@@ -6,7 +6,7 @@ import type { Stage, Task } from '../engine/types';
 import { skillById } from '../content/curriculum';
 import { updateProgress, type Profile } from '../data/store';
 import { CloseIcon, Confetti, Confirm, Fox, Speak, Toast } from '../ui/common';
-import { ExplainBody } from '../ui/Explain';
+import { ExplainBody, ExplainSheet } from '../ui/Explain';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
 import { SpellDiff } from '../ui/SpellDiff';
@@ -35,6 +35,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
   const [more, setMore] = useState(false);
   const [stageMsg, setStageMsg] = useState<string | null>(null);
   const [achieved, setAchieved] = useState<string[]>([]);
+  const [help, setHelp] = useState(false);
   const live = useData().progress[profile.id];
 
   const item = queue[idx];
@@ -158,6 +159,11 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
         <div className="row small muted" style={{ justifyContent: 'space-between' }}>
           <span>
             {skill?.icon} {skill?.title}
+            {skill && !result && (
+              <button className="help-link" onClick={() => setHelp(true)}>
+                💡 Hilfe
+              </button>
+            )}
           </span>
           {skill?.staged && item.task.stage && (
             <span className="stage-pill" title="Schwierigkeit">
@@ -250,6 +256,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
         </div>
       </div>
 
+      {help && skill && <ExplainSheet skill={skill} onClose={() => setHelp(false)} />}
       {stageMsg && <Toast text={stageMsg} onDone={() => setStageMsg(null)} ms={3200} />}
       {askQuit && (
         <Confirm

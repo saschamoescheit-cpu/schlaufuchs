@@ -56,6 +56,7 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
       <div className="small muted">
         Schon geschafft: {progress.solved} {progress.solved === 1 ? 'Aufgabe' : 'Aufgaben'} aus der Fehler-Kiste 🎉
       </div>
+      {progress.review.length > 0 && <BoxList progress={progress} />}
 
       <h2 className="section-title">🧩 Hier knobelst du noch</h2>
       {weak.length === 0 ? (
@@ -232,5 +233,37 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
         );
       })}
     </div>
+  );
+}
+
+/** Was liegt in der Fehler-Kiste? (nach Thema, mit Serie richtiger Antworten) */
+function BoxList({ progress }: { progress: Progress }) {
+  const now = Date.now();
+  const groups = new Map<string, typeof progress.review>();
+  for (const r of progress.review) groups.set(r.task.skillId, [...(groups.get(r.task.skillId) ?? []), r]);
+  return (
+    <details className="more">
+      <summary>Was liegt in der Fehler-Kiste? ({progress.review.length})</summary>
+      <div className="inner">
+        {[...groups].map(([id, items]) => {
+          const s = skillById(id);
+          return (
+            <div key={id}>
+              <b>
+                {s?.icon} {s?.title ?? id}
+              </b>
+              {items.map((it) => (
+                <div key={it.task.key} className="list-row small">
+                  <span className="grow" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                    {it.task.prompt.replace(/\*\*/g, '').split('\n').slice(-1)[0]}
+                  </span>
+                  <span className="muted">{it.streak ? '✓ 1×' : it.due <= now ? 'jetzt dran' : 'später'}</span>
+                </div>
+              ))}
+            </div>
+          );
+        })}
+      </div>
+    </details>
   );
 }

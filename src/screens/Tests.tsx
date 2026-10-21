@@ -391,6 +391,7 @@ export function TestResultView({ profile, result, onBack, onPractice }: { profil
           </button>
         )}
 
+        <TopicBreakdown result={result} />
         <h2 className="section-title">Deine Aufgaben</h2>
         <div className="card" style={{ padding: '4px 14px' }}>
           {result.items.map((it, i) => (
@@ -487,3 +488,33 @@ export function GradeKeyEditor({ value, onChange }: { value: number[]; onChange:
   );
 }
 
+
+/** Ergebnis je Thema – wo saß es, wo nicht? */
+function TopicBreakdown({ result }: { result: TestResult }) {
+  const by = new Map<string, { ok: number; n: number }>();
+  for (const it of result.items) {
+    const x = by.get(it.task.skillId) ?? { ok: 0, n: 0 };
+    x.n++;
+    if (it.ok) x.ok++;
+    by.set(it.task.skillId, x);
+  }
+  if (by.size < 2 || Math.max(...[...by.values()].map((x) => x.n)) < 2) return null;
+  return (
+    <div className="card" style={{ padding: '4px 14px' }}>
+      <h3 style={{ padding: '10px 0 4px' }}>Nach Themen</h3>
+      {[...by].sort((a, b) => a[1].ok / a[1].n - b[1].ok / b[1].n).map(([id, x]) => {
+        const s = skillById(id);
+        const pct = x.ok / x.n;
+        return (
+          <div key={id} className="list-row small">
+            <span>{s?.icon}</span>
+            <span className="grow">{s?.title ?? id}</span>
+            <span style={{ color: pct >= 0.8 ? 'var(--ok-dark)' : pct >= 0.5 ? 'var(--muted)' : 'var(--bad)', fontWeight: 700 }}>
+              {x.ok}/{x.n}
+            </span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
