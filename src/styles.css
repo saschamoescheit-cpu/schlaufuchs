@@ -2047,3 +2047,41 @@ details.more .inner {
 .topic-meta > * {
   white-space: nowrap;
 }
+
+/* Lernstand zum Ausdrucken */
+.report h3 {
+  margin: 14px 0 4px;
+}
+.report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+.report-table td {
+  border-bottom: 1px solid var(--line);
+  padding: 4px 6px;
+  vertical-align: top;
+}
+.report-table td.nowrap {
+  white-space: nowrap;
+}
+.report-table td.right {
+  text-align: right;
+}
+.report-area td {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-top: 10px;
+  border-bottom: 0;
+}
+@media print {
+  .report-subject {
+    break-inside: avoid-page;
+  }
+  .report-table td {
+    border-bottom-color: #ccc;
+  }
+}

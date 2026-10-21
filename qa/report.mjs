@@ -1,0 +1,22 @@
+// node qa/report.mjs [url] [out] – Eltern-Bereich → Kind → „Lernstand drucken“: Bildschirm + Druckansicht
+import { readFileSync } from 'node:fs';
+import { open } from './lib.mjs';
+const url = process.argv[2] ?? 'http://localhost:5192/';
+const out = process.argv[3] ?? 'qa/shots/report';
+const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
+const { p, shot, click, done } = await open({ url, out, grade: 3, progress });
+await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
+await click('Eltern-Bereich');
+for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+await p.waitForTimeout(250);
+for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+await p.waitForTimeout(400);
+await p.locator('.parent-card').first().click();
+await click('Lernstand drucken');
+await p.waitForTimeout(400);
+await shot('bildschirm', true);
+await p.emulateMedia({ media: 'print' });
+await shot('druck', true);
+const ok = await p.getByText(/Lernstand von/).isVisible();
+console.log(ok ? '✓ Lernstand-Seite' : '✗ fehlt');
+process.exit((await done()) + (ok ? 0 : 1));

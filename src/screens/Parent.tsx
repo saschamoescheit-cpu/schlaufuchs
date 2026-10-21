@@ -14,6 +14,7 @@ import { Confirm, TopBar } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
 import { SubjectStats } from './Stats';
 import { countdownText, daysUntil, fmtDay, nextPlanned, readiness } from './Planner';
+import { ProgressReport } from './Report';
 
 const DAY = 86400000;
 const fmtDate = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -311,10 +312,12 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
   const pr = data.progress[id] ?? emptyProgress();
   const [del, setDel] = useState(false);
   const [msg, setMsg] = useState('');
+  const [report, setReport] = useState(false);
   const [tab, setTab] = useState<'uebersicht' | 'ziele' | 'tests' | 'einst'>('uebersicht');
   const now = Date.now();
   const mins = useMemo(() => minutesByDay(pr), [pr]);
   if (!p) return null;
+  if (report) return <ProgressReport profile={p} progress={pr} onBack={() => setReport(false)} />;
   const set = (patch: Partial<Profile>) => saveProfile({ ...p, ...patch }, false);
   const days = Array.from({ length: 14 }, (_, i) => {
     const t = addDays(now, i - 13);
@@ -378,6 +381,9 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
 
             <button className="btn ok block" onClick={share}>
               📤 Wochenbericht teilen
+            </button>
+            <button className="btn ghost block" onClick={() => setReport(true)}>
+              🖨️ Lernstand drucken
             </button>
             {msg && <p className="small center">{msg}</p>}
 
