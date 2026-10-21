@@ -29,6 +29,8 @@ export interface Profile {
   plannedTests?: PlannedTest[];
   /** Blitzrunde: Rekord (richtige Aufgaben in 60 s) je Thema */
   blitz?: Record<string, number>;
+  /** Fuchs-Outfit: ausgewählte Teile (je Platz Kopf/Hals eins), freigeschaltet mit Sternen */
+  outfit?: string[];
   created: number;
 }
 

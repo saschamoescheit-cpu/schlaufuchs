@@ -10,6 +10,7 @@ import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
 import type { TestSpec } from './Tests';
 import { blitzable, BlitzPicker } from './Blitz';
+import { unseenOutfits, Wardrobe, wearing } from '../ui/Outfits';
 
 function greeting(name: string) {
   const h = new Date().getHours();
@@ -33,6 +34,8 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
   const next = suggestion(profile, progress);
   const today = progress.days[dayKey(now)] ?? 0;
   const soon = planned && daysUntil(planned.date) <= 7 ? planned : undefined;
+  const [wardrobe, setWardrobe] = useState(false);
+  const fresh = unseenOutfits(profile.id, progress.stars);
   const msg = soon
     ? `${countdownText(daysUntil(soon.date))[0].toUpperCase() + countdownText(daysUntil(soon.date)).slice(1)} ist dein ${subjectInfo(soon.subject).name}-Test. Lass uns gezielt dafür üben!`
     : due
@@ -57,12 +60,16 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
       </div>
 
       <div className="hello">
-        <Fox size={72} />
+        <button className="fox-btn" onClick={() => setWardrobe(true)} aria-label="Fuchs anziehen">
+          <Fox size={72} outfit={wearing(profile, progress.stars)} />
+          {fresh > 0 && <span className="badge">{fresh}</span>}
+        </button>
         <div className="bubble">
           <b>{greeting(profile.name)}</b> {msg}
         </div>
       </div>
 
+      {wardrobe && <Wardrobe profile={profile} stars={progress.stars} onClose={() => setWardrobe(false)} />}
       {planned && <PlannedCard t={planned} progress={progress} onPractice={onMix} onStart={onStartTest} />}
       <DailyGoal profile={profile} progress={progress} />
       <BadgeWatcher profile={profile} progress={progress} />

@@ -1,9 +1,10 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Lang } from '../engine/types';
 import { speak, stopSpeaking } from './speech';
+import { OUTFITS } from './outfitArt';
 
 /** Der Schlaufuchs – Maskottchen und Logo */
-export function Fox({ size = 64, mood = 'normal', className }: { size?: number; mood?: 'normal' | 'happy' | 'think'; className?: string }) {
+export function Fox({ size = 64, mood = 'normal', className, outfit }: { size?: number; mood?: 'normal' | 'happy' | 'think'; className?: string; outfit?: string[] }) {
   return (
     <svg viewBox="0 0 200 200" width={size} height={size} className={className} aria-hidden="true">
       <path d="M30 104 L34 22 Q36 14 44 19 L96 58 Z" fill="#E8661A" stroke="#E8661A" strokeWidth="6" strokeLinejoin="round" />
@@ -38,6 +39,7 @@ export function Fox({ size = 64, mood = 'normal', className }: { size?: number; 
       ) : (
         <path d="M90 166 Q95 172 100 166 Q105 172 110 166" fill="none" stroke="#2B2340" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
       )}
+      {outfit && OUTFITS.filter((o) => outfit.includes(o.id)).map((o) => <g key={o.id}>{o.draw}</g>)}
     </svg>
   );
 }

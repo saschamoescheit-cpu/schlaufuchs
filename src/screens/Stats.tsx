@@ -39,7 +39,7 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
       {tab === 'kiste' && (
         <>
           <div className="hello">
-            <Fox size={64} mood={due.length ? 'think' : 'happy'} />
+            <Fox size={64} mood={due.length ? 'think' : 'happy'} outfit={profile.outfit} />
             <div className="bubble">
               {due.length
                 ? `Hier sammle ich alle Aufgaben, die noch nicht geklappt haben. Jede kommt so lange wieder, bis du sie ${REVIEW_STREAK}-mal hintereinander richtig hast.`

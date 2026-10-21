@@ -68,7 +68,7 @@ export function BadgeWatcher({ profile, progress }: { profile: Profile; progress
       <Sheet onClose={close} label="Neues Abzeichen">
         <div className="stack center">
           <div>
-            <Fox size={90} mood="happy" className="fox-wiggle" />
+            <Fox size={90} mood="happy" className="fox-wiggle" outfit={profile.outfit} />
           </div>
           <h2>{best.size === 1 ? 'Neues Abzeichen!' : `${best.size} neue Abzeichen!`}</h2>
           {[...best].map(([id, t]) => {

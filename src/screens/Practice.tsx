@@ -98,7 +98,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
         {pct >= 0.7 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
-            <Fox size={130} mood="happy" className="fox-wiggle" />
+            <Fox size={130} mood="happy" className="fox-wiggle" outfit={profile.outfit} />
           </div>
           <h1>{pct >= 0.9 ? 'Fantastisch!' : pct >= 0.7 ? 'Super gemacht!' : 'Gut durchgehalten!'}</h1>
           <p className="muted">{title}</p>
@@ -182,7 +182,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
           <div className="pl-side">
             {result?.ok && (
               <div className="feedback right row">
-                <Fox size={56} mood="happy" />
+                <Fox size={56} mood="happy" outfit={profile.outfit} />
                 <div className="grow">
                   <h2>{praise} ⭐</h2>
                   {result.solved && <div className="small">Diese Fehler-Aufgabe sitzt jetzt! 🎉</div>}
@@ -196,7 +196,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
             {result && !result.ok && (
               <div className="feedback wrong">
                 <div className="row">
-                  <Fox size={52} mood="think" />
+                  <Fox size={52} mood="think" outfit={profile.outfit} />
                   <div className="grow">
                     <h2>Nicht ganz!</h2>
                     <div>

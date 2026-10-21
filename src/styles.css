@@ -1888,3 +1888,49 @@ details.more .inner {
 .blitz-task.bad {
   background: var(--bad-soft, #fde8e6);
 }
+
+/* Fuchs-Kleiderschrank */
+.fox-btn {
+  position: relative;
+  border: 0;
+  background: none;
+  padding: 0;
+  cursor: pointer;
+  flex: none;
+}
+.fox-btn .badge {
+  top: 0;
+  right: 0;
+}
+.wardrobe {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+.wardrobe-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  background: var(--card);
+  border: 3px solid transparent;
+  border-radius: 18px;
+  padding: 8px 4px 10px;
+  font: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow);
+}
+.wardrobe-item.on {
+  border-color: var(--ok);
+  background: var(--ok-soft);
+}
+.wardrobe-item:disabled {
+  cursor: default;
+  box-shadow: none;
+  background: transparent;
+  border: 2px dashed var(--line, #e6e0f0);
+}
+.wardrobe-item .locked {
+  filter: grayscale(1);
+  opacity: 0.45;
+}

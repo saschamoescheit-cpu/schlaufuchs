@@ -157,7 +157,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
         {best && score > 0 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
-            <Fox size={120} mood="happy" className="fox-wiggle" />
+            <Fox size={120} mood="happy" className="fox-wiggle" outfit={profile.outfit} />
           </div>
           <h1>{best && score > 0 ? 'Neuer Rekord!' : 'Zeit ist um!'}</h1>
           <div className="tiles" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
