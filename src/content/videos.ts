@@ -149,6 +149,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '9Ti_yRe0z_E', title: 'Halbschriftliches Dividieren - Klasse 3 Grundschule', channel: 'Nachhilfe vom Lehrer', len: '6:32' },
     { id: 'ne727UBDkKs', title: 'Halbschriftliches Dividieren', channel: 'Lehrerschmidt', len: '5:12' },
   ],
+  'd1-selbstlaute': [
+    { id: 'R-nsdU3bxe0', title: 'Vokale / Selbstlaute / Königsbuchstaben / Deutsch Klasse 1', channel: 'Lernen mit Lisa', len: '4:35' },
+    { id: 'edBSjJQJM4E', title: 'Was sind Selbstlaute, Doppellaute und Umlaute? einfach erklärt', channel: 'sofatutor', len: '2:36' },
+  ],
   'm4-fahrplan': [{ id: '9NkM9qlxNBc', title: 'Fahrplan - lesen und verstehen', channel: 'LehrerTEF', len: '4:12' }],
   'm3-wuerfelgebaeude': [
     { id: '1GJZeby2dxw', title: 'Erklärvideo Würfelgebäude: Baupläne', channel: 'Grundschule Ludwigsfeld', len: '3:56' },

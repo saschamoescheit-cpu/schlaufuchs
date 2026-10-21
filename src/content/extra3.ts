@@ -413,6 +413,46 @@ export const MATHE_EXTRA3: Skill[] = [
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
 ];
 
+// ---------- Selbstlaute (Kl. 1) ----------
+
+const VOKALE = 'aeiou';
+const VOK_W: [string, string][] = [
+  ['Hut', '🎩'], ['Ente', '🦆'], ['Igel', '🦔'], ['Sofa', '🛋️'], ['Tomate', '🍅'], ['Banane', '🍌'], ['Salat', '🥗'], ['Rose', '🌹'], ['Nase', '👃'],
+  ['Kamel', '🐫'], ['Tiger', '🐯'], ['Ufo', '🛸'], ['Oma', '👵'], ['Apfel', '🍎'], ['Hose', '👖'], ['Lama', '🦙'], ['Kino', '🎬'], ['Gabel', '🍴'], ['Rakete', '🚀'], ['Melone', '🍉'],
+];
+const KONS = 'bdfghklmnprstwz';
+function vokalTask(r: Rng, s: Stage): Gen {
+  if (s === 1 || chance(r, 0.4)) {
+    const v = pick(r, [...VOKALE]);
+    const up = chance(r, 0.5);
+    const cons = pickN(r, [...KONS], s === 1 ? 2 : 3);
+    const f = (x: string) => (up ? x.toUpperCase() : x);
+    return {
+      key: `v-${v}-${cons.join('')}-${up}`,
+      prompt: 'Welcher Buchstabe ist ein Selbstlaut?',
+      speak: 'Welcher Buchstabe ist ein Selbstlaut?',
+      answer: { ...choice(r, f(v), cons.map(f)), big: true },
+      tags: ['erkennen'],
+      solution: [`${f(v)} ist ein Selbstlaut.`, 'Die Selbstlaute heißen: a, e, i, o, u. Alle anderen Buchstaben sind Mitlaute.'],
+      solutionVisual: { kind: 'text', text: 'A E I O U' },
+    };
+  }
+  const [w, e] = pick(r, VOK_W);
+  const n = [...w.toLowerCase()].filter((c) => VOKALE.includes(c)).length;
+  const marks: [number, number][] = [...w.toLowerCase()].flatMap((c, i) => (VOKALE.includes(c) ? [[i, i + 1] as [number, number]] : []));
+  return {
+    key: `z-${w}`,
+    prompt: `Wie viele Selbstlaute hat das Wort?\n${w}`,
+    speak: `Wie viele Selbstlaute hat das Wort ${w}?`,
+    visual: { kind: 'emoji', chars: e },
+    answer: { type: 'number', value: n },
+    tags: ['zaehlen'],
+    traps: [{ answer: String(w.length - n), tag: 'mitlaute-gezaehlt', hint: 'Du hast die Mitlaute gezählt. Selbstlaute sind nur a, e, i, o, u.' }],
+    solution: [`In „${w}“ stecken ${n} Selbstlaute: ${[...w].filter((c) => VOKALE.includes(c.toLowerCase())).join(', ')}.`, 'Selbstlaute: a, e, i, o, u'],
+    solutionVisual: { kind: 'word', word: w, mark: marks },
+  };
+}
+
 // ---------- Orts- und Zeitangaben (Kl. 4) ----------
 
 type Adv = 'zeit' | 'wo' | 'wohin';
@@ -459,6 +499,7 @@ function advTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
   D(4, 'd4-orts-zeitangaben', 'Orts- und Zeitangaben', '🕰️', { text: ['Zeitangaben sagen, wann etwas passiert. Frage: Wann? – „Am Morgen“, „gestern“, „um drei Uhr“.', 'Ortsangaben sagen, wo oder wohin etwas passiert. Frage: Wo? – „im Park“. Wohin? – „ans Meer“.', 'Wo oder wohin? Bewegt sich etwas zu einem Ort hin, fragst du „Wohin?“.'], visual: { kind: 'text', text: 'Am Morgen (Wann?) fährt Lea in die Schule (Wohin?).' }, videoQuery: 'Zeitangaben Ortsangaben adverbiale Bestimmung Klasse 4' }, advTask, { tagLabels: { zeitangabe: 'Zeitangaben (Wann?)', ortsangabe: 'Ortsangaben (Wo? Wohin?)', 'wo-wohin': 'Wo und Wohin verwechselt' }, testSeconds: 20 }),
   D(3, 'd3-woerterbuch', 'Im Wörterbuch nachschlagen', '📖', { text: ['Im Wörterbuch stehen die Wörter nach dem ABC geordnet.', 'Ist der erste Buchstabe gleich, schaust du auf den zweiten – dann auf den dritten.', 'Wörter stehen in der Grundform: Verben wie „laufen“ (nicht „lief“), Nomen in der Einzahl („Baum“, nicht „Bäume“), Adjektive ungesteigert („groß“, nicht „größer“).'], visual: { kind: 'text', text: 'lief → laufen · Bäume → Baum' }, videoQuery: 'im Wörterbuch nachschlagen Grundform Klasse 3' }, woerterbuchTask, { tagLabels: { abc: 'nach dem ABC ordnen', 'grundform-verb': 'Grundform von Verben', 'grundform-nomen': 'Einzahl von Nomen', 'grundform-adjektiv': 'Grundstufe von Adjektiven', 'nicht-grundform': 'nicht in der Grundform gesucht' }, testSeconds: 20 }),
 ];
