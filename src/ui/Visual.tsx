@@ -49,13 +49,13 @@ function TenFrames({ n, m = 0, crossOut = 0 }: { n: number; m?: number; crossOut
   );
 }
 
-function NumberLine({ from, to, start, jumps, step }: { from: number; to: number; start: number; jumps: number[]; step?: number }) {
+function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number; to: number; start: number; jumps: number[]; step?: number; minor?: number; ask?: boolean }) {
   const W = 360;
   const pad = 18;
   const span = Math.max(1, to - from);
   const x = (v: number) => pad + ((v - from) / span) * (W - 2 * pad);
   const labelStep = step ?? (span <= 20 ? 1 : span <= 60 ? 5 : span <= 200 ? 10 : 100);
-  const tickStep = span <= 60 ? 1 : span <= 200 ? labelStep / 2 || 1 : labelStep / 10;
+  const tickStep = minor ?? (span <= 60 ? 1 : span <= 200 ? labelStep / 2 || 1 : labelStep / 10);
   const ticks: number[] = [];
   for (let v = Math.ceil(from / tickStep) * tickStep; v <= to; v += tickStep) ticks.push(Math.round(v * 100) / 100);
   let cur = start;
@@ -65,7 +65,7 @@ function NumberLine({ from, to, start, jumps, step }: { from: number; to: number
     return { a, b: cur, j };
   });
   const y = 78;
-  const fs = span > 20 && labelStep < 10 ? 9 : 11;
+  const fs = span > 20 && labelStep < 10 ? 10 : 13;
   return (
     <Svg w={W} h={104} label="Zahlenstrahl" max={420}>
       <line x1={pad - 8} y1={y} x2={W - pad + 8} y2={y} stroke={C.ink} strokeWidth={2} />
@@ -97,13 +97,30 @@ function NumberLine({ from, to, start, jumps, step }: { from: number; to: number
           </g>
         );
       })}
-      <circle cx={x(start)} cy={y} r={5.5} fill={C.b} stroke={C.paper} strokeWidth={1.5} />
+      <circle cx={x(start)} cy={y} r={ask ? 7 : 5.5} fill={C.b} stroke={C.paper} strokeWidth={1.5} />
       {jumps.length === 0 && (
-        <text x={x(start)} y={y - 14} fontSize={13} fontWeight={700} textAnchor="middle" fill={C.b} fontFamily="Fredoka, sans-serif">
-          {start}
+        <text x={x(start)} y={y - (ask ? 16 : 14)} fontSize={ask ? 24 : 13} fontWeight={700} textAnchor="middle" fill={C.b} fontFamily="Fredoka, sans-serif">
+          {ask ? '?' : start}
         </text>
       )}
     </Svg>
+  );
+}
+
+/** Bilder-Raster für oben/unten/links/rechts */
+function Grid({ rows, mark }: { rows: string[][]; mark?: [number, number] }) {
+  return (
+    <div className="vis-grid" role="img" aria-label={rows.map((r) => r.join(' ')).join(', ')}>
+      {rows.map((r, i) => (
+        <div key={i} className="vis-grid-row">
+          {r.map((c, j) => (
+            <span key={j} className={`vis-grid-cell ${mark && mark[0] === i && mark[1] === j ? 'mark' : ''}`}>
+              {c}
+            </span>
+          ))}
+        </div>
+      ))}
+    </div>
   );
 }
 
@@ -565,6 +582,8 @@ export function Visual({ v }: { v: V }) {
       return <TenFrames n={v.a} m={v.b} crossOut={v.crossOut} />;
     case 'numberline':
       return <NumberLine {...v} />;
+    case 'grid':
+      return <Grid rows={v.rows} mark={v.mark} />;
     case 'blocks':
       return <Blocks {...v} />;
     case 'placetable':

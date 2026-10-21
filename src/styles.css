@@ -1937,3 +1937,36 @@ details.more .inner {
   filter: grayscale(1);
   opacity: 0.45;
 }
+
+/* Bilder-Raster (Lagebeziehungen) */
+.vis-grid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  margin: 6px auto;
+  background: #f3e6d4;
+  border-radius: 14px;
+  padding: 6px 10px;
+}
+.vis-grid-row {
+  display: flex;
+  gap: 10px;
+  border-bottom: 5px solid #c9a27a;
+  padding: 6px 4px 4px;
+}
+.vis-grid-row:last-child {
+  border-bottom: 0;
+}
+.vis-grid-cell {
+  width: 56px;
+  height: 56px;
+  font-size: 2.6rem;
+  line-height: 56px;
+  text-align: center;
+  border-radius: 12px;
+}
+.vis-grid-cell.mark {
+  background: var(--ok-soft);
+  box-shadow: 0 0 0 3px var(--ok);
+}

@@ -10,7 +10,8 @@ export type Stage = 1 | 2 | 3;
 export type Visual =
   | { kind: 'dots'; n: number; m?: number } // n Punkte in Zehnerfeldern (m = zweite Farbe dazu)
   | { kind: 'tenframe'; a: number; b?: number; crossOut?: number }
-  | { kind: 'numberline'; from: number; to: number; start: number; jumps: number[]; step?: number }
+  /** Zahlenstrahl: step = Abstand der Beschriftung, minor = Abstand der kleinen Striche, ask = „?“ statt Zahl am Punkt */
+  | { kind: 'numberline'; from: number; to: number; start: number; jumps: number[]; step?: number; minor?: number; ask?: boolean }
   | { kind: 'blocks'; h?: number; t: number; o: number; th?: number } // Stellenwert-Material
   | { kind: 'placetable'; digits: number[]; labels: string[]; highlight?: number }
   | { kind: 'clock'; h: number; m: number }
@@ -33,7 +34,9 @@ export type Visual =
   /** Netz aus Quadraten (Würfelnetz): Zellen [Spalte, Zeile] */
   | { kind: 'net'; cells: [number, number][] }
   /** Säulendiagramm */
-  | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string };
+  | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string }
+  /** Raster aus Bildern (Lagebeziehungen): Zeilen von oben nach unten, '' = leer */
+  | { kind: 'grid'; rows: string[][]; mark?: [number, number] };
 
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }

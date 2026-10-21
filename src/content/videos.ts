@@ -132,4 +132,17 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'd4-nachsilben': [{ id: 'k-9IIDon0pY', title: "Nomen mit -heit, -keit, -nis, -ung - das solltest du wissen", channel: "Frau Weber digital", len: '5:27' }],
   'd4-sachtexte': [{ id: 'J71q1WzHhFc', title: "Wie liest man einen Sachtext? einfach erklärt – Deutsch 3. & 4. Klasse", channel: "sofatutor", len: '4:33' }],
   'e1-classroom': [{ id: 'WsiRSWthV1k', title: "Stand Up, Sit Down", channel: "Fun Kids English", len: '2:57' }],
+  'm1-lage': [{ id: 'ySAqipEArog', title: 'Lagebeziehungen - rechts/links - oben/unten - auf/unter', channel: 'Frau Ha', len: '4:05' }],
+  'm2-zahlenstrahl': [
+    { id: 'DTPJA-4KWwI', title: 'Der Zahlenstrahl - einfach erklärt', channel: 'Lehrerschmidt - Grundschule', len: '7:37' },
+    { id: 'krofH4VgDnM', title: 'Mathe Klasse 2: Der Zahlenstrahl bis 100', channel: 'Frau Ehmanns', len: '6:24' },
+  ],
+  'm3-zahlenstrahl': [
+    { id: 'Wk8WUn7xOaY', title: 'Der Zahlenstrahl bis 1000 (Klasse 3)', channel: 'Anja Wanke', len: '5:08' },
+    { id: 'g1J7fY7Ebfw', title: 'Zahldarstellungen - Zahlenraum bis 1000 - Klasse 3', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:55' },
+  ],
+  'd3-woerterbuch': [
+    { id: 'X3_-GKFqtL0', title: 'Wörterbuch richtig benutzen | Erklärung und Übungen', channel: 'lernfoerderung', len: '2:45' },
+    { id: 'g3qUzoziye0', title: 'Verben in der Grundform im Wörterbuch finden', channel: 'Grundschule Allendorf', len: '2:05' },
+  ],
 };
