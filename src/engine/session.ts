@@ -28,6 +28,26 @@ export function buildPractice(skill: Skill, p: Progress, now = Date.now(), seed 
   return interleave(news, due);
 }
 
+/** Fehlermuster gezielt üben: nur Aufgaben, in denen genau dieser Fehler passieren kann (z. B. Übertrag, ie-Wörter) */
+export function buildPattern(skill: Skill, tag: string, p: Progress, now = Date.now(), seed = randomSeed()): Task[] {
+  const r = mulberry32(seed);
+  const fits = (t: Task) => !!t.tags?.includes(tag) || !!t.traps?.some((x) => x.tag === tag);
+  const due = dueReviews(p, now, (id) => id === skill.id).map((x) => x.task).filter(fits).slice(0, 4);
+  const used = new Set(due.map((t) => t.key));
+  const news: Task[] = [];
+  const stage = stageOf(p, skill.id);
+  for (let i = 0; i < 400 && news.length < SESSION_LEN - due.length; i++) {
+    // zuerst die eigene Stufe, später auch die anderen – Hauptsache, der Fehler kann vorkommen
+    const t = skill.generate(r, i < 200 ? stage : (((i % 3) + 1) as Stage));
+    if (!fits(t) || used.has(t.key)) continue;
+    used.add(t.key);
+    news.push(t);
+  }
+  // selten: zu wenige passende Aufgaben → mit normalen Aufgaben des Themas auffüllen
+  while (news.length + due.length < SESSION_LEN) news.push(fresh(skill, r, used, stage));
+  return interleave(news, due);
+}
+
 /** Fuchs-Mix: Themen gewichtet – was schwerfällt oder noch nicht sicher ist, kommt öfter */
 export function buildMix(skills: Skill[], p: Progress, now = Date.now(), seed = randomSeed()): Task[] {
   const r = mulberry32(seed);

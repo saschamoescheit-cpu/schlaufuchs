@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { buildMix, buildPractice, buildReview } from './engine/session';
+import { buildMix, buildPattern, buildPractice, buildReview } from './engine/session';
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
@@ -111,7 +111,7 @@ export default function App() {
         route.tab === 'home' ? (
           <Home profile={profile} progress={progress} onSubject={(subject) => push({ r: 'subject', subject })} onReview={() => reviewAll()} onPractice={practiceSkill} onProfile={() => push({ r: 'settings' })} onMix={practiceMix} onStartTest={(spec) => push({ r: 'test', spec })} />
         ) : route.tab === 'review' ? (
-          <ReviewScreen profile={profile} progress={progress} onReviewAll={reviewAll} onPractice={practiceSkill} />
+          <ReviewScreen profile={profile} progress={progress} onReviewAll={reviewAll} onPractice={practiceSkill} onPracticePattern={(s, tag, label) => push({ r: 'practice', title: `${label} üben`, tasks: buildPattern(s, tag, progress), mode: 'übung', again: () => buildPattern(s, tag, data.progress[profile.id] ?? progress), n: 0 })} />
         ) : route.tab === 'tests' ? (
           <TestSetup profile={profile} progress={progress} onStart={(spec) => push({ r: 'test', spec })} onOpenResult={(id) => push({ r: 'result', id })} onPractice={practiceMix} onPrint={(spec) => push({ r: 'print', spec })} />
         ) : (

@@ -17,7 +17,7 @@ function relevantSkills(profile: Profile, p: Progress): Skill[] {
   });
 }
 
-export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { profile: Profile; progress: Progress; onReviewAll: (subject?: Subject) => void; onPractice: (skill: Skill) => void }) {
+export function ReviewScreen({ profile, progress, onReviewAll, onPractice, onPracticePattern }: { profile: Profile; progress: Progress; onReviewAll: (subject?: Subject) => void; onPractice: (skill: Skill) => void; onPracticePattern?: (skill: Skill, tag: string, label: string) => void }) {
   const now = Date.now();
   const due = dueReviews(progress, now);
   const waiting = progress.review.length - due.length;
@@ -90,7 +90,7 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
       {tab === 'muster' && pats.length > 0 && (
         <>
           <p className="muted" style={{ marginTop: -4 }}>
-            Diese Fehler passieren dir öfter. Übe gezielt das Thema dazu.
+            Diese Fehler passieren dir öfter. Mit „Üben“ bekommst du genau solche Aufgaben.
           </p>
           <div className="card" style={{ padding: '4px 14px' }}>
             {pats.map((p) => (
@@ -102,7 +102,7 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
                     {p.skill.title} · {p.wrong} von {p.seen} falsch
                   </div>
                 </span>
-                <button className="btn small ghost" onClick={() => onPractice(p.skill)}>
+                <button className="btn small ghost" onClick={() => (onPracticePattern ? onPracticePattern(p.skill, p.tag, p.label) : onPractice(p.skill))}>
                   Üben
                 </button>
               </div>
