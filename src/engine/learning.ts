@@ -206,3 +206,32 @@ export function streakDays(p: Progress, now: number): number {
   }
   return n;
 }
+
+/**
+ * Geschätzte Lernzeit in Minuten je Tag (aus dem Aufgaben-Verlauf): Zeit zwischen zwei Aufgaben zählt bis 2 Minuten,
+ * dazu 15 Sekunden für jede Aufgabe. Längere Pausen zählen nicht.
+ */
+export function minutesByDay(p: Progress): Record<string, number> {
+  const out: Record<string, number> = {};
+  const log = [...p.log].sort((a, b) => a.t - b.t);
+  for (let i = 0; i < log.length; i++) {
+    const k = dayKey(log[i].t);
+    const gap = i > 0 && dayKey(log[i - 1].t) === k ? Math.min(120, (log[i].t - log[i - 1].t) / 1000) : 0;
+    out[k] = (out[k] ?? 0) + (gap + 15) / 60;
+  }
+  for (const k of Object.keys(out)) out[k] = Math.round(out[k]);
+  return out;
+}
+
+/** Zusammenfassung eines Zeitraums (für Eltern) */
+export function periodStats(p: Progress, from: number, to: number) {
+  const items = p.log.filter((a) => a.t >= from && a.t < to);
+  const mins = minutesByDay({ ...p, log: items });
+  return {
+    tasks: items.length,
+    right: items.filter((a) => a.ok).length,
+    days: new Set(items.map((a) => dayKey(a.t))).size,
+    minutes: Object.values(mins).reduce((a, b) => a + b, 0),
+    tests: p.tests.filter((t) => t.t >= from && t.t < to),
+  };
+}

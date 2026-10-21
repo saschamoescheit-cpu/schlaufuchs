@@ -9,6 +9,8 @@ import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
 import { TestResultView, TestRun, TestSetup, type TestSpec } from './screens/Tests';
 import { ProfileEdit, Settings, Welcome } from './screens/Profile';
+import { ParentChild, ParentHome, PinGate } from './screens/Parent';
+import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
 
 type Tab = 'home' | 'review' | 'tests' | 'stats';
@@ -20,7 +22,9 @@ type Route =
   | { r: 'result'; id: string }
   | { r: 'profile-edit' }
   | { r: 'profile-new' }
-  | { r: 'settings' };
+  | { r: 'settings' }
+  | { r: 'parent' }
+  | { r: 'parent-child'; id: string };
 
 const TABS: { id: Tab; icon: string; label: string }[] = [
   { id: 'home', icon: '🏠', label: 'Lernen' },
@@ -69,6 +73,13 @@ export default function App() {
     window.scrollTo(0, 0);
   };
 
+  const [, setTick] = useState(0);
+  const parentView = (r: Route, onBack: () => void, openChild: (id: string) => void) => {
+    if (!isUnlocked()) return <PinGate onOk={() => setTick((t) => t + 1)} onCancel={onBack} />;
+    if (r.r === 'parent-child') return <ParentChild data={data} id={r.id} onBack={onBack} />;
+    return <ParentHome data={data} onChild={openChild} onBack={onBack} />;
+  };
+
   // Profil gewechselt oder gelöscht → zurück zum Start
   useEffect(() => {
     setStack([{ r: 'tab', tab: 'home' }]);
@@ -76,7 +87,9 @@ export default function App() {
 
   if (!profile) {
     if (route.r === 'profile-new') return <ProfileEdit onDone={() => setStack([{ r: 'tab', tab: 'home' }])} onCancel={() => setStack([{ r: 'tab', tab: 'home' }])} />;
-    return <Welcome data={data} onNew={() => setStack([{ r: 'profile-new' }])} />;
+    if (route.r === 'parent' || route.r === 'parent-child')
+      return parentView(route, () => setStack((s) => (s.length > 1 ? s.slice(0, -1) : [{ r: 'tab', tab: 'home' }])), (id) => setStack((s) => [...s, { r: 'parent-child', id }]));
+    return <Welcome data={data} onNew={() => setStack([{ r: 'profile-new' }])} onParent={() => setStack([{ r: 'parent' }])} />;
   }
 
   const practiceSkill = (s: Skill) => push({ r: 'practice', title: s.title, tasks: buildPractice(s, progress), mode: 'übung', again: () => buildPractice(s, data.progress[profile.id] ?? progress), n: 0 });
@@ -127,11 +140,14 @@ export default function App() {
       return <TestResultView profile={profile} result={res} onBack={back} onPractice={(tasks) => push({ r: 'practice', title: 'Fehler aus dem Test', tasks, mode: 'wiederholung', n: 0 })} />;
     }
     case 'profile-edit':
-      return <ProfileEdit profile={profile} onDone={back} onCancel={back} />;
+      return <ProfileEdit profile={profile} limited={hasPin()} onDone={back} onCancel={back} />;
     case 'profile-new':
       return <ProfileEdit onDone={() => setStack([{ r: 'tab', tab: 'home' }])} onCancel={back} />;
     case 'settings':
-      return <Settings data={data} profile={profile} onEdit={() => push({ r: 'profile-edit' })} onNew={() => push({ r: 'profile-new' })} onBack={back} />;
+      return <Settings data={data} profile={profile} onEdit={() => push({ r: 'profile-edit' })} onNew={() => push({ r: 'profile-new' })} onParent={() => push({ r: 'parent' })} onBack={back} />;
+    case 'parent':
+    case 'parent-child':
+      return parentView(route, back, (id) => push({ r: 'parent-child', id }));
   }
 
   const due = dueReviews(progress, Date.now()).length;

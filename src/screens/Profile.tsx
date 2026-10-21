@@ -9,10 +9,11 @@ import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
 import { canSpeak, speak } from '../ui/speech';
+import { hasPin } from '../data/parent';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
 
-export function Welcome({ data, onNew }: { data: AppData; onNew: () => void }) {
+export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () => void; onParent: () => void }) {
   const sync = useSyncStatus();
   return (
     <div className="app full">
@@ -39,6 +40,9 @@ export function Welcome({ data, onNew }: { data: AppData; onNew: () => void }) {
                 <span>Neues Kind</span>
               </button>
             </div>
+            <button className="btn ghost small" onClick={onParent}>
+              👨‍👩‍👧 Für Eltern
+            </button>
           </>
         ) : (
           <>
@@ -144,7 +148,7 @@ function SyncCard({ data }: { data: AppData }) {
   );
 }
 
-export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; onDone: () => void; onCancel?: () => void }) {
+export function ProfileEdit({ profile, onDone, onCancel, limited }: { profile?: Profile; onDone: () => void; onCancel?: () => void; limited?: boolean }) {
   const [p, setP] = useState<Profile>(() => profile ?? newProfile({}));
   const set = (patch: Partial<Profile>) => setP((x) => ({ ...x, ...patch }));
   const isNew = !profile;
@@ -169,6 +173,8 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
           </div>
         </div>
 
+        {limited && <div className="card small muted">Klasse, Alter, Bundesland und Schul-Einstellungen ändern Eltern im Eltern-Bereich.</div>}
+        {!limited && (<>
         <div className="field">
           <span className="label">In welche Klasse gehst du?</span>
           <div className="chips">
@@ -213,6 +219,7 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
             {st.note ? ` · ${st.note}` : ''}
           </div>
         </div>
+        </>)}
 
         <label className="switch">
           <input type="checkbox" checked={p.autoRead} onChange={(e) => set({ autoRead: e.target.checked })} />
@@ -234,6 +241,7 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
           </span>
         </label>
 
+        {!limited && (
         <details className="more">
           <summary>Schule anpassen</summary>
           <div className="inner">
@@ -276,6 +284,7 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
             </div>
           </div>
         </details>
+        )}
 
         <button
           className="btn ok block"
@@ -292,7 +301,7 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
   );
 }
 
-export function Settings({ data, profile, onEdit, onNew, onBack }: { data: AppData; profile: Profile; onEdit: () => void; onNew: () => void; onBack: () => void }) {
+export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { data: AppData; profile: Profile; onEdit: () => void; onNew: () => void; onParent: () => void; onBack: () => void }) {
   const [del, setDel] = useState(false);
   const download = () => {
     const blob = new Blob([exportJson()], { type: 'application/json' });
@@ -338,15 +347,21 @@ export function Settings({ data, profile, onEdit, onNew, onBack }: { data: AppDa
           ➕ Weiteres Kind anlegen
         </button>
 
+        <button className="btn block" onClick={onParent}>
+          👨‍👩‍👧 Eltern-Bereich
+        </button>
+
         <SyncCard data={data} />
 
         <button className="btn ghost block small" onClick={download}>
           💾 Lernstand als Datei speichern
         </button>
 
-        <button className="btn ghost block small" style={{ marginTop: 16, color: 'var(--bad)' }} onClick={() => setDel(true)}>
-          Profil von {profile.name} löschen
-        </button>
+        {!hasPin() && (
+          <button className="btn ghost block small" style={{ marginTop: 16, color: 'var(--bad)' }} onClick={() => setDel(true)}>
+            Profil von {profile.name} löschen
+          </button>
+        )}
         <p className="small muted center">Schlaufuchs · Version {__APP_VERSION__}</p>
       </div>
       {del && (

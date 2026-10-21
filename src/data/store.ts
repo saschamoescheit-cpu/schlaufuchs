@@ -23,6 +23,8 @@ export interface Profile {
   autoRead: boolean;
   sound: boolean;
   pace: Pace;
+  /** Tagesziel: so viele Aufgaben am Tag (0 = kein Ziel) */
+  dailyGoal?: number;
   created: number;
 }
 
@@ -110,12 +112,13 @@ export function newProfile(partial: Partial<Profile>): Profile {
     autoRead: grade <= 1,
     sound: true,
     pace: 'schule',
+    dailyGoal: 20,
     created: Date.now(),
     ...partial,
   };
 }
 
-export function saveProfile(p: Profile) {
+export function saveProfile(p: Profile, activate = true) {
   update((d) => {
     const i = d.profiles.findIndex((x) => x.id === p.id);
     if (i >= 0) d.profiles[i] = p;
@@ -123,7 +126,7 @@ export function saveProfile(p: Profile) {
       d.profiles.push(p);
       d.progress[p.id] = emptyProgress();
     }
-    d.activeId = p.id;
+    if (activate) d.activeId = p.id;
   });
 }
 

@@ -181,7 +181,7 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
   );
 }
 
-function SubjectStats({ subject, profile, progress, onPractice }: { subject: Subject; profile: Profile; progress: Progress; onPractice: (s: Skill) => void }) {
+export function SubjectStats({ subject, profile, progress, onPractice }: { subject: Subject; profile: Profile; progress: Progress; onPractice?: (s: Skill) => void }) {
   const info = subjectInfo(subject);
   const levels = levelsFor(subject).filter((l) => (subject === 'englisch' ? true : l.grade <= profile.grade) || skillsOf(subject, l.grade).some((s) => progress.skills[s.id]));
   const shown = levels.filter((l) => skillsOf(subject, l.grade).some((s) => progress.skills[s.id]) || (subject !== 'englisch' && l.grade === profile.grade) || (subject === 'englisch' && englishYear(profile) > 0 && l.grade === (englishYear(profile) >= 2 ? 4 : 3)));
@@ -210,7 +210,7 @@ function SubjectStats({ subject, profile, progress, onPractice }: { subject: Sub
               const acc = accuracy(progress.skills[s.id]);
               const open = openReviews(progress, s.id).length;
               return (
-                <button key={s.id} className="list-row" style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit' }} onClick={() => onPractice(s)}>
+                <button key={s.id} className="list-row" style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: onPractice ? 'pointer' : 'default', font: 'inherit' }} onClick={() => onPractice?.(s)}>
                   <span>{s.icon}</span>
                   <span className="grow small">{s.title}</span>
                   {open > 0 && <span className="tag">{open}</span>}
