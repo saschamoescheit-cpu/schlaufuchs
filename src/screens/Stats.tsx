@@ -42,7 +42,7 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
             <Fox size={64} mood={due.length ? 'think' : 'happy'} outfit={profile.outfit} />
             <div className="bubble">
               {due.length
-                ? `Hier sammle ich alle Aufgaben, die noch nicht geklappt haben. Jede kommt so lange wieder, bis du sie ${REVIEW_STREAK}-mal hintereinander richtig hast.`
+                ? `${due.length} ${due.length === 1 ? 'Aufgabe wartet' : 'Aufgaben warten'} auf dich. ${REVIEW_STREAK}-mal hintereinander richtig – dann ${due.length === 1 ? 'ist sie' : 'sind sie'} raus!`
                 : progress.review.length
                   ? `Gerade ist nichts fällig. ${waiting} ${waiting === 1 ? 'Aufgabe kommt' : 'Aufgaben kommen'} später zur Kontrolle wieder.`
                   : 'Deine Fehler-Kiste ist leer. Super!'}
