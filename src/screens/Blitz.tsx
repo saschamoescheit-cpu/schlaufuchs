@@ -4,9 +4,10 @@ import { check, correctText } from '../engine/check';
 import { record, stageOf, type Progress } from '../engine/learning';
 import type { Skill, Task } from '../engine/types';
 import { saveProfile, updateProgress, type Profile } from '../data/store';
-import { CloseIcon, Confetti, Fox, Rich, Sheet } from '../ui/common';
+import { CloseIcon, Confetti, Fox, Rich, Sheet, Speak } from '../ui/common';
 import { Visual } from '../ui/Visual';
 import { sounds } from '../ui/sound';
+import { speak, stopSpeaking } from '../ui/speech';
 
 export const BLITZ_SECONDS = 60;
 
@@ -94,6 +95,12 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
     if (profile.sound) sounds.done();
     if (score > record0) saveProfile({ ...profile, blitz: { ...(profile.blitz ?? {}), [skill.id]: score } }, false);
   }, [phase, score, record0, profile, skill.id]);
+
+  // Leseanfänger: jede Aufgabe vorlesen (wie beim Üben)
+  useEffect(() => {
+    if (phase === 'run' && profile.autoRead) speak(task.speak ?? task.prompt, 'de');
+  }, [task, phase, profile.autoRead]);
+  useEffect(() => () => stopSpeaking(), []);
 
   const answer = (v: string) => {
     if (busy.current || phase !== 'run') return;
@@ -206,8 +213,11 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
       </div>
       <div className="stack">
         <div className={`blitz-task ${flash ? (flash.ok ? 'ok' : 'bad') : ''}`}>
-          <div className="prompt center" style={{ fontSize: task.prompt.length < 16 ? '2.2rem' : undefined }}>
-            <Rich text={task.prompt} />
+          <div className="prompt-row">
+            <div className="prompt center grow" style={{ fontSize: task.prompt.length < 16 ? '2.2rem' : undefined }}>
+              <Rich text={task.prompt} />
+            </div>
+            {profile.autoRead && <Speak text={task.speak ?? task.prompt} label="Aufgabe vorlesen" />}
           </div>
           {task.visual && <Visual v={task.visual} />}
           {flash && !flash.ok && task.answer.type !== 'choice' && <div className="center" style={{ fontWeight: 700, color: 'var(--bad)' }}>Richtig: {flash.text}</div>}
