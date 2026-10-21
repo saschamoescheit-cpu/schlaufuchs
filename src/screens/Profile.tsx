@@ -1,8 +1,9 @@
-// Kinderprofile: anlegen, bearbeiten, wechseln, sichern.
-import { useRef, useState } from 'react';
+// Kinderprofile: anlegen, bearbeiten, wechseln, auf allen Geräten gleich halten.
+import { useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
-import { deleteProfile, exportJson, importJson, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
+import { deleteProfile, duplicateProfiles, exportJson, mergeProfiles, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
+import { forgetRemoved, removedList, restoreRemoved, signIn, signOut, syncNow, useSyncStatus } from '../data/sync';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
@@ -12,7 +13,7 @@ import { canSpeak, speak } from '../ui/speech';
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
 
 export function Welcome({ data, onNew }: { data: AppData; onNew: () => void }) {
-  const [imp, setImp] = useState<string | null>(null);
+  const sync = useSyncStatus();
   return (
     <div className="app full">
       <div className="stack center" style={{ paddingTop: 48 }}>
@@ -47,8 +48,13 @@ export function Welcome({ data, onNew }: { data: AppData; onNew: () => void }) {
             <button className="btn block" onClick={onNew}>
               Los geht&apos;s!
             </button>
-            <ImportButton onDone={(n) => setImp(`${n} ${n === 1 ? 'Kind' : 'Kinder'} aus der Sicherung geladen.`)} onError={setImp} />
-            {imp && <p className="small">{imp}</p>}
+            {sync.signedIn ? (
+              <p className="small muted">{sync.running || !sync.last ? 'Kinder von deinen anderen Geräten werden geladen …' : 'Auf deinen anderen Geräten ist noch kein Kind angelegt.'}</p>
+            ) : (
+              <button className="btn ghost block small" onClick={signIn}>
+                Schon auf einem anderen Gerät? Mit Google anmelden
+              </button>
+            )}
           </>
         )}
       </div>
@@ -56,29 +62,84 @@ export function Welcome({ data, onNew }: { data: AppData; onNew: () => void }) {
   );
 }
 
-function ImportButton({ onDone, onError }: { onDone: (n: number) => void; onError: (msg: string) => void }) {
-  const ref = useRef<HTMLInputElement>(null);
+const timeOf = (iso: string) => {
+  const d = new Date(iso);
+  const today = d.toDateString() === new Date().toDateString();
+  return today ? `heute ${d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : d.toLocaleString('de-DE', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
+};
+
+/** Alle Geräte gleich: ein Elternteil meldet sich einmal je Gerät mit Google an. */
+function SyncCard({ data }: { data: AppData }) {
+  const sync = useSyncStatus();
+  const [ask, setAsk] = useState<[Profile, Profile] | null>(null);
+  const removed = sync.removed ? removedList() : [];
+  const dups = duplicateProfiles(data);
   return (
     <>
-      <button className="btn ghost block small" onClick={() => ref.current?.click()}>
-        Sicherung laden
-      </button>
-      <input
-        ref={ref}
-        type="file"
-        accept="application/json,.json"
-        hidden
-        onChange={async (e) => {
-          const f = e.target.files?.[0];
-          if (!f) return;
-          try {
-            onDone(importJson(await f.text()));
-          } catch (err) {
-            onError(err instanceof Error ? err.message : 'Die Datei konnte nicht gelesen werden.');
-          }
-          e.target.value = '';
-        }}
-      />
+      <h3 style={{ marginTop: 8 }}>Auf allen Geräten</h3>
+      {sync.signedIn ? (
+        <div className="card stack" style={{ gap: 10 }}>
+          <div>
+            <b>☁️ Angemeldet{sync.email ? ` als ${sync.email}` : ''}</b>
+            <div className="small muted">
+              {sync.running ? 'Gleicht gerade ab …' : sync.last ? `Zuletzt abgeglichen ${timeOf(sync.last)}` : 'Noch nicht abgeglichen'} · Kinder und Lernstand sind auf iPad, iPhone und PC gleich.
+            </div>
+          </div>
+          {sync.error && <div className="small" style={{ color: 'var(--bad)' }}>{sync.error}</div>}
+          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn ghost small" disabled={sync.running} onClick={() => void syncNow()}>
+              Jetzt abgleichen
+            </button>
+            <button className="btn ghost small" onClick={signOut}>
+              Abmelden
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="card stack" style={{ gap: 10 }}>
+          <div className="small">Melde dich einmal mit Google an (als Elternteil) – auf jedem Gerät mit demselben Konto. Dann sind alle Kinder und ihr Lernstand auf iPad, iPhone und PC gleich, auch wenn ein Gerät mal offline geübt hat.</div>
+          <button className="btn block" onClick={signIn}>
+            Mit Google anmelden
+          </button>
+        </div>
+      )}
+      {dups.map(([a, b]) => (
+        <div key={b.id} className="card stack" style={{ gap: 8 }}>
+          <div className="small">
+            <b>{a.name}</b> gibt es zweimal – wohl auf zwei Geräten getrennt angelegt.
+          </div>
+          <button className="btn ghost small" onClick={() => setAsk([a, b])}>
+            Zu einem {a.name} zusammenführen
+          </button>
+        </div>
+      ))}
+      {removed.map((r) => (
+        <div key={r.profile.id} className="card stack" style={{ gap: 8 }}>
+          <div className="small">
+            {r.profile.avatar} <b>{r.profile.name}</b> wurde auf einem anderen Gerät gelöscht. Der Lernstand ist hier noch aufgehoben.
+          </div>
+          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+            <button className="btn ghost small" onClick={() => restoreRemoved(r.profile.id)}>
+              Wiederherstellen
+            </button>
+            <button className="btn ghost small" onClick={() => forgetRemoved(r.profile.id)}>
+              Ist gut so
+            </button>
+          </div>
+        </div>
+      ))}
+      {ask && (
+        <Confirm
+          title={`${ask[0].name} zusammenführen?`}
+          text={`Beide Lernstände werden zu einem: alle geübten Aufgaben, Sterne, Tests und die Fehler-Kiste. Es bleibt das Profil „${ask[0].avatar} ${ask[0].name}, Klasse ${ask[0].grade}“.`}
+          yes="Zusammenführen"
+          onYes={() => {
+            mergeProfiles(ask[0].id, ask[1].id);
+            setAsk(null);
+          }}
+          onNo={() => setAsk(null)}
+        />
+      )}
     </>
   );
 }
@@ -233,7 +294,6 @@ export function ProfileEdit({ profile, onDone, onCancel }: { profile?: Profile; 
 
 export function Settings({ data, profile, onEdit, onNew, onBack }: { data: AppData; profile: Profile; onEdit: () => void; onNew: () => void; onBack: () => void }) {
   const [del, setDel] = useState(false);
-  const [msg, setMsg] = useState<string | null>(null);
   const download = () => {
     const blob = new Blob([exportJson()], { type: 'application/json' });
     const a = document.createElement('a');
@@ -278,15 +338,11 @@ export function Settings({ data, profile, onEdit, onNew, onBack }: { data: AppDa
           ➕ Weiteres Kind anlegen
         </button>
 
-        <h3 style={{ marginTop: 8 }}>Sicherung</h3>
-        <p className="small muted" style={{ marginTop: -8 }}>
-          Alles wird nur auf diesem Gerät gespeichert. Mit einer Sicherungsdatei kannst du den Lernstand auf ein anderes Gerät mitnehmen.
-        </p>
-        <button className="btn ghost block" onClick={download}>
-          💾 Sicherung speichern
+        <SyncCard data={data} />
+
+        <button className="btn ghost block small" onClick={download}>
+          💾 Lernstand als Datei speichern
         </button>
-        <ImportButton onDone={(n) => setMsg(`${n} ${n === 1 ? 'Kind' : 'Kinder'} geladen.`)} onError={setMsg} />
-        {msg && <p className="small">{msg}</p>}
 
         <button className="btn ghost block small" style={{ marginTop: 16, color: 'var(--bad)' }} onClick={() => setDel(true)}>
           Profil von {profile.name} löschen
@@ -296,7 +352,7 @@ export function Settings({ data, profile, onEdit, onNew, onBack }: { data: AppDa
       {del && (
         <Confirm
           title={`${profile.name} wirklich löschen?`}
-          text="Der ganze Lernstand dieses Kindes wird gelöscht. Das kann man nicht rückgängig machen. Tipp: Speichere vorher eine Sicherung."
+          text="Der ganze Lernstand dieses Kindes wird gelöscht – mit Google-Anmeldung auf allen Geräten. Das kann man nicht rückgängig machen."
           yes="Ja, endgültig löschen"
           danger
           onYes={() => {

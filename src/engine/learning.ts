@@ -70,7 +70,7 @@ export interface Progress {
 export const emptyProgress = (): Progress => ({ skills: {}, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} });
 
 const RECENT = 12;
-const LOG_MAX = 6000;
+export const LOG_MAX = 6000;
 /** Nach dem ersten Richtig wartet eine Fehler-Aufgabe so lange, bevor sie zur Kontrolle wiederkommt. */
 export const REVIEW_GAP_MS = 30 * 60 * 1000;
 export const REVIEW_STREAK = 2;

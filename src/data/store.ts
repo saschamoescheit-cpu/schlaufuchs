@@ -1,4 +1,5 @@
-// Lokale Speicherung aller Kinderprofile und Lernstände (nur auf diesem Gerät).
+// Speicherung aller Kinderprofile und Lernstände auf dem Gerät; mit Google-Anmeldung zusätzlich auf allen Geräten
+// gleich (sync.ts).
 // Das Datenmodell ist für einen späteren Eltern-Bereich vorbereitet (parent: PIN, Einstellungen je Kind).
 import { useSyncExternalStore } from 'react';
 import { DEFAULT_KEY } from '../engine/grading';
@@ -6,6 +7,7 @@ import { emptyProgress, type Progress } from '../engine/learning';
 import type { Grade } from '../engine/types';
 import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
+import { mergeTwo } from './merge';
 
 export interface Profile {
   id: string;
@@ -50,6 +52,9 @@ function load(): AppData {
 let data: AppData = load();
 let saveError = false;
 const listeners = new Set<() => void>();
+let onChange: (() => void) | null = null;
+/** Jede Änderung meldet sich hier (der Abgleich startet kurz danach). */
+export const setChangeHook = (fn: (() => void) | null) => void (onChange = fn);
 
 function persist() {
   try {
@@ -60,13 +65,21 @@ function persist() {
   }
 }
 
-export function update(fn: (d: AppData) => void) {
+function commit(fn: (d: AppData) => void) {
   const next = structuredClone(data);
   fn(next);
   data = next;
   persist();
   listeners.forEach((l) => l());
 }
+
+export function update(fn: (d: AppData) => void) {
+  commit(fn);
+  onChange?.();
+}
+
+/** Was der Abgleich von den anderen Geräten holt – löst selbst keinen neuen Abgleich aus. */
+export const updateFromSync = commit;
 
 export const getData = () => data;
 export const hasSaveError = () => saveError;
@@ -122,7 +135,8 @@ export function deleteProfile(id: string) {
   });
 }
 
-export const setActive = (id: string | null) => update((d) => void (d.activeId = id));
+/** Wer gerade lernt, gilt nur für dieses Gerät (auf dem iPad das eine Kind, auf dem iPhone das andere). */
+export const setActive = (id: string | null) => commit((d) => void (d.activeId = id));
 
 export function updateProgress(profileId: string, fn: (p: Progress) => void) {
   update((d) => fn((d.progress[profileId] ??= emptyProgress())));
@@ -133,18 +147,25 @@ export function exportJson(): string {
   return JSON.stringify({ app: 'schlaufuchs', exported: new Date().toISOString(), data }, null, 1);
 }
 
-/** Sicherung einspielen: Kinder aus der Datei kommen dazu, vorhandene mit gleicher ID werden ersetzt. */
-export function importJson(text: string): number {
-  const parsed = JSON.parse(text) as { app?: string; data?: AppData };
-  if (parsed.app !== 'schlaufuchs' || !parsed.data?.profiles) throw new Error('Das ist keine Schlaufuchs-Sicherung.');
-  const inc = parsed.data;
+/** Kinder, die es zweimal gibt (vor dem Sync auf zwei Geräten getrennt angelegt): gleicher Name. */
+export function duplicateProfiles(d: AppData): [Profile, Profile][] {
+  const out: [Profile, Profile][] = [];
+  const byName = new Map<string, Profile>();
+  for (const p of [...d.profiles].sort((a, b) => a.created - b.created)) {
+    const k = p.name.trim().toLowerCase();
+    const first = byName.get(k);
+    if (first) out.push([first, p]);
+    else byName.set(k, p);
+  }
+  return out;
+}
+
+/** Zwei Profile desselben Kindes zu einem: der ganze Lernstand beider zählt, das ältere Profil bleibt. */
+export function mergeProfiles(keepId: string, dropId: string) {
   update((d) => {
-    for (const p of inc.profiles) {
-      const i = d.profiles.findIndex((x) => x.id === p.id);
-      if (i >= 0) d.profiles[i] = p;
-      else d.profiles.push(p);
-      d.progress[p.id] = inc.progress[p.id] ?? emptyProgress();
-    }
+    d.progress[keepId] = mergeTwo(d.progress[keepId] ?? emptyProgress(), d.progress[dropId] ?? emptyProgress());
+    d.profiles = d.profiles.filter((p) => p.id !== dropId);
+    delete d.progress[dropId];
+    if (d.activeId === dropId) d.activeId = keepId;
   });
-  return inc.profiles.length;
 }

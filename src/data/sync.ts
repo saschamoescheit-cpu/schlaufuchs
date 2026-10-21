@@ -1,0 +1,674 @@
+// Abgleich zwischen iPad, iPhone und PC (Sascha 21.10.2026: „genauso wie bei GolfOS, inkl. der Lernfortschritte“).
+// Offline zuerst: die App speichert weiter auf dem Gerät; mit Google-Anmeldung (ein Elternteil) und Netz wird mit der
+// Kopie in Supabase (EU) abgeglichen – dasselbe Projekt wie GolfOS, aber eine eigene Tabelle schlaufuchs_items.
+// Zeilen: je Kind das Profil, der Lernstand, jeder Test und der Aufgaben-Verlauf je Tag; dazu die Eltern-Einstellungen.
+// Hat ein Kind auf zwei Geräten geübt, ohne dass sie dazwischen abgeglichen haben, wird der Lernstand
+// zusammengeführt (merge.ts) – nichts geht verloren. Ein auf einem Gerät gelöschtes Kind verschwindet auch auf den
+// anderen, dort bleibt aber eine Kopie zum Wiederherstellen.
+//
+// Die Logik arbeitet auf zwei kleinen Schnittstellen (Gerät und Server) und ist ohne Browser und Server getestet
+// (sync.test.ts).
+import { useSyncExternalStore } from 'react';
+import { dayKey, emptyProgress, LOG_MAX, type Attempt, type Progress, type TestResult } from '../engine/learning';
+import type { AppData, Profile } from './store';
+import { baseOf, coreOf, mergeCore, unionLog, type Base, type Core } from './merge';
+
+export interface Row {
+  kind: string;
+  id: string;
+  data?: unknown;
+  updated_at: string;
+  deleted?: boolean;
+}
+export interface Remote {
+  /** Alle Zeilen der angemeldeten Familie ohne Inhalt. */
+  list(): Promise<Row[]>;
+  fetch(keys: { kind: string; id: string }[]): Promise<Row[]>;
+  /** Schreibt die Zeilen (neu oder ersetzen); gibt die abgelehnten zurück. */
+  upsert(rows: Row[]): Promise<{ row: Row; error: string }[]>;
+  /** Legt eine Zeile nur an, wenn es sie noch nicht gibt – false: ein anderes Gerät war schneller. */
+  create(row: Row): Promise<boolean>;
+  /** Ersetzt eine Zeile nur, wenn sie noch so ist wie zuletzt gesehen – false: inzwischen von einem anderen Gerät geändert. */
+  replace(row: Row, ifAt: string): Promise<boolean>;
+}
+export interface Device {
+  get(): AppData;
+  commit(fn: (d: AppData) => void): void;
+  read(key: string): string | null;
+  write(key: string, v: string | null): void;
+}
+
+const META = 'schlaufuchs:sync.meta.v1';
+const BASE = 'schlaufuchs:sync.base.v1';
+const REMOVED = 'schlaufuchs:sync.removed.v1';
+
+type Kind = 'profile' | 'progress' | 'test' | 'log' | 'parent';
+/** Zeilen, die zwei Geräte gleichzeitig ändern können – sie werden zusammengeführt statt überschrieben. */
+const MERGED = new Set<string>(['progress', 'log']);
+/** Reihenfolge beim Einspielen: erst das Kind, dann sein Lernstand. */
+const ORDER: Record<string, number> = { parent: 0, profile: 1, progress: 2, test: 3, log: 4 };
+
+interface Item {
+  kind: Kind;
+  id: string;
+  json: string;
+}
+type Meta = Record<string, { hash: string; at: string }>;
+const key = (kind: string, id: string) => `${kind}|${id}`;
+const pidOf = (kind: string, id: string): string | null => (kind === 'profile' || kind === 'progress' ? id : kind === 'test' || kind === 'log' ? id.split('/')[0] : null);
+const sameTime = (a: string, b: string) => a === b || Date.parse(a) === Date.parse(b);
+
+const parse = <T>(s: string | null, fallback: T): T => {
+  try {
+    return s ? (JSON.parse(s) as T) : fallback;
+  } catch {
+    return fallback;
+  }
+};
+
+/** JSON mit sortierten Schlüsseln – der Server (jsonb) ordnet die Schlüssel um, gleich muss gleich bleiben. */
+export function canon(v: unknown): string {
+  if (v === null || typeof v !== 'object') return JSON.stringify(v) ?? 'null';
+  if (Array.isArray(v)) return `[${v.map(canon).join(',')}]`;
+  const o = v as Record<string, unknown>;
+  return `{${Object.keys(o)
+    .filter((k) => o[k] !== undefined)
+    .sort()
+    .map((k) => `${JSON.stringify(k)}:${canon(o[k])}`)
+    .join(',')}}`;
+}
+
+/** Ein kurzer Fingerabdruck (FNV-1a) – hat sich ein Wert seit dem letzten Abgleich geändert? */
+export function hashOf(s: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = Math.imul(h, 0x01000193);
+  }
+  return (h >>> 0).toString(36) + s.length.toString(36);
+}
+
+/** Der Verlauf eines Kindes nach Tagen. Ist er voll (die ältesten fallen heraus), fehlt der älteste Tag womöglich
+ *  zum Teil – der bleibt dann so auf dem Server, wie er war. */
+function logDays(log: Attempt[]): Map<string, Attempt[]> {
+  const out = new Map<string, Attempt[]>();
+  for (const a of log) {
+    const d = dayKey(a.t);
+    const list = out.get(d);
+    if (list) list.push(a);
+    else out.set(d, [a]);
+  }
+  if (log.length >= LOG_MAX && log.length) out.delete(dayKey(log[0].t));
+  return out;
+}
+
+/** Alles Abgeglichene auf dem Gerät als kind|id → JSON. „Wer lernt gerade“ bleibt je Gerät. */
+export function itemsOf(d: AppData): Map<string, Item> {
+  const out = new Map<string, Item>();
+  const add = (kind: Kind, id: string, v: unknown) => out.set(key(kind, id), { kind, id, json: canon(v) });
+  add('parent', 'parent', d.parent);
+  for (const p of d.profiles) {
+    add('profile', p.id, p);
+    const pr = d.progress[p.id];
+    if (!pr) continue;
+    add('progress', p.id, coreOf(pr));
+    for (const t of pr.tests) add('test', `${p.id}/${t.id}`, t);
+    for (const [day, list] of logDays(pr.log)) add('log', `${p.id}/${day}`, list);
+  }
+  return out;
+}
+
+/** Ein auf einem anderen Gerät gelöschtes Kind: hier aufgehoben, bis es jemand wiederherstellt. */
+export interface Removed {
+  profile: Profile;
+  progress: Progress;
+  at: string;
+}
+
+/** Schreibt eine Zeile vom Server auf das Gerät (null = dort entfernen). */
+function apply(d: AppData, kind: string, id: string, data: unknown, removed: Removed[], at: string): void {
+  const pid = pidOf(kind, id);
+  if (kind === 'parent') {
+    if (data != null) d.parent = data as AppData['parent'];
+    return;
+  }
+  if (kind === 'profile') {
+    const i = d.profiles.findIndex((p) => p.id === id);
+    if (data == null) {
+      if (i < 0) return;
+      removed.push({ profile: d.profiles[i], progress: d.progress[id] ?? emptyProgress(), at });
+      d.profiles.splice(i, 1);
+      delete d.progress[id];
+      if (d.activeId === id) d.activeId = null;
+      return;
+    }
+    if (i >= 0) d.profiles[i] = data as Profile;
+    else {
+      d.profiles.push(data as Profile);
+      d.profiles.sort((a, b) => a.created - b.created);
+    }
+    d.progress[id] ??= emptyProgress();
+    return;
+  }
+  if (!pid || !d.profiles.some((p) => p.id === pid)) return; // ohne das Kind kein Lernstand
+  const pr = (d.progress[pid] ??= emptyProgress());
+  if (kind === 'progress') {
+    if (data != null) Object.assign(pr, data as Core);
+  } else if (kind === 'test') {
+    const tid = id.slice(pid.length + 1);
+    pr.tests = pr.tests.filter((t) => t.id !== tid);
+    if (data != null) pr.tests = [...pr.tests, data as TestResult].sort((a, b) => a.t - b.t);
+  } else if (kind === 'log') {
+    if (data != null) pr.log = unionLog(pr.log, data as Attempt[]).slice(-LOG_MAX);
+  }
+}
+
+export interface SyncResult {
+  pushed: number;
+  pulled: number;
+  at: string;
+  /** Zeilen, die ein anderes Gerät gerade geändert hat oder die hier während des Abgleichs geändert wurden – gleich noch einmal. */
+  again: number;
+  failed?: number;
+  error?: string;
+}
+
+/**
+ * Ein Abgleich: Geändertes geht hoch, auf anderen Geräten Geändertes kommt herunter. Haben beide Seiten geändert,
+ * wird der Lernstand zusammengeführt; beim Profil und den Eltern-Einstellungen gilt die Änderung auf diesem Gerät.
+ */
+export async function syncOnce(dev: Device, remote: Remote, now = () => new Date().toISOString()): Promise<SyncResult> {
+  const meta = parse<Meta>(dev.read(META), {});
+  const base = parse<Record<string, Base>>(dev.read(BASE), {});
+  const snap = itemsOf(dev.get());
+  const rows = await remote.list();
+  const remoteBy = new Map(rows.map((r) => [key(r.kind, r.id), r]));
+  const at = now();
+
+  type Push = { row: Row; ifAt?: string; create?: boolean; core?: Core };
+  const push: Push[] = [];
+  const pullKeys: { kind: string; id: string }[] = [];
+  const removeHere: string[] = [];
+  const pushLocal = (l: Item, r?: Row) => {
+    const data = JSON.parse(l.json);
+    push.push({ row: { kind: l.kind, id: l.id, data, updated_at: at, deleted: false }, ...(MERGED.has(l.kind) ? (r && !r.deleted ? { ifAt: r.updated_at } : { create: !r }) : {}), ...(l.kind === 'progress' ? { core: data } : {}) });
+  };
+  const changedHere = (k: string, l?: Item) => l != null && (!meta[k] || meta[k].hash !== hashOf(l.json));
+  const changedThere = (k: string, r?: Row) => r != null && (!meta[k] || !sameTime(r.updated_at, meta[k].at));
+
+  const keys = [...new Set([...snap.keys(), ...remoteBy.keys()])];
+  // Kinder, die hier gelöscht wurden: ihre übrigen Zeilen gehen mit
+  const goneHere = new Set<string>();
+  for (const k of keys) {
+    const [kind, id] = k.split('|');
+    if (kind === 'profile' && !snap.has(k) && meta[k] && remoteBy.get(k) && !remoteBy.get(k)!.deleted && !changedThere(k, remoteBy.get(k))) goneHere.add(id);
+  }
+  for (const k of keys) {
+    const l = snap.get(k);
+    const r = remoteBy.get(k);
+    const [kind, id] = k.split('|');
+    const lc = changedHere(k, l);
+    const rc = changedThere(k, r);
+    if (l && !r) pushLocal(l);
+    else if (!l && r) {
+      if (r.deleted) continue;
+      const pid = pidOf(kind, id);
+      if (meta[k] && !rc) {
+        // hier nicht mehr da: gelöscht – oder nur ein alter Tag, der aus dem vollen Verlauf gefallen ist
+        if (kind === 'profile' || (pid && goneHere.has(pid))) push.push({ row: { kind, id, updated_at: at, deleted: true } });
+      } else pullKeys.push({ kind, id });
+    } else if (l && r) {
+      if (r.deleted) {
+        if (rc && !lc) removeHere.push(k);
+        else if (lc) pushLocal(l, r); // hier nach dem Löschen noch geändert (oder wiederhergestellt): bleibt
+      } else if (lc && !rc) pushLocal(l, r);
+      else if (rc) pullKeys.push({ kind, id }); // nach dem Holen entschieden
+    }
+  }
+
+  const fetched = pullKeys.length ? await remote.fetch(pullKeys) : [];
+  fetched.sort((a, b) => (ORDER[a.kind] ?? 9) - (ORDER[b.kind] ?? 9));
+  /** was auf das Gerät kommt: kind|id → Inhalt (null = entfernen) */
+  // merged: zusammengeführt, geht gleich wieder hoch (bis das geklappt hat, gilt es hier als geändert)
+  const writes = new Map<string, { kind: string; id: string; data: unknown; at: string; merged?: unknown }>();
+  for (const r of fetched) {
+    const k = key(r.kind, r.id);
+    const l = snap.get(k);
+    if (r.deleted) {
+      if (l && changedHere(k, l)) pushLocal(l, r);
+      else if (l) removeHere.push(k);
+      continue;
+    }
+    const json = canon(r.data);
+    if (l && l.json === json) {
+      meta[k] = { hash: hashOf(l.json), at: r.updated_at };
+      if (r.kind === 'progress') base[r.id] = baseOf(r.data as Core);
+      continue;
+    }
+    const firstMeet = l != null && !meta[k];
+    const both = l != null && !firstMeet && changedHere(k, l);
+    if (l && (both || firstMeet)) {
+      if (r.kind === 'progress') {
+        const merged = mergeCore(firstMeet ? null : (base[r.id] ?? null), JSON.parse(l.json) as Core, r.data as Core);
+        writes.set(k, { kind: r.kind, id: r.id, data: merged, at: r.updated_at, merged: r.data });
+        push.push({ row: { kind: r.kind, id: r.id, data: merged, updated_at: at, deleted: false }, ifAt: r.updated_at, core: merged });
+        continue;
+      }
+      if (r.kind === 'log') {
+        const merged = unionLog(JSON.parse(l.json) as Attempt[], r.data as Attempt[]);
+        const up = canon(merged) !== json;
+        writes.set(k, { kind: r.kind, id: r.id, data: merged, at: r.updated_at, ...(up ? { merged: r.data } : {}) });
+        if (up) push.push({ row: { kind: r.kind, id: r.id, data: merged, updated_at: at, deleted: false }, ifAt: r.updated_at });
+        continue;
+      }
+      // Profil, Eltern-Einstellungen, Test: beide geändert → die Änderung hier; ein neues Gerät übernimmt die vom Server
+      if (both) {
+        pushLocal(l, r);
+        continue;
+      }
+    }
+    writes.set(k, { kind: r.kind, id: r.id, data: r.data, at: r.updated_at });
+  }
+  for (const k of removeHere) {
+    const [kind, id] = k.split('|');
+    writes.set(k, { kind, id, data: null, at: remoteBy.get(k)!.updated_at });
+  }
+
+  // Aufs Gerät – aber nur, was sich hier seit dem Start des Abgleichs nicht geändert hat (das Kind übt ja weiter);
+  // das andere kommt beim nächsten Abgleich gleich danach dran
+  let again = 0;
+  let pulled = 0;
+  const skipped = new Set<string>();
+  const removedNow: Removed[] = [];
+  if (writes.size) {
+    dev.commit((d) => {
+      const cur = itemsOf(d);
+      for (const [k, w] of [...writes].sort((a, b) => (ORDER[a[1].kind] ?? 9) - (ORDER[b[1].kind] ?? 9))) {
+        if (cur.get(k)?.json !== snap.get(k)?.json) {
+          skipped.add(k);
+          continue;
+        }
+        apply(d, w.kind, w.id, w.data, removedNow, at);
+        pulled++;
+      }
+    });
+    const after = itemsOf(dev.get());
+    for (const [k, w] of writes) {
+      if (skipped.has(k)) continue;
+      const a = after.get(k);
+      // zusammengeführt: der Server-Stand ist ab jetzt der gemeinsame; bis der neue oben ist, gilt er hier als geändert
+      meta[k] = { hash: a && w.merged === undefined ? hashOf(a.json) : '', at: w.at };
+      if (w.kind === 'progress' && w.data) base[w.id] = baseOf((w.merged ?? w.data) as Core);
+      if (w.kind === 'profile' && w.data == null) delete base[w.id];
+    }
+  }
+  if (removedNow.length) dev.write(REMOVED, JSON.stringify([...removedList(dev), ...removedNow]));
+  again += skipped.size;
+  // gleich festhalten: bricht das Hochladen ab (Netz weg), darf Zusammengeführtes nicht doppelt zählen
+  dev.write(META, JSON.stringify(meta));
+  dev.write(BASE, JSON.stringify(base));
+
+  // Hoch – eine abgelehnte Zeile hält die anderen nicht auf
+  const send = push.filter((p) => !skipped.has(key(p.row.kind, p.row.id)));
+  const sent: Push[] = [];
+  const plain: Push[] = [];
+  for (const p of send) {
+    if (p.ifAt) (await remote.replace(p.row, p.ifAt)) ? sent.push(p) : again++;
+    else if (p.create) (await remote.create(p.row)) ? sent.push(p) : again++;
+    else plain.push(p);
+  }
+  const refused = plain.length ? await remote.upsert(plain.map((p) => p.row)) : [];
+  const bad = new Set(refused.map((f) => key(f.row.kind, f.row.id)));
+  sent.push(...plain.filter((p) => !bad.has(key(p.row.kind, p.row.id))));
+  for (const p of sent) {
+    const k = key(p.row.kind, p.row.id);
+    meta[k] = { hash: p.row.deleted ? '' : hashOf(canon(p.row.data)), at: p.row.updated_at };
+    if (p.core) base[p.row.id] = baseOf(p.core);
+    if (p.row.kind === 'profile' && p.row.deleted) delete base[p.row.id];
+  }
+  dev.write(META, JSON.stringify(meta));
+  dev.write(BASE, JSON.stringify(base));
+  return { pushed: sent.length, pulled, at, again, ...(refused.length ? { failed: refused.length, error: refused[0].error } : {}) };
+}
+
+export const removedList = (dev: Device = browserDevice): Removed[] => parse<Removed[]>(dev.read(REMOVED), []);
+/** Ein anderswo gelöschtes Kind wiederherstellen – es kommt mit dem nächsten Abgleich auch auf die anderen Geräte. */
+export function restoreRemoved(profileId: string, dev: Device = browserDevice): void {
+  const list = removedList(dev);
+  const r = list.find((x) => x.profile.id === profileId);
+  if (!r) return;
+  dev.commit((d) => {
+    if (!d.profiles.some((p) => p.id === profileId)) d.profiles.push(r.profile);
+    d.progress[profileId] = r.progress;
+  });
+  dev.write(REMOVED, JSON.stringify(list.filter((x) => x.profile.id !== profileId)));
+  changed();
+  syncSoon(500);
+}
+export function forgetRemoved(profileId: string, dev: Device = browserDevice): void {
+  dev.write(REMOVED, JSON.stringify(removedList(dev).filter((x) => x.profile.id !== profileId)));
+  changed();
+}
+
+// ---------- im Browser: localStorage und Supabase (REST, keine Bibliothek) ----------
+
+export const SUPABASE_URL = 'https://rgisfnilwehnqpmbrxmp.supabase.co'; // Saschas Supabase-Projekt (EU), wie GolfOS
+export const SUPABASE_KEY = 'sb_publishable_41ASfBWeORDK7Mlql3pZyA_XjmtGWvC'; // öffentlich – die Zeilen-Regel schützt die Daten
+const TABLE = 'schlaufuchs_items';
+
+const ls = {
+  read: (k: string) => {
+    try {
+      return localStorage.getItem(k);
+    } catch {
+      return null;
+    }
+  },
+  write: (k: string, v: string | null) => {
+    try {
+      if (v == null) localStorage.removeItem(k);
+      else localStorage.setItem(k, v);
+    } catch {
+      /* voll oder gesperrt */
+    }
+  },
+};
+
+let browserDevice: Device = { get: () => ({ schema: 1, profiles: [], progress: {}, activeId: null, parent: { pin: null } }), commit: () => {}, ...ls };
+/** Verbindet den Abgleich mit dem Speicher der App (main.tsx). */
+export function connectStore(get: () => AppData, commit: (fn: (d: AppData) => void) => void): void {
+  browserDevice = { get, commit, ...ls };
+}
+
+const AUTH = 'schlaufuchs:auth.v1';
+interface Session {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  email: string | null;
+}
+const loadSession = (): Session | null => parse<Session | null>(ls.read(AUTH), null);
+const saveSession = (s: Session | null) => ls.write(AUTH, s ? JSON.stringify(s) : null);
+
+/** „Mit Google anmelden“: Supabase schickt zu Google und mit den Schlüsseln in der Adresse zurück in die App. */
+export function signIn(): void {
+  const back = location.origin + location.pathname;
+  location.href = `${SUPABASE_URL}/auth/v1/authorize?provider=google&redirect_to=${encodeURIComponent(back)}`;
+}
+export function signOut(): void {
+  liveClose();
+  saveSession(null);
+  ls.write(META, null);
+  ls.write(BASE, null);
+  ls.write(LAST, null);
+  noteError(null);
+  changed();
+}
+
+/** Zurück von Google: die Schlüssel stehen in der Adresse (#access_token=…) – merken, Adresse aufräumen. */
+export async function finishSignIn(): Promise<void> {
+  if (!location.hash.includes('access_token=')) return;
+  const p = new URLSearchParams(location.hash.slice(1));
+  history.replaceState(null, '', location.pathname + location.search);
+  const access = p.get('access_token');
+  const refresh = p.get('refresh_token');
+  if (!access || !refresh) return;
+  const s: Session = { access_token: access, refresh_token: refresh, expires_at: Math.floor(Date.now() / 1000) + Number(p.get('expires_in') ?? 3600), email: null };
+  try {
+    const u = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${access}` } }).then((r) => r.json());
+    s.email = u.email ?? null;
+  } catch {
+    /* die Adresse kommt später */
+  }
+  saveSession(s);
+  changed();
+}
+
+/** Ein gültiger Schlüssel – erneuert, wenn er abläuft (er gilt eine Stunde). Immer nur eine Erneuerung zugleich. */
+let refreshing: Promise<string | null> | null = null;
+async function authToken(): Promise<string | null> {
+  const s = loadSession();
+  if (!s) return null;
+  if (s.expires_at - 60 > Date.now() / 1000) return s.access_token;
+  if (refreshing) return refreshing;
+  refreshing = (async () => {
+    try {
+      const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=refresh_token`, {
+        method: 'POST',
+        headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ refresh_token: s.refresh_token }),
+      });
+      if (!r.ok) {
+        const why = await r.text().catch(() => '');
+        if ((r.status === 400 || r.status === 401) && /invalid|not found|revoked/i.test(why) && !/already used/i.test(why)) {
+          saveSession(null);
+          noteError('Abgemeldet – bitte neu anmelden.');
+        }
+        return null;
+      }
+      const j = await r.json();
+      const next = { ...s, access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Math.floor(Date.now() / 1000) + (j.expires_in ?? 3600) };
+      saveSession(next);
+      return next.access_token as string;
+    } catch {
+      return null; // offline
+    } finally {
+      refreshing = null;
+    }
+  })();
+  return refreshing;
+}
+
+function supabaseRemote(bearer: string): Remote {
+  const base = `${SUPABASE_URL}/rest/v1/${TABLE}`;
+  const headers = { apikey: SUPABASE_KEY, Authorization: `Bearer ${bearer}`, 'Content-Type': 'application/json' };
+  const ok = async (r: Response) => {
+    if (!r.ok) throw new Error(`${r.status} ${(await r.text().catch(() => '')).slice(0, 120)}`.trim());
+    return r;
+  };
+  const body = (r: Row) => ({ kind: r.kind, id: r.id, data: r.data ?? {}, updated_at: r.updated_at, deleted: !!r.deleted });
+  const one = (r: Row) => `kind=eq.${encodeURIComponent(r.kind)}&id=eq.${encodeURIComponent(r.id)}`;
+  return {
+    list: async () => {
+      const all: Row[] = [];
+      for (let from = 0; ; from += 1000) {
+        const page: Row[] = await (await ok(await fetch(`${base}?select=kind,id,updated_at,deleted&order=kind,id&limit=1000&offset=${from}`, { headers }))).json();
+        all.push(...page);
+        if (page.length < 1000) return all;
+      }
+    },
+    fetch: async (keys) => {
+      const out: Row[] = [];
+      const byKind = new Map<string, string[]>();
+      for (const x of keys) byKind.set(x.kind, [...(byKind.get(x.kind) ?? []), x.id]);
+      for (const [kind, ids] of byKind)
+        for (let i = 0; i < ids.length; i += 50) {
+          const list = ids.slice(i, i + 50).map((id) => `"${id.replace(/"/g, '\\"')}"`).join(',');
+          out.push(...(await (await ok(await fetch(`${base}?select=kind,id,data,updated_at,deleted&kind=eq.${encodeURIComponent(kind)}&id=in.(${encodeURIComponent(list)})`, { headers }))).json()));
+        }
+      return out;
+    },
+    upsert: async (rows) => {
+      const failed: { row: Row; error: string }[] = [];
+      const send = (list: Row[]) => fetch(`${base}?on_conflict=user_id,kind,id`, { method: 'POST', headers: { ...headers, Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(list.map(body)) });
+      for (let i = 0; i < rows.length; i += 50) {
+        const chunk = rows.slice(i, i + 50);
+        const r = await send(chunk);
+        if (r.ok) continue;
+        if (r.status === 401) throw new Error('401 Anmeldung abgelaufen');
+        for (const row of chunk) {
+          const x = chunk.length === 1 ? r : await send([row]);
+          if (!x.ok) failed.push({ row, error: `${x.status} ${(await x.text().catch(() => '')).slice(0, 120)}`.trim() });
+        }
+      }
+      return failed;
+    },
+    create: async (row) => {
+      const r = await ok(await fetch(`${base}?on_conflict=user_id,kind,id`, { method: 'POST', headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' }, body: JSON.stringify([body(row)]) }));
+      return ((await r.json()) as unknown[]).length > 0;
+    },
+    replace: async (row, ifAt) => {
+      const r = await ok(await fetch(`${base}?${one(row)}&updated_at=eq.${encodeURIComponent(ifAt)}`, { method: 'PATCH', headers: { ...headers, Prefer: 'return=representation' }, body: JSON.stringify(body(row)) }));
+      return ((await r.json()) as unknown[]).length > 0;
+    },
+  };
+}
+
+// ---------- Zustand für die Anzeige ----------
+
+const LAST = 'schlaufuchs:sync.last.v1';
+const ERROR = 'schlaufuchs:sync.error.v1';
+export interface SyncStatus {
+  signedIn: boolean;
+  email: string | null;
+  running: boolean;
+  last: string | null;
+  error: string | null;
+  removed: number;
+}
+let running: Promise<SyncResult | null> | null = null;
+let status: SyncStatus = readStatus();
+const watchers = new Set<() => void>();
+function readStatus(): SyncStatus {
+  const s = loadSession();
+  return { signedIn: !!s, email: s?.email ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
+}
+function changed() {
+  status = readStatus();
+  watchers.forEach((w) => w());
+}
+function noteError(text: string | null) {
+  ls.write(ERROR, text ? JSON.stringify({ at: new Date().toISOString(), text }) : null);
+}
+export function useSyncStatus(): SyncStatus {
+  return useSyncExternalStore(
+    (w) => {
+      watchers.add(w);
+      return () => watchers.delete(w);
+    },
+    () => status,
+  );
+}
+
+let again = false;
+/** Gleicht jetzt ab, wenn angemeldet und online. Immer nur einer zugleich; eine Änderung währenddessen → gleich noch einer. */
+export function syncNow(): Promise<SyncResult | null> {
+  if (!loadSession() || (typeof navigator !== 'undefined' && navigator.onLine === false)) return Promise.resolve(null);
+  if (running) {
+    again = true;
+    return running;
+  }
+  running = (async () => {
+    try {
+      const t = await authToken();
+      if (!t) return null;
+      const res = await syncOnce(browserDevice, supabaseRemote(t));
+      ls.write(LAST, res.at);
+      noteError(res.failed ? `${res.failed} Einträge abgelehnt (${res.error}) – beim nächsten Abgleich erneut.` : null);
+      if (res.pushed) nudgeOthers();
+      if (res.again) again = true;
+      return res;
+    } catch (e) {
+      if (typeof navigator === 'undefined' || navigator.onLine !== false) noteError(`Abgleich fehlgeschlagen: ${(e as Error).message}`);
+      return null;
+    } finally {
+      running = null;
+      changed();
+      liveConnect();
+      if (again) {
+        again = false;
+        syncSoon(800);
+      }
+    }
+  })();
+  changed();
+  return running;
+}
+
+let soon = 0;
+/** Etwas wurde gespeichert: in ein paar Sekunden abgleichen (mehrere Antworten hintereinander werden ein Abgleich). */
+export function syncSoon(ms = 2500): void {
+  if (!loadSession()) return;
+  window.clearTimeout(soon);
+  soon = window.setTimeout(() => void syncNow(), ms);
+}
+
+/** Beim Start: Rückkehr von Google auswerten, abgleichen, live verbinden; dann beim Zurückkehren in die App, beim
+ *  Verlassen (gleich hochschicken), wenn das Netz wiederkommt und alle 3 Minuten. */
+export async function startSync(): Promise<void> {
+  await finishSignIn();
+  void syncNow();
+  document.addEventListener('visibilitychange', () => void syncNow());
+  window.addEventListener('online', () => void syncNow());
+  window.setInterval(() => void syncNow(), 3 * 60 * 1000);
+}
+
+// ---------- live: eine Änderung auf einem Gerät ist in Sekunden auf den anderen ----------
+// Wie GolfOS: nach einem Abgleich, der etwas geschickt hat, ein Anstupser im Kanal der Familie (Supabase Realtime
+// Broadcast – keine Daten, nur „etwas hat sich geändert“); jedes andere offene Gerät gleicht sofort ab.
+
+let live: WebSocket | null = null;
+let liveTopic = '';
+let liveRef = 1;
+let liveBeat = 0;
+let liveRetry = 0;
+let liveWait = 1000;
+
+function userId(): string | null {
+  const t = loadSession()?.access_token;
+  if (!t) return null;
+  try {
+    const b = t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    return (JSON.parse(atob(b + '==='.slice((b.length + 3) % 4))) as { sub?: string }).sub ?? null;
+  } catch {
+    return null;
+  }
+}
+
+export function liveConnect(): void {
+  if (typeof WebSocket === 'undefined') return;
+  const id = userId();
+  if (!id) return liveClose();
+  const topic = `realtime:schlaufuchs-${id}`;
+  if (live && liveTopic === topic && (live.readyState === WebSocket.OPEN || live.readyState === WebSocket.CONNECTING)) return;
+  liveClose();
+  liveTopic = topic;
+  const ws = new WebSocket(`${SUPABASE_URL.replace(/^http/, 'ws')}/realtime/v1/websocket?apikey=${SUPABASE_KEY}&vsn=1.0.0`);
+  live = ws;
+  const send = (event: string, payload: unknown, t = topic) => ws.readyState === WebSocket.OPEN && ws.send(JSON.stringify({ topic: t, event, payload, ref: String(liveRef++) }));
+  ws.onopen = () => {
+    liveWait = 1000;
+    send('phx_join', { config: { broadcast: { self: false }, presence: { key: '' }, private: false } });
+    window.clearInterval(liveBeat);
+    liveBeat = window.setInterval(() => send('heartbeat', {}, 'phoenix'), 25000);
+  };
+  ws.onmessage = (m) => {
+    try {
+      const d = JSON.parse(String(m.data)) as { event?: string; payload?: { event?: string } };
+      if (d.event === 'broadcast' && d.payload?.event === 'changed') void syncNow();
+    } catch {
+      /* nicht für uns */
+    }
+  };
+  ws.onclose = () => {
+    if (live !== ws) return;
+    live = null;
+    window.clearInterval(liveBeat);
+    window.clearTimeout(liveRetry);
+    liveRetry = window.setTimeout(liveConnect, liveWait);
+    liveWait = Math.min(liveWait * 2, 30000);
+  };
+}
+
+export function liveClose(): void {
+  window.clearTimeout(liveRetry);
+  window.clearInterval(liveBeat);
+  const ws = live;
+  live = null;
+  ws?.close();
+}
+
+function nudgeOthers(): void {
+  if (!live || live.readyState !== WebSocket.OPEN) return liveConnect();
+  live.send(JSON.stringify({ topic: liveTopic, event: 'broadcast', payload: { type: 'broadcast', event: 'changed', payload: {} }, ref: String(liveRef++) }));
+}

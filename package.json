@@ -1,7 +1,7 @@
 {
   "name": "schlaufuchs",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Schlaufuchs – interaktive Lern-App für Grundschüler (Mathe, Deutsch, Englisch, Klassen 1–4).",
   "scripts": {
