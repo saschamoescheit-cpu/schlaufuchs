@@ -15,6 +15,8 @@ const G1: Item[] = [
   ['Tomate', '🍅', 'Die Tomate ist rot.'], ['Banane', '🍌', 'Die Banane ist gelb.'], ['Wal', '🐋', 'Der Wal ist groß.'], ['Ufo', '🛸', 'Das Ufo fliegt.'], ['Auto', '🚗', 'Das Auto fährt.'],
   ['Maus', '🐭', 'Die Maus piepst.'], ['Haus', '🏠', 'Das Haus ist groß.'], ['Eis', '🍦', 'Das Eis ist kalt.'], ['Limo', '🥤', 'Die Limo ist süß.'], ['Rakete', '🚀', 'Die Rakete fliegt.'],
   ['Salat', '🥗', 'Der Salat ist frisch.'], ['Melone', '🍉', 'Die Melone ist saftig.'], ['Nudel', '🍝', 'Die Nudel ist lang.'], ['Lupe', '🔍', 'Die Lupe ist rund.'], ['Pinsel', '🖌️', 'Der Pinsel ist nass.'],
+  ['Ananas', '🍍', 'Die Ananas ist süß.'], ['Kamera', '📷', 'Die Kamera ist neu.'], ['Laterne', '🏮', 'Die Laterne leuchtet.'], ['Lineal', '📏', 'Das Lineal ist lang.'], ['Telefon', '☎️', 'Das Telefon klingelt.'],
+  ['Elefant', '🐘', 'Der Elefant ist grau.'], ['Tulpe', '🌷', 'Die Tulpe blüht.'], ['Palme', '🌴', 'Die Palme ist hoch.'], ['Pirat', '🏴‍☠️', 'Der Pirat lacht.'], ['Krone', '👑', 'Die Krone glänzt.'],
 ];
 const G2: Item[] = [
   ['Biene', '🐝', 'Die Biene summt.'], ['Ball', '⚽', 'Der Ball rollt.'], ['Sonne', '☀️', 'Die Sonne scheint.'], ['Puppe', '🪆', 'Die Puppe ist alt.'], ['Katze', '🐱', 'Die Katze schläft.'],
@@ -38,6 +40,9 @@ const G4: string[] = [
   'Die Kinder freuen sich auf die Ferien.', 'Mein Vater fährt mit dem Zug.', 'Ich bleibe zu Hause, weil ich krank bin.', 'Oma backt einen leckeren Kuchen.', 'Das Wasser im See ist sehr warm.',
   'Viele Tiere schlafen im Winter.', 'Der Bäcker verkauft frische Brötchen.', 'Wir gehen heute in den Zoo.', 'Die Blätter fallen von den Bäumen.', 'Er glaubt, dass es morgen regnet.',
   'Mein Freund wohnt in der Nähe.', 'Das Spiel beginnt um vier Uhr.', 'Im Garten blühen bunte Blumen.', 'Wir trinken heißen Tee mit Zucker.',
+  'Wenn es regnet, ziehe ich meine Gummistiefel an.', 'Lena hat Hunger, deshalb isst sie ein Brot.', 'Am Wochenende besuchen wir unsere Großeltern auf dem Land.',
+  'Im Herbst sammeln die Eichhörnchen Nüsse für den Winter.', 'Ich freue mich, dass heute die Sonne scheint.', 'Unsere Lehrerin liest uns jeden Morgen eine Geschichte vor.',
+  'Der Fußball fliegt über den Zaun in den Garten.', 'Weil der Bus zu spät kommt, warten wir an der Haltestelle.',
 ];
 
 /** Rechtschreib-Merkmale eines Textes (für die Fehlerstatistik: wie oft kam ein Muster vor, wie oft war es falsch) */
