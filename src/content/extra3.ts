@@ -436,7 +436,62 @@ export const MATHE_EXTRA3: Skill[] = [
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🏗️', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
+  M(4, 'm4-bruchgroessen', 'Brüche bei Größen: ½, ¼, ¾', '🍰', { text: ['½ heißt: die Hälfte. ½ kg = 500 g, ½ h = 30 min.', '¼ heißt: ein Viertel – das Ganze durch 4. ¼ l = 250 ml, ¼ h = 15 min.', '¾ sind drei Viertel: ¾ h = 45 min, ¾ kg = 750 g.'], visual: { kind: 'text', text: '½ kg = 500 g · ¼ h = 15 min' }, videoQuery: 'Brüche bei Größen halb viertel Klasse 4' }, fracTask, { tagLabels: { halb: 'halbe Größen', viertel: 'Viertel und Dreiviertel', 'prozent-gedacht': 'Umrechnungszahl vergessen' }, testSeconds: 25 }),
 ];
+
+// ---------- V oder F (Kl. 2) ----------
+
+const VF: [string, string, string][] = [
+  ['Vogel', 'V', '🐦'], ['Vater', 'V', '👨'], ['vier', 'v', '4️⃣'], ['viel', 'v', '➕'], ['Vase', 'V', '🏺'], ['Vulkan', 'V', '🌋'], ['Vampir', 'V', '🧛'],
+  ['Fisch', 'F', '🐟'], ['Fuchs', 'F', '🦊'], ['Feder', 'F', '🪶'], ['Fahrrad', 'F', '🚲'], ['fünf', 'f', '5️⃣'], ['Frosch', 'F', '🐸'], ['Fenster', 'F', '🪟'], ['fliegen', 'f', '✈️'],
+];
+function vfTask(r: Rng, s: Stage): Gen {
+  const [w, l, e] = pick(r, VF);
+  const isV = l.toLowerCase() === 'v';
+  const up = w[0] === w[0].toUpperCase();
+  const opts = up ? ['V', 'F'] : ['v', 'f'];
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${w}`, prompt: 'Hör gut zu und schreibe das Wort.', speak: w, listen: { text: w, lang: 'de' }, visual: { kind: 'emoji', chars: e }, answer: { type: 'text', value: w, dictation: true, caseSensitive: true }, tags: [isV ? 'merkwort-v' : 'f'], solution: [`So schreibt man es: ${w}`, isV ? `„${w}“ ist ein Merkwort mit V – man hört f, schreibt aber v.` : `„${w}“ schreibt man mit F.`] };
+  }
+  return {
+    key: `c-${w}`,
+    prompt: `Welcher Buchstabe fehlt?\n_${w.slice(1)}`,
+    speak: `Welcher Buchstabe fehlt bei ${w}? V oder F?`,
+    visual: { kind: 'emoji', chars: e },
+    answer: { ...choice(r, w[0], opts.filter((x) => x !== w[0])), big: true },
+    tags: [isV ? 'merkwort-v' : 'f'],
+    solution: [`Richtig: ${w}`, isV ? 'Das ist ein Merkwort mit V: Vogel, Vater, vier, viel, von, vor, ver-. Man hört f, schreibt aber v.' : 'Die meisten Wörter mit f-Laut schreibt man mit F. Nur Merkwörter haben ein V.'],
+  };
+}
+
+// ---------- Brüche bei Größen (Kl. 4) ----------
+
+const FRAC: { f: string; val: number; text: string }[] = [
+  { f: '½', val: 0.5, text: 'ein halb' }, { f: '¼', val: 0.25, text: 'ein Viertel' }, { f: '¾', val: 0.75, text: 'drei Viertel' },
+];
+const FRAC_UNITS: { big: string; small: string; per: number; name: string }[] = [
+  { big: 'kg', small: 'g', per: 1000, name: 'Kilogramm' }, { big: 'l', small: 'ml', per: 1000, name: 'Liter' }, { big: 'h', small: 'min', per: 60, name: 'Stunde' },
+  { big: 'km', small: 'm', per: 1000, name: 'Kilometer' }, { big: 'm', small: 'cm', per: 100, name: 'Meter' }, { big: '€', small: 'ct', per: 100, name: 'Euro' },
+];
+const SMALL_SPOKEN: Record<string, string> = { g: 'Gramm', ml: 'Milliliter', min: 'Minuten', m: 'Meter', cm: 'Zentimeter', ct: 'Cent' };
+function fracTask(r: Rng, s: Stage): Gen {
+  const u = pick(r, FRAC_UNITS);
+  // beim Geld nur „halbe Euro“ – ¼ € oder ¾ € sagt niemand
+  const fr = s === 1 || u.big === '€' ? FRAC[0] : pick(r, FRAC);
+  const whole = s === 3 && chance(r, 0.5) ? ri(r, 1, 3) : 0;
+  const v = Math.round((whole + fr.val) * u.per);
+  const label = `${whole || ''}${fr.f} ${u.big}`;
+  const part = Math.round(fr.val * u.per);
+  return {
+    key: `${label}-${u.small}`,
+    prompt: `${label} = ☐ ${u.small}`,
+    speak: `${whole ? `${whole} und ` : ''}${fr.text} ${u.name} sind wie viel ${SMALL_SPOKEN[u.small] ?? u.small}?`,
+    answer: { type: 'number', value: v, unit: u.small },
+    tags: [fr.f === '½' ? 'halb' : 'viertel'],
+    traps: [{ answer: String(Math.round(fr.val * 100)), tag: 'prozent-gedacht', hint: `1 ${u.big} sind ${u.per} ${u.small} – davon brauchst du ${fr.text}.` }],
+    solution: [`1 ${u.big} = ${u.per} ${u.small}`, fr.f === '½' ? `Die Hälfte von ${u.per} ist ${part}.` : fr.f === '¼' ? `Ein Viertel: ${u.per} : 4 = ${part}` : `Ein Viertel: ${u.per} : 4 = ${u.per / 4}, drei Viertel: 3 · ${u.per / 4} = ${part}`, ...(whole ? [`Dazu ${whole} ${u.big} = ${whole * u.per} ${u.small}`, `Zusammen: ${v} ${u.small}`] : [])],
+  };
+}
 
 // ---------- Selbstlaute (Kl. 1) ----------
 
@@ -525,6 +580,7 @@ function advTask(r: Rng, s: Stage): Gen {
 
 export const DEUTSCH_EXTRA3: Skill[] = [
   D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
+  D(2, 'd2-v-f', 'V oder F?', '🐦', { text: ['Den f-Laut schreibt man meistens mit F: Fisch, Fuchs, fünf.', 'Merkwörter mit V: Vogel, Vater, vier, viel, von, vor – und alle Wörter mit ver- und vor-.', 'Diese Wörter musst du dir merken – man hört f, schreibt aber v.'], visual: { kind: 'text', text: 'Vogel · Vater · vier · viel' }, videoQuery: 'Wörter mit V Merkwörter Grundschule Klasse 2' }, vfTask, { tagLabels: { 'merkwort-v': 'Merkwörter mit V', f: 'Wörter mit F' }, testSeconds: 15 }),
   D(4, 'd4-orts-zeitangaben', 'Orts- und Zeitangaben', '🕰️', { text: ['Zeitangaben sagen, wann etwas passiert. Frage: Wann? – „Am Morgen“, „gestern“, „um drei Uhr“.', 'Ortsangaben sagen, wo oder wohin etwas passiert. Frage: Wo? – „im Park“. Wohin? – „ans Meer“.', 'Wo oder wohin? Bewegt sich etwas zu einem Ort hin, fragst du „Wohin?“.'], visual: { kind: 'text', text: 'Am Morgen (Wann?) fährt Lea in die Schule (Wohin?).' }, videoQuery: 'Zeitangaben Ortsangaben adverbiale Bestimmung Klasse 4' }, advTask, { tagLabels: { zeitangabe: 'Zeitangaben (Wann?)', ortsangabe: 'Ortsangaben (Wo? Wohin?)', 'wo-wohin': 'Wo und Wohin verwechselt' }, testSeconds: 20 }),
   D(3, 'd3-woerterbuch', 'Im Wörterbuch nachschlagen', '📖', { text: ['Im Wörterbuch stehen die Wörter nach dem ABC geordnet.', 'Ist der erste Buchstabe gleich, schaust du auf den zweiten – dann auf den dritten.', 'Wörter stehen in der Grundform: Verben wie „laufen“ (nicht „lief“), Nomen in der Einzahl („Baum“, nicht „Bäume“), Adjektive ungesteigert („groß“, nicht „größer“).'], visual: { kind: 'text', text: 'lief → laufen · Bäume → Baum' }, videoQuery: 'im Wörterbuch nachschlagen Grundform Klasse 3' }, woerterbuchTask, { tagLabels: { abc: 'nach dem ABC ordnen', 'grundform-verb': 'Grundform von Verben', 'grundform-nomen': 'Einzahl von Nomen', 'grundform-adjektiv': 'Grundstufe von Adjektiven', 'nicht-grundform': 'nicht in der Grundform gesucht' }, testSeconds: 20 }),
 ];
