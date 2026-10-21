@@ -105,11 +105,11 @@ export default function App() {
     case 'tab':
       body =
         route.tab === 'home' ? (
-          <Home profile={profile} progress={progress} onSubject={(subject) => push({ r: 'subject', subject })} onReview={() => reviewAll()} onPractice={practiceSkill} onProfile={() => push({ r: 'settings' })} />
+          <Home profile={profile} progress={progress} onSubject={(subject) => push({ r: 'subject', subject })} onReview={() => reviewAll()} onPractice={practiceSkill} onProfile={() => push({ r: 'settings' })} onMix={practiceMix} onStartTest={(spec) => push({ r: 'test', spec })} />
         ) : route.tab === 'review' ? (
           <ReviewScreen profile={profile} progress={progress} onReviewAll={reviewAll} onPractice={practiceSkill} />
         ) : route.tab === 'tests' ? (
-          <TestSetup profile={profile} progress={progress} onStart={(spec) => push({ r: 'test', spec })} onOpenResult={(id) => push({ r: 'result', id })} />
+          <TestSetup profile={profile} progress={progress} onStart={(spec) => push({ r: 'test', spec })} onOpenResult={(id) => push({ r: 'result', id })} onPractice={practiceMix} />
         ) : (
           <StatsScreen profile={profile} progress={progress} onPractice={practiceSkill} onOpenTest={(id) => push({ r: 'result', id })} />
         );

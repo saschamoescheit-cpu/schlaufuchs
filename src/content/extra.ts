@@ -251,7 +251,7 @@ function verbTask(r: Rng, s: Stage): Gen {
 }
 
 const BAUSTEINE: [string, string, string[]][] = [
-  ['Ich ☐schreibe die Sätze von der Tafel.', 'ab', ['ver', 'vor', 'zer']], ['Der Zauberer kann sich in einen Frosch ☐wandeln.', 'ver', ['ab', 'an', 'mit']], ['Bitte ☐lies uns die Geschichte vor.', 'vor', ['ab', 'ver', 'zer']],
+  ['Ich ☐schreibe die Sätze von der Tafel.', 'ab', ['ver', 'vor', 'zer']], ['Der Zauberer kann sich in einen Frosch ☐wandeln.', 'ver', ['ab', 'an', 'mit']], ['Kannst du uns die Geschichte ☐lesen?', 'vor', ['ab', 'zer', 'an']],
   ['Das Glas ist auf den Boden gefallen und ☐brochen.', 'zer', ['ab', 'vor', 'an']], ['Kommst du heute ☐? Wir fahren ins Schwimmbad.', 'mit', ['ver', 'zer', 'ab']], ['Mach bitte das Licht ☐, es ist dunkel.', 'an', ['zer', 'ver', 'vor']],
   ['Ich habe meinen Schlüssel ☐loren.', 'ver', ['zer', 'ab', 'mit']], ['Der Zug ☐fährt um acht Uhr.', 'ab', ['ver', 'zer', 'mit']], ['Am Ende des Spiels ☐teilen wir die Preise.', 'ver', ['zer', 'an', 'mit']],
 ];
@@ -278,7 +278,8 @@ function wordTask(r: Rng, words: W[], s: Stage): Gen {
   const w = pick(r, words);
   const others = words.filter((x) => x !== w);
   const say = { text: w.en, lang: 'en' as const };
-  const mode = s === 1 ? pick(r, ['bild', 'hören']) : s === 3 ? pick(r, ['hören', 'de-en', 'schreiben']) : pick(r, ['bild', 'hören', 'de-en']);
+  const same = w.en.toLowerCase() === w.de.toLowerCase();
+  const mode = s === 1 || same ? pick(r, ['bild', 'hören']) : s === 3 ? pick(r, ['hören', 'de-en', 'schreiben']) : pick(r, ['bild', 'hören', 'de-en']);
   if (mode === 'schreiben' && !w.en.includes(' ')) return { key: `s-${w.en}`, prompt: `Schreibe auf Englisch:\n${w.de}`, visual: { kind: 'emoji', chars: w.e }, answer: { type: 'text', value: w.en, lang: 'en' }, tags: ['schreiben'], solution: [`${w.de} = ${w.en}`], pronounce: say };
   if (mode === 'hören') return { key: `h-${w.en}`, prompt: 'Hör gut zu! Welches Bild passt?', speak: 'Hör gut zu!', listen: say, answer: { ...choice(r, w.e, pickN(r, others, 3).map((x) => x.e)), big: true }, tags: ['hören'], solution: [`${w.en} = ${w.de}`], pronounce: say };
   if (mode === 'de-en') return { key: `u-${w.en}`, prompt: `Was heißt „${w.de}“ auf Englisch?`, answer: { ...choice(r, w.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['übersetzen'], solution: [`${w.de} = ${w.en}`], pronounce: say };

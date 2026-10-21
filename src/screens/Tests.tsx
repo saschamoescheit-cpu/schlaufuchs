@@ -10,6 +10,7 @@ import { updateProgress, type Profile } from '../data/store';
 import type { Progress } from '../engine/learning';
 import { Confetti, Confirm, Rich, Sheet, Speak, Toast, TopBar } from '../ui/common';
 import { ExplainBody } from '../ui/Explain';
+import { daysUntil, nextPlanned, Planner } from './Planner';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
 import { SpellDiff } from '../ui/SpellDiff';
@@ -27,7 +28,8 @@ export interface TestSpec {
   pace: Pace;
 }
 
-export function TestSetup({ profile, progress, onStart, onOpenResult }: { profile: Profile; progress: Progress; onStart: (t: TestSpec) => void; onOpenResult: (id: string) => void }) {
+export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice }: { profile: Profile; progress: Progress; onStart: (t: TestSpec) => void; onOpenResult: (id: string) => void; onPractice: (skills: Skill[], title: string) => void }) {
+  const [tab, setTab] = useState<'probe' | 'termine' | 'ergebnisse'>(() => (nextPlanned(profile, 60) ? 'termine' : 'probe'));
   const [subject, setSubject] = useState<Subject>('mathe');
   const [level, setLevel] = useState<Grade>(currentLevel('mathe', profile));
   const [sel, setSel] = useState<Set<string>>(new Set());
@@ -60,10 +62,18 @@ export function TestSetup({ profile, progress, onStart, onOpenResult }: { profil
   return (
     <div className="stack">
       <TopBar title="⏱️ Lernzielkontrolle" />
+      <div className="seg-light" role="tablist">
+        {([['probe', 'Probetest'], ['termine', `Termine${(profile.plannedTests ?? []).filter((t) => daysUntil(t.date) >= 0).length ? ` (${(profile.plannedTests ?? []).filter((t) => daysUntil(t.date) >= 0).length})` : ''}`], ['ergebnisse', 'Ergebnisse']] as const).map(([k, l]) => (
+          <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'on' : ''} onClick={() => setTab(k)}>
+            {l}
+          </button>
+        ))}
+      </div>
       <p className="muted" style={{ marginTop: -6 }}>
         Übe für deinen nächsten Test – mit Zeit wie in der Schule{withGrades ? ' und mit Note' : ''}.
       </p>
 
+      {tab === 'probe' && (<>
       <div className="field">
         <span className="label">Fach</span>
         <div className="chips">
@@ -144,7 +154,9 @@ export function TestSetup({ profile, progress, onStart, onOpenResult }: { profil
         Test starten
       </button>
 
-      <h2 className="section-title">📋 Deine Tests</h2>
+      </>)}
+      {tab === 'termine' && <Planner profile={profile} progress={progress} onPractice={onPractice} onStart={onStart} />}
+      {tab === 'ergebnisse' && (<>
       {progress.tests.length === 0 ? (
         <div className="empty card">Noch keine Lernzielkontrolle geschrieben.</div>
       ) : (
@@ -163,6 +175,7 @@ export function TestSetup({ profile, progress, onStart, onOpenResult }: { profil
           ))}
         </div>
       )}
+      </>)}
     </div>
   );
 }

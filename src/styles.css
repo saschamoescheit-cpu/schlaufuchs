@@ -1736,3 +1736,11 @@ details.more .inner {
     margin-top: 0;
   }
 }
+.chip-mini {
+  display: inline-block;
+  background: var(--line);
+  border-radius: 999px;
+  padding: 2px 10px;
+  margin: 0 6px 6px 0;
+  font-size: 0.85rem;
+}

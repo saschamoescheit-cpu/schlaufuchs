@@ -4,7 +4,7 @@
 import { useSyncExternalStore } from 'react';
 import { DEFAULT_KEY } from '../engine/grading';
 import { emptyProgress, type Progress } from '../engine/learning';
-import type { Grade } from '../engine/types';
+import type { Grade, Subject } from '../engine/types';
 import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
 import { mergeTwo } from './merge';
@@ -25,7 +25,19 @@ export interface Profile {
   pace: Pace;
   /** Tagesziel: so viele Aufgaben am Tag (0 = kein Ziel) */
   dailyGoal?: number;
+  /** eingetragene Klassenarbeiten/Tests in der Schule */
+  plannedTests?: PlannedTest[];
   created: number;
+}
+
+/** ein Test in der Schule, für den geübt wird */
+export interface PlannedTest {
+  id: string;
+  subject: Subject;
+  /** Datum JJJJ-MM-TT */
+  date: string;
+  note?: string;
+  skills: string[];
 }
 
 export interface AppData {

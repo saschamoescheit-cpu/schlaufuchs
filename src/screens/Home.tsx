@@ -7,6 +7,8 @@ import type { Profile } from '../data/store';
 import { Fox, LevelDots, TopBar } from '../ui/common';
 import { ExplainSheet } from '../ui/Explain';
 import { BadgeWatcher, DailyGoal } from '../ui/Badges';
+import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
+import type { TestSpec } from './Tests';
 
 function greeting(name: string) {
   const h = new Date().getHours();
@@ -22,13 +24,17 @@ export function suggestion(profile: Profile, p: Progress): Skill | undefined {
   return started[0] ?? cur.find((s) => level(p, s.id) === 0);
 }
 
-export function Home({ profile, progress, onSubject, onReview, onPractice, onProfile }: { profile: Profile; progress: Progress; onSubject: (s: Subject) => void; onReview: () => void; onPractice: (skill: Skill) => void; onProfile: () => void }) {
+export function Home({ profile, progress, onSubject, onReview, onPractice, onProfile, onMix, onStartTest }: { profile: Profile; progress: Progress; onSubject: (s: Subject) => void; onReview: () => void; onPractice: (skill: Skill) => void; onProfile: () => void; onMix: (skills: Skill[], title: string) => void; onStartTest: (spec: TestSpec) => void }) {
+  const planned = nextPlanned(profile);
   const now = Date.now();
   const due = dueReviews(progress, now).length;
   const streak = streakDays(progress, now);
   const next = suggestion(profile, progress);
   const today = progress.days[dayKey(now)] ?? 0;
-  const msg = due
+  const soon = planned && daysUntil(planned.date) <= 7 ? planned : undefined;
+  const msg = soon
+    ? `${countdownText(daysUntil(soon.date))[0].toUpperCase() + countdownText(daysUntil(soon.date)).slice(1)} ist dein ${subjectInfo(soon.subject).name}-Test. Lass uns gezielt dafür üben!`
+    : due
     ? `In deiner Fehler-Kiste ${due === 1 ? 'wartet 1 Aufgabe' : `warten ${due} Aufgaben`} auf dich. Wollen wir sie knacken?`
     : next
       ? `Wie wär's mit „${next.title}“? ${today ? 'Du warst heute schon fleißig!' : 'Los geht\'s!'}`
@@ -56,6 +62,7 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
         </div>
       </div>
 
+      {planned && <PlannedCard t={planned} progress={progress} onPractice={onMix} onStart={onStartTest} />}
       <DailyGoal profile={profile} progress={progress} />
       <BadgeWatcher profile={profile} progress={progress} />
 
