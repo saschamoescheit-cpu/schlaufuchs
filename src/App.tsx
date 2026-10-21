@@ -130,6 +130,10 @@ export default function App() {
           tasks={route.tasks}
           mode={route.mode}
           onExit={back}
+          onPracticePattern={(id, tag, label) => {
+            const s = ALL_SKILLS.find((k) => k.id === id);
+            if (s) replace({ r: 'practice', title: `${label} üben`, tasks: buildPattern(s, tag, data.progress[profile.id] ?? progress), mode: 'übung', again: () => buildPattern(s, tag, data.progress[profile.id] ?? progress), n: route.n + 1 });
+          }}
           onRestart={route.again ? () => replace({ ...route, tasks: route.again!(), n: route.n + 1 }) : dueReviews(data.progress[profile.id] ?? progress, Date.now()).length && route.mode === 'wiederholung' ? () => replace({ ...route, tasks: buildReview(ALL_SKILLS, data.progress[profile.id] ?? progress), n: route.n + 1 }) : undefined}
         />
       );

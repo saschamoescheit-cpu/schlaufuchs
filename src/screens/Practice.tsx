@@ -24,7 +24,7 @@ interface Item {
   again?: boolean;
 }
 
-export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { profile: Profile; title: string; tasks: Task[]; mode: Mode; onExit: () => void; onRestart?: () => void }) {
+export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPracticePattern }: { profile: Profile; title: string; tasks: Task[]; mode: Mode; onExit: () => void; onRestart?: () => void; onPracticePattern?: (skillId: string, tag: string, label: string) => void }) {
   const [queue, setQueue] = useState<Item[]>(() => tasks.map((task) => ({ task })));
   const [idx, setIdx] = useState(0);
   const [value, setValue] = useState('');
@@ -38,6 +38,8 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
   const [stageMsg, setStageMsg] = useState<string | null>(null);
   const [achieved, setAchieved] = useState<string[]>([]);
   const [help, setHelp] = useState(false);
+  /** Fehlerarten dieser Runde: „Thema|Fehlerart“ → Anzahl */
+  const [misses, setMisses] = useState<Record<string, number>>({});
   const live = useData().progress[profile.id];
 
   const item = queue[idx];
@@ -74,6 +76,9 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
       if (profile.sound) sounds.right();
     } else {
       if (profile.sound) sounds.wrong();
+      const tags = [...new Set([...(item.task.tags ?? []), ...(res.tags ?? (res.trap ? [res.trap.tag] : []))])];
+      const labeled = tags.filter((t) => skill?.tagLabels?.[t] && t !== 'gross-klein');
+      if (labeled.length) setMisses((m) => ({ ...m, ...Object.fromEntries(labeled.map((t) => [`${item.task.skillId}|${t}`, (m[`${item.task.skillId}|${t}`] ?? 0) + 1])) }));
       // gleiche Aufgabe kommt in dieser Runde noch einmal (höchstens einmal extra)
       if (!item.again) setQueue((q) => [...q.slice(0, idx + 1), ...q.slice(idx + 1, idx + 4), { task: item.task, again: true }, ...q.slice(idx + 4)]);
     }
@@ -96,6 +101,11 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
   if (done) {
     const pct = firstTry.total ? firstTry.right / firstTry.total : 0;
     const newOutfits = live ? OUTFITS.filter((o) => o.stars > live.stars - stars && o.stars <= live.stars) : [];
+    // derselbe Fehler mehrmals in dieser Runde → gezielt üben anbieten
+    const top = Object.entries(misses).filter(([, n]) => n >= 2).sort((a, b) => b[1] - a[1])[0];
+    const topSkill = top ? skillById(top[0].split('|')[0]) : undefined;
+    const topTag = top?.[0].split('|')[1];
+    const topLabel = topSkill && topTag ? topSkill.tagLabels?.[topTag] : undefined;
     return (
       <div className="app full">
         {pct >= 0.7 && <Confetti />}
@@ -122,6 +132,14 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
               🎯 <b>Lernziel geschafft:</b> {skillById(id)?.icon} {skillById(id)?.title} sitzt jetzt sicher!
             </div>
           ))}
+          {onPracticePattern && topSkill && topTag && topLabel && (
+            <div className="card tint" style={{ background: 'var(--fox-soft)', textAlign: 'left' }}>
+              🎯 <b>{topLabel}</b> ist dir in dieser Runde {top![1]}-mal passiert.
+              <button className="btn block small" style={{ marginTop: 8 }} onClick={() => onPracticePattern(topSkill.id, topTag, topLabel)}>
+                Genau das jetzt üben
+              </button>
+            </div>
+          )}
           {newOutfits.length > 0 && (
             <div className="card tint" style={{ background: 'var(--ok-soft)', textAlign: 'left' }}>
               👕 <b>Neu für deinen Fuchs:</b> {newOutfits.map((o) => o.name).join(', ')}! Tippe auf der Startseite auf den Fuchs – dann kannst du ihn verkleiden.
