@@ -418,7 +418,7 @@ function TestItemSheet({ item, onClose }: { item: TestItem; onClose: () => void 
           <div>
             Richtig ist: <b>{correctText(item.task.answer)}</b>
           </div>
-          {!item.ok && item.given && item.task.answer.type === 'text' && <SpellDiff correct={item.task.answer.value} given={item.given} tags={check(item.task, item.given).tags} caseSensitive={item.task.answer.caseSensitive} />}
+          {!item.ok && item.given && item.task.answer.type === 'text' && !item.task.work && <SpellDiff correct={item.task.answer.value} given={item.given} tags={check(item.task, item.given).tags} caseSensitive={item.task.answer.caseSensitive} />}
           <div className="row" style={{ marginTop: 10 }}>
             <h3 className="grow">So geht&apos;s:</h3>
             <Speak text={item.task.solution.join(' ')} />

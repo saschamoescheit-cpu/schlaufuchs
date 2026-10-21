@@ -778,10 +778,26 @@ const schrGeteilt = M(4, 'm4-schriftlich-geteilt', 'Schriftliche Division', '➗
   const d = s === 1 ? ri(r, 2, 5) : ri(r, 2, 9);
   let q = ri(r, 102, 999);
   while ((s === 1 && String(q).includes('0')) || (s === 3 && !String(q).includes('0') && q < 1000)) q = s === 3 ? pick(r, [ri(r, 1, 9) * 100 + ri(r, 1, 9), ri(r, 101, 999), ri(r, 1, 9) * 100 + ri(r, 1, 9) * 10]) : ri(r, 102, 999);
+  // ab Stufe 2 manchmal mit Rest (NRW: Division durch einstellige Zahlen mit Restschreibweise)
+  const rest = s >= 2 && chance(r, s === 3 ? 0.5 : 0.3) ? ri(r, 1, d - 1) : 0;
+  if (rest) {
+    const n = d * q + rest;
+    const { steps } = columnDiv(n, d);
+    return {
+      key: `${n}:${d}`,
+      prompt: `Rechne schriftlich mit Rest:\n${fmt(n)} : ${d}`,
+      speak: `Rechne schriftlich: ${n} geteilt durch ${d}. Schreibe auch den Rest auf.`,
+      work: { op: ':', rows: [n, d], result: q, rest },
+      answer: { type: 'text', value: `${q} Rest ${rest}`, accept: [`${q} R ${rest}`, `${q}R${rest}`] },
+      tags: ['mit-rest'],
+      solution: [...steps, `Ergebnis: ${q} Rest ${rest}`, `Probe: ${q} · ${d} + ${rest} = ${fmt(n)} ✓`],
+      solutionVisual: { kind: 'column', op: ':', rows: [n, d], result: q, steps },
+    };
+  }
   const n = d * q;
   const { steps } = columnDiv(n, d);
   return { key: `${n}:${d}`, prompt: `Rechne schriftlich:\n${fmt(n)} : ${d}`, speak: `Rechne schriftlich: ${n} geteilt durch ${d}`, work: { op: ':', rows: [n, d], result: q }, answer: { type: 'number', value: q }, tags: [String(q).includes('0') ? 'null-im-ergebnis' : 'division'], traps: String(q).includes('0') ? [{ answer: String(q).replace(/0/g, ''), tag: 'null-vergessen', hint: 'Wenn die Zahl nicht hineinpasst, schreibst du eine 0 ins Ergebnis!' }] : [], solution: [...steps, `Probe: ${q} · ${d} = ${fmt(n)} ✓`], solutionVisual: { kind: 'column', op: ':', rows: [n, d], result: q, steps } };
-}, { tagLabels: { 'null-im-ergebnis': 'Null im Ergebnis', 'null-vergessen': 'Null im Ergebnis vergessen' }, testSeconds: 90 });
+}, { tagLabels: { 'null-im-ergebnis': 'Null im Ergebnis', 'null-vergessen': 'Null im Ergebnis vergessen', 'mit-rest': 'Teilen mit Rest' }, testSeconds: 90 });
 
 const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: string; sol: string[]; trap?: number } }[] = [
   { q: (r) => { const l = ri(r, 2, 9); return { p: `${l} l = ☐ ml`, v: l * 1000, unit: 'ml', tag: 'liter', sol: ['1 l = 1000 ml', `${l} l = ${l * 1000} ml`], trap: l * 100 }; } },

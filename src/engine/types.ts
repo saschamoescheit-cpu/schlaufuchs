@@ -44,6 +44,8 @@ export interface ColumnWork {
   /** Zahlen der Aufgabe (bei ':' Dividend und Divisor, bei '·' die beiden Faktoren) */
   rows: number[];
   result: number;
+  /** Teilen mit Rest: der Rest (eigenes Kästchen) */
+  rest?: number;
 }
 
 export interface Task {

@@ -98,6 +98,14 @@ export function ColumnWork({ work, value, onChange, onSubmit, reveal, guided }: 
               {work.rows[0]} : {work.rows[1]} =
             </span>
             {layout.rows[0].cells!.map(cellBtn)}
+            {layout.hasRest && (
+              <>
+                <span className="cw-static" style={{ fontSize: '1.4rem' }}>
+                  Rest
+                </span>
+                {layout.rows[1].cells!.map(cellBtn)}
+              </>
+            )}
           </div>
         ) : (
           <div className="cw-grid">

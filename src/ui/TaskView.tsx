@@ -56,7 +56,7 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
       )}
       {a.type === 'choice' && <Choices task={task} value={value} onPick={(v) => (onSubmit ? onSubmit(v) : onChange(v))} reveal={reveal} />}
       {a.type === 'number' && !task.work && <NumberInput value={value} unit={a.unit} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal ? (Number(value.replace(',', '.')) === a.value ? 'right' : 'wrong') : undefined} submitLabel={submitLabel} />}
-      {a.type === 'text' && <TextInput value={value} lang={a.lang} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal} submitLabel={submitLabel} />}
+      {a.type === 'text' && !task.work && <TextInput value={value} lang={a.lang} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal} submitLabel={submitLabel} />}
     </div>
   );
 }

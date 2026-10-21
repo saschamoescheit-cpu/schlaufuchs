@@ -28,6 +28,8 @@ export interface Layout {
   resultKeys: string[];
   /** Teilung: Ziffern des Dividenden und Startlänge */
   division?: { digits: number[]; divisor: number; startLen: number };
+  /** Teilung mit Rest-Kästchen */
+  hasRest?: boolean;
 }
 
 const rev = (n: number | string) => String(n).split('').reverse();
@@ -114,7 +116,15 @@ export function layoutOf(w: ColumnWork): Layout {
   while (startLen < digits.length && Number(digits.slice(0, startLen).join('')) < d) startLen++;
   const q = String(w.result);
   const cells: Cell[] = q.split('').map((ch, i) => ({ key: `r${i}`, col: q.length - 1 - i, expect: ch }));
-  return { width: q.length, rows: [{ kind: 'input', cells }], order: cells.map((c) => c.key), resultKeys: cells.map((c) => c.key), division: { digits, divisor: d, startLen } };
+  const rest: Cell[] = w.rest !== undefined ? [{ key: 'rest', col: -1, expect: String(w.rest) }] : [];
+  return {
+    width: q.length,
+    rows: [{ kind: 'input', cells }, ...(rest.length ? [{ kind: 'input' as const, cells: rest, label: 'Rest' }] : [])],
+    order: [...cells.map((c) => c.key), ...rest.map((c) => c.key)],
+    resultKeys: cells.map((c) => c.key),
+    division: { digits, divisor: d, startLen },
+    hasRest: rest.length > 0,
+  };
 }
 
 export interface DivStep {
@@ -145,7 +155,11 @@ export function divSteps(div: NonNullable<Layout['division']>, qDigits: string[]
 }
 
 /** Wert der Antwort aus den Ergebnis-Kästchen */
-export const resultValue = (l: Layout, vals: Record<string, string>) => l.resultKeys.map((k) => vals[k] ?? '').join('').replace(/^0+(?=\d)/, '');
+export function resultValue(l: Layout, vals: Record<string, string>): string {
+  const q = l.resultKeys.map((k) => vals[k] ?? '').join('').replace(/^0+(?=\d)/, '');
+  if (!l.hasRest) return q;
+  return q || vals.rest ? `${q} Rest ${vals.rest ?? ''}`.trim() : '';
+}
 
 /** Kästchen, deren Inhalt nicht stimmt (für die Rückmeldung) */
 export function wrongCells(l: Layout, vals: Record<string, string>): Set<string> {
@@ -161,7 +175,8 @@ export function wrongCells(l: Layout, vals: Record<string, string>): Set<string>
 
 /** Werte aus einer gespeicherten Antwort (nur Ergebnisziffern) wiederherstellen */
 export function valsFromValue(l: Layout, value: string): Record<string, string> {
-  const ds = value.replace(/\D/g, '').split('');
+  const [main, restPart] = value.split(/\s*Rest\s*/i);
+  const ds = (main ?? '').replace(/\D/g, '').split('');
   const keys = l.resultKeys;
   const out: Record<string, string> = {};
   const offset = l.division ? 0 : keys.length - ds.length;
@@ -169,5 +184,6 @@ export function valsFromValue(l: Layout, value: string): Record<string, string> 
     const k = keys[offset + i];
     if (k) out[k] = ch;
   });
+  if (l.hasRest && restPart) out.rest = restPart.replace(/\D/g, '');
   return out;
 }

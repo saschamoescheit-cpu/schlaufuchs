@@ -196,7 +196,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
                     </div>
                   </div>
                 </div>
-                {a.type === 'text' && value && <SpellDiff correct={a.value} given={value} tags={result.tags} caseSensitive={a.caseSensitive} />}
+                {a.type === 'text' && value && !item.task.work && <SpellDiff correct={a.value} given={value} tags={result.tags} caseSensitive={a.caseSensitive} />}
                 {result.trap && (
                   <div className="hint">
                     <span>💡</span>
