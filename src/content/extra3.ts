@@ -307,6 +307,52 @@ export const MATHE_EXTRA3: Skill[] = [
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🧊', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
 ];
 
+// ---------- Orts- und Zeitangaben (Kl. 4) ----------
+
+type Adv = 'zeit' | 'wo' | 'wohin';
+const ADV: { s: string; mark: string; was: Adv }[] = [
+  { s: '**Am Morgen** fährt Lea mit dem Bus.', mark: 'Am Morgen', was: 'zeit' }, { s: 'Die Katze schläft **auf dem Sofa**.', mark: 'auf dem Sofa', was: 'wo' },
+  { s: '**Im Sommer** fahren wir ans Meer.', mark: 'Im Sommer', was: 'zeit' }, { s: 'Im Sommer fahren wir **ans Meer**.', mark: 'ans Meer', was: 'wohin' },
+  { s: 'Tim spielt **nach der Schule** Fußball.', mark: 'nach der Schule', was: 'zeit' }, { s: 'Tim spielt nach der Schule **im Park**.', mark: 'im Park', was: 'wo' },
+  { s: '**Gestern** hat es geregnet.', mark: 'Gestern', was: 'zeit' }, { s: 'Oma wohnt **in Köln**.', mark: 'in Köln', was: 'wo' },
+  { s: 'Wir treffen uns **um drei Uhr** vor dem Kino.', mark: 'um drei Uhr', was: 'zeit' }, { s: 'Wir treffen uns um drei Uhr **vor dem Kino**.', mark: 'vor dem Kino', was: 'wo' },
+  { s: '**Unter dem Bett** liegt eine Socke.', mark: 'Unter dem Bett', was: 'wo' }, { s: 'Der Zug kommt **in zehn Minuten**.', mark: 'in zehn Minuten', was: 'zeit' },
+  { s: '**Jeden Montag** haben wir Sport.', mark: 'Jeden Montag', was: 'zeit' }, { s: 'Die Kinder spielen **auf dem Schulhof**.', mark: 'auf dem Schulhof', was: 'wo' },
+  { s: 'Papa kocht **in der Küche**.', mark: 'in der Küche', was: 'wo' }, { s: '**Am Wochenende** besuchen wir Opa.', mark: 'Am Wochenende', was: 'zeit' },
+  { s: 'Lisa geht morgens **in die Schule**.', mark: 'in die Schule', was: 'wohin' }, { s: 'Der Ball fliegt **über den Zaun**.', mark: 'über den Zaun', was: 'wohin' },
+  { s: 'Nach dem Essen legt Mama das Buch **auf den Tisch**.', mark: 'auf den Tisch', was: 'wohin' }, { s: '**Nach dem Essen** legt Mama das Buch auf den Tisch.', mark: 'Nach dem Essen', was: 'zeit' },
+];
+const ADV_NAME = { zeit: 'Zeitangabe (Wann?)', ort: 'Ortsangabe (Wo? Wohin?)' };
+function advTask(r: Rng, s: Stage): Gen {
+  const a = pick(r, ADV);
+  const plain = a.s.replace(/\*\*/g, '');
+  const ort = a.was !== 'zeit';
+  const why = ort ? a.was === 'wo' ? 'Die Angabe sagt, wo etwas passiert – das ist eine Ortsangabe.' : 'Die Angabe sagt, wohin sich etwas bewegt – das ist eine Ortsangabe.' : 'Die Angabe sagt, wann etwas passiert – das ist eine Zeitangabe.';
+  // Stufe 3: die passende Frage finden (auch Wo und Wohin unterscheiden)
+  if (s === 3 && chance(r, 0.5)) {
+    const ok = a.was === 'zeit' ? 'Wann?' : a.was === 'wo' ? 'Wo?' : 'Wohin?';
+    return {
+      key: `q-${a.s}`,
+      prompt: `Mit welcher Frage findest du die markierte Angabe?\n${a.s}`,
+      speak: `Mit welcher Frage findest du „${a.mark}“? ${plain}`,
+      answer: { ...choice(r, ok, ['Wann?', 'Wo?', 'Wohin?', 'Wer?'].filter((x) => x !== ok)), big: true },
+      tags: [ort ? 'ortsangabe' : 'zeitangabe'],
+      traps: a.was === 'wohin' ? [{ answer: 'Wo?', tag: 'wo-wohin', hint: 'Hier bewegt sich etwas irgendwohin – dann fragst du „Wohin?“.' }] : a.was === 'wo' ? [{ answer: 'Wohin?', tag: 'wo-wohin', hint: 'Hier ist etwas an einem Ort, es bewegt sich nicht dorthin – dann fragst du „Wo?“.' }] : [],
+      solution: [`Frage: ${ok} → ${a.mark}`, why],
+    };
+  }
+  const right = ort ? ADV_NAME.ort : ADV_NAME.zeit;
+  return {
+    key: a.s,
+    prompt: `Was für eine Angabe ist markiert?\n${a.s}`,
+    speak: `Was für eine Angabe ist „${a.mark}“? ${plain}`,
+    answer: choice(r, right, [ort ? ADV_NAME.zeit : ADV_NAME.ort, ...(s > 1 ? ['Subjekt (Wer oder was?)'] : [])]),
+    tags: [ort ? 'ortsangabe' : 'zeitangabe'],
+    solution: [`Frage: ${ort ? (a.was === 'wo' ? 'Wo?' : 'Wohin?') : 'Wann?'} → ${a.mark}`, why],
+  };
+}
+
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(4, 'd4-orts-zeitangaben', 'Orts- und Zeitangaben', '🕰️', { text: ['Zeitangaben sagen, wann etwas passiert. Frage: Wann? – „Am Morgen“, „gestern“, „um drei Uhr“.', 'Ortsangaben sagen, wo oder wohin etwas passiert. Frage: Wo? – „im Park“. Wohin? – „ans Meer“.', 'Wo oder wohin? Bewegt sich etwas zu einem Ort hin, fragst du „Wohin?“.'], visual: { kind: 'text', text: 'Am Morgen (Wann?) fährt Lea in die Schule (Wohin?).' }, videoQuery: 'Zeitangaben Ortsangaben adverbiale Bestimmung Klasse 4' }, advTask, { tagLabels: { zeitangabe: 'Zeitangaben (Wann?)', ortsangabe: 'Ortsangaben (Wo? Wohin?)', 'wo-wohin': 'Wo und Wohin verwechselt' }, testSeconds: 20 }),
   D(3, 'd3-woerterbuch', 'Im Wörterbuch nachschlagen', '📖', { text: ['Im Wörterbuch stehen die Wörter nach dem ABC geordnet.', 'Ist der erste Buchstabe gleich, schaust du auf den zweiten – dann auf den dritten.', 'Wörter stehen in der Grundform: Verben wie „laufen“ (nicht „lief“), Nomen in der Einzahl („Baum“, nicht „Bäume“), Adjektive ungesteigert („groß“, nicht „größer“).'], visual: { kind: 'text', text: 'lief → laufen · Bäume → Baum' }, videoQuery: 'im Wörterbuch nachschlagen Grundform Klasse 3' }, woerterbuchTask, { tagLabels: { abc: 'nach dem ABC ordnen', 'grundform-verb': 'Grundform von Verben', 'grundform-nomen': 'Einzahl von Nomen', 'grundform-adjektiv': 'Grundstufe von Adjektiven', 'nicht-grundform': 'nicht in der Grundform gesucht' }, testSeconds: 20 }),
 ];

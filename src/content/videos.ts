@@ -145,6 +145,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '1GJZeby2dxw', title: 'Erklärvideo Würfelgebäude: Baupläne', channel: 'Grundschule Ludwigsfeld', len: '3:56' },
     { id: '8CkMXnbJq9c', title: 'Was sind Würfelgebäude?', channel: 'Pflichtsender', len: '2:59' },
   ],
+  'd4-orts-zeitangaben': [
+    { id: 'mKnMovqnxzU', title: 'Zeitbestimmung und Ortsbestimmung (Adverbiale Bestimmungen) - Grundschule', channel: 'Nachhilfe vom Lehrer', len: '4:52' },
+    { id: '1BBT86j3p7g', title: 'Erklärvideo Zeitbestimmung (adverbiale Bestimmung der Zeit)', channel: 'Frau Pipps', len: '2:06' },
+  ],
   'e1-festivals': [
     { id: 'l91Pm_1BCbE', title: 'Halloween for Kids: The Story of Halloween + 14 English Words', channel: 'TevESL', len: '6:00' },
     { id: 'vctndz-L4rE', title: 'Easter Vocabulary for kids', channel: 'Interesting English', len: '3:49' },
