@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { dayKey, dueReviews, level, openReviews, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Grade, Skill, Subject } from '../engine/types';
-import { currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { byArea, currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import type { Profile } from '../data/store';
 import { Fox, LevelDots, TopBar } from '../ui/common';
 import { ExplainSheet } from '../ui/Explain';
@@ -176,7 +176,13 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
         {sure} von {skills.length} Lernzielen sicher · Was dir schwerfällt, kommt öfter dran.
       </div>
 
-      {skills.map((s) => {
+      {byArea(subject, skills).flatMap((g, _, groups) => [
+        groups.length > 1 ? (
+          <h2 key={`h-${g.name}`} className="section-title">
+            {g.name}
+          </h2>
+        ) : null,
+        ...g.skills.map((s) => {
         const lvl = level(progress, s.id);
         const st = progress.skills[s.id];
         const open = openReviews(progress, s.id).length;
@@ -202,7 +208,8 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
             </button>
           </div>
         );
-      })}
+        }),
+      ])}
 
       {explain && (
         <ExplainSheet

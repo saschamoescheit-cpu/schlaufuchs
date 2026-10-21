@@ -73,6 +73,32 @@ export function currentLevel(subject: Subject, p: ProfileLike): Grade {
 
 export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((s) => s.subject === subject && (grade === undefined || s.grade === grade));
 
+/** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
+const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
+  mathe: [
+    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen/ },
+    { name: 'Rechnen', re: /plus|minus|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|ueberschlag/ },
+    { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|fahrplan|massstab/ },
+    { name: 'Geometrie und Daten', re: /formen|lage|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
+  ],
+  deutsch: [
+    { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben/ },
+    { name: 'Lesen', re: /lesen|saetze|sachtexte/ },
+    { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|ck-tz|-ie$|grossschreibung|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch/ },
+    { name: 'Sprache untersuchen', re: /./ },
+  ],
+  englisch: [
+    { name: 'Sätze, Hören und Sprechen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom/ },
+    { name: 'Wörter', re: /./ },
+  ],
+};
+export const areaOf = (s: Skill) => AREAS[s.subject].find((a) => a.re.test(s.id))?.name ?? 'Weitere';
+/** Themen einer Liste nach Bereichen gruppiert (leere Bereiche fallen weg) */
+export const byArea = (subject: Subject, skills: Skill[]) => {
+  const names = [...AREAS[subject].map((a) => a.name), 'Weitere'];
+  return names.map((name) => ({ name, skills: skills.filter((s) => areaOf(s) === name) })).filter((g) => g.skills.length);
+};
+
 /** Lernziele des aktuellen Schuljahres (für Fortschritt und Mix) */
 export const currentSkills = (subject: Subject, p: ProfileLike) => skillsOf(subject, currentLevel(subject, p));
 
