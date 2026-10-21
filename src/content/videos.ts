@@ -167,6 +167,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '1GJZeby2dxw', title: 'Erklärvideo Würfelgebäude: Baupläne', channel: 'Grundschule Ludwigsfeld', len: '3:56' },
     { id: '8CkMXnbJq9c', title: 'Was sind Würfelgebäude?', channel: 'Pflichtsender', len: '2:59' },
   ],
+  'd4-nominalisierung': [
+    { id: '9W8ojRn1zks', title: 'Nominalisierung von Verben – Erklärung und Beispiel', channel: 'lernfoerderung', len: '3:41' },
+    { id: 'fCGIZexJA1w', title: 'Nominalisierung von Adjektiven – Erklärung und Beispiele', channel: 'lernfoerderung', len: '3:21' },
+  ],
   'd4-orts-zeitangaben': [
     { id: 'mKnMovqnxzU', title: 'Zeitbestimmung und Ortsbestimmung (Adverbiale Bestimmungen) - Grundschule', channel: 'Nachhilfe vom Lehrer', len: '4:52' },
     { id: '1BBT86j3p7g', title: 'Erklärvideo Zeitbestimmung (adverbiale Bestimmung der Zeit)', channel: 'Frau Pipps', len: '2:06' },

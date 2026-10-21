@@ -76,7 +76,7 @@ export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((
 /** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
 const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   mathe: [
-    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen/ },
+    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter/ },
     { name: 'Rechnen', re: /plus|minus|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|ueberschlag/ },
     { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|fahrplan|massstab/ },
     { name: 'Geometrie und Daten', re: /formen|lage|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
@@ -84,7 +84,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben/ },
     { name: 'Lesen', re: /lesen|saetze|sachtexte/ },
-    { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|ck-tz|-ie$|grossschreibung|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch/ },
+    { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|ck-tz|-ie$|grossschreibung|nominalisierung|v-f|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch/ },
     { name: 'Sprache untersuchen', re: /./ },
   ],
   englisch: [

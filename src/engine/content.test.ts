@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { ALL_SKILLS } from '../content/curriculum';
+import { ALL_SKILLS, areaOf } from '../content/curriculum';
 import { check, correctText } from './check';
 import { mulberry32 } from './rng';
 
@@ -41,4 +41,11 @@ describe('Inhalte', () => {
       }
     });
   }
+});
+
+describe('Gliederung', () => {
+  it('jedes Thema gehört zu einem Bereich (keins unter „Weitere“)', () => {
+    const rest = ALL_SKILLS.filter((s) => areaOf(s) === 'Weitere').map((s) => s.id);
+    expect(rest).toEqual([]);
+  });
 });

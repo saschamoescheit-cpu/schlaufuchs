@@ -579,6 +579,29 @@ function vokalTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Nominalisierung: groß oder klein? (Kl. 4) ----------
+
+// [Satz mit ☐, Wort klein, groß?, Signalwort]
+const NOMI: [string, string, boolean, string][] = [
+  ['Beim ☐ habe ich mir das Knie gestoßen.', 'laufen', true, 'beim'], ['Wir gehen heute ☐.', 'schwimmen', false, ''], ['Das ☐ macht mir großen Spaß.', 'lesen', true, 'das'],
+  ['Zum ☐ brauche ich einen Stift.', 'schreiben', true, 'zum'], ['Ich will heute Abend ☐.', 'malen', false, ''], ['Ich wünsche dir viel ☐!', 'gutes', true, 'viel'],
+  ['Im Zoo haben wir etwas ☐ gesehen.', 'lustiges', true, 'etwas'], ['Der Film war sehr ☐.', 'lustig', false, ''], ['Vom vielen ☐ bin ich müde.', 'rennen', true, 'vom'],
+  ['Heute gibt es nichts ☐ im Fernsehen.', 'spannendes', true, 'nichts'], ['Mama kann sehr gut ☐.', 'kochen', false, ''], ['Alles ☐ zum Geburtstag!', 'gute', true, 'alles'],
+  ['Beim ☐ muss man leise sein.', 'lernen', true, 'beim'], ['Das Wasser ist sehr ☐.', 'kalt', false, ''], ['Lisa hilft beim ☐ der Wäsche.', 'aufhängen', true, 'beim'],
+  ['Wir hören dem ☐ der Vögel zu.', 'singen', true, 'dem'], ['Tim kann schon gut ☐.', 'rechnen', false, ''], ['Ich habe etwas ☐ für dich.', 'schönes', true, 'etwas'],
+];
+const cap = (w: string) => w[0].toUpperCase() + w.slice(1);
+function nomiTask(r: Rng, s: Stage): Gen {
+  const [satz, w, gross, signal] = pick(r, NOMI);
+  const ok = gross ? cap(w) : w;
+  const full = satz.replace('☐', ok);
+  const why = gross ? `Vor „${ok}“ steht das Signalwort „${signal}“. Damit wird das Wort zum Nomen – also groß.` : `„${w}“ ist hier kein Nomen – kein Signalwort davor. Also klein.`;
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${satz}`, prompt: `Schreibe das Wort richtig in die Lücke:\n${satz.replace('☐', `☐ (${w})`)}`, speak: satz.replace('☐', w), answer: { type: 'text', value: ok, caseSensitive: true }, tags: [gross ? 'gross' : 'klein'], solution: [full, why] };
+  }
+  return { key: `c-${satz}`, prompt: `Groß oder klein?\n${satz}`, speak: satz.replace('☐', w), answer: { ...choice(r, ok, [gross ? w : cap(w)]), big: true }, tags: [gross ? 'gross' : 'klein'], traps: [{ answer: gross ? w : cap(w), tag: gross ? 'signalwort-uebersehen' : 'zu-gross', hint: gross ? `Achte auf das Signalwort „${signal}“ vor dem Wort.` : 'Ohne Signalwort (das, beim, zum, viel, etwas …) bleibt das Verb oder Adjektiv klein.' }], solution: [full, why] };
+}
+
 // ---------- Orts- und Zeitangaben (Kl. 4) ----------
 
 type Adv = 'zeit' | 'wo' | 'wohin';
@@ -628,5 +651,6 @@ export const DEUTSCH_EXTRA3: Skill[] = [
   D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
   D(2, 'd2-v-f', 'V oder F?', '🐦', { text: ['Den f-Laut schreibt man meistens mit F: Fisch, Fuchs, fünf.', 'Merkwörter mit V: Vogel, Vater, vier, viel, von, vor – und alle Wörter mit ver- und vor-.', 'Diese Wörter musst du dir merken – man hört f, schreibt aber v.'], visual: { kind: 'text', text: 'Vogel · Vater · vier · viel' }, videoQuery: 'Wörter mit V Merkwörter Grundschule Klasse 2' }, vfTask, { tagLabels: { 'merkwort-v': 'Merkwörter mit V', f: 'Wörter mit F' }, testSeconds: 15 }),
   D(4, 'd4-orts-zeitangaben', 'Orts- und Zeitangaben', '🕰️', { text: ['Zeitangaben sagen, wann etwas passiert. Frage: Wann? – „Am Morgen“, „gestern“, „um drei Uhr“.', 'Ortsangaben sagen, wo oder wohin etwas passiert. Frage: Wo? – „im Park“. Wohin? – „ans Meer“.', 'Wo oder wohin? Bewegt sich etwas zu einem Ort hin, fragst du „Wohin?“.'], visual: { kind: 'text', text: 'Am Morgen (Wann?) fährt Lea in die Schule (Wohin?).' }, videoQuery: 'Zeitangaben Ortsangaben adverbiale Bestimmung Klasse 4' }, advTask, { tagLabels: { zeitangabe: 'Zeitangaben (Wann?)', ortsangabe: 'Ortsangaben (Wo? Wohin?)', 'wo-wohin': 'Wo und Wohin verwechselt' }, testSeconds: 20 }),
+  D(4, 'd4-nominalisierung', 'Verben und Adjektive werden Nomen', '🔠', { text: ['Verben und Adjektive können zu Nomen werden – dann schreibt man sie groß.', 'Signalwörter zeigen es an: das, beim, zum, vom, im (das Lesen, beim Schwimmen) – und viel, etwas, nichts, alles (etwas Schönes, viel Gutes).', 'Ohne Signalwort bleiben sie klein: Wir gehen schwimmen. Der Film ist lustig.'], visual: { kind: 'text', text: 'beim Schwimmen · etwas Schönes' }, videoQuery: 'Nominalisierung Verben Adjektive großschreiben Klasse 4' }, nomiTask, { tagLabels: { gross: 'Großschreibung mit Signalwort', klein: 'Kleinschreibung ohne Signalwort', 'signalwort-uebersehen': 'Signalwort übersehen', 'zu-gross': 'zu viel großgeschrieben' }, testSeconds: 20 }),
   D(3, 'd3-woerterbuch', 'Im Wörterbuch nachschlagen', '📖', { text: ['Im Wörterbuch stehen die Wörter nach dem ABC geordnet.', 'Ist der erste Buchstabe gleich, schaust du auf den zweiten – dann auf den dritten.', 'Wörter stehen in der Grundform: Verben wie „laufen“ (nicht „lief“), Nomen in der Einzahl („Baum“, nicht „Bäume“), Adjektive ungesteigert („groß“, nicht „größer“).'], visual: { kind: 'text', text: 'lief → laufen · Bäume → Baum' }, videoQuery: 'im Wörterbuch nachschlagen Grundform Klasse 3' }, woerterbuchTask, { tagLabels: { abc: 'nach dem ABC ordnen', 'grundform-verb': 'Grundform von Verben', 'grundform-nomen': 'Einzahl von Nomen', 'grundform-adjektiv': 'Grundstufe von Adjektiven', 'nicht-grundform': 'nicht in der Grundform gesucht' }, testSeconds: 20 }),
 ];
