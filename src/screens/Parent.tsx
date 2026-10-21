@@ -13,6 +13,7 @@ import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
 import { SubjectStats } from './Stats';
+import { countdownText, daysUntil, fmtDay, nextPlanned, readiness } from './Planner';
 
 const DAY = 86400000;
 const fmtDate = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -296,6 +297,8 @@ export function weekReport(p: Profile, pr: Progress, now = Date.now()): string {
     const cur = currentSkills(s.id, p);
     lines.push(`${s.name}: ${cur.filter((k) => level(pr, k.id) === 3).length} von ${cur.length} Lernzielen sicher.`);
   }
+  const plan = nextPlanned(p, 30);
+  if (plan) lines.push('', `Nächster Test: ${subjectInfo(plan.subject).name} am ${fmtDay(plan.date)} (${countdownText(daysUntil(plan.date))})${plan.note ? ` – ${plan.note}` : ''}, vorbereitet: ${Math.round(readiness(pr, plan) * 100)} %`);
   if (w.tests.length) lines.push('', 'Lernzielkontrollen:', ...w.tests.map((t) => `- ${subjectInfo(t.subject).name}: ${t.percent} %${t.grade ? `, Note ${t.grade} (${GRADE_NAMES[t.grade]})` : ''}`));
   if (weak.length) lines.push('', 'Hier hakt es noch:', ...weak.map((x) => `- ${x.skill.title} (${Math.round(x.acc * 100)} % richtig)`));
   if (pats.length) lines.push('', 'Typische Fehler:', ...pats.map((x) => `- ${x.label} (${x.skill.title})`));

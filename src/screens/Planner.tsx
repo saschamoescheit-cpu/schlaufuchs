@@ -15,7 +15,7 @@ const todayKey = () => {
 };
 /** Tage bis zum Termin (0 = heute) */
 export const daysUntil = (date: string) => Math.round((new Date(date + 'T12:00:00').getTime() - new Date(todayKey() + 'T12:00:00').getTime()) / DAY);
-const fmtDay = (date: string) => new Date(date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
+export const fmtDay = (date: string) => new Date(date + 'T12:00:00').toLocaleDateString('de-DE', { weekday: 'long', day: 'numeric', month: 'long' });
 export const countdownText = (d: number) => (d === 0 ? 'heute' : d === 1 ? 'morgen' : d === 2 ? 'übermorgen' : `in ${d} Tagen`);
 
 /** Wie gut vorbereitet? Anteil der Themen, die mindestens „geübt“ sind */
