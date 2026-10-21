@@ -500,7 +500,7 @@ function storyGen(r: Rng, level: 2 | 3 | 4): Story {
     if (t === 0) { const p = ri(r, 5, 12), k = ri(r, 3, 6), g = 10 * Math.ceil((p * k + 1) / 10) + pick(r, [0, 10, 20]); return { text: `Ein Kinoticket kostet ${p} €. Familie Berg kauft ${k} Tickets und bezahlt mit ${g} €.`, q: 'Wie viel Rückgeld bekommt sie?', calc: `${k} · ${p} € = ${k * p} €, dann ${g} € − ${k * p} € = ${g - k * p} €`, res: g - k * p, unit: '€', ant: `Sie bekommt ${g - k * p} € zurück.`, op: 'zwei-schritte', wrong: k * p }; }
     if (t === 1) { const a = ri(r, 120, 480), b = ri(r, 100, 400); return { text: `Die Schule sammelt Altpapier. Am Montag kommen ${a} kg zusammen, am Dienstag ${b} kg.`, q: 'Wie viel Kilogramm sind es zusammen?', calc: `${a} + ${b} = ${a + b}`, res: a + b, unit: 'kg', ant: `Es sind ${a + b} kg Altpapier.`, op: 'plus', wrong: Math.abs(a - b) }; }
     if (t === 2) { const a = ri(r, 3, 9) * 100, b = ri(r, 12, 99) * 2; return { text: `Ein Buch hat ${a} Seiten. ${n} hat schon ${b} Seiten gelesen.`, q: `Wie viele Seiten muss ${n} noch lesen?`, calc: `${a} − ${b} = ${a - b}`, res: a - b, unit: 'Seiten', ant: `Es sind noch ${a - b} Seiten.`, op: 'minus', wrong: a + b }; }
-    if (t === 3) { const w = ri(r, 3, 8), d = ri(r, 2, 6); return { text: `${n} trainiert jede Woche ${d} Mal Fußball. Ein Training dauert 60 Minuten.`, q: `Wie viele Minuten trainiert ${n} in ${w} Wochen?`, calc: `${w} · ${d} = ${w * d} Trainings, ${w * d} · 60 = ${w * d * 60} Minuten`, res: w * d * 60, unit: 'Minuten', ant: `${n} trainiert ${w * d * 60} Minuten.`, op: 'zwei-schritte', wrong: w * d }; }
+    if (t === 3) { const w = ri(r, 2, 4), d = ri(r, 2, 4); return { text: `${n} trainiert jede Woche ${d} Mal Fußball. Ein Training dauert 60 Minuten.`, q: `Wie viele Minuten trainiert ${n} in ${w} Wochen?`, calc: `${w} · ${d} = ${w * d} Trainings, ${w * d} · 60 = ${w * d * 60} Minuten`, res: w * d * 60, unit: 'Minuten', ant: `${n} trainiert ${w * d * 60} Minuten.`, op: 'zwei-schritte', wrong: w * d }; }
     if (t === 4) { const k = ri(r, 3, 8), b = ri(r, 4, 9) * k; return { text: `${b} Kinder fahren ins Schullandheim. In jedes Zimmer passen ${k} Kinder.`, q: 'Wie viele Zimmer werden gebraucht?', calc: `${b} : ${k} = ${b / k}`, res: b / k, unit: 'Zimmer', ant: `Es werden ${b / k} Zimmer gebraucht.`, op: 'geteilt' }; }
     const a = ri(r, 25, 60), b = ri(r, 10, a - 5), c = ri(r, 10, 40); return { text: `Am Kiosk liegen ${a} Brezeln. Vormittags werden ${b} verkauft, mittags kommen ${c} frische dazu.`, q: 'Wie viele Brezeln liegen jetzt am Kiosk?', calc: `${a} − ${b} = ${a - b}, dann ${a - b} + ${c} = ${a - b + c}`, res: a - b + c, unit: 'Brezeln', ant: `Es liegen ${a - b + c} Brezeln am Kiosk.`, op: 'zwei-schritte', wrong: a - b };
   }
@@ -603,6 +603,7 @@ const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
 function plusNumbers(r: Rng, s: Stage): number[] {
   for (;;) {
     const nums = s === 3 && chance(r, 0.5) ? [ri(r, 100, 399), ri(r, 100, 299), ri(r, 10, 299)] : [ri(r, 120, 699), ri(r, 105, 399)];
+    if (nums.reduce(sumUp, 0) > 999) continue; // Zahlenraum Klasse 3: bis 1000
     const c = columnAdd(nums).carries.filter(Boolean).length;
     if (s === 1 ? c === 0 : s === 2 ? c >= 1 : nums.length === 3 || c >= 2) return nums;
   }

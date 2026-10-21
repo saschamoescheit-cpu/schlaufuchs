@@ -43,20 +43,23 @@ function seqTask(r: Rng, s: Stage): Gen {
   let seq: number[];
   let rule: string;
   if (kind === 'plus') {
-    const d = s === 1 ? pick(r, [1, 2, 5, 10]) : pick(r, [3, 4, 6, 9, 11, 25]);
-    const a = ri(r, 0, s === 1 ? 20 : 60);
+    const d = s === 1 ? pick(r, [1, 2, 5, 10]) : pick(r, [3, 4, 6, 9, 11, 15]);
+    // Zahlenraum Klasse 2: die letzte Zahl bleibt höchstens 100
+    const a = ri(r, 0, Math.min(s === 1 ? 20 : 60, 100 - 5 * d));
     seq = Array.from({ length: 6 }, (_, i) => a + i * d);
     rule = `Immer + ${d}`;
   } else if (kind === 'minus') {
     const d = s === 1 ? pick(r, [1, 2, 5, 10]) : pick(r, [3, 4, 6, 9, 11]);
-    const a = ri(r, 6 * d, 6 * d + (s === 1 ? 20 : 60));
+    const a = ri(r, 6 * d, Math.min(6 * d + (s === 1 ? 20 : 60), 100));
     seq = Array.from({ length: 6 }, (_, i) => a - i * d);
     rule = `Immer − ${d}`;
   } else if (kind === 'mal') {
-    const f = pick(r, [2, 3]);
-    const a = ri(r, 1, 4);
-    seq = Array.from({ length: 6 }, (_, i) => a * f ** i);
-    rule = `Immer · ${f} (${f === 2 ? 'verdoppeln' : 'verdreifachen'})`;
+    // verdoppeln bis höchstens 96 – oder rückwärts halbieren (96, 48, 24 …)
+    const a = ri(r, 1, 3);
+    const up = Array.from({ length: 6 }, (_, i) => a * 2 ** i);
+    const half = chance(r, 0.4);
+    seq = half ? up.reverse() : up;
+    rule = half ? 'Immer : 2 (halbieren)' : 'Immer · 2 (verdoppeln)';
   } else if (kind === 'wechsel') {
     const [x, y] = pickN(r, [2, 3, 4, 5, 10], 2);
     const a = ri(r, 1, 30);

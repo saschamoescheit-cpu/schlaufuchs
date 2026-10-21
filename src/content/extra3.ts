@@ -100,7 +100,8 @@ function strahlTask(from: number, to: number, step: number, minor: number, n: nu
 /** Welche Zahl liegt genau in der Mitte? */
 function mitteTask(r: Rng, unit: number, maxUnits: number): Gen {
   const a = ri(r, 0, maxUnits - 2) * unit;
-  const half = ri(r, 1, Math.min(4, (maxUnits * unit - a) / unit / 2)) * unit;
+  // b = a + 2·half bleibt im Zahlenraum (maxUnits · unit)
+  const half = ri(r, 1, Math.max(1, Math.min(4, Math.floor((maxUnits * unit - a) / unit / 2)))) * unit;
   const b = a + 2 * half;
   const m = a + half;
   return {
@@ -132,7 +133,7 @@ function strahl100(r: Rng, s: Stage): Gen {
 }
 
 function strahl1000(r: Rng, s: Stage): Gen {
-  if (s > 1 && chance(r, 0.25)) return mitteTask(r, chance(r, 0.5) ? 100 : 50, chance(r, 0.5) ? 10 : 20);
+  if (s > 1 && chance(r, 0.25)) return chance(r, 0.5) ? mitteTask(r, 100, 10) : mitteTask(r, 50, 20);
   if (s === 1) {
     const h = ri(r, 0, 9) * 100;
     let n = h + ri(r, 1, 9) * 10;
