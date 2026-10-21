@@ -152,9 +152,15 @@ const time = E(2, 'e2-time', "What's the time?", '🕐', { text: ["Volle Stunde:
 }, { tagLabels: { oclock: "o'clock", 'half-past': 'half past', quarter: 'quarter past / to', 'halb-falle': 'half past wie „halb“ verstanden' }, testSeconds: 20 });
 
 const PREPS: { pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of'; de: string }[] = [{ pos: 'in', de: 'in' }, { pos: 'on', de: 'auf' }, { pos: 'under', de: 'unter' }, { pos: 'next to', de: 'neben' }, { pos: 'behind', de: 'hinter' }, { pos: 'in front of', de: 'vor' }];
-const preps = E(2, 'e2-prepositions', 'Where is the cat?', '📦', { text: ['in = in, on = auf, under = unter.', 'next to = neben, behind = hinter, in front of = vor.', "Where's the cat? – It's under the box."], visual: { kind: 'prep', pos: 'under' }, videoQuery: 'prepositions in on under song for kids' }, (r) => {
+const preps = E(2, 'e2-prepositions', 'Where is the cat?', '📦', { text: ['in = in, on = auf, under = unter.', 'next to = neben, behind = hinter, in front of = vor.', "Where's the cat? – It's under the box."], visual: { kind: 'prep', pos: 'under' }, videoQuery: 'prepositions in on under song for kids' }, (r, s) => {
   const p = pick(r, PREPS);
   const say = { text: `The cat is ${p.pos} the box.`, lang: 'en' as const };
+  const tag = `prep-${p.pos.replace(/ /g, '-')}`;
+  const sol = [`${p.pos} = ${p.de}`, `The cat is ${p.pos} the box. = Die Katze ist ${p.de} der Kiste.`];
+  // Stufe 3: Präposition selbst schreiben
+  if (s === 3 && chance(r, 0.5)) return { key: `w-${p.pos}`, prompt: 'Where is the cat? Write the missing word:\nThe cat is ☐ the box.', visual: { kind: 'prep', pos: p.pos }, answer: { type: 'text', value: p.pos, lang: 'en' }, tags: [tag], solution: sol, pronounce: say };
+  // Deutsch → Englisch (ohne Bild)
+  if (s !== 1 && chance(r, 0.4)) return { key: `de-${p.pos}`, prompt: `Wie sagt man auf Englisch?\n„Die Katze ist ${p.de} der Kiste.“`, answer: { ...choice(r, `The cat is ${p.pos} the box.`, pickN(r, PREPS.filter((x) => x !== p), 3).map((x) => `The cat is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [tag], solution: sol, solutionVisual: { kind: 'prep', pos: p.pos }, pronounce: say };
   return { key: p.pos, prompt: 'Where is the cat?', visual: { kind: 'prep', pos: p.pos }, answer: { ...choice(r, `The cat is ${p.pos} the box.`, PREPS.filter((x) => x !== p).map((x) => `The cat is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [`prep-${p.pos.replace(/ /g, '-')}`], solution: [`${p.pos} = ${p.de}`, `The cat is ${p.pos} the box. = Die Katze ist ${p.de} der Kiste.`], solutionVisual: { kind: 'prep', pos: p.pos }, pronounce: say };
 }, { tagLabels: Object.fromEntries(PREPS.map((p) => [`prep-${p.pos.replace(/ /g, '-')}`, p.pos])), testSeconds: 15 });
 

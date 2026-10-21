@@ -184,7 +184,16 @@ const SATZBILD: [string, string, string[]][] = [
   ['☀️🏖️', 'Die Sonne scheint am Strand.', ['Es regnet am Strand.', 'Die Sonne scheint im Wald.', 'Der Mond scheint am Strand.']],
   ['🍎🧺', 'Die Äpfel liegen im Korb.', ['Die Birnen liegen im Korb.', 'Die Äpfel hängen am Baum.', 'Der Korb ist leer.']],
   ['🚌🏫', 'Der Bus fährt zur Schule.', ['Das Auto fährt zur Schule.', 'Der Bus fährt nach Hause.', 'Der Zug fährt zur Schule.']],
-  ['👵🎂', 'Oma backt einen Kuchen.', ['Oma kauft einen Kuchen.', 'Opa backt einen Kuchen.', 'Oma backt Brot.']],
+  ['👵🎂', 'Oma hat einen Kuchen.', ['Oma hat ein Buch.', 'Opa hat einen Kuchen.', 'Oma hat ein Brot.']],
+  ['🐰🥕', 'Der Hase frisst eine Möhre.', ['Der Hase frisst einen Apfel.', 'Das Pferd frisst eine Möhre.', 'Der Hase schläft.']],
+  ['👧🚲', 'Das Mädchen fährt Fahrrad.', ['Das Mädchen fährt Auto.', 'Der Junge fährt Fahrrad.', 'Das Mädchen schwimmt.']],
+  ['🌧️☂️', 'Es regnet.', ['Die Sonne scheint.', 'Es schneit.', 'Der Wind weht.']],
+  ['⛄❄️', 'Es schneit.', ['Es regnet.', 'Die Sonne scheint.', 'Es ist heiß.']],
+  ['🐸🍃', 'Der Frosch sitzt auf einem Blatt.', ['Der Frosch sitzt auf einem Stein.', 'Die Ente sitzt auf einem Blatt.', 'Der Frosch schläft im Bett.']],
+  ['🐝🌻', 'Die Biene fliegt zur Blume.', ['Der Vogel fliegt zur Blume.', 'Die Biene fliegt zum Baum.', 'Die Biene schläft.']],
+  ['👶🍼', 'Das Baby trinkt aus der Flasche.', ['Das Baby isst ein Brot.', 'Die Katze trinkt aus der Flasche.', 'Das Baby spielt Ball.']],
+  ['🦒🌳', 'Die Giraffe frisst Blätter vom Baum.', ['Der Elefant frisst Blätter vom Baum.', 'Die Giraffe trinkt Wasser.', 'Die Giraffe schläft.']],
+  ['🐄🌾', 'Die Kuh steht auf der Wiese.', ['Das Schaf steht auf der Wiese.', 'Die Kuh liegt im Stall.', 'Die Kuh schwimmt im See.']],
 ];
 function satzBild(r: Rng, s: Stage): Gen {
   const [e, ok, wrong] = pick(r, SATZBILD);
@@ -230,6 +239,10 @@ const PRONOMEN: [string, string, string][] = [
   ['Lena', 'Sie', 'Lena liest ein Buch. ☐ findet es sehr spannend.'], ['Tim', 'Er', 'Tim spielt Fußball. ☐ schießt ein Tor.'], ['Das Kind', 'Es', 'Das Kind lacht. ☐ freut sich über das Geschenk.'], ['Die Kinder', 'Sie', 'Die Kinder rennen. ☐ wollen zum Spielplatz.'],
   ['Der Hund', 'Er', 'Der Hund bellt. ☐ hat Hunger.'], ['Die Katze', 'Sie', 'Die Katze miaut. ☐ will hinaus.'], ['Das Pferd', 'Es', 'Das Pferd wiehert. ☐ steht im Stall.'], ['Mama und ich', 'Wir', 'Mama und ich backen. ☐ machen Waffeln.'],
   ['Du und Ben', 'Ihr', 'Du und Ben, ☐ seid heute dran!'], ['Opa', 'Er', 'Opa schläft. ☐ ist müde.'],
+  ['Der Ball', 'Er', 'Der Ball rollt weg. ☐ ist ganz rund.'], ['Die Blume', 'Sie', 'Die Blume blüht. ☐ duftet gut.'], ['Das Baby', 'Es', 'Das Baby weint. ☐ hat Hunger.'],
+  ['Papa und ich', 'Wir', 'Papa und ich gehen angeln. ☐ fangen einen Fisch.'], ['Lisa und Tom', 'Sie', 'Lisa und Tom spielen. ☐ bauen einen Turm.'], ['Die Vögel', 'Sie', 'Die Vögel zwitschern. ☐ sitzen im Baum.'],
+  ['Das Auto', 'Es', 'Das Auto ist schmutzig. ☐ muss gewaschen werden.'], ['Du und Lea', 'Ihr', 'Du und Lea, ☐ dürft zuerst spielen.'], ['Der Lehrer', 'Er', 'Der Lehrer kommt. ☐ bringt Hefte mit.'],
+  ['Oma', 'Sie', 'Oma strickt. ☐ macht einen Schal für mich.'], ['Anna und ich', 'Wir', 'Anna und ich sind Freundinnen. ☐ treffen uns jeden Tag.'],
 ];
 function pronTask(r: Rng): Gen {
   const [who, pr, s] = pick(r, PRONOMEN);
@@ -270,6 +283,9 @@ const BAUSTEINE: [string, string, string[]][] = [
   ['Ich ☐schreibe die Sätze von der Tafel.', 'ab', ['ver', 'vor', 'zer']], ['Der Zauberer kann sich in einen Frosch ☐wandeln.', 'ver', ['ab', 'an', 'mit']], ['Kannst du uns die Geschichte ☐lesen?', 'vor', ['ab', 'zer', 'an']],
   ['Das Glas ist auf den Boden gefallen und ☐brochen.', 'zer', ['ab', 'vor', 'an']], ['Kommst du heute ☐? Wir fahren ins Schwimmbad.', 'mit', ['ver', 'zer', 'ab']], ['Mach bitte das Licht ☐, es ist dunkel.', 'an', ['zer', 'ver', 'vor']],
   ['Ich habe meinen Schlüssel ☐loren.', 'ver', ['zer', 'ab', 'mit']], ['Der Zug ☐fährt um acht Uhr.', 'ab', ['ver', 'zer', 'mit']], ['Am Ende des Spiels ☐teilen wir die Preise.', 'ver', ['zer', 'an', 'mit']],
+  ['Der Hund hat meinen Hausschuh ☐bissen.', 'zer', ['an', 'mit', 'vor']], ['Papa will mich heute von der Schule ☐holen.', 'ab', ['zer', 'ver', 'mit']], ['Die Sonne geht am Morgen ☐.', 'auf', ['zer', 'ver', 'mit']],
+  ['Kannst du bitte das Fenster ☐machen? Es zieht.', 'zu', ['zer', 'vor', 'ver']], ['Wir ☐stecken uns hinter dem Baum.', 'ver', ['ab', 'an', 'mit']], ['Der Teller fällt herunter und ☐bricht in viele Stücke.', 'zer', ['an', 'mit', 'vor']],
+  ['Kannst du mir das Spiel ☐klären?', 'er', ['ab', 'zer', 'mit']], ['Ich habe mir die Hände ☐getrocknet.', 'ab', ['zer', 'ver', 'vor']], ['Wann fängt der Film ☐?', 'an', ['ver', 'zer', 'er']],
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
@@ -336,6 +352,16 @@ const QA: [string, string, string[]][] = [
   ["What's the weather like?", "It's rainy.", ["It's Monday.", "It's a cat.", "It's eight o'clock."]],
   ['Do you like ice cream?', 'Yes, I do.', ['Yes, I can.', 'Yes, I am.', 'Yes, it is.']],
   ["What's the time?", "It's three o'clock.", ["It's Tuesday.", "It's sunny.", 'I am three.']],
+  ['When is your birthday?', 'My birthday is in May.', ['I am nine.', 'Yes, it is.', 'I like cake.']],
+  ["What's your favourite animal?", 'My favourite animal is the dog.', ['I have got a dog.', 'Yes, I do.', 'It is Monday.']],
+  ['Have you got a brother?', 'No, I haven’t.', ['No, I can’t.', 'No, I am not.', 'I like my brother.']],
+  ['Can you swim?', 'Yes, I can.', ['Yes, I do.', 'Yes, I have.', 'I like swimming.']],
+  ['Do you like spaghetti?', 'No, I don’t.', ['No, I can’t.', 'No, I am not.', 'No, it isn’t.']],
+  ['Is this your pencil?', 'Yes, it is.', ['Yes, I am.', 'Yes, I can.', 'Yes, I do.']],
+  ["What's this?", "It's a ruler.", ["It's red.", 'I am fine.', 'Yes, it is.']],
+  ['What colour is your bag?', 'It is blue.', ['It is big.', 'I have got a bag.', 'Yes, it is.']],
+  ['How many pencils have you got?', 'I have got five pencils.', ['I am five.', 'My pencil is red.', 'Yes, I have.']],
+  ['What day is it today?', "It's Friday.", ["It's sunny.", "It's ten o'clock.", "It's my bag."]],
 ];
 function qaTask(r: Rng, s: Stage): Gen {
   const [q, a, w] = pick(r, QA);

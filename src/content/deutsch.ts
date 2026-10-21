@@ -340,6 +340,12 @@ const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Im', 'Garten', 'blühen', 'viele', 'Blumen'], noun: [1, 4] }, { w: ['Tim', 'liest', 'ein', 'spannendes', 'Buch'], noun: [0, 4] },
   { w: ['Die', 'Katze', 'schläft', 'auf', 'dem', 'Sofa'], noun: [1, 5] }, { w: ['Wir', 'fahren', 'mit', 'dem', 'Bus', 'zur', 'Schule'], noun: [4, 6] },
   { w: ['Am', 'Morgen', 'trinke', 'ich', 'Milch'], noun: [1, 4] }, { w: ['Der', 'Vogel', 'singt', 'im', 'Baum'], noun: [1, 4] },
+  { w: ['Lena', 'malt', 'ein', 'buntes', 'Bild'], noun: [0, 4] }, { w: ['Der', 'Bauer', 'füttert', 'die', 'Kühe'], noun: [1, 4] },
+  { w: ['Mein', 'Bruder', 'spielt', 'gern', 'Fußball'], noun: [1, 4] }, { w: ['Im', 'Winter', 'fällt', 'oft', 'Schnee'], noun: [1, 4] },
+  { w: ['Die', 'Kinder', 'bauen', 'eine', 'Sandburg'], noun: [1, 4] }, { w: ['Papa', 'kocht', 'heute', 'leckere', 'Nudeln'], noun: [0, 4] },
+  { w: ['Am', 'Abend', 'lese', 'ich', 'ein', 'Buch'], noun: [1, 5] }, { w: ['Der', 'Fisch', 'schwimmt', 'im', 'Teich'], noun: [1, 4] },
+  { w: ['Unsere', 'Lehrerin', 'erzählt', 'eine', 'Geschichte'], noun: [1, 4] }, { w: ['Ben', 'trägt', 'eine', 'rote', 'Mütze'], noun: [0, 4] },
+  { w: ['Die', 'Sonne', 'scheint', 'hell', 'am', 'Himmel'], noun: [1, 5] }, { w: ['Nach', 'der', 'Schule', 'spielen', 'wir', 'im', 'Park'], noun: [2, 6] },
 ];
 const grossschreibung = D(2, 'd2-grossschreibung', 'Groß oder klein?', '🔠', {
   text: ['Groß schreibt man: das erste Wort im Satz und alle Nomen (Namenwörter).', 'Klein schreibt man: Verben (Tunwörter), Adjektive (Wiewörter) und kleine Wörter wie mit, auf, ein.', 'Probe für Nomen: Passt der, die oder das davor?'],
@@ -522,6 +528,10 @@ const SP_SAETZE: { s: string[]; subj: [number, number]; pred: number }[] = [
   { s: ['Die', 'Kinder', 'bauen', 'eine', 'Sandburg'], subj: [0, 2], pred: 2 }, { s: ['Am', 'Abend', 'kocht', 'Papa', 'Nudeln'], subj: [3, 4], pred: 2 },
   { s: ['Im', 'Teich', 'schwimmen', 'viele', 'Fische'], subj: [3, 5], pred: 2 }, { s: ['Lea', 'malt', 'einen', 'Regenbogen'], subj: [0, 1], pred: 1 },
   { s: ['Heute', 'besucht', 'uns', 'die', 'Oma'], subj: [3, 5], pred: 1 }, { s: ['Der', 'kleine', 'Igel', 'sucht', 'Futter'], subj: [0, 3], pred: 3 },
+  { s: ['Die', 'Sonne', 'scheint', 'hell'], subj: [0, 2], pred: 2 }, { s: ['Mein', 'Opa', 'repariert', 'das', 'Fahrrad'], subj: [0, 2], pred: 2 },
+  { s: ['Im', 'Herbst', 'fallen', 'die', 'Blätter'], subj: [3, 5], pred: 2 }, { s: ['Tim', 'trinkt', 'einen', 'Kakao'], subj: [0, 1], pred: 1 },
+  { s: ['Die', 'Lehrerin', 'erklärt', 'die', 'Aufgabe'], subj: [0, 2], pred: 2 }, { s: ['Nach', 'dem', 'Essen', 'spielen', 'die', 'Kinder'], subj: [4, 6], pred: 3 },
+  { s: ['Der', 'Wind', 'weht', 'sehr', 'stark'], subj: [0, 2], pred: 2 }, { s: ['Morgen', 'fährt', 'unsere', 'Klasse', 'in', 'den', 'Zoo'], subj: [2, 4], pred: 1 },
 ];
 const satzglieder3 = D(3, 'd3-satzglieder', 'Subjekt und Prädikat', '🧱', {
   text: ['Das Prädikat (Satzkern) ist das Verb im Satz. Frage: Was tut jemand? Was geschieht?', 'Das Subjekt ist der Satzgegenstand. Frage: Wer oder was tut etwas?', '„Der Hund bellt.“ Wer oder was bellt? → der Hund (Subjekt). Was tut der Hund? → bellt (Prädikat).', 'Das Subjekt steht nicht immer am Anfang: „Am Abend kocht Papa Nudeln.“'],
@@ -600,6 +610,9 @@ const DAS_DASS: [string, 'das' | 'dass'][] = [
   ['Ich glaube, ☐ es morgen regnet.', 'dass'], ['☐ Buch ist sehr spannend.', 'das'], ['Das Kind, ☐ dort spielt, ist mein Bruder.', 'das'], ['Mama sagt, ☐ wir pünktlich sein sollen.', 'dass'],
   ['Ich hoffe, ☐ du bald gesund wirst.', 'dass'], ['Siehst du ☐ Pferd auf der Wiese?', 'das'], ['Das Fahrrad, ☐ ich mir wünsche, ist blau.', 'das'], ['Es ist schön, ☐ du da bist.', 'dass'],
   ['Weißt du, ☐ Wale Säugetiere sind?', 'dass'], ['☐ ist mein Lieblingslied.', 'das'], ['Er freut sich, ☐ er gewonnen hat.', 'dass'], ['Wo ist ☐ Haus, ☐ du gemalt hast?', 'das'],
+  ['Ich weiß, ☐ du das kannst.', 'dass'], ['Das Lied, ☐ wir singen, ist lustig.', 'das'], ['Papa meint, ☐ es zu kalt zum Baden ist.', 'dass'], ['Gib mir bitte ☐ Heft.', 'das'],
+  ['Es ist wichtig, ☐ wir uns die Hände waschen.', 'dass'], ['☐ Wetter ist heute schön.', 'das'], ['Lea erzählt, ☐ ihre Katze Junge bekommen hat.', 'dass'], ['Das Spiel, ☐ wir gestern gespielt haben, war toll.', 'das'],
+  ['Ich bin froh, ☐ heute Freitag ist.', 'dass'], ['Kennst du ☐ Mädchen mit der roten Mütze?', 'das'],
 ];
 const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   text: ['„das“ ist ein Artikel oder Begleiter: das Buch – oder es steht für ein Nomen.', 'Probe: Kannst du „dieses“, „jenes“ oder „welches“ einsetzen? Dann schreibst du „das“.', '„dass“ verbindet zwei Sätze und steht oft nach Verben wie glauben, hoffen, sagen, wissen: „Ich hoffe, dass …“.', 'Vor „dass“ steht immer ein Komma.'],
@@ -607,7 +620,7 @@ const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   videoQuery: 'das oder dass Grundschule Klasse 4',
 }, (r) => {
   const [s, a] = pick(r, DAS_DASS);
-  return { key: s, prompt: `Setze ein: das oder dass?\n${s}`, speak: s.replace(/☐/g, 'Lücke'), answer: fixedChoice(['das', 'dass'], a), tags: [a], solution: [s.replace(/☐/g, a), a === 'das' ? 'Probe: Man kann „dieses“ oder „welches“ einsetzen → das.' : '„dieses“ oder „welches“ passt nicht. Das Wort verbindet zwei Sätze → dass.'] };
+  return { key: s, prompt: `Setze ein: das oder dass?\n${s}`, speak: s.replace(/☐/g, 'Lücke'), answer: fixedChoice(['das', 'dass'], a), tags: [a], solution: [s.replace(/☐/g, a).replace(/^./, (c) => c.toUpperCase()), a === 'das' ? 'Probe: Man kann „dieses“ oder „welches“ einsetzen → das.' : '„dieses“ oder „welches“ passt nicht. Das Wort verbindet zwei Sätze → dass.'] };
 }, { tagLabels: { das: '„das“ erkennen', dass: '„dass“ erkennen' }, testSeconds: 15 });
 
 const SSZ: [string, 's' | 'ss' | 'ß', string, string?][] = [
@@ -655,6 +668,18 @@ const KOMMA: { ok: string; wrong: string[]; tag: string; why: string }[] = [
   { ok: 'Wir gehen schwimmen, wenn die Sonne scheint.', wrong: ['Wir gehen schwimmen wenn die Sonne scheint.', 'Wir gehen, schwimmen wenn die Sonne scheint.'], tag: 'nebensatz', why: 'Vor „wenn“ steht ein Komma.' },
   { ok: 'Ich weiß, dass du das kannst.', wrong: ['Ich weiß dass du das kannst.', 'Ich weiß dass, du das kannst.'], tag: 'nebensatz', why: 'Vor „dass“ steht immer ein Komma.' },
   { ok: 'Lisa lacht, denn der Witz ist lustig.', wrong: ['Lisa lacht denn der Witz ist lustig.', 'Lisa lacht denn, der Witz ist lustig.'], tag: 'nebensatz', why: 'Vor „denn“ steht ein Komma.' },
+  { ok: 'Zum Frühstück gibt es Brot, Käse, Honig und Tee.', wrong: ['Zum Frühstück gibt es Brot Käse Honig und Tee.', 'Zum Frühstück gibt es Brot, Käse, Honig, und Tee.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
+  { ok: 'Auf dem Bauernhof leben Kühe, Schweine, Hühner und Pferde.', wrong: ['Auf dem Bauernhof leben Kühe Schweine Hühner und Pferde.', 'Auf dem Bauernhof leben Kühe, Schweine, Hühner, und Pferde.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
+  { ok: 'Möchtest du Saft, Milch oder Wasser?', wrong: ['Möchtest du Saft Milch oder Wasser?', 'Möchtest du Saft, Milch, oder Wasser?'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „oder“ steht kein Komma.' },
+  { ok: 'Paul hat einen Hund, eine Katze und zwei Hasen.', wrong: ['Paul hat einen Hund eine Katze und zwei Hasen.', 'Paul hat einen Hund, eine Katze, und zwei Hasen.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
+  { ok: 'Ich ziehe eine Jacke an, weil es kalt ist.', wrong: ['Ich ziehe eine Jacke an weil es kalt ist.', 'Ich ziehe eine Jacke an weil, es kalt ist.'], tag: 'nebensatz', why: 'Vor „weil“ steht ein Komma – es trennt die beiden Satzteile.' },
+  { ok: 'Tom freut sich, dass morgen Ferien sind.', wrong: ['Tom freut sich dass morgen Ferien sind.', 'Tom freut sich dass, morgen Ferien sind.'], tag: 'nebensatz', why: 'Vor „dass“ steht immer ein Komma.' },
+  { ok: 'Wir spielen drinnen, wenn es regnet.', wrong: ['Wir spielen drinnen wenn es regnet.', 'Wir spielen, drinnen wenn es regnet.'], tag: 'nebensatz', why: 'Vor „wenn“ steht ein Komma.' },
+  { ok: 'Ich wollte rausgehen, aber es regnete.', wrong: ['Ich wollte rausgehen aber es regnete.', 'Ich wollte rausgehen aber, es regnete.'], tag: 'nebensatz', why: 'Vor „aber“ steht ein Komma.' },
+  { ok: 'Mia ist müde, denn sie hat schlecht geschlafen.', wrong: ['Mia ist müde denn sie hat schlecht geschlafen.', 'Mia ist müde denn, sie hat schlecht geschlafen.'], tag: 'nebensatz', why: 'Vor „denn“ steht ein Komma.' },
+  { ok: 'Weil es regnet, bleiben wir drinnen.', wrong: ['Weil es regnet bleiben wir drinnen.', 'Weil, es regnet bleiben wir drinnen.'], tag: 'nebensatz', why: 'Auch wenn „weil“ vorne steht, trennt ein Komma die beiden Satzteile.' },
+  { ok: 'Als es dunkel wurde, gingen wir nach Hause.', wrong: ['Als es dunkel wurde gingen wir nach Hause.', 'Als, es dunkel wurde gingen wir nach Hause.'], tag: 'nebensatz', why: 'Der Satzteil mit „als“ wird mit einem Komma abgetrennt.' },
+  { ok: 'Ich hoffe, dass du bald gesund wirst.', wrong: ['Ich hoffe dass du bald gesund wirst.', 'Ich hoffe dass, du bald gesund wirst.'], tag: 'nebensatz', why: 'Vor „dass“ steht immer ein Komma.' },
 ];
 const komma = D(4, 'd4-komma', 'Kommas setzen', '✏️', {
   text: ['Aufzählungen: Zwischen die Wörter kommt ein Komma – aber nicht vor „und“ oder „oder“.', 'Vor Bindewörtern wie weil, dass, wenn, denn, aber steht ein Komma.', 'Beispiel: „Ich bleibe zu Hause, weil ich krank bin.“'],
@@ -669,6 +694,12 @@ const SG4: { s: string; mark: string; was: 'Subjekt' | 'Prädikat' | 'Dativobjek
   { s: '**Der Bäcker** verkauft frisches Brot.', mark: 'Der Bäcker', was: 'Subjekt' }, { s: 'Der Bäcker **verkauft** frisches Brot.', mark: 'verkauft', was: 'Prädikat' }, { s: 'Der Bäcker verkauft **frisches Brot**.', mark: 'frisches Brot', was: 'Akkusativobjekt' },
   { s: 'Tim schenkt **seiner Mutter** Blumen.', mark: 'seiner Mutter', was: 'Dativobjekt' }, { s: 'Tim schenkt seiner Mutter **Blumen**.', mark: 'Blumen', was: 'Akkusativobjekt' }, { s: '**Tim** schenkt seiner Mutter Blumen.', mark: 'Tim', was: 'Subjekt' },
   { s: 'Die Kinder **helfen** dem Hausmeister.', mark: 'helfen', was: 'Prädikat' }, { s: 'Die Kinder helfen **dem Hausmeister**.', mark: 'dem Hausmeister', was: 'Dativobjekt' }, { s: 'Am Morgen füttert **Oma** die Hühner.', mark: 'Oma', was: 'Subjekt' }, { s: 'Am Morgen füttert Oma **die Hühner**.', mark: 'die Hühner', was: 'Akkusativobjekt' },
+  { s: 'Lea gibt **dem Hund** einen Knochen.', mark: 'dem Hund', was: 'Dativobjekt' }, { s: 'Lea gibt dem Hund **einen Knochen**.', mark: 'einen Knochen', was: 'Akkusativobjekt' }, { s: '**Lea** gibt dem Hund einen Knochen.', mark: 'Lea', was: 'Subjekt' },
+  { s: 'Der Briefträger **bringt** uns ein Paket.', mark: 'bringt', was: 'Prädikat' }, { s: 'Der Briefträger bringt uns **ein Paket**.', mark: 'ein Paket', was: 'Akkusativobjekt' }, { s: '**Der Briefträger** bringt uns ein Paket.', mark: 'Der Briefträger', was: 'Subjekt' },
+  { s: '**Meine Schwester** besucht ihre Freundin.', mark: 'Meine Schwester', was: 'Subjekt' }, { s: 'Meine Schwester besucht **ihre Freundin**.', mark: 'ihre Freundin', was: 'Akkusativobjekt' },
+  { s: 'Das Geschenk gefällt **dem Mädchen**.', mark: 'dem Mädchen', was: 'Dativobjekt' }, { s: '**Das Geschenk** gefällt dem Mädchen.', mark: 'Das Geschenk', was: 'Subjekt' }, { s: 'Das Geschenk **gefällt** dem Mädchen.', mark: 'gefällt', was: 'Prädikat' },
+  { s: 'Am Nachmittag zeigt Opa **den Enkeln** seinen Garten.', mark: 'den Enkeln', was: 'Dativobjekt' }, { s: 'Am Nachmittag zeigt Opa den Enkeln **seinen Garten**.', mark: 'seinen Garten', was: 'Akkusativobjekt' }, { s: 'Am Nachmittag **zeigt** Opa den Enkeln seinen Garten.', mark: 'zeigt', was: 'Prädikat' },
+  { s: 'Der Junge **wirft** den Ball über den Zaun.', mark: 'wirft', was: 'Prädikat' }, { s: 'Der Junge wirft **den Ball** über den Zaun.', mark: 'den Ball', was: 'Akkusativobjekt' },
 ];
 /** Satzanfang mitten im Satz: Begleiter und Pronomen klein ("Meine Schwester" → "meine Schwester"), Nomen bleiben groß */
 function midSentence(w: string): string {
@@ -694,6 +725,15 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: 'Mit dem verletzten Fuß ☐ Ben zum Arzt.', ok: 'humpelt', opts: ['rennt', 'hüpft', 'springt'], feld: 'gehen' },
   { s: 'Am Sonntag ☐ wir gemütlich durch die Stadt.', ok: 'bummeln', opts: ['rasen', 'stolpern', 'flüchten'], feld: 'gehen' },
   { s: 'Der Riese ☐ wütend mit seinen großen Füßen auf den Boden.', ok: 'stampft', opts: ['schleicht', 'trippelt', 'schwebt'], feld: 'gehen' },
+  { s: '„Gute Nacht“, ☐ Oma leise und macht das Licht aus.', ok: 'flüstert', opts: ['brüllt', 'fragt', 'schimpft'], feld: 'sagen' },
+  { s: '„Räum sofort dein Zimmer auf!“, ☐ Mama streng.', ok: 'befiehlt', opts: ['flüstert', 'fragt', 'kichert'], feld: 'sagen' },
+  { s: '„Das ist ungerecht!“, ☐ Jonas und stampft mit dem Fuß auf.', ok: 'schimpft', opts: ['flüstert', 'antwortet', 'fragt'], feld: 'sagen' },
+  { s: 'Das kleine Kind ☐ mit winzigen Schritten über den Flur.', ok: 'trippelt', opts: ['stampft', 'rast', 'springt'], feld: 'gehen' },
+  { s: 'Nach dem langen Ausflug ☐ wir müde nach Hause.', ok: 'trotten', opts: ['rasen', 'hüpfen', 'sprinten'], feld: 'gehen' },
+  { s: 'Die Ballerina ☐ leicht wie eine Feder über die Bühne.', ok: 'schwebt', opts: ['stampft', 'humpelt', 'stolpert'], feld: 'gehen' },
+  { s: 'Mit dem Fernglas ☐ Opa die Vögel im Wald.', ok: 'beobachtet', opts: ['überhört', 'vergisst', 'verpasst'], feld: 'sehen' },
+  { s: 'Vor Schreck ☐ Mia mit großen Augen auf die Spinne.', ok: 'starrt', opts: ['blinzelt', 'gähnt', 'lächelt'], feld: 'sehen' },
+  { s: 'Neugierig ☐ Paul durch das Schlüsselloch.', ok: 'späht', opts: ['gähnt', 'übersieht', 'schläft'], feld: 'sehen' },
 ];
 const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
   text: ['Ein Wortfeld sind Wörter mit ähnlicher Bedeutung: sagen – flüstern – rufen – fragen – antworten.', 'Treffende Wörter machen deine Texte spannender: Statt „Tim sagt leise“ schreibst du „Tim flüstert“.', 'Achte auf Hinweise im Satz: leise, laut, schnell, verletzt …'],
@@ -702,7 +742,7 @@ const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
 }, (r) => {
   const w = pick(r, WORTFELD);
   return { key: w.s, prompt: `Welches Wort passt am besten?\n${w.s}`, speak: w.s.replace('☐', 'Lücke'), answer: { ...choice(r, w.ok, w.opts), speakOptions: 'de' }, tags: [`wortfeld-${w.feld}`], solution: [w.s.replace('☐', w.ok), `„${w.ok}“ passt am besten zu den Hinweisen im Satz.`] };
-}, { tagLabels: { 'wortfeld-sagen': 'Wortfeld „sagen“', 'wortfeld-gehen': 'Wortfeld „gehen“' }, testSeconds: 20 });
+}, { tagLabels: { 'wortfeld-sagen': 'Wortfeld „sagen“', 'wortfeld-gehen': 'Wortfeld „gehen“', 'wortfeld-sehen': 'Wortfeld „sehen“' }, testSeconds: 20 });
 
 function story4(r: Rng): Gen {
   const stories = [
