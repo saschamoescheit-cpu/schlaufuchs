@@ -1,14 +1,28 @@
 // Deutsch, Klassen 1–4 (orientiert am Lehrplan Deutsch Grundschule NRW 2021).
 import { chance, choice, fixedChoice, pick, pickN, ri, type Rng } from '../engine/rng';
-import type { Skill } from '../engine/types';
+import type { Skill, Stage } from '../engine/types';
 import { NAMES, skill, type Gen } from './helpers';
 
 const D = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('deutsch', grade, ...a);
 
 /** zwei Schreibweisen: richtig + falsch (+ Bild) */
 type Pair = [string, string, string?];
-function spellTask(r: Rng, list: Pair[], tag: (p: Pair) => string, why: (p: Pair) => string[], prompt = 'Welches Wort ist richtig geschrieben?'): Gen {
+function spellTask(r: Rng, stage: Stage, list: Pair[], tag: (p: Pair) => string, why: (p: Pair) => string[], prompt = 'Welches Wort ist richtig geschrieben?'): Gen {
   const p = pick(r, list);
+  if (stage === 3) {
+    // schwer: das Wort selbst schreiben statt auswählen
+    return {
+      key: `${p[0]}#schreiben`,
+      prompt: 'Hör gut zu und schreibe das Wort.',
+      speak: 'Hör gut zu und schreibe das Wort.',
+      listen: { text: p[0], lang: 'de', slow: true },
+      visual: p[2] ? { kind: 'emoji', chars: p[2] } : undefined,
+      answer: { type: 'text', value: p[0], caseSensitive: true, dictation: true },
+      tags: [tag(p)],
+      solution: [`Richtig ist: ${p[0]}`, ...why(p)],
+      solutionVisual: { kind: 'word', word: p[0], mark: markDiff(p[0], p[1]) },
+    };
+  }
   return {
     key: p[0],
     prompt,
@@ -302,7 +316,7 @@ const doppel = D(2, 'd2-doppelkonsonant', 'Doppelte Mitlaute', '👯‍♀️', 
   text: ['Nach einem kurzen, betonten Selbstlaut folgt oft ein doppelter Mitlaut: Sonne, Ball, Kamm.', 'Sprich das Wort und achte auf den Selbstlaut: Ist er kurz (So-nne) oder lang (Ho-se)?', 'Kurz → doppelt: Puppe, Tasse. Lang → einfach: Hose, Nase.', 'Tipp: Klatsche die Silben – bei Son-ne hörst du das n am Ende der ersten und am Anfang der zweiten Silbe.'],
   visual: { kind: 'syllables', parts: ['Son', 'ne'], emoji: '☀️' },
   videoQuery: 'doppelte Mitlaute Doppelkonsonanten kurzer Vokal Klasse 2',
-}, (r) => spellTask(r, DOPPEL, (p) => (p[0].length > p[1].length ? 'kurzer-vokal' : 'langer-vokal'), (p) => (p[0].length > p[1].length ? ['Der Selbstlaut vorher ist kurz – deshalb kommt ein doppelter Mitlaut.'] : ['Der Selbstlaut ist lang – deshalb nur ein Mitlaut.'])), { tagLabels: { 'kurzer-vokal': 'Doppelung nach kurzem Vokal', 'langer-vokal': 'keine Doppelung nach langem Vokal' }, testSeconds: 12 });
+}, (r, s) => spellTask(r, s, DOPPEL, (p) => (p[0].length > p[1].length ? 'kurzer-vokal' : 'langer-vokal'), (p) => (p[0].length > p[1].length ? ['Der Selbstlaut vorher ist kurz – deshalb kommt ein doppelter Mitlaut.'] : ['Der Selbstlaut ist lang – deshalb nur ein Mitlaut.'])), { tagLabels: { 'kurzer-vokal': 'Doppelung nach kurzem Vokal', 'langer-vokal': 'keine Doppelung nach langem Vokal' }, testSeconds: 12 });
 
 const CKTZ: Pair[] = [['Zucker', 'Zuker', '🍬'], ['Decke', 'Deke', '🛏️'], ['Glocke', 'Gloke', '🔔'], ['Socke', 'Soke', '🧦'], ['Jacke', 'Jake', '🧥'], ['Schnecke', 'Schneke', '🐌'], ['Brücke', 'Brüke', '🌉'], ['Rucksack', 'Ruksak', '🎒'],
   ['Katze', 'Kaze', '🐱'], ['Mütze', 'Müze', '🧢'], ['Spatz', 'Spaz', '🐦'], ['Blitz', 'Bliz', '⚡'], ['Platz', 'Plaz', '🏟️'], ['Tatze', 'Taze', '🐾'], ['Pfütze', 'Pfüze', '💦'],
@@ -311,7 +325,7 @@ const cktz = D(2, 'd2-ck-tz', 'ck und tz', '🧦', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ck statt kk und tz statt zz: Socke, Katze.', 'Nach einem langen Selbstlaut, nach au/ei/eu oder nach einem Mitlaut (l, n, r) steht nur k oder z: Haken, Kreuz, Kerze, Onkel.', 'Merkspruch: Nach l, n, r – das merke ja – steht nie tz und nie ck!'],
   visual: { kind: 'word', word: 'Socke', mark: [[2, 4]] },
   videoQuery: 'ck und tz Rechtschreibung Klasse 2',
-}, (r) => spellTask(r, CKTZ, (p) => (p[0].includes('ck') ? 'ck' : p[0].includes('tz') ? 'tz' : 'kein-ck-tz'), (p) => (p[0].includes('ck') || p[0].includes('tz') ? ['Der Selbstlaut davor ist kurz – deshalb ck oder tz.'] : ['Davor steht ein langer Selbstlaut, ein Doppellaut oder l, n, r – deshalb nur k oder z.'])), { tagLabels: { ck: 'Wörter mit ck', tz: 'Wörter mit tz', 'kein-ck-tz': 'k/z nach l, n, r oder langem Vokal' }, testSeconds: 12 });
+}, (r, s) => spellTask(r, s, CKTZ, (p) => (p[0].includes('ck') ? 'ck' : p[0].includes('tz') ? 'tz' : 'kein-ck-tz'), (p) => (p[0].includes('ck') || p[0].includes('tz') ? ['Der Selbstlaut davor ist kurz – deshalb ck oder tz.'] : ['Davor steht ein langer Selbstlaut, ein Doppellaut oder l, n, r – deshalb nur k oder z.'])), { tagLabels: { ck: 'Wörter mit ck', tz: 'Wörter mit tz', 'kein-ck-tz': 'k/z nach l, n, r oder langem Vokal' }, testSeconds: 12 });
 
 const IE: Pair[] = [['Biene', 'Bine', '🐝'], ['Brief', 'Brif', '✉️'], ['Spiegel', 'Spigel', '🪞'], ['Ziege', 'Zige', '🐐'], ['Fliege', 'Flige', '🪰'], ['Riese', 'Rise', '🧌'], ['Wiese', 'Wise', '🌾'], ['Papier', 'Papir', '📄'], ['Tier', 'Tir', '🐾'], ['vier', 'vir', '4️⃣'], ['Dieb', 'Dib', '🦹'], ['Knie', 'Kni', '🦵'], ['Stiefel', 'Stifel', '🥾'],
   ['Tiger', 'Tieger', '🐯'], ['Kino', 'Kieno', '🎬'], ['Igel', 'Iegel', '🦔'], ['Krokodil', 'Krokodiel', '🐊'], ['Bibel', 'Biebel', '📕'], ['Fisch', 'Fiesch', '🐟'], ['Kiste', 'Kieste', '📦']];
@@ -319,7 +333,7 @@ const ie = D(2, 'd2-ie', 'ie oder i', '🐝', {
   text: ['Hörst du ein langes i, schreibst du meistens ie: Biene, Wiese, vier.', 'Hörst du ein kurzes i, schreibst du i: Fisch, Kiste.', 'Ausnahmen musst du dir merken (Merkwörter): Tiger, Igel, Kino, Krokodil, Bibel.'],
   visual: { kind: 'word', word: 'Biene', mark: [[1, 3]] },
   videoQuery: 'Wörter mit ie langes i Klasse 2',
-}, (r) => spellTask(r, IE, (p) => (p[0].includes('ie') ? 'ie' : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? 'merkwort' : 'kurzes-i'), (p) => (p[0].includes('ie') ? ['Das i ist lang – deshalb ie.'] : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? ['Das ist ein Merkwort: langes i, aber ohne e.'] : ['Das i ist kurz – deshalb nur i.'])), { tagLabels: { ie: 'langes i (ie)', merkwort: 'Merkwörter mit i', 'kurzes-i': 'kurzes i' }, testSeconds: 12 });
+}, (r, s) => spellTask(r, s, IE, (p) => (p[0].includes('ie') ? 'ie' : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? 'merkwort' : 'kurzes-i'), (p) => (p[0].includes('ie') ? ['Das i ist lang – deshalb ie.'] : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? ['Das ist ein Merkwort: langes i, aber ohne e.'] : ['Das i ist kurz – deshalb nur i.'])), { tagLabels: { ie: 'langes i (ie)', merkwort: 'Merkwörter mit i', 'kurzes-i': 'kurzes i' }, testSeconds: 12 });
 
 const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Der', 'Hund', 'spielt', 'mit', 'dem', 'Ball'], noun: [1, 5] }, { w: ['Meine', 'Oma', 'backt', 'einen', 'Kuchen'], noun: [1, 4] },
@@ -484,7 +498,7 @@ const dehnung = D(3, 'd3-dehnungs-h', 'Wörter mit Dehnungs-h', '🐔', {
   text: ['Manchmal zeigt ein h, dass der Selbstlaut davor lang ist: fahren, Zahl, Uhr.', 'Das h hört man nicht – diese Wörter musst du dir merken (Merkwörter).', 'Das Dehnungs-h steht oft vor l, m, n oder r: Zahl, nehmen, Zahn, Uhr.', 'Aber Vorsicht: Die meisten Wörter mit langem Selbstlaut haben KEIN h: Name, Hose, Schule.'],
   visual: { kind: 'word', word: 'Zahl', mark: [[2, 3]] },
   videoQuery: 'Dehnungs-h Merkwörter Klasse 3',
-}, (r) => spellTask(r, DEHNUNG, (p) => (p[0].includes('h') && !p[1].includes('h') ? 'mit-h' : 'ohne-h'), (p) => (p[0].includes('h') && !p[1].includes('h') ? ['Das ist ein Merkwort mit Dehnungs-h.'] : ['Dieses Wort hat einen langen Selbstlaut, aber kein h.'])), { tagLabels: { 'mit-h': 'Wörter mit Dehnungs-h', 'ohne-h': 'h zu viel geschrieben' }, testSeconds: 12 });
+}, (r, s) => spellTask(r, s, DEHNUNG, (p) => (p[0].includes('h') && !p[1].includes('h') ? 'mit-h' : 'ohne-h'), (p) => (p[0].includes('h') && !p[1].includes('h') ? ['Das ist ein Merkwort mit Dehnungs-h.'] : ['Dieses Wort hat einen langen Selbstlaut, aber kein h.'])), { tagLabels: { 'mit-h': 'Wörter mit Dehnungs-h', 'ohne-h': 'h zu viel geschrieben' }, testSeconds: 12 });
 
 // [Grundstufe, Vergleichsstufe, Höchststufe, passendes Verb]
 const STEIGERUNG: [string, string, string, string][] = [['groß', 'größer', 'am größten', 'ist'], ['klein', 'kleiner', 'am kleinsten', 'ist'], ['schnell', 'schneller', 'am schnellsten', 'läuft'], ['gut', 'besser', 'am besten', 'malt'], ['viel', 'mehr', 'am meisten', 'isst'], ['hoch', 'höher', 'am höchsten', 'springt'], ['alt', 'älter', 'am ältesten', 'ist'], ['weit', 'weiter', 'am weitesten', 'wirft'], ['lang', 'länger', 'am längsten', 'schläft'], ['jung', 'jünger', 'am jüngsten', 'ist'], ['gern', 'lieber', 'am liebsten', 'liest'], ['laut', 'lauter', 'am lautesten', 'singt'], ['stark', 'stärker', 'am stärksten', 'ist']];

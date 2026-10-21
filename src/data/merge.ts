@@ -49,7 +49,10 @@ function mergeSkill(b: SkillStat | undefined, l: SkillStat | undefined, r: Skill
   const [older, newer] = l.last <= r.last ? [l, r] : [r, l];
   const shared = known ? (b?.recent ?? []) : [];
   const recent = [...shared, ...fresh(older), ...fresh(newer)].slice(-RECENT);
-  return { n: count(b?.n, l.n, r.n, known), ok: count(b?.ok, l.ok, r.ok, known), recent, last: Math.max(l.last, r.last), tags };
+  // Stufe: die zuletzt geübte Seite gilt
+  const stage = newer.stage ?? older.stage;
+  const run = newer.stage !== undefined ? newer.run : older.run;
+  return { n: count(b?.n, l.n, r.n, known), ok: count(b?.ok, l.ok, r.ok, known), recent, last: Math.max(l.last, r.last), tags, ...(stage ? { stage, run: run ?? [] } : {}) };
 }
 
 /**

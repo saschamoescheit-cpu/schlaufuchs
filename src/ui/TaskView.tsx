@@ -103,7 +103,11 @@ function NumberInput({ value, unit, onChange, onSubmit, reveal, submitLabel }: {
       if (c.reveal || e.target instanceof HTMLInputElement) return;
       if (/^[0-9]$/.test(e.key) && c.value.length < 9) c.onChange(c.value + e.key);
       else if (e.key === 'Backspace') c.onChange(c.value.slice(0, -1));
-      else if (e.key === 'Enter' && c.value && c.onSubmit) c.onSubmit();
+      else if (e.key === 'Enter' && c.value && c.onSubmit) {
+        // sonst löst dieselbe Taste gleich den „Weiter“-Knopf aus und die Rückmeldung wäre weg
+        e.preventDefault();
+        c.onSubmit();
+      }
     };
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);
@@ -158,7 +162,12 @@ function TextInput({ value, lang, onChange, onSubmit, reveal, submitLabel }: { v
         value={value}
         disabled={reveal}
         onChange={(e) => onChange(e.target.value)}
-        onKeyDown={(e) => e.key === 'Enter' && value.trim() && onSubmit?.()}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' && value.trim() && onSubmit) {
+            e.preventDefault();
+            onSubmit();
+          }
+        }}
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"

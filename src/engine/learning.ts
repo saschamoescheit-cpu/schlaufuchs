@@ -1,5 +1,5 @@
 // Lernfortschritt: Statistik je Thema, Fehlermuster, Wiederholungs-Kiste (bis es sitzt), Tagesverlauf.
-import type { Skill, Subject, Task } from './types';
+import type { Skill, Subject, Task, Stage } from './types';
 
 export type Mode = 'übung' | 'wiederholung' | 'test';
 
@@ -11,6 +11,10 @@ export interface SkillStat {
   last: number;
   /** Fehlermuster: [gesehen, falsch] */
   tags: Record<string, [number, number]>;
+  /** aktuelle Schwierigkeitsstufe (1 leicht – 3 schwer) */
+  stage?: Stage;
+  /** Antworten seit dem letzten Stufenwechsel */
+  run?: number[];
 }
 
 /** Eine falsch gelöste Aufgabe – kommt so lange wieder, bis sie zweimal hintereinander richtig ist. */
@@ -80,7 +84,7 @@ export const dayKey = (t: number) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: number, trap?: string | string[]): { reviewSolved: boolean; reviewAdded: boolean } {
+export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: number, trap?: string | string[]): { reviewSolved: boolean; reviewAdded: boolean; stageChange?: 'up' | 'down' } {
   const traps = trap === undefined ? [] : Array.isArray(trap) ? trap : [trap];
   const trapTag = traps[0];
   // Muster der Aufgabe, die der erkannte Fehler betrifft (sonst gelten alle Muster der Aufgabe als falsch)
@@ -102,6 +106,7 @@ export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: nu
     c[1]++;
   }
   if (ok) p.stars++;
+  const stageChange = mode === 'test' ? undefined : adaptStage(st, task, ok);
   const dk = dayKey(now);
   p.days[dk] = (p.days[dk] ?? 0) + 1;
   p.log.push({ t: now, s: task.skillId, ok: ok ? 1 : 0, m: mode, ...(trapTag ? { tag: trapTag } : {}) });
@@ -111,7 +116,7 @@ export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: nu
   if (!ok) {
     if (i >= 0) Object.assign(p.review[i], { wrong: p.review[i].wrong + 1, streak: 0, due: now });
     else p.review.push({ task, added: now, wrong: 1, streak: 0, due: now });
-    return { reviewSolved: false, reviewAdded: i < 0 };
+    return { reviewSolved: false, reviewAdded: i < 0, stageChange };
   }
   if (i >= 0) {
     const it = p.review[i];
@@ -119,11 +124,11 @@ export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: nu
     if (it.streak >= REVIEW_STREAK) {
       p.review.splice(i, 1);
       p.solved++;
-      return { reviewSolved: true, reviewAdded: false };
+      return { reviewSolved: true, reviewAdded: false, stageChange };
     }
     it.due = now + REVIEW_GAP_MS;
   }
-  return { reviewSolved: false, reviewAdded: false };
+  return { reviewSolved: false, reviewAdded: false, stageChange };
 }
 
 const avg = (a: number[]) => (a.length ? a.reduce((x, y) => x + y, 0) / a.length : 0);
@@ -234,4 +239,29 @@ export function periodStats(p: Progress, from: number, to: number) {
     minutes: Object.values(mins).reduce((a, b) => a + b, 0),
     tests: p.tests.filter((t) => t.t >= from && t.t < to),
   };
+}
+
+/** aktuelle Stufe eines Themas (neue Themen beginnen leicht) */
+export const stageOf = (p: Progress, skillId: string): Stage => p.skills[skillId]?.stage ?? 1;
+
+/**
+ * Stufe anpassen: 4 von 5 richtig (die letzten beiden richtig) → eine Stufe schwerer,
+ * höchstens 1 von 4 richtig → eine Stufe leichter. Nur Aufgaben der aktuellen Stufe zählen.
+ */
+function adaptStage(st: SkillStat, task: Task, ok: boolean): 'up' | 'down' | undefined {
+  const cur = st.stage ?? 1;
+  if (!task.stage || task.stage !== cur) return undefined;
+  st.run = [...(st.run ?? []), ok ? 1 : 0].slice(-6);
+  const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
+  if (cur < 3 && st.run.length >= 5 && sum(st.run.slice(-5)) >= 4 && sum(st.run.slice(-2)) === 2) {
+    st.stage = (cur + 1) as Stage;
+    st.run = [];
+    return 'up';
+  }
+  if (cur > 1 && st.run.length >= 4 && sum(st.run.slice(-4)) <= 1) {
+    st.stage = (cur - 1) as Stage;
+    st.run = [];
+    return 'down';
+  }
+  return undefined;
 }

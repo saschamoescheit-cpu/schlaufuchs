@@ -60,7 +60,10 @@ export function ColumnWork({ work, value, onChange, onSubmit, reveal, guided }: 
       if (c.reveal || e.target instanceof HTMLInputElement) return;
       if (/^[0-9]$/.test(e.key)) c.type(e.key);
       else if (e.key === 'Backspace') c.erase();
-      else if (e.key === 'Enter' && c.result && c.onSubmit) c.onSubmit(c.result);
+      else if (e.key === 'Enter' && c.result && c.onSubmit) {
+        e.preventDefault();
+        c.onSubmit(c.result);
+      }
     };
     window.addEventListener('keydown', k);
     return () => window.removeEventListener('keydown', k);

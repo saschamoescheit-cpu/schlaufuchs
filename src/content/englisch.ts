@@ -1,7 +1,7 @@
 // Englisch in der Grundschule – 1. und 2. Lernjahr (Skill.grade 3 = 1. Lernjahr, 4 = 2. Lernjahr).
 // In NRW beginnt Englisch in Klasse 3; in Ländern mit Beginn in Klasse 1 wird das 1. Lernjahr früher gezeigt (curriculum.ts).
 import { chance, choice, fixedChoice, pick, pickN, ri, type Rng } from '../engine/rng';
-import type { Skill, Visual } from '../engine/types';
+import type { Skill, Stage, Visual } from '../engine/types';
 import { skill, type Gen } from './helpers';
 
 const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
@@ -11,10 +11,11 @@ const visualOf = (w: Word): Visual => (w.hex ? { kind: 'color', hex: w.hex } : w
 
 const VTAGS = { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', verstehen: 'Englisch → Deutsch', schreiben: 'Wörter schreiben' };
 
-function vocabTask(r: Rng, words: Word[], year: 1 | 2): Gen {
+function vocabTask(r: Rng, words: Word[], year: 1 | 2, stage: Stage = 2): Gen {
   const w = pick(r, words);
   const others = words.filter((x) => x !== w);
-  const spell = w.en.length <= 8 && !w.en.includes(' ') ? (year === 1 ? 0.12 : 0.25) : 0;
+  // Stufe 1: nur wiedererkennen (Bild, Hören), Stufe 3: viel selbst schreiben
+  const spell = stage === 1 ? 0 : w.en.length <= 8 && !w.en.includes(' ') ? (stage === 3 ? 0.45 : year === 1 ? 0.12 : 0.25) : 0;
   const roll = r();
   const say = { text: w.en, lang: 'en' as const };
   const sol = [`${w.de} heißt auf Englisch: ${w.en}`];
@@ -22,7 +23,7 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2): Gen {
     return { key: `s-${w.en}`, prompt: `Schreibe auf Englisch:\n${w.de}`, visual: visualOf(w), answer: { type: 'text', value: w.en, lang: 'en' }, tags: ['schreiben'], solution: [...sol, `Buchstabiert: ${w.en.toUpperCase().split('').join(' – ')}`], pronounce: say };
   }
   const same = w.en.toLowerCase() === w.de.toLowerCase();
-  let mode: 'bild' | 'hören' | 'de-en' | 'en-de' = pick(r, same ? (['bild', 'hören'] as const) : (['bild', 'hören', 'de-en', 'en-de'] as const));
+  let mode: 'bild' | 'hören' | 'de-en' | 'en-de' = pick(r, same || stage === 1 ? (['bild', 'hören'] as const) : stage === 3 ? (['hören', 'de-en', 'de-en', 'en-de'] as const) : (['bild', 'hören', 'de-en', 'en-de'] as const));
   if (mode === 'hören' && !w.e && !w.hex) mode = same ? 'bild' : 'en-de';
   if (mode === 'bild') return { key: `b-${w.en}`, prompt: 'Wie heißt das auf Englisch?', visual: visualOf(w), answer: { ...choice(r, w.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['bild-wort'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
   if (mode === 'hören' && (w.e || w.hex)) {
@@ -35,7 +36,7 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2): Gen {
 }
 
 function vocabSkill(year: 1 | 2, id: string, title: string, icon: string, words: Word[], tips: string[], q: string) {
-  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r) => vocabTask(r, words, year), { tagLabels: VTAGS, testSeconds: 15 });
+  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r, s) => vocabTask(r, words, year, s), { tagLabels: VTAGS, testSeconds: 15 });
 }
 
 const COLOURS: Word[] = [

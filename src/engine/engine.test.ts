@@ -4,6 +4,7 @@ import { gradeFor } from './grading';
 import { dueReviews, emptyProgress, level, patterns, record, REVIEW_GAP_MS, weaknesses } from './learning';
 import { buildMix, buildPractice, buildReview, buildTest } from './session';
 import { skillById } from '../content/curriculum';
+import { mulberry32 } from './rng';
 import type { Task } from './types';
 
 const task = (key: string, value = 5, skillId = 'm1-plus10'): Task => ({ key, skillId, prompt: `${key}`, answer: { type: 'number', value }, solution: ['x'], tags: ['plus'] });
@@ -102,5 +103,33 @@ describe('Noten und Prüfen', () => {
     expect(check(t, ' Dog ').ok).toBe(true);
     const trap: Task = { ...task('f', 13), traps: [{ answer: '3', tag: 'übertrag-vergessen', hint: 'h' }] };
     expect(check(trap, '3').trap?.tag).toBe('übertrag-vergessen');
+  });
+});
+
+describe('Stufen (leicht – mittel – schwer)', () => {
+  const st = (key: string, stage: 1 | 2 | 3): Task => ({ ...task(key), stage });
+  it('steigt nach 4 von 5 richtig, fällt bei vielen Fehlern', () => {
+    const p = emptyProgress();
+    const res = [true, false, true, true, true].map((ok, i) => record(p, st(`a${i}`, 1), ok, 'übung', i + 1).stageChange);
+    expect(res[4]).toBe('up');
+    expect(p.skills['m1-plus10'].stage).toBe(2);
+    // Aufgaben der alten Stufe zählen nicht mehr
+    expect(record(p, st('alt', 1), false, 'übung', 10).stageChange).toBeUndefined();
+    const down = [false, false, true, false].map((ok, i) => record(p, st(`b${i}`, 2), ok, 'übung', 20 + i).stageChange);
+    expect(down[3]).toBe('down');
+    expect(p.skills['m1-plus10'].stage).toBe(1);
+  });
+  it('Tests verändern die Stufe nicht', () => {
+    const p = emptyProgress();
+    for (let i = 0; i < 6; i++) record(p, st(`t${i}`, 1), true, 'test', i);
+    expect(p.skills['m1-plus10'].stage).toBeUndefined();
+  });
+  it('Stufe 1 hat eine Antwort weniger', () => {
+    const s = skillById('m1-formen')!;
+    const r = mulberry32(3);
+    for (let i = 0; i < 20; i++) {
+      const t = s.generate(r, 1);
+      if (t.answer.type === 'choice') expect(t.answer.options.length).toBe(3);
+    }
   });
 });

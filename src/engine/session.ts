@@ -1,13 +1,13 @@
 // Übungsrunden und Lernzielkontrollen zusammenstellen.
 import { mulberry32, pick, randomSeed, shuffle, type Rng } from './rng';
-import { difficulty, dueReviews, level, type Progress } from './learning';
-import type { Skill, Task } from './types';
+import { difficulty, dueReviews, level, stageOf, type Progress } from './learning';
+import type { Skill, Stage, Task } from './types';
 
 export const SESSION_LEN = 10;
 
-function fresh(skill: Skill, r: Rng, used: Set<string>): Task {
-  let t = skill.generate(r);
-  for (let i = 0; i < 8 && used.has(t.key); i++) t = skill.generate(r);
+export function fresh(skill: Skill, r: Rng, used: Set<string>, stage?: Stage): Task {
+  let t = skill.generate(r, stage);
+  for (let i = 0; i < 8 && used.has(t.key); i++) t = skill.generate(r, stage);
   used.add(t.key);
   return t;
 }
@@ -24,7 +24,7 @@ export function buildPractice(skill: Skill, p: Progress, now = Date.now(), seed 
   const r = mulberry32(seed);
   const due = dueReviews(p, now, (id) => id === skill.id).slice(0, 4).map((x) => x.task);
   const used = new Set(due.map((t) => t.key));
-  const news = Array.from({ length: SESSION_LEN - due.length }, () => fresh(skill, r, used));
+  const news = Array.from({ length: SESSION_LEN - due.length }, () => fresh(skill, r, used, stageOf(p, skill.id)));
   return interleave(news, due);
 }
 
@@ -40,7 +40,7 @@ export function buildMix(skills: Skill[], p: Progress, now = Date.now(), seed = 
   while (news.length < SESSION_LEN - due.length) {
     let x = r() * total;
     const s = skills.find((k) => (x -= weight(k)) <= 0) ?? pick(r, skills);
-    news.push(fresh(s, r, used));
+    news.push(fresh(s, r, used, stageOf(p, s.id)));
   }
   return interleave(news, due);
 }
@@ -53,7 +53,7 @@ export function buildReview(skills: Skill[], p: Progress, now = Date.now(), seed
   const hard = skills.filter((s) => difficulty(p, s.id) > 0.1).sort((a, b) => difficulty(p, b.id) - difficulty(p, a.id)).slice(0, 4);
   const used = new Set(due.map((t) => t.key));
   const extra: Task[] = [];
-  for (let i = 0; due.length + extra.length < Math.min(n, Math.max(6, due.length)) && hard.length; i++) extra.push(fresh(hard[i % hard.length], r, used));
+  for (let i = 0; due.length + extra.length < Math.min(n, Math.max(6, due.length)) && hard.length; i++) extra.push(fresh(hard[i % hard.length], r, used, stageOf(p, hard[i % hard.length].id)));
   return shuffle(r, [...due, ...extra]);
 }
 
@@ -69,7 +69,8 @@ export function buildTest(skills: Skill[], n: number, pace: Pace, seed = randomS
   const r = mulberry32(seed);
   const used = new Set<string>();
   const order = shuffle(r, skills);
-  const tasks = Array.from({ length: n }, (_, i) => fresh(order[i % order.length], r, used));
+  // Lernzielkontrolle: Klassenniveau (mittel) mit einigen schweren Aufgaben
+  const tasks = Array.from({ length: n }, (_, i) => fresh(order[i % order.length], r, used, i % 3 === 2 ? 3 : 2));
   const secs = tasks.reduce((a, t) => a + (skills.find((s) => s.id === t.skillId)?.testSeconds ?? 30), 0);
   const factor = PACES.find((x) => x.id === pace)!.factor;
   const limit = Math.max(60, Math.ceil((secs * factor) / 60) * 60);

@@ -3,6 +3,8 @@
 export type Subject = 'mathe' | 'deutsch' | 'englisch';
 export type Grade = 1 | 2 | 3 | 4;
 export type Lang = 'de' | 'en';
+/** Schwierigkeit innerhalb eines Themas: 1 leicht, 2 mittel, 3 schwer */
+export type Stage = 1 | 2 | 3;
 
 /** Ein Bild zur Aufgabe oder Erklärung. Wird von ui/Visual.tsx als SVG gezeichnet. */
 export type Visual =
@@ -62,6 +64,8 @@ export interface Task {
   solutionVisual?: Visual;
   /** Wort zum Anhören in der Erklärung (z. B. englische Aussprache) */
   pronounce?: { text: string; lang: Lang };
+  /** Stufe, mit der die Aufgabe erzeugt wurde */
+  stage?: Stage;
   /** Punkte in einer Lernzielkontrolle */
   points?: number;
 }
@@ -90,7 +94,9 @@ export interface Skill {
   explain: Explanation;
   /** lesbare Namen der Fehlermuster */
   tagLabels?: Record<string, string>;
-  generate: (rng: () => number) => Task;
+  generate: (rng: () => number, stage?: Stage) => Task;
+  /** Stufen machen bei diesem Thema einen echten Unterschied */
+  staged?: boolean;
   /** Sekunden pro Aufgabe in einer Lernzielkontrolle (Schultempo) */
   testSeconds?: number;
 }

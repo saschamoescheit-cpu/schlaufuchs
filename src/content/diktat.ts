@@ -1,7 +1,7 @@
 // Diktat und Schreiben: Die App liest vor, das Kind schreibt. Fehler werden Buchstabe für Buchstabe gezeigt und
 // einem Rechtschreibmuster zugeordnet (engine/spelling.ts).
 import { pick, type Rng } from '../engine/rng';
-import type { Skill } from '../engine/types';
+import type { Skill, Stage } from '../engine/types';
 import { SPELL_TAG_LABELS, spellHint } from '../engine/spelling';
 import { skill, type Gen } from './helpers';
 
@@ -61,8 +61,10 @@ export function spellFeatures(text: string, withCase = true): string[] {
   return [...out];
 }
 
-function wordTask(r: Rng, list: Item[], withCase: boolean): Gen {
-  const [w, e, s] = pick(r, list);
+function wordTask(r: Rng, list: Item[], withCase: boolean, stage: Stage = 2): Gen {
+  // Stufe 1: kurze Wörter, Stufe 3: lange Wörter mit mehreren Rechtschreib-Merkmalen
+  const pool = stage === 1 ? list.filter(([x]) => x.length <= 5) : stage === 3 ? list.filter(([x]) => x.length >= 6 || spellFeatures(x).length >= 3) : list;
+  const [w, e, s] = pick(r, pool.length >= 4 ? pool : list);
   const f = spellFeatures(w, withCase);
   const tips = withCase ? f.filter((t) => t !== 'gross-klein').slice(0, 2).map(spellHint) : [];
   const caseTip = withCase ? (w[0] === w[0].toUpperCase() ? `„${w}“ ist ein Nomen – deshalb groß.` : `„${w}“ ist kein Nomen – deshalb klein.`) : '';
@@ -78,8 +80,9 @@ function wordTask(r: Rng, list: Item[], withCase: boolean): Gen {
   };
 }
 
-function sentenceTask(r: Rng): Gen {
-  const s = pick(r, G4);
+function sentenceTask(r: Rng, stage: Stage = 2): Gen {
+  const pool = stage === 1 ? G4.filter((x) => x.split(' ').length <= 6 && !x.includes(',')) : stage === 3 ? G4.filter((x) => x.includes(',') || x.split(' ').length >= 7) : G4;
+  const s = pick(r, pool.length >= 4 ? pool : G4);
   const f = spellFeatures(s);
   const tips = f.filter((t) => t !== 'gross-klein').slice(0, 3).map(spellHint);
   return {
@@ -101,17 +104,17 @@ export const DIKTAT: Skill[] = [
     text: ['Hör dir das Wort genau an. Sprich es dann ganz langsam mit: Ma – ma.', 'Schreibe jeden Laut, den du hörst: M – a – m – a.', 'Tippe auf den Lautsprecher, so oft du willst!'],
     visual: { kind: 'syllables', parts: ['Ma', 'ma'], emoji: '👩' },
     videoQuery: 'Schreiben lernen Klasse 1 lautgetreu Wörter',
-  }, (r) => wordTask(r, G1, false), { tagLabels: LABELS, testSeconds: 30 }),
+  }, (r, st) => wordTask(r, G1, false, st), { tagLabels: LABELS, testSeconds: 30 }),
   D(2, 'd2-diktat', 'Diktat: Lernwörter', '📝', {
     text: ['Hör das Wort und den Satz genau an.', 'Sprich das Wort in Silben mit und schreibe es dann.', 'Denk an die Regeln: Nomen groß, langes i meistens ie, nach kurzem Vokal oft doppelte Mitlaute, ck oder tz.', 'Lies am Ende noch einmal Buchstabe für Buchstabe nach.'],
     visual: { kind: 'word', word: 'Biene', mark: [[1, 3]] },
     videoQuery: 'Lernwörter üben Klasse 2 Rechtschreibung',
-  }, (r) => wordTask(r, G2, true), { tagLabels: LABELS, testSeconds: 40 }),
+  }, (r, st) => wordTask(r, G2, true, st), { tagLabels: LABELS, testSeconds: 40 }),
   D(3, 'd3-diktat', 'Diktat: Rechtschreib-Strategien', '🖊️', {
     text: ['Nutze die Rechtschreib-Strategien:', 'Verlängern: Wald → Wälder (d), Berg → Berge (g).', 'Ableiten: Bäume kommt von Baum (äu), Hände von Hand (ä).', 'Merkwörter: Wörter mit Dehnungs-h (Zahl, Uhr) oder V (Vater, viel) muss man sich merken.'],
     visual: { kind: 'text', text: 'Wald → Wälder' },
     videoQuery: 'Rechtschreibstrategien Grundschule verlängern ableiten merken',
-  }, (r) => wordTask(r, G3, true), { tagLabels: LABELS, testSeconds: 40 }),
+  }, (r, st) => wordTask(r, G3, true, st), { tagLabels: LABELS, testSeconds: 40 }),
   D(4, 'd4-diktat', 'Diktat: ganze Sätze', '📜', {
     text: ['Hör dir den ganzen Satz an. Merke dir ein paar Wörter und schreibe sie, dann hörst du wieder hin.', 'Satzanfang und Nomen schreibst du groß.', 'Achte auf Kommas: vor „dass“, „weil“ und bei Aufzählungen.', 'Lies den Satz am Ende Wort für Wort durch.'],
     visual: { kind: 'text', text: 'Ich weiß, dass du kommst.' },

@@ -72,3 +72,18 @@ export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((
 
 /** Lernziele des aktuellen Schuljahres (für Fortschritt und Mix) */
 export const currentSkills = (subject: Subject, p: ProfileLike) => skillsOf(subject, currentLevel(subject, p));
+
+// Hat ein Thema echte Stufen? Gleicher Zufall, Stufe 1 und 3 – unterscheiden sich die Aufgaben, ja.
+import { mulberry32 } from '../engine/rng';
+for (const s of ALL_SKILLS) {
+  if (s.staged !== undefined) continue;
+  const a = mulberry32(5);
+  const b = mulberry32(5);
+  let diff = false;
+  for (let i = 0; i < 12 && !diff; i++) {
+    const x = s.generate(a, 1);
+    const y = s.generate(b, 3);
+    diff = x.key !== y.key || JSON.stringify(x.answer) !== JSON.stringify(y.answer);
+  }
+  s.staged = diff;
+}

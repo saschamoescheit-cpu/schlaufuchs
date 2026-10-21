@@ -1,6 +1,6 @@
 // Mathe, Klassen 1–4 (orientiert am Lehrplan Mathematik Grundschule NRW 2021).
 import { chance, choice, fixedChoice, fmt, pick, ri, shuffle, type Rng } from '../engine/rng';
-import type { Skill } from '../engine/types';
+import type { Skill, Stage } from '../engine/types';
 import { NAMES, PLACE, PLACE_SHORT, columnAdd, columnDiv, columnMul1, columnSub, digitsOf, skill, type Gen } from './helpers';
 
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
@@ -18,8 +18,8 @@ const zaehlen = M(1, 'm1-zaehlen', 'Mengen zählen bis 20', '🔢', {
   ],
   visual: { kind: 'dots', n: 13 },
   videoQuery: 'Zehnerfeld Mengen erfassen Klasse 1',
-}, (r) => {
-  const n = ri(r, 3, 20);
+}, (r, s) => {
+  const n = s === 1 ? ri(r, 3, 10) : s === 2 ? ri(r, 6, 15) : ri(r, 11, 20);
   return {
     key: `${n}`,
     prompt: 'Wie viele Punkte siehst du?',
@@ -41,9 +41,11 @@ const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', 
   ],
   visual: { kind: 'compare', a: 3, b: 8 },
   videoQuery: 'größer kleiner gleich Zeichen Krokodil Klasse 1',
-}, (r) => {
-  const a = ri(r, 0, 20);
-  const b = chance(r, 0.2) ? a : ri(r, 0, 20);
+}, (r, s) => {
+  const max = s === 1 ? 10 : 20;
+  const a = ri(r, 0, max);
+  // schwer: nah beieinander liegende Zahlen
+  const b = chance(r, 0.2) ? a : s === 3 ? Math.max(0, Math.min(20, a + pick(r, [-2, -1, 1, 2]))) : ri(r, 0, max);
   const sign = a < b ? '<' : a > b ? '>' : '=';
   const word = { '<': 'kleiner als', '>': 'größer als', '=': 'gleich' }[sign];
   return {
@@ -65,8 +67,8 @@ const nachbarn = M(1, 'm1-nachbarn', 'Nachbarzahlen', '🏘️', {
   ],
   visual: { kind: 'numberline', from: 4, to: 10, start: 7, jumps: [] },
   videoQuery: 'Nachbarzahlen Vorgänger Nachfolger Klasse 1',
-}, (r) => {
-  const n = ri(r, 1, 19);
+}, (r, s) => {
+  const n = s === 1 ? ri(r, 1, 9) : s === 2 ? ri(r, 1, 19) : pick(r, [9, 10, 11, 19, ri(r, 11, 19)]);
   const vor = chance(r, 0.5);
   const v = vor ? n - 1 : n + 1;
   return {
@@ -87,8 +89,8 @@ const zerlegen = M(1, 'm1-zerlegen', 'Zahlen zerlegen', '🏠', {
   ],
   visual: { kind: 'dots', n: 4, m: 3 },
   videoQuery: 'Zahlen zerlegen Zahlenhaus Klasse 1',
-}, (r) => {
-  const total = chance(r, 0.35) ? 10 : ri(r, 3, 10);
+}, (r, s) => {
+  const total = s === 1 ? ri(r, 3, 6) : s === 3 ? (chance(r, 0.6) ? 10 : ri(r, 7, 10)) : chance(r, 0.35) ? 10 : ri(r, 3, 10);
   const a = ri(r, 0, total);
   const b = total - a;
   return {
@@ -106,9 +108,10 @@ const plus10 = M(1, 'm1-plus10', 'Plus bis 10', '➕', {
   text: ['Plus heißt: Es kommt etwas dazu.', 'Starte bei der ersten Zahl und zähle weiter – oder lege die Zahlen ins Zehnerfeld.', '3 + 4: Du hast 3, dazu kommen 4 → 7.'],
   visual: { kind: 'tenframe', a: 3, b: 4 },
   videoQuery: 'Addition bis 10 Klasse 1 erklärt',
-}, (r) => {
-  const a = ri(r, 1, 9);
-  const b = ri(r, 0, 10 - a);
+}, (r, s) => {
+  const max = s === 1 ? 6 : 10;
+  const a = ri(r, 1, max - 1);
+  const b = ri(r, s === 3 ? Math.min(max - a, 2) : 0, max - a);
   return {
     key: `${a}+${b}`,
     prompt: `${a} + ${b} = ☐`,
@@ -125,8 +128,8 @@ const minus10 = M(1, 'm1-minus10', 'Minus bis 10', '➖', {
   text: ['Minus heißt: Es geht etwas weg.', 'Lege die erste Zahl hin und streiche so viele weg, wie abgezogen werden.', '8 − 3: Von 8 Plättchen streichst du 3 weg → 5 bleiben übrig.'],
   visual: { kind: 'tenframe', a: 8, crossOut: 3 },
   videoQuery: 'Subtraktion bis 10 Klasse 1 erklärt',
-}, (r) => {
-  const a = ri(r, 2, 10);
+}, (r, s) => {
+  const a = s === 1 ? ri(r, 2, 6) : s === 2 ? ri(r, 4, 10) : ri(r, 7, 10);
   const b = ri(r, 1, a);
   return {
     key: `${a}-${b}`,
@@ -148,8 +151,8 @@ const plus20 = M(1, 'm1-plus20', 'Plus bis 20', '🚀', {
   ],
   visual: { kind: 'numberline', from: 5, to: 15, start: 8, jumps: [2, 3] },
   videoQuery: 'Zehnerübergang Addition bis 20 Klasse 1',
-}, (r) => {
-  if (chance(r, 0.6)) {
+}, (r, s) => {
+  if (s === 3 || (s === 2 && chance(r, 0.6))) {
     const a = ri(r, 2, 9);
     const b = ri(r, 11 - a, 9);
     const toTen = 10 - a;
@@ -183,8 +186,8 @@ const minus20 = M(1, 'm1-minus20', 'Minus bis 20', '🛝', {
   ],
   visual: { kind: 'numberline', from: 6, to: 15, start: 13, jumps: [-3, -2] },
   videoQuery: 'Zehnerübergang Subtraktion bis 20 Klasse 1',
-}, (r) => {
-  if (chance(r, 0.6)) {
+}, (r, s) => {
+  if (s === 3 || (s === 2 && chance(r, 0.6))) {
     const a = ri(r, 11, 18);
     const b = ri(r, a - 9, 9);
     const toTen = a - 10;
@@ -215,12 +218,13 @@ const verdoppeln1 = M(1, 'm1-verdoppeln', 'Verdoppeln und Halbieren', '🦋', {
   text: ['Verdoppeln heißt: die gleiche Zahl noch einmal dazu. Das Doppelte von 4 ist 4 + 4 = 8.', 'Halbieren heißt: in zwei gleich große Teile teilen. Die Hälfte von 8 ist 4.', 'Wie bei einem Schmetterling: Beide Flügel sind gleich.'],
   visual: { kind: 'dots', n: 4, m: 4 },
   videoQuery: 'Verdoppeln Halbieren Klasse 1',
-}, (r) => {
-  if (chance(r, 0.5)) {
-    const n = ri(r, 1, 10);
+}, (r, s) => {
+  const top = s === 1 ? 5 : 10;
+  if (chance(r, s === 3 ? 0.3 : 0.5)) {
+    const n = ri(r, s === 3 ? 6 : 1, top);
     return { key: `d${n}`, prompt: `Verdopple ${n}.`, answer: { type: 'number', value: 2 * n }, tags: ['verdoppeln'], solution: [`Verdoppeln: ${n} + ${n} = ${2 * n}`], solutionVisual: { kind: 'dots', n, m: n } };
   }
-  const n = ri(r, 1, 10);
+  const n = ri(r, s === 3 ? 5 : 1, top);
   return { key: `h${2 * n}`, prompt: `Halbiere ${2 * n}.`, answer: { type: 'number', value: n }, tags: ['halbieren'], solution: [`Halbieren: ${2 * n} in zwei gleiche Teile. ${n} + ${n} = ${2 * n}, also ist die Hälfte ${n}.`], solutionVisual: { kind: 'dots', n, m: n } };
 }, { tagLabels: { verdoppeln: 'Verdoppeln', halbieren: 'Halbieren' }, testSeconds: 15 });
 
@@ -268,8 +272,8 @@ const stellenwert2 = M(2, 'm2-stellenwert', 'Zehner und Einer', '🧱', {
   return { key: `s${n}`, prompt: `${t} Zehner und ${o} Einer sind ☐`, answer: { type: 'number', value: n }, tags: ['bündeln'], traps, solution: [`${t} Zehner = ${10 * t}, dazu ${o} Einer: ${n}`], solutionVisual: { kind: 'blocks', t, o } };
 }, { tagLabels: { zahlendreher: 'Zahlendreher', 'zehner-einer': 'Zehner und Einer verwechselt' }, testSeconds: 20 });
 
-function plusMinus100(r: Rng, minus: boolean): Gen {
-  const kind = ri(r, 0, 4); // 0 ZE±E ohne, 1 ZE±E mit, 2 ZE±Z, 3 ZE±ZE ohne, 4 ZE±ZE mit
+function plusMinus100(r: Rng, minus: boolean, s: Stage): Gen {
+  const kind = s === 1 ? pick(r, [0, 2, 3]) : s === 3 ? pick(r, [1, 4, 4]) : ri(r, 0, 4); // 0 ZE±E ohne, 1 ZE±E mit, 2 ZE±Z, 3 ZE±ZE ohne, 4 ZE±ZE mit
   let a: number, b: number;
   for (;;) {
     a = ri(r, 11, 89);
@@ -320,13 +324,13 @@ const plus100 = M(2, 'm2-plus100', 'Plus bis 100', '🚂', {
   text: ['Rechne in Schritten: erst die Zehner, dann die Einer.', '38 + 47: 38 + 40 = 78, dann 78 + 7 = 85.', 'Werden die Einer mehr als 10, entsteht ein neuer Zehner (Zehnerübergang).'],
   visual: { kind: 'numberline', from: 35, to: 90, start: 38, jumps: [40, 7], step: 10 },
   videoQuery: 'Addition bis 100 schrittweise Zehnerübergang Klasse 2',
-}, (r) => plusMinus100(r, false), { tagLabels: ueber, testSeconds: 30 });
+}, (r, s) => plusMinus100(r, false, s), { tagLabels: ueber, testSeconds: 30 });
 
 const minus100 = M(2, 'm2-minus100', 'Minus bis 100', '🛷', {
   text: ['Rechne in Schritten: erst die Zehner weg, dann die Einer.', '72 − 38: 72 − 30 = 42, dann 42 − 8 = 34.', 'Bei 42 − 8 hilft der Zwischenschritt über den Zehner: 42 − 2 = 40, 40 − 6 = 34.'],
   visual: { kind: 'numberline', from: 30, to: 75, start: 72, jumps: [-30, -8], step: 10 },
   videoQuery: 'Subtraktion bis 100 schrittweise Klasse 2',
-}, (r) => plusMinus100(r, true), { tagLabels: ueber, testSeconds: 30 });
+}, (r, s) => plusMinus100(r, true, s), { tagLabels: ueber, testSeconds: 30 });
 
 function malSteps(a: number, b: number): string[] {
   if ([1, 2, 5, 10].includes(a)) return [`${a} · ${b} ist eine Kernaufgabe: ${a * b}`];
@@ -335,13 +339,16 @@ function malSteps(a: number, b: number): string[] {
   return [`10 · ${b} = ${10 * b}`];
 }
 
+/** Einmaleins-Reihen je Stufe: Kernaufgaben → leichte → schwere Reihen */
+const ROWS: Record<Stage, number[]> = { 1: [2, 5, 10], 2: [2, 3, 4, 5, 10], 3: [3, 4, 6, 7, 8, 9] };
+
 const einmaleins = M(2, 'm2-einmaleins', 'Einmaleins', '✖️', {
   text: ['Malnehmen ist schnelles Plusrechnen: 3 · 4 heißt 4 + 4 + 4 = 12.', 'Die Kernaufgaben 1 ·, 2 ·, 5 · und 10 · solltest du auswendig können.', 'Aus ihnen kannst du alle anderen ableiten: 7 · 6 = 5 · 6 + 2 · 6 = 30 + 12 = 42.'],
   visual: { kind: 'array', rows: 7, cols: 6, split: 5 },
   videoQuery: 'Einmaleins Kernaufgaben ableiten Klasse 2',
-}, (r) => {
+}, (r, s) => {
   const a = ri(r, 1, 10);
-  const b = ri(r, 2, 10);
+  const b = pick(r, ROWS[s]);
   const traps = [a * b + b, a * b - b].filter((x) => x > 0).map((x) => ({ answer: String(x), tag: 'nachbaraufgabe', hint: `Knapp daneben – das ist ${x > a * b ? a + 1 : a - 1} · ${b}. Du warst eine Reihe zu weit.` }));
   return {
     key: `${a}x${b}`,
@@ -359,8 +366,8 @@ const geteilt = M(2, 'm2-geteilt', 'Geteilt durch', '➗', {
   text: ['Teilen heißt: gerecht verteilen.', '12 : 3 – 12 Bonbons an 3 Kinder. Jedes Kind bekommt 4.', 'Denk an die Malaufgabe: Wie oft passt die 3 in die 12? 4 · 3 = 12, also 12 : 3 = 4.'],
   visual: { kind: 'array', rows: 3, cols: 4 },
   videoQuery: 'Division geteilt Umkehraufgabe Einmaleins Klasse 2',
-}, (r) => {
-  const d = ri(r, 2, 10);
+}, (r, s) => {
+  const d = pick(r, ROWS[s]);
   const q = ri(r, 1, 10);
   const n = d * q;
   return {
@@ -504,8 +511,9 @@ function storyGen(r: Rng, level: 2 | 3 | 4): Story {
   if (t === 4) { const pp = ri(r, 3, 8), c = ri(r, 4, 9); return { text: `Für das Schulfest backen ${c} Eltern je ${pp} Bleche Kuchen. Auf jedes Blech passen 20 Stücke.`, q: 'Wie viele Kuchenstücke gibt es?', calc: `${c} · ${pp} = ${c * pp} Bleche, ${c * pp} · 20 = ${c * pp * 20} Stücke`, res: c * pp * 20, unit: 'Stücke', ant: `Es gibt ${c * pp * 20} Kuchenstücke.`, op: 'zwei-schritte', wrong: c * pp }; }
   const start = ri(r, 7, 9), dur = pick(r, [95, 110, 125, 140, 155]); const end = start * 60 + 15 + dur; return { text: `Der Ausflug beginnt um ${start}:15 Uhr. Die Busfahrt dauert ${dur} Minuten.`, q: 'Um wie viel Uhr kommt der Bus an? (Gib die Minuten nach der vollen Stunde an.)', calc: `${dur} min = ${Math.floor(dur / 60)} h ${dur % 60} min. ${start}:15 Uhr + ${Math.floor(dur / 60)} h ${dur % 60} min = ${Math.floor(end / 60)}:${pad(end % 60)} Uhr`, res: end % 60, unit: 'Minuten', ant: `Der Bus kommt um ${Math.floor(end / 60)}:${pad(end % 60)} Uhr an.`, op: 'zeit' };
 }
-function storyTask(r: Rng, level: 2 | 3 | 4): Gen {
-  const s = storyGen(r, level);
+function storyTask(r: Rng, level: 2 | 3 | 4, stage: Stage = 2): Gen {
+  let s = storyGen(r, level);
+  for (let i = 0; i < 12 && ((stage === 1 && s.op === 'zwei-schritte') || (stage === 3 && level > 2 && s.op !== 'zwei-schritte')); i++) s = storyGen(r, level);
   return {
     key: s.text,
     prompt: `${s.text}\n${s.q}`,
@@ -517,7 +525,7 @@ function storyTask(r: Rng, level: 2 | 3 | 4): Gen {
 }
 const SACH_TAGS = { plus: 'Plus-Geschichten', minus: 'Minus-Geschichten', mal: 'Mal-Geschichten', geteilt: 'Teilen-Geschichten', 'zwei-schritte': 'Aufgaben mit zwei Schritten', 'falsche-rechenart': 'falsche Rechenart gewählt', 'schritt-vergessen': 'einen Rechenschritt vergessen', zeit: 'Zeitrechnung' };
 const sachEx = (k: string) => ({ text: ['Lies die Geschichte zweimal in Ruhe.', 'Frage dich: Was weiß ich? Was soll ich herausfinden?', 'Überlege: Kommt etwas dazu (+), geht etwas weg (−), gibt es mehrmals das Gleiche (·) oder wird verteilt (:)?', 'Schreibe Frage, Rechnung und Antwort auf.'], videoQuery: `Sachaufgaben lösen ${k} Grundschule` });
-const sach2 = M(2, 'm2-sachaufgaben', 'Rechengeschichten', '📖', sachEx('Klasse 2'), (r) => storyTask(r, 2), { tagLabels: SACH_TAGS, testSeconds: 60 });
+const sach2 = M(2, 'm2-sachaufgaben', 'Rechengeschichten', '📖', sachEx('Klasse 2'), (r, s) => storyTask(r, 2, s), { tagLabels: SACH_TAGS, testSeconds: 60 });
 
 // ---------- Klasse 3 ----------
 
@@ -525,8 +533,8 @@ const stellenwert3 = M(3, 'm3-stellenwert', 'Zahlen bis 1000', '🏛️', {
   text: ['Zahlen bis 1000 haben Hunderter (H), Zehner (Z) und Einer (E).', '507: 5 Hunderter, 0 Zehner, 7 Einer. Die 0 ist wichtig – sie hält den Platz frei!', 'Eine Hunderterplatte besteht aus 10 Zehnerstangen.'],
   visual: { kind: 'placetable', digits: [5, 0, 7], labels: ['H', 'Z', 'E'] },
   videoQuery: 'Zahlen bis 1000 Stellenwerttafel Hunderter Zehner Einer Klasse 3',
-}, (r) => {
-  const h = ri(r, 1, 9), t = chance(r, 0.25) ? 0 : ri(r, 0, 9), o = ri(r, 0, 9);
+}, (r, s) => {
+  const h = ri(r, 1, 9), t = chance(r, s === 3 ? 0.6 : s === 2 ? 0.25 : 0) ? 0 : ri(r, 1, 9), o = s === 3 && chance(r, 0.4) ? 0 : ri(r, 0, 9);
   const n = 100 * h + 10 * t + o;
   const v = ri(r, 0, 2);
   if (v === 0) return { key: `b${n}`, prompt: 'Welche Zahl ist das?', visual: { kind: 'blocks', h, t, o }, answer: { type: 'number', value: n }, tags: t === 0 ? ['null'] : ['bündeln'], traps: t === 0 ? [{ answer: `${h}${o}`, tag: 'null-vergessen', hint: 'Es gibt keine Zehner – dafür musst du eine 0 schreiben!' }] : [], solution: [`${h} Hunderter = ${100 * h}`, `${t} Zehner = ${10 * t}`, `${o} Einer = ${o}`, `Zusammen: ${n}`], solutionVisual: { kind: 'placetable', digits: [h, t, o], labels: ['H', 'Z', 'E'] } };
@@ -557,13 +565,13 @@ const runden3 = M(3, 'm3-runden', 'Runden', '🎯', {
   text: ['Beim Runden schaust du auf die Ziffer rechts von der Stelle, auf die du rundest.', '0, 1, 2, 3, 4 → abrunden. 5, 6, 7, 8, 9 → aufrunden.', '347 auf Zehner: Die Einer-Ziffer ist 7 → aufrunden auf 350.', '347 auf Hunderter: Die Zehner-Ziffer ist 4 → abrunden auf 300.'],
   visual: { kind: 'numberline', from: 340, to: 350, start: 347, jumps: [], step: 1 },
   videoQuery: 'Runden auf Zehner Hunderter Klasse 3',
-}, (r) => roundTask(ri(r, 101, 989), pick(r, [1, 2])), { tagLabels: { 'falsche-richtung': 'in die falsche Richtung gerundet', fünf: 'Runden bei der 5' }, testSeconds: 20 });
+}, (r, s) => roundTask(ri(r, 101, 989), s === 1 ? 1 : s === 2 ? pick(r, [1, 2]) : 2), { tagLabels: { 'falsche-richtung': 'in die falsche Richtung gerundet', fünf: 'Runden bei der 5' }, testSeconds: 20 });
 
 const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
   text: ['Nutze, was du kannst: 340 + 250 ist wie 34 + 25, nur mit Zehnern: 590.', 'Rechne in Schritten: 456 + 230 = 456 + 200 + 30 = 686.', 'Bei Minus ebenso: 700 − 260 = 700 − 200 − 60 = 440.'],
   videoQuery: 'Kopfrechnen bis 1000 Addition Subtraktion Klasse 3',
-}, (r) => {
-  const kind = ri(r, 0, 3);
+}, (r, st) => {
+  const kind = st === 1 ? ri(r, 0, 1) : st === 3 ? ri(r, 2, 3) : ri(r, 0, 3);
   let a: number, b: number, minus: boolean;
   if (kind === 0) { a = ri(r, 10, 60) * 10; b = ri(r, 10, 99 - a / 10) * 10; minus = false; }
   else if (kind === 1) { a = ri(r, 30, 99) * 10; b = ri(r, 10, a / 10 - 5) * 10; minus = true; }
@@ -578,13 +586,21 @@ const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
   return { key: `${a}${s}${b}`, prompt: `${a} ${s} ${b} = ☐`, answer: { type: 'number', value: res }, tags: [minus ? 'minus' : 'plus'], traps: minus || a >= b ? [{ answer: String(minus ? a + b : a - b), tag: 'rechenzeichen', hint: 'Achte auf das Rechenzeichen.' }] : [], solution: ['Rechne in Schritten:', ...steps] };
 }, { testSeconds: 30 });
 
+/** Stufe 1 ohne Übertrag, Stufe 2 mit Übertrag, Stufe 3 drei Zahlen oder mehrere Überträge */
+function plusNumbers(r: Rng, s: Stage): number[] {
+  for (;;) {
+    const nums = s === 3 && chance(r, 0.5) ? [ri(r, 100, 399), ri(r, 100, 299), ri(r, 10, 299)] : [ri(r, 120, 699), ri(r, 105, 399)];
+    const c = columnAdd(nums).carries.filter(Boolean).length;
+    if (s === 1 ? c === 0 : s === 2 ? c >= 1 : nums.length === 3 || c >= 2) return nums;
+  }
+}
+
 const schrPlus = M(3, 'm3-schriftlich-plus', 'Schriftliche Addition', '🧾', {
   text: ['Schreibe die Zahlen genau untereinander: Einer unter Einer, Zehner unter Zehner, Hunderter unter Hunderter.', 'Rechne von rechts nach links – zuerst die Einer.', 'Ist das Ergebnis einer Spalte 10 oder mehr, schreibst du die Einer-Ziffer hin und merkst dir den Übertrag in der nächsten Spalte (kleine 1).'],
   visual: { kind: 'column', op: '+', rows: [358, 276], result: 634, carries: [0, 1, 1] },
   videoQuery: 'schriftliche Addition mit Übertrag Klasse 3',
-}, (r) => {
-  const three = chance(r, 0.25);
-  const nums = three ? [ri(r, 100, 399), ri(r, 100, 299), ri(r, 10, 299)] : [ri(r, 120, 699), ri(r, 105, 399)];
+}, (r, s) => {
+  const nums = plusNumbers(r, s);
   const res = nums.reduce(sumUp, 0);
   const { steps, carries } = columnAdd(nums);
   const noCarry = Number([0, 1, 2].map((i) => nums.reduce((acc, n) => acc + (Math.floor(n / 10 ** i) % 10), 0) % 10).reverse().join(''));
@@ -592,13 +608,22 @@ const schrPlus = M(3, 'm3-schriftlich-plus', 'Schriftliche Addition', '🧾', {
   return { key: nums.join('+'), prompt: `Rechne schriftlich:\n${nums.join(' + ')}`, speak: `Rechne schriftlich: ${nums.join(' plus ')}`, visual: { kind: 'column', op: '+', rows: nums }, work: { op: '+', rows: nums, result: res }, answer: { type: 'number', value: res }, tags: [hasCarry ? 'übertrag' : 'ohne-übertrag'], traps: hasCarry && noCarry !== res ? [{ answer: String(noCarry), tag: 'übertrag-vergessen', hint: 'Du hast den Übertrag vergessen. Schreibe ihn klein in die nächste Spalte und rechne ihn mit.' }] : [], solution: steps, solutionVisual: { kind: 'column', op: '+', rows: nums, result: res, carries } };
 }, { tagLabels: { übertrag: 'mit Übertrag', 'übertrag-vergessen': 'Übertrag vergessen' }, testSeconds: 60 });
 
+/** Stufe 1 ohne Entbündeln, Stufe 2 mit, Stufe 3 mit Nullen in der oberen Zahl */
+function minusNumbers(r: Rng, s: Stage): [number, number] {
+  for (;;) {
+    const a = s === 3 ? pick(r, [ri(r, 3, 9) * 100 + ri(r, 1, 9), ri(r, 3, 9) * 100, ri(r, 3, 9) * 100 + ri(r, 1, 9) * 10]) : ri(r, 300, 999);
+    const b = ri(r, 101, a - 50);
+    const borrow = columnSub(a, b).carries.filter(Boolean).length;
+    if (s === 1 ? borrow === 0 : borrow >= 1) return [a, b];
+  }
+}
+
 const schrMinus = M(3, 'm3-schriftlich-minus', 'Schriftliche Subtraktion', '📝', {
   text: ['Schreibe die Zahlen genau untereinander – die größere Zahl oben.', 'Rechne von rechts nach links.', 'Ist die obere Ziffer zu klein, holst du dir einen von der nächsten Stelle (entbündeln): Aus 1 Zehner werden 10 Einer.', 'Ihr lernt in der Schule vielleicht das Ergänzungsverfahren – das Ergebnis ist das gleiche. Mach die Probe mit Plus!'],
   visual: { kind: 'column', op: '−', rows: [542, 178], result: 364 },
   videoQuery: 'schriftliche Subtraktion Klasse 3 erklärt',
-}, (r) => {
-  const a = ri(r, 300, 999);
-  const b = ri(r, 101, a - 50);
+}, (r, s) => {
+  const [a, b] = minusNumbers(r, s);
   const res = a - b;
   const { steps, carries } = columnSub(a, b);
   const wrong = Number(digitsOf(a).reverse().map((d, i) => Math.abs(d - (digitsOf(b).reverse()[i] ?? 0))).reverse().join(''));
@@ -698,7 +723,7 @@ const koerper3 = M(3, 'm3-koerper', 'Geometrische Körper', '🧊', {
   return { key: b.s, prompt: 'Wie heißt dieser Körper?', visual: { kind: 'shape', shape: b.s }, answer: choice(r, b.s, BODIES.map((x) => x.s)), tags: ['benennen'], solution: [b.info] };
 }, { tagLabels: { 'ecken-kanten': 'Ecken, Kanten, Flächen', benennen: 'Körper benennen' }, testSeconds: 20 });
 
-const sach3 = M(3, 'm3-sachaufgaben', 'Sachaufgaben', '🧐', sachEx('Klasse 3'), (r) => storyTask(r, 3), { tagLabels: SACH_TAGS, testSeconds: 90 });
+const sach3 = M(3, 'm3-sachaufgaben', 'Sachaufgaben', '🧐', sachEx('Klasse 3'), (r, s) => storyTask(r, 3, s), { tagLabels: SACH_TAGS, testSeconds: 90 });
 
 // ---------- Klasse 4 ----------
 
@@ -729,15 +754,15 @@ const stellenwert4 = M(4, 'm4-stellenwert', 'Zahlen bis 1 Million', '🌌', {
 const runden4 = M(4, 'm4-runden', 'Runden und Überschlagen', '🎯', {
   text: ['Runden geht bei großen Zahlen genauso: Schau auf die Ziffer rechts von der Rundungsstelle.', '0–4 abrunden, 5–9 aufrunden.', 'Überschlagen: Runde erst, dann rechne – so prüfst du, ob dein Ergebnis ungefähr stimmt.'],
   videoQuery: 'Runden große Zahlen Überschlag Klasse 4',
-}, (r) => roundTask(ri(r, 1001, 999999), pick(r, [2, 3, 4])), { tagLabels: { 'falsche-richtung': 'in die falsche Richtung gerundet', fünf: 'Runden bei der 5' }, testSeconds: 25 });
+}, (r, s) => roundTask(s === 1 ? ri(r, 1001, 9999) : s === 2 ? ri(r, 10001, 999999) : ri(r, 100001, 949999), s === 1 ? pick(r, [2, 3]) : s === 2 ? pick(r, [3, 4]) : pick(r, [4, 5])), { tagLabels: { 'falsche-richtung': 'in die falsche Richtung gerundet', fünf: 'Runden bei der 5' }, testSeconds: 25 });
 
 const schrMal = M(4, 'm4-schriftlich-mal', 'Schriftliche Multiplikation', '✖️', {
   text: ['Mit einstelliger Zahl: Rechne von rechts nach links und nimm jede Ziffer mal. Überträge schreibst du klein auf.', 'Mit zweistelliger Zahl: Rechne zuerst mal den Zehner, dann mal den Einer. Das zweite Teilergebnis rückt eine Stelle nach rechts. Dann addierst du.'],
   visual: { kind: 'column', op: '·', rows: [347, 6], result: 2082 },
   videoQuery: 'schriftliche Multiplikation Klasse 4 erklärt',
-}, (r) => {
-  if (chance(r, 0.55)) {
-    const a = ri(r, 120, 2999), d = ri(r, 3, 9);
+}, (r, s) => {
+  if (s === 1 || (s === 2 && chance(r, 0.7))) {
+    const a = s === 1 ? ri(r, 12, 399) : ri(r, 120, 2999), d = s === 1 ? ri(r, 2, 5) : ri(r, 3, 9);
     return { key: `${a}x${d}`, prompt: `Rechne schriftlich:\n${a} · ${d}`, speak: `Rechne schriftlich: ${a} mal ${d}`, visual: { kind: 'column', op: '·', rows: [a, d] }, work: { op: '·', rows: [a, d], result: a * d }, answer: { type: 'number', value: a * d }, tags: ['einstellig'], solution: [...columnMul1(a, d), `Ergebnis: ${fmt(a * d)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, d], result: a * d } };
   }
   const a = ri(r, 102, 899), b = ri(r, 12, 49);
@@ -749,8 +774,10 @@ const schrGeteilt = M(4, 'm4-schriftlich-geteilt', 'Schriftliche Division', '➗
   text: ['Teile Ziffer für Ziffer von links nach rechts.', 'Frage: Wie oft passt die Zahl hinein? Schreibe das Ergebnis, rechne den Rest aus und hole die nächste Ziffer herunter.', 'Mach am Ende die Probe mit der Malaufgabe.'],
   visual: { kind: 'column', op: ':', rows: [852, 4], result: 213 },
   videoQuery: 'schriftliche Division Klasse 4 erklärt',
-}, (r) => {
-  const d = ri(r, 2, 9), q = ri(r, 102, 999);
+}, (r, s) => {
+  const d = s === 1 ? ri(r, 2, 5) : ri(r, 2, 9);
+  let q = ri(r, 102, 999);
+  while ((s === 1 && String(q).includes('0')) || (s === 3 && !String(q).includes('0') && q < 1000)) q = s === 3 ? pick(r, [ri(r, 1, 9) * 100 + ri(r, 1, 9), ri(r, 101, 999), ri(r, 1, 9) * 100 + ri(r, 1, 9) * 10]) : ri(r, 102, 999);
   const n = d * q;
   const { steps } = columnDiv(n, d);
   return { key: `${n}:${d}`, prompt: `Rechne schriftlich:\n${fmt(n)} : ${d}`, speak: `Rechne schriftlich: ${n} geteilt durch ${d}`, work: { op: ':', rows: [n, d], result: q }, answer: { type: 'number', value: q }, tags: [String(q).includes('0') ? 'null-im-ergebnis' : 'division'], traps: String(q).includes('0') ? [{ answer: String(q).replace(/0/g, ''), tag: 'null-vergessen', hint: 'Wenn die Zahl nicht hineinpasst, schreibst du eine 0 ins Ergebnis!' }] : [], solution: [...steps, `Probe: ${q} · ${d} = ${fmt(n)} ✓`], solutionVisual: { kind: 'column', op: ':', rows: [n, d], result: q, steps } };
@@ -770,8 +797,8 @@ const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: stri
 const groessen4 = M(4, 'm4-groessen', 'Größen umrechnen', '🔄', {
   text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!'],
   videoQuery: 'Größen umrechnen Klasse 4 Längen Gewichte Zeit Hohlmaße',
-}, (r) => {
-  const g = pick(r, GROESSEN).q(r);
+}, (r, s) => {
+  const g = GROESSEN[pick(r, s === 1 ? [0, 1, 3, 4, 8] : s === 3 ? [2, 5, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7, 8])].q(r);
   return { key: g.p, prompt: g.p, answer: { type: 'number', value: g.v, unit: g.unit }, tags: [g.tag], traps: g.trap !== undefined ? [{ answer: String(g.trap), tag: 'umrechnungszahl', hint: g.tag === 'zeit' ? 'Bei der Zeit ist die Umrechnungszahl 60, nicht 100.' : 'Schau noch einmal auf die Umrechnungszahl.' }] : [], solution: g.sol };
 }, { tagLabels: { liter: 'Liter und Milliliter', zeit: 'Zeiteinheiten', geld: 'Euro und Cent', gewicht: 'Gewichte', länge: 'Längen', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 });
 
@@ -779,8 +806,8 @@ const flaeche4 = M(4, 'm4-flaeche', 'Umfang und Fläche', '🟩', {
   text: ['Der Umfang ist der Weg einmal ganz außen herum: Alle Seiten zusammen.', 'Rechteck: Umfang = 2 · Länge + 2 · Breite.', 'Die Fläche sagt, wie viel Platz innen ist: Zähle die Kästchen oder rechne Länge · Breite.', 'Merke: Umfang = Zaun außen herum. Fläche = Rasen innen.'],
   visual: { kind: 'rect', w: 5, h: 3 },
   videoQuery: 'Umfang und Flächeninhalt Rechteck Grundschule Klasse 4',
-}, (r) => {
-  const w = ri(r, 2, 9), h = ri(r, 2, 6);
+}, (r, s) => {
+  const w = s === 1 ? ri(r, 2, 5) : ri(r, 3, 9), h = s === 1 ? ri(r, 2, 4) : s === 3 ? ri(r, 4, 7) : ri(r, 2, 6);
   const umfang = chance(r, 0.5);
   const v = umfang ? 2 * (w + h) : w * h;
   const other = umfang ? w * h : 2 * (w + h);
@@ -820,7 +847,7 @@ const wahrsch4 = M(4, 'm4-wahrscheinlichkeit', 'Wahrscheinlichkeit', '🎲', {
   return { key: `${JSON.stringify(colors)}-best`, prompt: 'Welche Farbe ziehst du am wahrscheinlichsten?', visual: { kind: 'marbles', colors }, answer: choice(r, best, opts), tags: ['wahrscheinlichste'], solution: [`Von ${best} gibt es die meisten Kugeln (${colors[best]} von ${total}).`] };
 }, { tagLabels: { sicher: 'sicher', möglich: 'möglich', unmöglich: 'unmöglich', wahrscheinlichste: 'am wahrscheinlichsten' }, testSeconds: 25 });
 
-const sach4 = M(4, 'm4-sachaufgaben', 'Sachaufgaben', '🗺️', sachEx('Klasse 4'), (r) => storyTask(r, 4), { tagLabels: SACH_TAGS, testSeconds: 120 });
+const sach4 = M(4, 'm4-sachaufgaben', 'Sachaufgaben', '🗺️', sachEx('Klasse 4'), (r, s) => storyTask(r, 4, s), { tagLabels: SACH_TAGS, testSeconds: 120 });
 
 export const MATHE: Skill[] = [
   zaehlen, vergleichen, nachbarn, zerlegen, plus10, minus10, plus20, minus20, verdoppeln1, formen,

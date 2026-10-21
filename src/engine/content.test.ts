@@ -12,10 +12,11 @@ describe('Inhalte', () => {
   });
 
   for (const skill of ALL_SKILLS) {
-    it(`${skill.id}: 400 Aufgaben sind lösbar und sauber`, () => {
+    it(`${skill.id}: je Stufe 150 Aufgaben sind lösbar und sauber`, () => {
       const r = mulberry32(skill.id.length * 7919 + 17);
-      for (let i = 0; i < 400; i++) {
-        const t = skill.generate(r);
+      for (let i = 0; i < 450; i++) {
+        const t = skill.generate(r, ((i % 3) + 1) as 1 | 2 | 3);
+        expect(t.stage).toBe((i % 3) + 1);
         const ctx = `${skill.id} #${i}: ${t.prompt}`;
         expect(t.skillId, ctx).toBe(skill.id);
         expect(t.key, ctx).toBeTruthy();

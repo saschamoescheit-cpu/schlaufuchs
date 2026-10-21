@@ -1,4 +1,4 @@
-import type { Explanation, Grade, Skill, Subject, Task } from '../engine/types';
+import type { Explanation, Grade, Skill, Stage, Subject, Task } from '../engine/types';
 import type { Rng } from '../engine/rng';
 
 export type Gen = Omit<Task, 'skillId'>;
@@ -10,10 +10,20 @@ export function skill(
   title: string,
   icon: string,
   explain: Explanation,
-  gen: (r: Rng) => Gen,
-  extra: Partial<Pick<Skill, 'tagLabels' | 'testSeconds'>> = {},
+  gen: (r: Rng, stage: Stage) => Gen,
+  extra: Partial<Pick<Skill, 'tagLabels' | 'testSeconds' | 'staged'>> = {},
 ): Skill {
-  return { id, subject, grade, title, icon, explain, generate: (r) => cleanTraps({ ...gen(r), skillId: id }), ...extra };
+  return { id, subject, grade, title, icon, explain, generate: (r, stage = 2) => easier(cleanTraps({ ...gen(r, stage), skillId: id, stage }), r), ...extra };
+}
+
+/** Stufe 1: bei Auswahl-Aufgaben eine falsche Antwort weniger */
+function easier(t: Task, r: Rng): Task {
+  const a = t.answer;
+  if (t.stage !== 1 || a.type !== 'choice' || a.options.length < 4) return t;
+  const wrong = a.options.map((_, i) => i).filter((i) => i !== a.correct);
+  const drop = wrong[Math.floor(r() * wrong.length)];
+  const options = a.options.filter((_, i) => i !== drop);
+  return { ...t, answer: { ...a, options, correct: options.indexOf(a.options[a.correct]) } };
 }
 
 /** Fallen, die zufällig der richtigen Antwort entsprechen, fallen weg */

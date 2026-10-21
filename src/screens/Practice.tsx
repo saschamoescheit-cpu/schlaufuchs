@@ -1,11 +1,11 @@
 // Übungsrunde: Aufgabe → sofortige Rückmeldung → bei Fehlern Erklärung, Wiederholung in der Runde und in der Fehler-Kiste.
 import { useMemo, useState } from 'react';
 import { check, correctText, type CheckResult } from '../engine/check';
-import { record, type Mode } from '../engine/learning';
-import type { Task } from '../engine/types';
+import { record, stageOf, type Mode } from '../engine/learning';
+import type { Stage, Task } from '../engine/types';
 import { skillById } from '../content/curriculum';
 import { updateProgress, type Profile } from '../data/store';
-import { CloseIcon, Confetti, Confirm, Fox, Speak } from '../ui/common';
+import { CloseIcon, Confetti, Confirm, Fox, Speak, Toast } from '../ui/common';
 import { ExplainBody } from '../ui/Explain';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
@@ -31,6 +31,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
   const [solvedInBox, setSolvedInBox] = useState(0);
   const [askQuit, setAskQuit] = useState(false);
   const [more, setMore] = useState(false);
+  const [stageMsg, setStageMsg] = useState<string | null>(null);
 
   const item = queue[idx];
   const done = idx >= queue.length;
@@ -41,11 +42,22 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
     setValue(v);
     const res = check(item.task, v);
     let solved = false;
+    let change: 'up' | 'down' | undefined;
+    let newStage: Stage = 1;
+    let inBox = new Set<string>();
     updateProgress(profile.id, (p) => {
       const r = record(p, item.task, res.ok, mode, Date.now(), res.tags ?? res.trap?.tag);
       solved = r.reviewSolved;
+      change = r.stageChange;
+      newStage = stageOf(p, item.task.skillId);
+      inBox = new Set(p.review.map((x) => x.task.key));
       if (r.reviewAdded) setNewInBox((n) => n + 1);
     });
+    if (change && skill?.staged) {
+      setStageMsg(change === 'up' ? `Stark! ${skill.title}: Stufe ${newStage} – jetzt wird's kniffliger! 🚀` : `Wir machen es ein bisschen leichter: Stufe ${newStage}.`);
+      // kommende neue Aufgaben dieses Themas passend zur neuen Stufe
+      setQueue((q) => q.map((it, k) => (k > idx && !it.again && it.task.skillId === item.task.skillId && !inBox.has(it.task.key) ? { task: skill.generate(Math.random, newStage) } : it)));
+    }
     if (solved) setSolvedInBox((n) => n + 1);
     if (!item.again) setFirstTry((f) => ({ right: f.right + (res.ok ? 1 : 0), total: f.total + 1 }));
     if (res.ok) {
@@ -134,6 +146,11 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
           <span>
             {skill?.icon} {skill?.title}
           </span>
+          {skill?.staged && item.task.stage && (
+            <span className="stage-pill" title="Schwierigkeit">
+              Stufe {[1, 2, 3].map((x) => (x <= item.task.stage! ? '●' : '○')).join('')}
+            </span>
+          )}
           {item.again && <span className="tag">Nochmal!</span>}
         </div>
 
@@ -213,6 +230,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
         )}
       </div>
 
+      {stageMsg && <Toast text={stageMsg} onDone={() => setStageMsg(null)} ms={3200} />}
       {askQuit && (
         <Confirm
           title="Übung beenden?"
