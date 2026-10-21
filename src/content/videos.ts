@@ -159,6 +159,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   ],
   'm4-bruchgroessen': [{ id: '9x8mSib0ETk', title: 'Brüche umrechnen in die nächstkleinere Maßeinheit', channel: 'LehrerBros - Mathe leicht gemacht', len: '4:35' }],
   'm4-fahrplan': [{ id: '9NkM9qlxNBc', title: 'Fahrplan - lesen und verstehen', channel: 'LehrerTEF', len: '4:12' }],
+  'm3-zahlwoerter': [
+    { id: 'gv_5KM9CCk8', title: 'Zahlwörter bis 1000', channel: 'Grundschul-Lernleitern', len: '3:42' },
+    { id: 'g1J7fY7Ebfw', title: 'Zahldarstellungen - Zahlenraum bis 1000 - Klasse 3', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:55' },
+  ],
   'm3-wuerfelgebaeude': [
     { id: '1GJZeby2dxw', title: 'Erklärvideo Würfelgebäude: Baupläne', channel: 'Grundschule Ludwigsfeld', len: '3:56' },
     { id: '8CkMXnbJq9c', title: 'Was sind Würfelgebäude?', channel: 'Pflichtsender', len: '2:59' },

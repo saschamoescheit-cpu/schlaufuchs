@@ -434,10 +434,56 @@ export const MATHE_EXTRA3: Skill[] = [
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-geteilt-gross', 'Teilen mit großen Zahlen', '➗', { text: ['Große Zahlen teilst du in Schritten: Zerlege die Zahl in zwei Teile, die du gut teilen kannst.', '84 : 4 → 80 : 4 = 20 und 4 : 4 = 1 → zusammen 21.', 'Probe mit der Malaufgabe: 21 · 4 = 84 ✓'], visual: { kind: 'text', text: '84 : 4 = 80 : 4 + 4 : 4 = 21' }, videoQuery: 'halbschriftliche Division Klasse 3 erklärt' }, teilenGrossTask, { tagLabels: { zweistellig: 'zweistellige Zahlen teilen', dreistellig: 'dreistellige Zahlen teilen', 'teil-vergessen': 'einen Teil vergessen' }, testSeconds: 30 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
+  M(3, 'm3-zahlwoerter', 'Zahlwörter lesen und schreiben', '🔤', { text: ['Zahlwörter schreibt man zusammen: dreihundertvierundfünfzig = 354.', 'Achtung: Im Deutschen sagt man die Einer vor den Zehnern – vier-und-fünfzig, aber geschrieben 54.', 'Lies lange Zahlwörter in Stücken: drei-hundert | vier-und-fünfzig.'], visual: { kind: 'text', text: 'dreihundert · vierund · fünfzig = 354' }, videoQuery: 'Zahlwörter schreiben Zahlen bis 1000 Klasse 3' }, zahlwortTask, { tagLabels: { 'bis-100': 'Zahlwörter bis 100', 'bis-1000': 'Zahlwörter bis 1000', zahlendreher: 'Zahlendreher (Einer und Zehner vertauscht)' }, testSeconds: 20 }),
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🏗️', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
   M(4, 'm4-bruchgroessen', 'Brüche bei Größen: ½, ¼, ¾', '🍰', { text: ['½ heißt: die Hälfte. ½ kg = 500 g, ½ h = 30 min.', '¼ heißt: ein Viertel – das Ganze durch 4. ¼ l = 250 ml, ¼ h = 15 min.', '¾ sind drei Viertel: ¾ h = 45 min, ¾ kg = 750 g.'], visual: { kind: 'text', text: '½ kg = 500 g · ¼ h = 15 min' }, videoQuery: 'Brüche bei Größen halb viertel Klasse 4' }, fracTask, { tagLabels: { halb: 'halbe Größen', viertel: 'Viertel und Dreiviertel', 'prozent-gedacht': 'Umrechnungszahl vergessen' }, testSeconds: 25 }),
 ];
+
+// ---------- Zahlwörter (Kl. 3) ----------
+
+const EINS = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn', 'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn'];
+const ZEHN = ['', '', 'zwanzig', 'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig'];
+/** deutsches Zahlwort bis 999 (zusammengeschrieben, wie es Kinder lernen) */
+export function zahlwort(n: number): string {
+  if (n < 20) return EINS[n];
+  if (n < 100) {
+    const e = n % 10;
+    return e ? `${e === 1 ? 'ein' : EINS[e]}und${ZEHN[Math.floor(n / 10)]}` : ZEHN[n / 10];
+  }
+  const h = Math.floor(n / 100);
+  const rest = n % 100;
+  return `${h === 1 ? 'ein' : EINS[h]}hundert${rest ? zahlwort(rest) : ''}`;
+}
+function zahlwortTask(r: Rng, s: Stage): Gen {
+  const n = s === 1 ? ri(r, 21, 99) : s === 2 ? ri(r, 101, 999) : pick(r, [ri(r, 101, 999), ri(r, 1, 9) * 100 + ri(r, 11, 19), ri(r, 1, 9) * 100 + ri(r, 1, 9)]);
+  const w = zahlwort(n);
+  const swap = (x: number) => {
+    const e = x % 10, z = Math.floor(x / 10) % 10;
+    return x - e - z * 10 + e * 10 + z;
+  };
+  const dreher = swap(n);
+  if (chance(r, 0.5)) {
+    return {
+      key: `w-${n}`,
+      prompt: `Schreibe als Zahl:\n${w}`,
+      speak: `Schreibe als Zahl: ${n}`,
+      answer: { type: 'number', value: n },
+      tags: [n < 100 ? 'bis-100' : 'bis-1000'],
+      traps: dreher !== n ? [{ answer: String(dreher), tag: 'zahlendreher', hint: 'Achtung Zahlendreher: Im Deutschen sagt man die Einer vor den Zehnern – „vierundsiebzig“ ist 74, nicht 47.' }] : [],
+      solution: [`${w} = ${n}`, n >= 100 ? `${Math.floor(n / 100)} Hunderter, ${Math.floor(n / 10) % 10} Zehner, ${n % 10} Einer` : `${Math.floor(n / 10)} Zehner, ${n % 10} Einer`],
+    };
+  }
+  const wrong = [...new Set([dreher, n + 10 <= 999 ? n + 10 : n - 10, n >= 100 ? n + 100 * (n < 900 ? 1 : -1) : n + 1].filter((x) => x !== n))].map(zahlwort);
+  return {
+    key: `z-${n}`,
+    prompt: `Welches Zahlwort passt zu ${n}?`,
+    answer: { ...choice(r, w, wrong), speakOptions: 'de' },
+    tags: [n < 100 ? 'bis-100' : 'bis-1000'],
+    traps: dreher !== n ? [{ answer: zahlwort(dreher), tag: 'zahlendreher', hint: 'Achtung Zahlendreher: Im Zahlwort kommen die Einer vor den Zehnern.' }] : [],
+    solution: [`${n} = ${w}`, 'Lies Stück für Stück: erst die Hunderter, dann die Einer, dann die Zehner – „…hundert-vier-und-fünfzig“.'],
+  };
+}
 
 // ---------- V oder F (Kl. 2) ----------
 
