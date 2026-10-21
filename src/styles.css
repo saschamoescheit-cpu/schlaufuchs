@@ -1744,3 +1744,113 @@ details.more .inner {
   margin: 0 6px 6px 0;
   font-size: 0.85rem;
 }
+
+/* ---------- Arbeitsblatt ---------- */
+.print-page {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 16px 40px;
+}
+.sheet-paper {
+  background: #fff;
+  color: #000;
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  font-family: var(--body);
+}
+.paper-head {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 10px;
+  margin-bottom: 14px;
+}
+.paper-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 0.95rem;
+}
+.paper-tasks > li {
+  break-inside: avoid;
+  margin-bottom: 18px;
+  padding-left: 4px;
+}
+.paper-prompt {
+  white-space: pre-line;
+  font-weight: 600;
+}
+.paper-visual {
+  max-width: 260px;
+  margin: 8px 0;
+}
+.paper-visual svg {
+  max-height: 150px;
+  width: auto !important;
+  margin: 0 !important;
+}
+.paper-visual .vis-emoji {
+  font-size: 3rem;
+}
+.paper-reading {
+  border: 1px solid #999;
+  border-radius: 6px;
+  padding: 8px 10px;
+  margin: 6px 0;
+  font-size: 0.95rem;
+}
+.paper-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 6px;
+}
+.paper-line {
+  margin-top: 10px;
+}
+.paper-grid {
+  height: 120px;
+  width: 260px;
+  margin-top: 8px;
+  background-image: linear-gradient(#bbb 1px, transparent 1px), linear-gradient(90deg, #bbb 1px, transparent 1px);
+  background-size: 20px 20px;
+  border: 1px solid #bbb;
+}
+.paper-solutions li {
+  margin-bottom: 6px;
+}
+.paper-key {
+  margin-top: 10px;
+  color: #444;
+}
+@media print {
+  body,
+  html {
+    background: #fff !important;
+  }
+  .no-print,
+  .tabbar {
+    display: none !important;
+  }
+  .app {
+    padding: 0 !important;
+    max-width: none !important;
+  }
+  .print-page {
+    padding: 0;
+    max-width: none;
+  }
+  .sheet-paper {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 0;
+    margin: 0;
+  }
+  .page-break {
+    break-before: page;
+  }
+}

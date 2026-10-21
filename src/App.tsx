@@ -10,6 +10,7 @@ import { ReviewScreen, StatsScreen } from './screens/Stats';
 import { TestResultView, TestRun, TestSetup, type TestSpec } from './screens/Tests';
 import { ProfileEdit, Settings, Welcome } from './screens/Profile';
 import { ParentChild, ParentHome, PinGate } from './screens/Parent';
+import { PrintView } from './screens/Print';
 import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
 
@@ -19,6 +20,7 @@ type Route =
   | { r: 'subject'; subject: Subject }
   | { r: 'practice'; title: string; tasks: Task[]; mode: Mode; again?: () => Task[]; n: number }
   | { r: 'test'; spec: TestSpec }
+  | { r: 'print'; spec: TestSpec }
   | { r: 'result'; id: string }
   | { r: 'profile-edit' }
   | { r: 'profile-new' }
@@ -109,7 +111,7 @@ export default function App() {
         ) : route.tab === 'review' ? (
           <ReviewScreen profile={profile} progress={progress} onReviewAll={reviewAll} onPractice={practiceSkill} />
         ) : route.tab === 'tests' ? (
-          <TestSetup profile={profile} progress={progress} onStart={(spec) => push({ r: 'test', spec })} onOpenResult={(id) => push({ r: 'result', id })} onPractice={practiceMix} />
+          <TestSetup profile={profile} progress={progress} onStart={(spec) => push({ r: 'test', spec })} onOpenResult={(id) => push({ r: 'result', id })} onPractice={practiceMix} onPrint={(spec) => push({ r: 'print', spec })} />
         ) : (
           <StatsScreen profile={profile} progress={progress} onPractice={practiceSkill} onOpenTest={(id) => push({ r: 'result', id })} />
         );
@@ -129,6 +131,8 @@ export default function App() {
           onRestart={route.again ? () => replace({ ...route, tasks: route.again!(), n: route.n + 1 }) : dueReviews(data.progress[profile.id] ?? progress, Date.now()).length && route.mode === 'wiederholung' ? () => replace({ ...route, tasks: buildReview(ALL_SKILLS, data.progress[profile.id] ?? progress), n: route.n + 1 }) : undefined}
         />
       );
+    case 'print':
+      return <PrintView profile={profile} spec={route.spec} onBack={back} />;
     case 'test':
       return <TestRun profile={profile} spec={route.spec} onCancel={back} onDone={(id) => replace({ r: 'result', id })} />;
     case 'result': {

@@ -509,11 +509,24 @@ function storyGen(r: Rng, level: 2 | 3 | 4): Story {
   if (t === 2) { const a = ri(r, 1200, 4800), b = ri(r, 800, a - 200); return { text: `Ein Fahrradhändler hat ${a} € eingenommen. Davon bezahlt er eine Rechnung über ${b} €.`, q: 'Wie viel Geld bleibt übrig?', calc: `${a} − ${b} = ${a - b}`, res: a - b, unit: '€', ant: `Es bleiben ${a - b} € übrig.`, op: 'minus', wrong: a + b }; }
   if (t === 3) { const k = ri(r, 3, 9), s = ri(r, 120, 450); return { text: `Eine Kiste Mineralwasser wiegt 9 kg ${s} g. Ein Lieferwagen bringt ${k} Kisten.`, q: 'Wie viel Gramm wiegen alle Kisten zusammen?', calc: `9 kg ${s} g = ${9000 + s} g, ${k} · ${9000 + s} g = ${k * (9000 + s)} g`, res: k * (9000 + s), unit: 'g', ant: `Die Kisten wiegen ${fmt(k * (9000 + s))} g.`, op: 'zwei-schritte', wrong: k * (9 + s) }; }
   if (t === 4) { const pp = ri(r, 3, 8), c = ri(r, 4, 9); return { text: `Für das Schulfest backen ${c} Eltern je ${pp} Bleche Kuchen. Auf jedes Blech passen 20 Stücke.`, q: 'Wie viele Kuchenstücke gibt es?', calc: `${c} · ${pp} = ${c * pp} Bleche, ${c * pp} · 20 = ${c * pp * 20} Stücke`, res: c * pp * 20, unit: 'Stücke', ant: `Es gibt ${c * pp * 20} Kuchenstücke.`, op: 'zwei-schritte', wrong: c * pp }; }
-  const start = ri(r, 7, 9), dur = pick(r, [95, 110, 125, 140, 155]); const end = start * 60 + 15 + dur; return { text: `Der Ausflug beginnt um ${start}:15 Uhr. Die Busfahrt dauert ${dur} Minuten.`, q: 'Um wie viel Uhr kommt der Bus an? (Gib die Minuten nach der vollen Stunde an.)', calc: `${dur} min = ${Math.floor(dur / 60)} h ${dur % 60} min. ${start}:15 Uhr + ${Math.floor(dur / 60)} h ${dur % 60} min = ${Math.floor(end / 60)}:${pad(end % 60)} Uhr`, res: end % 60, unit: 'Minuten', ant: `Der Bus kommt um ${Math.floor(end / 60)}:${pad(end % 60)} Uhr an.`, op: 'zeit' };
+  const start = ri(r, 7, 9), dur = pick(r, [95, 110, 125, 140, 155]); const end = start * 60 + 15 + dur; return { text: `Der Ausflug beginnt um ${start}:15 Uhr. Die Busfahrt dauert ${dur} Minuten.`, q: 'Um wie viel Uhr kommt der Bus an?', calc: `${dur} min = ${Math.floor(dur / 60)} h ${dur % 60} min. ${start}:15 Uhr + ${Math.floor(dur / 60)} h ${dur % 60} min = ${Math.floor(end / 60)}:${pad(end % 60)} Uhr`, res: end, unit: 'Uhr', wrong: start * 60 + 15 + Math.floor(dur / 100) * 60 + (dur % 100), ant: `Der Bus kommt um ${Math.floor(end / 60)}:${pad(end % 60)} Uhr an.`, op: 'zeit' };
 }
 function storyTask(r: Rng, level: 2 | 3 | 4, stage: Stage = 2): Gen {
   let s = storyGen(r, level);
   for (let i = 0; i < 12 && ((stage === 1 && s.op === 'zwei-schritte') || (stage === 3 && level > 2 && s.op !== 'zwei-schritte')); i++) s = storyGen(r, level);
+  if (s.op === 'zeit') {
+    // Uhrzeit-Geschichte: die richtige Uhrzeit auswählen (res = Minuten seit Mitternacht, wrong = mit 100 statt 60 gerechnet)
+    const t = (m: number) => `${Math.floor(m / 60)}:${pad(m % 60)} Uhr`;
+    const traps = s.wrong !== undefined && s.wrong !== s.res ? [{ answer: t(s.wrong), tag: 'hundert-statt-sechzig', hint: 'Eine Stunde hat 60 Minuten, nicht 100! Zerlege die Fahrzeit in Stunden und Minuten.' }] : [];
+    return {
+      key: s.text,
+      prompt: `${s.text}\n${s.q}`,
+      answer: choice(r, t(s.res), [t(s.res + 10), t(s.res - 60), ...(s.wrong !== undefined ? [t(s.wrong)] : []), t(s.res + 60)]),
+      tags: ['zeit'],
+      traps,
+      solution: [`Frage: ${s.q}`, `Rechnung: ${s.calc}`, `Antwort: ${s.ant}`],
+    };
+  }
   return {
     key: s.text,
     prompt: `${s.text}\n${s.q}`,
@@ -523,7 +536,7 @@ function storyTask(r: Rng, level: 2 | 3 | 4, stage: Stage = 2): Gen {
     solution: [`Frage: ${s.q}`, `Rechnung: ${s.calc}`, `Antwort: ${s.ant}`],
   };
 }
-const SACH_TAGS = { plus: 'Plus-Geschichten', minus: 'Minus-Geschichten', mal: 'Mal-Geschichten', geteilt: 'Teilen-Geschichten', 'zwei-schritte': 'Aufgaben mit zwei Schritten', 'falsche-rechenart': 'falsche Rechenart gewählt', 'schritt-vergessen': 'einen Rechenschritt vergessen', zeit: 'Zeitrechnung' };
+const SACH_TAGS = { plus: 'Plus-Geschichten', minus: 'Minus-Geschichten', mal: 'Mal-Geschichten', geteilt: 'Teilen-Geschichten', 'zwei-schritte': 'Aufgaben mit zwei Schritten', 'falsche-rechenart': 'falsche Rechenart gewählt', 'schritt-vergessen': 'einen Rechenschritt vergessen', zeit: 'Zeitrechnung', 'hundert-statt-sechzig': 'mit 100 statt 60 Minuten gerechnet' };
 const sachEx = (k: string) => ({ text: ['Lies die Geschichte zweimal in Ruhe.', 'Frage dich: Was weiß ich? Was soll ich herausfinden?', 'Überlege: Kommt etwas dazu (+), geht etwas weg (−), gibt es mehrmals das Gleiche (·) oder wird verteilt (:)?', 'Schreibe Frage, Rechnung und Antwort auf.'], videoQuery: `Sachaufgaben lösen ${k} Grundschule` });
 const sach2 = M(2, 'm2-sachaufgaben', 'Rechengeschichten', '📖', sachEx('Klasse 2'), (r, s) => storyTask(r, 2, s), { tagLabels: SACH_TAGS, testSeconds: 60 });
 

@@ -28,7 +28,7 @@ export interface TestSpec {
   pace: Pace;
 }
 
-export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice }: { profile: Profile; progress: Progress; onStart: (t: TestSpec) => void; onOpenResult: (id: string) => void; onPractice: (skills: Skill[], title: string) => void }) {
+export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice, onPrint }: { profile: Profile; progress: Progress; onStart: (t: TestSpec) => void; onOpenResult: (id: string) => void; onPractice: (skills: Skill[], title: string) => void; onPrint: (t: TestSpec) => void }) {
   const [tab, setTab] = useState<'probe' | 'termine' | 'ergebnisse'>(() => (nextPlanned(profile, 60) ? 'termine' : 'probe'));
   const [subject, setSubject] = useState<Subject>('mathe');
   const [level, setLevel] = useState<Grade>(currentLevel('mathe', profile));
@@ -152,6 +152,16 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
         }}
       >
         Test starten
+      </button>
+      <button
+        className="btn ghost block small"
+        disabled={!chosen.length}
+        onClick={() => {
+          const t = buildTest(chosen, n, pace);
+          onPrint({ subject, skills: chosen.map((s) => s.id), tasks: t.tasks, limit: t.limit, pace });
+        }}
+      >
+        🖨️ Als Arbeitsblatt drucken
       </button>
 
       </>)}
