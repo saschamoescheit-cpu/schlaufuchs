@@ -49,3 +49,20 @@ describe('Gliederung', () => {
     expect(rest).toEqual([]);
   });
 });
+
+describe('Zahlenraum je Klasse', () => {
+  // Größen-Umrechnungen (900 cm, 4600 g) und Kalender (365 Tage) dürfen darüber liegen
+  const AUSNAHMEN = new Set(['m2-laengen', 'm2-kalender', 'm3-gewichte', 'm3-laengen']);
+  const LIM: Record<number, number> = { 1: 20, 2: 100, 3: 1000 };
+  for (const s of ALL_SKILLS.filter((x) => x.subject === 'mathe' && x.grade <= 3 && !AUSNAHMEN.has(x.id))) {
+    it(`${s.id}: bleibt im Zahlenraum bis ${LIM[s.grade]}`, () => {
+      const r = mulberry32(17);
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, ((i % 3) + 1) as 1 | 2 | 3);
+        const txt = t.prompt.replace(/\d{1,2}:\d\d/g, '');
+        const nums = (txt.match(/\d+/g) ?? []).map(Number).concat(t.answer.type === 'number' ? [t.answer.value] : []);
+        expect(Math.max(0, ...nums), t.prompt).toBeLessThanOrEqual(LIM[s.grade]);
+      }
+    });
+  }
+});
