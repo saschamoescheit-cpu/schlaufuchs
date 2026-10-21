@@ -167,80 +167,87 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
           {item.again && <span className="tag">Nochmal!</span>}
         </div>
 
-        <TaskView key={`${idx}-${item.task.key}`} task={item.task} value={value} onChange={setValue} onSubmit={submit} reveal={!!result} autoRead={profile.autoRead} />
-
-        {result?.ok && (
-          <div className="feedback right row">
-            <Fox size={56} mood="happy" />
-            <div className="grow">
-              <h2>{praise} ⭐</h2>
-              {result.solved && <div className="small">Diese Fehler-Aufgabe sitzt jetzt! 🎉</div>}
-            </div>
-            <button className="btn ok" onClick={next} autoFocus>
-              Weiter
-            </button>
+        <div className="practice-layout">
+          <div className="pl-task">
+            <TaskView key={`${idx}-${item.task.key}`} task={item.task} value={value} onChange={setValue} onSubmit={submit} reveal={!!result} autoRead={profile.autoRead} />
           </div>
-        )}
-
-        {result && !result.ok && (
-          <div className="feedback wrong">
-            <div className="row">
-              <Fox size={52} mood="think" />
-              <div className="grow">
-                <h2>Nicht ganz!</h2>
-                <div>
-                  Richtig ist: <b style={{ fontSize: '1.15rem' }}>{correctText(a)}</b>
+          <div className="pl-side">
+            {result?.ok && (
+              <div className="feedback right row">
+                <Fox size={56} mood="happy" />
+                <div className="grow">
+                  <h2>{praise} ⭐</h2>
+                  {result.solved && <div className="small">Diese Fehler-Aufgabe sitzt jetzt! 🎉</div>}
                 </div>
-              </div>
-            </div>
-            {a.type === 'text' && value && <SpellDiff correct={a.value} given={value} tags={result.tags} caseSensitive={a.caseSensitive} />}
-            {result.trap && (
-              <div className="hint">
-                <span>💡</span>
-                <span>{result.trap.hint}</span>
+                <button className="btn ok" onClick={next} autoFocus>
+                  Weiter
+                </button>
               </div>
             )}
-            <div className="row" style={{ marginTop: 12 }}>
-              <h3 className="grow">So geht&apos;s:</h3>
-              <Speak text={[result.trap?.hint, ...item.task.solution].filter(Boolean).join(' ')} label="Lösungsweg vorlesen" />
-            </div>
-            <ol className="steps">
-              {item.task.solution.map((s, i) => (
-                <li key={i}>{s}</li>
-              ))}
-            </ol>
-            {item.task.solutionVisual && (
-              <div className="visual-box" style={{ marginTop: 10 }}>
-                <Visual v={item.task.solutionVisual} />
+
+            {result && !result.ok && (
+              <div className="feedback wrong">
+                <div className="row">
+                  <Fox size={52} mood="think" />
+                  <div className="grow">
+                    <h2>Nicht ganz!</h2>
+                    <div>
+                      Richtig ist: <b style={{ fontSize: '1.15rem' }}>{correctText(a)}</b>
+                    </div>
+                  </div>
+                </div>
+                {a.type === 'text' && value && <SpellDiff correct={a.value} given={value} tags={result.tags} caseSensitive={a.caseSensitive} />}
+                {result.trap && (
+                  <div className="hint">
+                    <span>💡</span>
+                    <span>{result.trap.hint}</span>
+                  </div>
+                )}
+                <div className="row" style={{ marginTop: 12 }}>
+                  <h3 className="grow">So geht&apos;s:</h3>
+                  <Speak text={[result.trap?.hint, ...item.task.solution].filter(Boolean).join(' ')} label="Lösungsweg vorlesen" />
+                </div>
+                <ol className="steps">
+                  {item.task.solution.map((s, i) => (
+                    <li key={i}>{s}</li>
+                  ))}
+                </ol>
+                {item.task.solutionVisual && (
+                  <div className="visual-box" style={{ marginTop: 10 }}>
+                    <Visual v={item.task.solutionVisual} />
+                  </div>
+                )}
+                {item.task.pronounce && (
+                  <div className="row" style={{ marginTop: 10 }}>
+                    <Speak text={item.task.pronounce.text} lang={item.task.pronounce.lang} label="Aussprache anhören" />
+                    <span>
+                      Hör dir die Aussprache an: <b>{item.task.pronounce.text}</b>
+                    </span>
+                  </div>
+                )}
+                <div className="again-note">
+                  <span>🔁</span>
+                  <span>
+                    {item.again ? 'Diese Aufgabe bleibt in deiner Fehler-Kiste, bis sie sitzt.' : 'Diese Aufgabe kommt gleich noch einmal – und später aus deiner Fehler-Kiste, bis sie sitzt.'}
+                  </span>
+                </div>
+                {skill && !more && (
+                  <button className="btn ghost block small" style={{ marginTop: 12 }} onClick={() => setMore(true)}>
+                    💡 Mehr erklären (mit Video)
+                  </button>
+                )}
+                {skill && more && (
+                  <div className="card" style={{ marginTop: 12 }}>
+                    <ExplainBody skill={skill} />
+                  </div>
+                )}
+                <button className="btn block" style={{ marginTop: 14 }} onClick={next}>
+                  Weiter
+                </button>
               </div>
             )}
-            {item.task.pronounce && (
-              <div className="row" style={{ marginTop: 10 }}>
-                <Speak text={item.task.pronounce.text} lang={item.task.pronounce.lang} label="Aussprache anhören" />
-                <span>
-                  Hör dir die Aussprache an: <b>{item.task.pronounce.text}</b>
-                </span>
-              </div>
-            )}
-            <div className="again-note">
-              <span>🔁</span>
-              <span>{item.again ? 'Diese Aufgabe bleibt in deiner Fehler-Kiste, bis sie sitzt.' : 'Diese Aufgabe kommt gleich noch einmal – und später aus deiner Fehler-Kiste, bis sie sitzt.'}</span>
-            </div>
-            {skill && !more && (
-              <button className="btn ghost block small" style={{ marginTop: 12 }} onClick={() => setMore(true)}>
-                💡 Mehr erklären (mit Video)
-              </button>
-            )}
-            {skill && more && (
-              <div className="card" style={{ marginTop: 12 }}>
-                <ExplainBody skill={skill} />
-              </div>
-            )}
-            <button className="btn block" style={{ marginTop: 14 }} onClick={next}>
-              Weiter
-            </button>
           </div>
-        )}
+        </div>
       </div>
 
       {stageMsg && <Toast text={stageMsg} onDone={() => setStageMsg(null)} ms={3200} />}

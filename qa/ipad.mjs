@@ -1,0 +1,22 @@
+// node qa/ipad.mjs [url] [out] – iPad quer: Startseite, Fach, Übung (richtig/falsch), Lernstand
+import { readFileSync } from 'node:fs';
+import { open } from './lib.mjs';
+const url = process.argv[2] ?? 'http://localhost:5192/';
+const out = process.argv[3] ?? 'qa/shots/ipad';
+const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
+const { p, shot, click, done } = await open({ url, out, grade: 3, progress, device: process.argv[4] ?? 'iPad Pro 11 landscape' });
+await shot('home');
+await click('Mathe');
+await shot('mathe');
+await p.getByRole('button', { name: /Schriftliche Addition/ }).first().click();
+await shot('aufgabe');
+await p.keyboard.press('1');
+await p.locator('.numpad .ok-key').click();
+await shot('falsch');
+await p.getByRole('button', { name: 'Übung beenden' }).click();
+await click('Ja, beenden');
+await click('Lernen');
+await click('Englisch');
+await p.getByRole('button', { name: /Animals/ }).first().click();
+await shot('englisch');
+process.exit(await done());

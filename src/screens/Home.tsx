@@ -72,6 +72,7 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
         </button>
       )}
 
+      <div className="home-subjects stack">
       {SUBJECTS.map((s) => {
         const noEnglish = s.id === 'englisch' && englishYear(profile) === 0;
         const cur = currentSkills(s.id, profile);
@@ -95,6 +96,7 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
           </button>
         );
       })}
+      </div>
 
       {next && !due && (
         <button className="callout fox" onClick={() => onPractice(next)}>
