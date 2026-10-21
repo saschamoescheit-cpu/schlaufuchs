@@ -88,7 +88,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
     { name: 'Sprache untersuchen', re: /./ },
   ],
   englisch: [
-    { name: 'Sätze, Hören und Sprechen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom/ },
+    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading/ },
     { name: 'Wörter', re: /./ },
   ],
 };
