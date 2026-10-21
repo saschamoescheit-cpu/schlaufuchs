@@ -1,0 +1,229 @@
+// Übungsrunde: Aufgabe → sofortige Rückmeldung → bei Fehlern Erklärung, Wiederholung in der Runde und in der Fehler-Kiste.
+import { useMemo, useState } from 'react';
+import { check, correctText, type CheckResult } from '../engine/check';
+import { record, type Mode } from '../engine/learning';
+import type { Task } from '../engine/types';
+import { skillById } from '../content/curriculum';
+import { updateProgress, type Profile } from '../data/store';
+import { CloseIcon, Confetti, Confirm, Fox, Speak } from '../ui/common';
+import { ExplainBody } from '../ui/Explain';
+import { TaskView } from '../ui/TaskView';
+import { Visual } from '../ui/Visual';
+import { sounds } from '../ui/sound';
+import { stopSpeaking } from '../ui/speech';
+
+const PRAISE = ['Super!', 'Klasse!', 'Richtig!', 'Toll gemacht!', 'Spitze!', 'Genau!', 'Prima!', 'Stark!'];
+
+interface Item {
+  task: Task;
+  again?: boolean;
+}
+
+export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { profile: Profile; title: string; tasks: Task[]; mode: Mode; onExit: () => void; onRestart?: () => void }) {
+  const [queue, setQueue] = useState<Item[]>(() => tasks.map((task) => ({ task })));
+  const [idx, setIdx] = useState(0);
+  const [value, setValue] = useState('');
+  const [result, setResult] = useState<(CheckResult & { solved?: boolean }) | null>(null);
+  const [firstTry, setFirstTry] = useState({ right: 0, total: 0 });
+  const [stars, setStars] = useState(0);
+  const [newInBox, setNewInBox] = useState(0);
+  const [solvedInBox, setSolvedInBox] = useState(0);
+  const [askQuit, setAskQuit] = useState(false);
+  const [more, setMore] = useState(false);
+
+  const item = queue[idx];
+  const done = idx >= queue.length;
+  const skill = item ? skillById(item.task.skillId) : undefined;
+
+  const submit = (v: string) => {
+    if (!item || result) return;
+    setValue(v);
+    const res = check(item.task, v);
+    let solved = false;
+    updateProgress(profile.id, (p) => {
+      const r = record(p, item.task, res.ok, mode, Date.now(), res.trap?.tag);
+      solved = r.reviewSolved;
+      if (r.reviewAdded) setNewInBox((n) => n + 1);
+    });
+    if (solved) setSolvedInBox((n) => n + 1);
+    if (!item.again) setFirstTry((f) => ({ right: f.right + (res.ok ? 1 : 0), total: f.total + 1 }));
+    if (res.ok) {
+      setStars((s) => s + 1);
+      if (profile.sound) sounds.right();
+    } else {
+      if (profile.sound) sounds.wrong();
+      // gleiche Aufgabe kommt in dieser Runde noch einmal (höchstens einmal extra)
+      if (!item.again) setQueue((q) => [...q.slice(0, idx + 1), ...q.slice(idx + 1, idx + 4), { task: item.task, again: true }, ...q.slice(idx + 4)]);
+    }
+    setResult({ ...res, solved });
+  };
+
+  const next = () => {
+    stopSpeaking();
+    setResult(null);
+    setValue('');
+    setMore(false);
+    const n = idx + 1;
+    setIdx(n);
+    if (n >= queue.length && profile.sound) sounds.done();
+  };
+
+  const progress = Math.min(1, idx / Math.max(1, queue.length));
+  const praise = useMemo(() => PRAISE[Math.floor(Math.random() * PRAISE.length)], [idx]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (done) {
+    const pct = firstTry.total ? firstTry.right / firstTry.total : 0;
+    return (
+      <div className="app full">
+        {pct >= 0.7 && <Confetti />}
+        <div className="stack center" style={{ paddingTop: 40 }}>
+          <Fox size={130} mood="happy" className="fox-wiggle" />
+          <h1>{pct >= 0.9 ? 'Fantastisch!' : pct >= 0.7 ? 'Super gemacht!' : 'Gut durchgehalten!'}</h1>
+          <p className="muted">{title}</p>
+          <div className="tiles" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>
+            <div className="tile">
+              <b>
+                {firstTry.right} / {firstTry.total}
+              </b>
+              <span>beim ersten Versuch richtig</span>
+            </div>
+            <div className="tile">
+              <b>⭐ {stars}</b>
+              <span>Sterne gesammelt</span>
+            </div>
+          </div>
+          {newInBox > 0 && (
+            <div className="card tint" style={{ background: 'var(--fox-soft)', textAlign: 'left' }}>
+              🔁 <b>{newInBox}</b> {newInBox === 1 ? 'Aufgabe ist' : 'Aufgaben sind'} in deiner Fehler-Kiste. Sie kommen wieder, bis du sie zweimal hintereinander richtig hast.
+            </div>
+          )}
+          {solvedInBox > 0 && (
+            <div className="card tint" style={{ background: 'var(--ok-soft)', textAlign: 'left' }}>
+              🎉 <b>{solvedInBox}</b> {solvedInBox === 1 ? 'Fehler-Aufgabe sitzt' : 'Fehler-Aufgaben sitzen'} jetzt – raus aus der Kiste!
+            </div>
+          )}
+          {onRestart && (
+            <button className="btn ok block" onClick={onRestart}>
+              Noch eine Runde
+            </button>
+          )}
+          <button className="btn ghost block" onClick={onExit}>
+            Fertig
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  const a = item.task.answer;
+  return (
+    <div className="app full">
+      <div className="session-top">
+        <button className="icon-btn" aria-label="Übung beenden" onClick={() => (idx === 0 && !result ? onExit() : setAskQuit(true))}>
+          <CloseIcon />
+        </button>
+        <div className="progress" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
+          <i style={{ width: `${progress * 100}%` }} />
+        </div>
+        <span className="pill">⭐ {stars}</span>
+      </div>
+
+      <div className="stack">
+        <div className="row small muted" style={{ justifyContent: 'space-between' }}>
+          <span>
+            {skill?.icon} {skill?.title}
+          </span>
+          {item.again && <span className="tag">Nochmal!</span>}
+        </div>
+
+        <TaskView key={`${idx}-${item.task.key}`} task={item.task} value={value} onChange={setValue} onSubmit={submit} reveal={!!result} autoRead={profile.autoRead} />
+
+        {result?.ok && (
+          <div className="feedback right row">
+            <Fox size={56} mood="happy" />
+            <div className="grow">
+              <h2>{praise} ⭐</h2>
+              {result.solved && <div className="small">Diese Fehler-Aufgabe sitzt jetzt! 🎉</div>}
+            </div>
+            <button className="btn ok" onClick={next} autoFocus>
+              Weiter
+            </button>
+          </div>
+        )}
+
+        {result && !result.ok && (
+          <div className="feedback wrong">
+            <div className="row">
+              <Fox size={52} mood="think" />
+              <div className="grow">
+                <h2>Nicht ganz!</h2>
+                <div>
+                  Richtig ist: <b style={{ fontSize: '1.15rem' }}>{correctText(a)}</b>
+                </div>
+              </div>
+            </div>
+            {result.trap && (
+              <div className="hint">
+                <span>💡</span>
+                <span>{result.trap.hint}</span>
+              </div>
+            )}
+            <div className="row" style={{ marginTop: 12 }}>
+              <h3 className="grow">So geht&apos;s:</h3>
+              <Speak text={[result.trap?.hint, ...item.task.solution].filter(Boolean).join(' ')} label="Lösungsweg vorlesen" />
+            </div>
+            <ol className="steps">
+              {item.task.solution.map((s, i) => (
+                <li key={i}>{s}</li>
+              ))}
+            </ol>
+            {item.task.solutionVisual && (
+              <div className="visual-box" style={{ marginTop: 10 }}>
+                <Visual v={item.task.solutionVisual} />
+              </div>
+            )}
+            {item.task.pronounce && (
+              <div className="row" style={{ marginTop: 10 }}>
+                <Speak text={item.task.pronounce.text} lang={item.task.pronounce.lang} label="Aussprache anhören" />
+                <span>
+                  Hör dir die Aussprache an: <b>{item.task.pronounce.text}</b>
+                </span>
+              </div>
+            )}
+            <div className="again-note">
+              <span>🔁</span>
+              <span>{item.again ? 'Diese Aufgabe bleibt in deiner Fehler-Kiste, bis sie sitzt.' : 'Diese Aufgabe kommt gleich noch einmal – und später aus deiner Fehler-Kiste, bis sie sitzt.'}</span>
+            </div>
+            {skill && !more && (
+              <button className="btn ghost block small" style={{ marginTop: 12 }} onClick={() => setMore(true)}>
+                💡 Mehr erklären (mit Video)
+              </button>
+            )}
+            {skill && more && (
+              <div className="card" style={{ marginTop: 12 }}>
+                <ExplainBody skill={skill} />
+              </div>
+            )}
+            <button className="btn block" style={{ marginTop: 14 }} onClick={next}>
+              Weiter
+            </button>
+          </div>
+        )}
+      </div>
+
+      {askQuit && (
+        <Confirm
+          title="Übung beenden?"
+          text="Alles, was du schon geübt hast, ist gespeichert."
+          yes="Ja, beenden"
+          no="Weiter üben"
+          onYes={() => {
+            stopSpeaking();
+            onExit();
+          }}
+          onNo={() => setAskQuit(false)}
+        />
+      )}
+    </div>
+  );
+}

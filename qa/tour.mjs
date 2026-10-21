@@ -1,0 +1,75 @@
+// node qa/tour.mjs [url] [outDir] – klickt sich wie ein Kind durch die App und macht Bildschirmfotos.
+import { webkit, devices } from 'playwright';
+import { mkdirSync } from 'node:fs';
+
+const url = process.argv[2] ?? 'http://localhost:5190/';
+const out = process.argv[3] ?? 'qa/shots';
+mkdirSync(out, { recursive: true });
+const b = await webkit.launch();
+const ctx = await b.newContext({ ...devices['iPhone 13'], locale: 'de-DE' });
+const p = await ctx.newPage();
+const errs = [];
+p.on('pageerror', (e) => errs.push(e.message));
+p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+let n = 0;
+const shot = async (name, full = false) => {
+  await p.waitForTimeout(350);
+  await p.screenshot({ path: `${out}/${String(++n).padStart(2, '0')}-${name}.png`, fullPage: full });
+};
+const click = (t) => p.getByRole('button', { name: t }).first().click();
+const quit = async () => { await p.getByRole('button', { name: 'Übung beenden' }).click(); const y = p.getByRole('button', { name: 'Ja, beenden' }); if (await y.isVisible({ timeout: 800 }).catch(() => false)) await y.click(); await p.waitForTimeout(200); };
+
+await p.goto(url);
+await shot('welcome');
+await click("Los geht's!");
+await p.fill('#name', 'Mia');
+await click('3.');
+await shot('profil', true);
+await click('Fertig – los geht’s!');
+await shot('home', true);
+await click('Mathe');
+await shot('mathe', true);
+await p.getByRole('button', { name: /Schriftliche Addition/ }).first().click();
+await shot('aufgabe');
+// absichtlich falsch: 1 eingeben und prüfen
+await p.locator('.numpad button', { hasText: /^1$/ }).click();
+await p.locator('.numpad .ok-key').click();
+await shot('falsch', true);
+await click('Weiter');
+await shot('naechste');
+// Übung abbrechen
+await quit();
+await p.goBack().catch(() => {});
+await p.waitForTimeout(300);
+await click('Lernen');
+await click('Deutsch');
+await p.getByRole('tab', { name: 'Klasse 2' }).click();
+await p.getByRole('button', { name: /Erklärung zu der, die, das/ }).click();
+await shot('erklaerung', false);
+await p.keyboard.press('Escape');
+await p.getByRole('button', { name: /^.*der, die, das/ }).first().click();
+await shot('artikel');
+await p.locator('.choice').first().click();
+await shot('artikel-antwort', true);
+await quit();
+await click('Lernen');
+await click('Englisch');
+await shot('englisch', true);
+await p.getByRole('button', { name: /Animals/ }).first().click();
+await shot('englisch-aufgabe');
+await quit();
+await click('Tests');
+await shot('test-setup', true);
+await click('Test starten');
+await shot('test-lauf');
+await p.locator('.choice, .numpad button').first().click();
+await click('Abgeben');
+await click('Ja, abgeben');
+await shot('test-ergebnis', true);
+await click('Zur Übersicht');
+await click('Wiederholen');
+await shot('wiederholen', true);
+await click('Lernstand');
+await shot('lernstand', true);
+console.log(errs.length ? 'FEHLER:\n' + errs.join('\n') : 'keine Seitenfehler');
+await b.close();

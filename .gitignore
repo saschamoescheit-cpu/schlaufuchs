@@ -1,0 +1,7 @@
+node_modules
+dist
+qa/node_modules
+qa/shots
+*.log
+.DS_Store
+*.tsbuildinfo
