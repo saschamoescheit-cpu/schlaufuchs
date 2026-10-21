@@ -15,8 +15,41 @@ const PREFER: Record<Lang, RegExp[]> = {
 };
 const NICE = /(Google|Anna|Helena|Katja|Petra|Vicki|Siri|Natural|Enhanced|Premium|Daniel|Serena|Kate|Martha|Libby|Sonia)/i;
 
+const VOICE_KEY = (lang: Lang) => `schlaufuchs:voice:${lang}`;
+/** gewählte Stimme (je Gerät gemerkt) */
+export function chosenVoice(lang: Lang): string | null {
+  try {
+    return localStorage.getItem(VOICE_KEY(lang));
+  } catch {
+    return null;
+  }
+}
+export function chooseVoice(lang: Lang, uri: string | null) {
+  try {
+    if (uri) localStorage.setItem(VOICE_KEY(lang), uri);
+    else localStorage.removeItem(VOICE_KEY(lang));
+  } catch {
+    /* egal */
+  }
+}
+/** Stimmen einer Sprache, die besten zuerst */
+export function voicesFor(lang: Lang): SpeechSynthesisVoice[] {
+  if (!voices.length) loadVoices();
+  const re = PREFER[lang][PREFER[lang].length - 1];
+  return voices.filter((v) => re.test(v.lang.replace('_', '-'))).sort((a, b) => Number(NICE.test(b.name)) - Number(NICE.test(a.name)) || a.name.localeCompare(b.name));
+}
+export function onVoicesChanged(fn: () => void) {
+  synth?.addEventListener?.('voiceschanged', fn);
+  return () => synth?.removeEventListener?.('voiceschanged', fn);
+}
+
 function voiceFor(lang: Lang) {
   if (!voices.length) loadVoices();
+  const pick = chosenVoice(lang);
+  if (pick) {
+    const v = voices.find((x) => x.voiceURI === pick);
+    if (v) return v;
+  }
   for (const re of PREFER[lang]) {
     const vs = voices.filter((v) => re.test(v.lang.replace('_', '-')));
     if (vs.length) return vs.find((v) => NICE.test(v.name)) ?? vs[0];

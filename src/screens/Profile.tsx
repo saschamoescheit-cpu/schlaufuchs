@@ -1,5 +1,5 @@
 // Kinderprofile: anlegen, bearbeiten, wechseln, auf allen Geräten gleich halten.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
 import { deleteProfile, duplicateProfiles, exportJson, mergeProfiles, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
@@ -8,7 +8,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
-import { canSpeak, speak } from '../ui/speech';
+import { canSpeak, chooseVoice, chosenVoice, onVoicesChanged, speak, voicesFor } from '../ui/speech';
 import { hasPin } from '../data/parent';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
@@ -351,6 +351,8 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
           👨‍👩‍👧 Eltern-Bereich
         </button>
 
+        <VoicePicker />
+
         <SyncCard data={data} />
 
         <button className="btn ghost block small" onClick={download}>
@@ -378,5 +380,56 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
         />
       )}
     </div>
+  );
+}
+
+/** Vorlese-Stimmen wählen (je Gerät) – viele iPads haben bessere „verbesserte“ Stimmen */
+function VoicePicker() {
+  const [, setTick] = useState(0);
+  useEffect(() => onVoicesChanged(() => setTick((t) => t + 1)), []);
+  if (!canSpeak()) return null;
+  const row = (lang: 'de' | 'en', label: string, sample: string) => {
+    const list = voicesFor(lang);
+    const cur = chosenVoice(lang) ?? '';
+    return (
+      <div className="field">
+        <label className="label" htmlFor={`voice-${lang}`}>
+          {label}
+        </label>
+        <div className="row">
+          <select
+            id={`voice-${lang}`}
+            className="input grow"
+            value={cur}
+            onChange={(e) => {
+              chooseVoice(lang, e.target.value || null);
+              setTick((t) => t + 1);
+              speak(sample, lang);
+            }}
+          >
+            <option value="">Automatisch (beste Stimme)</option>
+            {list.map((v) => (
+              <option key={v.voiceURI} value={v.voiceURI}>
+                {v.name} ({v.lang})
+              </option>
+            ))}
+          </select>
+          <button className="icon-btn" aria-label={`${label} testen`} onClick={() => speak(sample, lang)}>
+            🔊
+          </button>
+        </div>
+        {list.length === 0 && <div className="small muted">Auf diesem Gerät ist keine passende Stimme installiert.</div>}
+      </div>
+    );
+  };
+  return (
+    <details className="more">
+      <summary>🔊 Vorlese-Stimme</summary>
+      <div className="inner">
+        {row('de', 'Deutsch', 'Hallo! Ich bin der Schlaufuchs. So klinge ich, wenn ich vorlese.')}
+        {row('en', 'Englisch', 'Hello! I am the clever fox. This is how I sound in English.')}
+        <div className="small muted">Tipp fürs iPad: Unter Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen kannst du eine „verbesserte“ Stimme laden. Sie klingt viel natürlicher.</div>
+      </div>
+    </details>
   );
 }

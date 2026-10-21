@@ -165,6 +165,7 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
                 <span className="row small" style={{ gap: 8, marginTop: 2 }}>
                   <LevelDots level={lvl} />
                   <span className="muted">{['Neu', 'Angefangen', 'Geübt', 'Sicher ✓'][lvl]}</span>
+                  {s.staged && st?.stage && <span className="stage-pill">Stufe {st.stage}</span>}
                   {st && st.recent.length > 0 && <span className="muted">· {Math.round((st.recent.reduce((a, b) => a + b, 0) / st.recent.length) * 100)} %</span>}
                   {open > 0 && <span className="tag">{open} Fehler</span>}
                 </span>

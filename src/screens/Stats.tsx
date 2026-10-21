@@ -221,8 +221,9 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
                   {open > 0 && <span className="tag">{open}</span>}
                   {acc !== undefined && <span className="small muted">{Math.round(acc * 100)} %</span>}
                   <LevelDots level={lv} />
-                  <span className="small muted" style={{ width: 74, textAlign: 'right' }}>
+                  <span className="small muted" style={{ minWidth: 74, textAlign: 'right', whiteSpace: 'nowrap' }}>
                     {LEVEL_NAMES[lv]}
+                    {s.staged && progress.skills[s.id]?.stage ? ` · St. ${progress.skills[s.id]!.stage}` : ''}
                   </span>
                 </button>
               );
