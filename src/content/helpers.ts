@@ -13,7 +13,7 @@ export function skill(
   gen: (r: Rng, stage: Stage) => Gen,
   extra: Partial<Pick<Skill, 'tagLabels' | 'testSeconds' | 'staged'>> = {},
 ): Skill {
-  return { id, subject, grade, title, icon, explain, generate: (r, stage = 2) => easier(cleanTraps({ ...gen(r, stage), skillId: id, stage }), r), ...extra };
+  return { id, subject, grade, title, icon, explain, generate: (r, stage = 2) => easier(cleanTraps(dedupe({ ...gen(r, stage), skillId: id, stage })), r), ...extra };
 }
 
 /** Stufe 1: bei Auswahl-Aufgaben eine falsche Antwort weniger */
@@ -24,6 +24,12 @@ function easier(t: Task, r: Rng): Task {
   const drop = wrong[Math.floor(r() * wrong.length)];
   const options = a.options.filter((_, i) => i !== drop);
   return { ...t, answer: { ...a, options, correct: options.indexOf(a.options[a.correct]) } };
+}
+
+/** gleiche Lösungszeilen direkt hintereinander (z. B. „1 m = 100 cm“ bei genau 1 m) nur einmal zeigen */
+function dedupe(t: Task): Task {
+  const solution = t.solution.filter((x, i) => x !== t.solution[i - 1]);
+  return solution.length === t.solution.length ? t : { ...t, solution };
 }
 
 /** Fallen, die zufällig der richtigen Antwort entsprechen, fallen weg */
