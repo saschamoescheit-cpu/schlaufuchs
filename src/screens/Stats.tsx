@@ -5,6 +5,7 @@ import { ALL_SKILLS, currentSkills, englishYear, levelsFor, skillById, skillsOf,
 import type { Profile } from '../data/store';
 import { Fox, LevelDots, TopBar } from '../ui/common';
 import { GRADE_NAMES } from '../engine/grading';
+import { BadgeGrid, BadgeWatcher } from '../ui/Badges';
 
 /** Themen, die für das Kind relevant sind: aktuelle Stufe und alles darunter + alles, was schon geübt wurde */
 function relevantSkills(profile: Profile, p: Progress): Skill[] {
@@ -155,6 +156,10 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
           <span>heute</span>
         </div>
       </div>
+
+      <h2 className="section-title">🏅 Abzeichen</h2>
+      <BadgeGrid profile={profile} progress={progress} />
+      <BadgeWatcher profile={profile} progress={progress} />
 
       {tests.length > 0 && (
         <div className="card">

@@ -1,7 +1,7 @@
 // Übungsrunde: Aufgabe → sofortige Rückmeldung → bei Fehlern Erklärung, Wiederholung in der Runde und in der Fehler-Kiste.
 import { useMemo, useState } from 'react';
 import { check, correctText, type CheckResult } from '../engine/check';
-import { record, stageOf, type Mode } from '../engine/learning';
+import { level, record, stageOf, type Mode } from '../engine/learning';
 import type { Stage, Task } from '../engine/types';
 import { skillById } from '../content/curriculum';
 import { updateProgress, type Profile } from '../data/store';
@@ -10,6 +10,8 @@ import { ExplainBody } from '../ui/Explain';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
 import { SpellDiff } from '../ui/SpellDiff';
+import { BadgeWatcher, DailyGoal } from '../ui/Badges';
+import { useData } from '../data/store';
 import { sounds } from '../ui/sound';
 import { stopSpeaking } from '../ui/speech';
 
@@ -32,6 +34,8 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
   const [askQuit, setAskQuit] = useState(false);
   const [more, setMore] = useState(false);
   const [stageMsg, setStageMsg] = useState<string | null>(null);
+  const [achieved, setAchieved] = useState<string[]>([]);
+  const live = useData().progress[profile.id];
 
   const item = queue[idx];
   const done = idx >= queue.length;
@@ -46,7 +50,9 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
     let newStage: Stage = 1;
     let inBox = new Set<string>();
     updateProgress(profile.id, (p) => {
+      const before = level(p, item.task.skillId);
       const r = record(p, item.task, res.ok, mode, Date.now(), res.tags ?? res.trap?.tag);
+      if (before < 3 && level(p, item.task.skillId) === 3) setAchieved((a) => (a.includes(item.task.skillId) ? a : [...a, item.task.skillId]));
       solved = r.reviewSolved;
       change = r.stageChange;
       newStage = stageOf(p, item.task.skillId);
@@ -105,6 +111,13 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
               <span>Sterne gesammelt</span>
             </div>
           </div>
+          {achieved.map((id) => (
+            <div key={id} className="card tint" style={{ background: 'var(--ok-soft)', textAlign: 'left' }}>
+              🎯 <b>Lernziel geschafft:</b> {skillById(id)?.icon} {skillById(id)?.title} sitzt jetzt sicher!
+            </div>
+          ))}
+          {live && <DailyGoal profile={profile} progress={live} />}
+          {live && <BadgeWatcher profile={profile} progress={live} />}
           {newInBox > 0 && (
             <div className="card tint" style={{ background: 'var(--fox-soft)', textAlign: 'left' }}>
               🔁 <b>{newInBox}</b> {newInBox === 1 ? 'Aufgabe ist' : 'Aufgaben sind'} in deiner Fehler-Kiste. Sie kommen wieder, bis du sie zweimal hintereinander richtig hast.

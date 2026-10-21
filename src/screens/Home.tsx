@@ -6,6 +6,7 @@ import { currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS
 import type { Profile } from '../data/store';
 import { Fox, LevelDots, TopBar } from '../ui/common';
 import { ExplainSheet } from '../ui/Explain';
+import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 
 function greeting(name: string) {
   const h = new Date().getHours();
@@ -54,6 +55,9 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
           <b>{greeting(profile.name)}</b> {msg}
         </div>
       </div>
+
+      <DailyGoal profile={profile} progress={progress} />
+      <BadgeWatcher profile={profile} progress={progress} />
 
       {due > 0 && (
         <button className="callout fox" onClick={onReview}>

@@ -2,7 +2,7 @@
 import { webkit, devices } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', device = 'iPhone 13', grade = 3, name = 'Mia', progress, profile = {}, data = {} } = {}) {
+export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', device = 'iPhone 13', grade = 3, name = 'Mia', progress, profile = {}, data = {}, badges = false } = {}) {
   mkdirSync(out, { recursive: true });
   const b = await webkit.launch();
   const ctx = await b.newContext({ ...devices[device], locale: 'de-DE' });
@@ -15,12 +15,16 @@ export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', d
     parent: { pin: null },
     ...data,
   };
-  await ctx.addInitScript((d) => {
+  // Abzeichen-Feier und Tagesziel-Konfetti stören die Klick-Abläufe: vorab als gesehen markieren (außer badges: true)
+  const ids = ['aufgaben', 'sterne', 'serie', 'lernziele', 'fehlerjaeger', 'tests', 'bestnote', 'stufe3', 'tagesziel', 'meister'];
+  const seen = badges ? null : JSON.stringify(ids.flatMap((b) => [1, 2, 3].map((t) => `${b}:${t}`)));
+  await ctx.addInitScript(([d, seenKeys, pid]) => {
     if (!sessionStorage.getItem('qa-seeded')) {
       localStorage.setItem('schlaufuchs:v1', JSON.stringify(d));
+      if (seenKeys) localStorage.setItem(`schlaufuchs:badges-seen:${pid}`, seenKeys);
       sessionStorage.setItem('qa-seeded', '1');
     }
-  }, app);
+  }, [app, seen, id]);
   const p = await ctx.newPage();
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message));

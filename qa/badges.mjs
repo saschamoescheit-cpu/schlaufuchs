@@ -1,0 +1,20 @@
+// node qa/badges.mjs [url] [out] – Lernstand mit Abzeichen, Feier bei neuen Abzeichen, Tagesziel auf der Startseite.
+import { readFileSync } from 'node:fs';
+import { open } from './lib.mjs';
+const url = process.argv[2] ?? 'http://localhost:5192/';
+const out = process.argv[3] ?? 'qa/shots/badges';
+const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
+const { p, shot, click, done } = await open({ url, out, grade: 3, progress, badges: true });
+await p.waitForTimeout(1500);
+const party = await p.locator('h2', { hasText: 'Abzeichen!' }).first().isVisible().catch(() => false);
+console.log(party ? '✓ Abzeichen-Feier' : '✗ keine Abzeichen-Feier');
+await shot('feier');
+await click('Juhu!');
+await shot('home');
+await click('Lernstand');
+await shot('lernstand', true);
+await p.reload();
+await p.waitForTimeout(500);
+const again = await p.locator('h2', { hasText: 'Abzeichen!' }).first().isVisible().catch(() => false);
+console.log(again ? '✗ Feier kommt erneut' : '✓ Feier nur einmal');
+process.exit((await done()) + (party && !again ? 0 : 1));
