@@ -57,7 +57,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
   const make = () => skill.generate(Math.random, stage.current);
   const [task, setTask] = useState<Task>(make);
   const [value, setValue] = useState('');
-  const [flash, setFlash] = useState<null | { ok: boolean; text?: string }>(null);
+  const [flash, setFlash] = useState<null | { ok: boolean; text?: string; pick?: string }>(null);
   const [score, setScore] = useState(0);
   const [wrong, setWrong] = useState(0);
   const [record0, setRecord0] = useState(profile.blitz?.[skill.id] ?? 0);
@@ -103,11 +103,11 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
     if (res.ok) {
       setScore((s) => s + 1);
       if (profile.sound) sounds.right();
-      setFlash({ ok: true });
+      setFlash({ ok: true, pick: v });
     } else {
       setWrong((w) => w + 1);
       if (profile.sound) sounds.wrong();
-      setFlash({ ok: false, text: correctText(task.answer) });
+      setFlash({ ok: false, text: correctText(task.answer), pick: v });
     }
     setTimeout(
       () => {
@@ -140,7 +140,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
 
   if (phase === 'count')
     return (
-      <div className="app full">
+      <div className="app full narrow">
         <div className="stack center" style={{ paddingTop: 120 }}>
           <div className="muted">
             {skill.icon} {skill.title}
@@ -153,7 +153,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
   if (phase === 'done') {
     const best = score > record0;
     return (
-      <div className="app full">
+      <div className="app full narrow">
         {best && score > 0 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
@@ -194,7 +194,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
 
   const a = task.answer;
   return (
-    <div className="app full">
+    <div className="app full narrow">
       <div className="session-top">
         <button className="icon-btn" aria-label="Blitzrunde beenden" onClick={onExit}>
           <CloseIcon />
@@ -206,15 +206,15 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
       </div>
       <div className="stack">
         <div className={`blitz-task ${flash ? (flash.ok ? 'ok' : 'bad') : ''}`}>
-          <div className="prompt center" style={{ fontSize: task.prompt.length < 24 ? '2.2rem' : undefined }}>
+          <div className="prompt center" style={{ fontSize: task.prompt.length < 16 ? '2.2rem' : undefined }}>
             <Rich text={task.prompt} />
           </div>
           {task.visual && <Visual v={task.visual} />}
-          {flash && !flash.ok && <div className="center" style={{ fontWeight: 700, color: 'var(--bad)' }}>Richtig: {flash.text}</div>}
+          {flash && !flash.ok && task.answer.type !== 'choice' && <div className="center" style={{ fontWeight: 700, color: 'var(--bad)' }}>Richtig: {flash.text}</div>}
         </div>
         {a.type === 'number' && (
           <>
-            <div className="answer-field focus">{value || <span className="ph">?</span>}</div>
+            <div className={`answer-field ${flash ? (flash.ok ? 'right' : 'wrong') : 'focus'}`}>{value || <span className="ph">?</span>}</div>
             <div className="numpad">
               {['1', '2', '3', '4', '5', '6', '7', '8', '9', '⌫', '0'].map((d) => (
                 <button key={d} onClick={() => typed(d)}>
@@ -227,7 +227,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
         {a.type === 'choice' && (
           <div className={`choices ${a.options.length === 3 ? 'three' : ''}`}>
             {a.options.map((o, i) => (
-              <button key={i} className={`choice ${a.big ? 'big' : ''}`} onClick={() => answer(String(i))}>
+              <button key={i} className={`choice ${a.big ? 'big' : ''} ${flash ? (i === a.correct ? 'right' : flash.pick === String(i) ? 'wrong' : '') : ''}`} onClick={() => answer(String(i))}>
                 {o}
               </button>
             ))}

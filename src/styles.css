@@ -1693,6 +1693,9 @@ details.more .inner {
   .app {
     max-width: 1180px;
   }
+  .app.narrow {
+    max-width: 680px;
+  }
   .tabbar-inner {
     max-width: 900px;
   }
