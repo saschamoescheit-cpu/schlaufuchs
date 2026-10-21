@@ -589,7 +589,7 @@ const schrPlus = M(3, 'm3-schriftlich-plus', 'Schriftliche Addition', '🧾', {
   const { steps, carries } = columnAdd(nums);
   const noCarry = Number([0, 1, 2].map((i) => nums.reduce((acc, n) => acc + (Math.floor(n / 10 ** i) % 10), 0) % 10).reverse().join(''));
   const hasCarry = carries.some(Boolean);
-  return { key: nums.join('+'), prompt: `Rechne schriftlich:\n${nums.join(' + ')}`, speak: `Rechne schriftlich: ${nums.join(' plus ')}`, visual: { kind: 'column', op: '+', rows: nums }, answer: { type: 'number', value: res }, tags: [hasCarry ? 'übertrag' : 'ohne-übertrag'], traps: hasCarry && noCarry !== res ? [{ answer: String(noCarry), tag: 'übertrag-vergessen', hint: 'Du hast den Übertrag vergessen. Schreibe ihn klein in die nächste Spalte und rechne ihn mit.' }] : [], solution: steps, solutionVisual: { kind: 'column', op: '+', rows: nums, result: res, carries } };
+  return { key: nums.join('+'), prompt: `Rechne schriftlich:\n${nums.join(' + ')}`, speak: `Rechne schriftlich: ${nums.join(' plus ')}`, visual: { kind: 'column', op: '+', rows: nums }, work: { op: '+', rows: nums, result: res }, answer: { type: 'number', value: res }, tags: [hasCarry ? 'übertrag' : 'ohne-übertrag'], traps: hasCarry && noCarry !== res ? [{ answer: String(noCarry), tag: 'übertrag-vergessen', hint: 'Du hast den Übertrag vergessen. Schreibe ihn klein in die nächste Spalte und rechne ihn mit.' }] : [], solution: steps, solutionVisual: { kind: 'column', op: '+', rows: nums, result: res, carries } };
 }, { tagLabels: { übertrag: 'mit Übertrag', 'übertrag-vergessen': 'Übertrag vergessen' }, testSeconds: 60 });
 
 const schrMinus = M(3, 'm3-schriftlich-minus', 'Schriftliche Subtraktion', '📝', {
@@ -602,7 +602,7 @@ const schrMinus = M(3, 'm3-schriftlich-minus', 'Schriftliche Subtraktion', '📝
   const res = a - b;
   const { steps, carries } = columnSub(a, b);
   const wrong = Number(digitsOf(a).reverse().map((d, i) => Math.abs(d - (digitsOf(b).reverse()[i] ?? 0))).reverse().join(''));
-  return { key: `${a}-${b}`, prompt: `Rechne schriftlich:\n${a} − ${b}`, speak: `Rechne schriftlich: ${a} minus ${b}`, visual: { kind: 'column', op: '−', rows: [a, b] }, answer: { type: 'number', value: res }, tags: [carries.some(Boolean) ? 'entbündeln' : 'ohne-entbündeln', ...(String(a).includes('0') ? ['null'] : [])], traps: wrong !== res ? [{ answer: String(wrong), tag: 'kleiner-minus-größer', hint: 'Du hast an einer Stelle die kleinere von der größeren Ziffer abgezogen (unten minus oben). Wenn oben zu wenig ist, musst du entbündeln.' }] : [], solution: [...steps, `Probe: ${res} + ${b} = ${a}`], solutionVisual: { kind: 'column', op: '−', rows: [a, b], result: res, carries } };
+  return { key: `${a}-${b}`, prompt: `Rechne schriftlich:\n${a} − ${b}`, speak: `Rechne schriftlich: ${a} minus ${b}`, visual: { kind: 'column', op: '−', rows: [a, b] }, work: { op: '−', rows: [a, b], result: res }, answer: { type: 'number', value: res }, tags: [carries.some(Boolean) ? 'entbündeln' : 'ohne-entbündeln', ...(String(a).includes('0') ? ['null'] : [])], traps: wrong !== res ? [{ answer: String(wrong), tag: 'kleiner-minus-größer', hint: 'Du hast an einer Stelle die kleinere von der größeren Ziffer abgezogen (unten minus oben). Wenn oben zu wenig ist, musst du entbündeln.' }] : [], solution: [...steps, `Probe: ${res} + ${b} = ${a}`], solutionVisual: { kind: 'column', op: '−', rows: [a, b], result: res, carries } };
 }, { tagLabels: { entbündeln: 'mit Entbündeln', null: 'mit Nullen', 'kleiner-minus-größer': 'unten minus oben gerechnet' }, testSeconds: 60 });
 
 const mal3 = M(3, 'm3-mal-gross', 'Malnehmen mit großen Zahlen', '✳️', {
@@ -738,11 +738,11 @@ const schrMal = M(4, 'm4-schriftlich-mal', 'Schriftliche Multiplikation', '✖�
 }, (r) => {
   if (chance(r, 0.55)) {
     const a = ri(r, 120, 2999), d = ri(r, 3, 9);
-    return { key: `${a}x${d}`, prompt: `Rechne schriftlich:\n${a} · ${d}`, speak: `Rechne schriftlich: ${a} mal ${d}`, visual: { kind: 'column', op: '·', rows: [a, d] }, answer: { type: 'number', value: a * d }, tags: ['einstellig'], solution: [...columnMul1(a, d), `Ergebnis: ${fmt(a * d)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, d], result: a * d } };
+    return { key: `${a}x${d}`, prompt: `Rechne schriftlich:\n${a} · ${d}`, speak: `Rechne schriftlich: ${a} mal ${d}`, visual: { kind: 'column', op: '·', rows: [a, d] }, work: { op: '·', rows: [a, d], result: a * d }, answer: { type: 'number', value: a * d }, tags: ['einstellig'], solution: [...columnMul1(a, d), `Ergebnis: ${fmt(a * d)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, d], result: a * d } };
   }
   const a = ri(r, 102, 899), b = ri(r, 12, 49);
   const t = Math.floor(b / 10), o = b % 10;
-  return { key: `${a}x${b}`, prompt: `Rechne schriftlich:\n${a} · ${b}`, speak: `Rechne schriftlich: ${a} mal ${b}`, visual: { kind: 'column', op: '·', rows: [a, b] }, answer: { type: 'number', value: a * b }, tags: ['zweistellig'], traps: [{ answer: String(a * (t + o)), tag: 'stelle-verschoben', hint: `Die Zehnerziffer ${t} bedeutet ${t * 10}! Das Teilergebnis mit dem Zehner ist ${a} · ${t * 10} = ${a * t * 10}.` }], solution: [`${a} · ${t} Zehner = ${fmt(a * t * 10)}`, `${a} · ${o} = ${fmt(a * o)}`, `${fmt(a * t * 10)} + ${fmt(a * o)} = ${fmt(a * b)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, b], result: a * b, steps: [String(a * t), String(a * o)] } };
+  return { key: `${a}x${b}`, prompt: `Rechne schriftlich:\n${a} · ${b}`, speak: `Rechne schriftlich: ${a} mal ${b}`, visual: { kind: 'column', op: '·', rows: [a, b] }, work: { op: '·', rows: [a, b], result: a * b }, answer: { type: 'number', value: a * b }, tags: ['zweistellig'], traps: [{ answer: String(a * (t + o)), tag: 'stelle-verschoben', hint: `Die Zehnerziffer ${t} bedeutet ${t * 10}! Das Teilergebnis mit dem Zehner ist ${a} · ${t * 10} = ${a * t * 10}.` }], solution: [`${a} · ${t} Zehner = ${fmt(a * t * 10)}`, `${a} · ${o} = ${fmt(a * o)}`, `${fmt(a * t * 10)} + ${fmt(a * o)} = ${fmt(a * b)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, b], result: a * b, steps: [String(a * t), String(a * o)] } };
 }, { tagLabels: { einstellig: 'mal einstellige Zahl', zweistellig: 'mal zweistellige Zahl', 'stelle-verschoben': 'Stellen verschoben' }, testSeconds: 90 });
 
 const schrGeteilt = M(4, 'm4-schriftlich-geteilt', 'Schriftliche Division', '➗', {
@@ -753,7 +753,7 @@ const schrGeteilt = M(4, 'm4-schriftlich-geteilt', 'Schriftliche Division', '➗
   const d = ri(r, 2, 9), q = ri(r, 102, 999);
   const n = d * q;
   const { steps } = columnDiv(n, d);
-  return { key: `${n}:${d}`, prompt: `Rechne schriftlich:\n${fmt(n)} : ${d}`, speak: `Rechne schriftlich: ${n} geteilt durch ${d}`, answer: { type: 'number', value: q }, tags: [String(q).includes('0') ? 'null-im-ergebnis' : 'division'], traps: String(q).includes('0') ? [{ answer: String(q).replace(/0/g, ''), tag: 'null-vergessen', hint: 'Wenn die Zahl nicht hineinpasst, schreibst du eine 0 ins Ergebnis!' }] : [], solution: [...steps, `Probe: ${q} · ${d} = ${fmt(n)} ✓`], solutionVisual: { kind: 'column', op: ':', rows: [n, d], result: q, steps } };
+  return { key: `${n}:${d}`, prompt: `Rechne schriftlich:\n${fmt(n)} : ${d}`, speak: `Rechne schriftlich: ${n} geteilt durch ${d}`, work: { op: ':', rows: [n, d], result: q }, answer: { type: 'number', value: q }, tags: [String(q).includes('0') ? 'null-im-ergebnis' : 'division'], traps: String(q).includes('0') ? [{ answer: String(q).replace(/0/g, ''), tag: 'null-vergessen', hint: 'Wenn die Zahl nicht hineinpasst, schreibst du eine 0 ins Ergebnis!' }] : [], solution: [...steps, `Probe: ${q} · ${d} = ${fmt(n)} ✓`], solutionVisual: { kind: 'column', op: ':', rows: [n, d], result: q, steps } };
 }, { tagLabels: { 'null-im-ergebnis': 'Null im Ergebnis', 'null-vergessen': 'Null im Ergebnis vergessen' }, testSeconds: 90 });
 
 const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: string; sol: string[]; trap?: number } }[] = [

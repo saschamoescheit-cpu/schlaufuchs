@@ -32,6 +32,14 @@ export type Answer =
   | { type: 'choice'; options: string[]; correct: number; speakOptions?: Lang; big?: boolean }
   | { type: 'text'; value: string; accept?: string[]; caseSensitive?: boolean; lang?: Lang };
 
+/** Schriftliches Rechnen in Kästchen (Ziffer für Ziffer wie auf Papier) */
+export interface ColumnWork {
+  op: '+' | '−' | '·' | ':';
+  /** Zahlen der Aufgabe (bei ':' Dividend und Divisor, bei '·' die beiden Faktoren) */
+  rows: number[];
+  result: number;
+}
+
 export interface Task {
   /** gleicher Schlüssel = gleiche Aufgabe (für die Wiederholung genau dieser Aufgabe) */
   key: string;
@@ -42,6 +50,8 @@ export interface Task {
   /** Aufgabe zum Hören: der Lautsprecher ist das Wichtigste (z. B. englisches Wort) */
   listen?: { text: string; lang: Lang };
   visual?: Visual;
+  /** Kästchen-Rechnung statt Ziffernblock (das Ergebnis bleibt answer.value) */
+  work?: ColumnWork;
   answer: Answer;
   /** Fehlermuster dieser Aufgabe (z. B. 'zehnerübergang', 'ie') */
   tags?: string[];

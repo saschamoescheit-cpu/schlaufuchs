@@ -4,6 +4,7 @@ import type { Task } from '../engine/types';
 import { Rich, Speak, SpeakerIcon } from './common';
 import { speak } from './speech';
 import { Visual } from './Visual';
+import { ColumnWork } from './ColumnWork';
 
 interface Props {
   task: Task;
@@ -47,13 +48,14 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
           <Speak big text={task.listen.text} lang={task.listen.lang} label="Anhören" />
         </div>
       )}
-      {task.visual && (
+      {task.work && <ColumnWork work={task.work} value={value} onChange={onChange} onSubmit={onSubmit} reveal={reveal} guided={!!onSubmit} />}
+      {task.visual && !task.work && (
         <div className="visual-box">
           <Visual v={task.visual} />
         </div>
       )}
       {a.type === 'choice' && <Choices task={task} value={value} onPick={(v) => (onSubmit ? onSubmit(v) : onChange(v))} reveal={reveal} />}
-      {a.type === 'number' && <NumberInput value={value} unit={a.unit} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal ? (Number(value.replace(',', '.')) === a.value ? 'right' : 'wrong') : undefined} submitLabel={submitLabel} />}
+      {a.type === 'number' && !task.work && <NumberInput value={value} unit={a.unit} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal ? (Number(value.replace(',', '.')) === a.value ? 'right' : 'wrong') : undefined} submitLabel={submitLabel} />}
       {a.type === 'text' && <TextInput value={value} lang={a.lang} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal} submitLabel={submitLabel} />}
     </div>
   );
