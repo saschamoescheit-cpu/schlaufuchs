@@ -17,10 +17,10 @@ export interface StateInfo {
   note?: string;
 }
 
-// Stand Oktober 2026. Schulen können abweichen – deshalb ist alles im Profil anpassbar.
+// Stand Oktober 2026 (Quellen u. a. Friedrich Verlag, Cornelsen, miaundmika.de). Schulen können abweichen – deshalb ist alles im Profil anpassbar.
 export const STATES: StateInfo[] = [
-  { code: 'BW', name: 'Baden-Württemberg', englishFrom: 3, gradesFrom: 3, note: 'An der Rheinschiene lernen manche Kinder Französisch statt Englisch.' },
-  { code: 'BY', name: 'Bayern', englishFrom: 3, gradesFrom: 3 },
+  { code: 'BW', name: 'Baden-Württemberg', englishFrom: 3, gradesFrom: 3, note: 'An der Rheinschiene lernen manche Kinder Französisch statt Englisch. Am Ende von Klasse 2 gibt es oft schon Noten in Deutsch und Mathe.' },
+  { code: 'BY', name: 'Bayern', englishFrom: 3, gradesFrom: 3, note: 'Manche Schulen geben schon ab dem 2. Halbjahr von Klasse 2 Noten.' },
   { code: 'BE', name: 'Berlin', englishFrom: 3, gradesFrom: 3 },
   { code: 'BB', name: 'Brandenburg', englishFrom: 1, gradesFrom: 3 },
   { code: 'HB', name: 'Bremen', englishFrom: 3, gradesFrom: 3 },
