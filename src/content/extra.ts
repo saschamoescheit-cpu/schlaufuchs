@@ -205,6 +205,9 @@ const TRENN: [string, string, string[]][] = [
   ['Fenster', 'Fens-ter', ['Fen-ster', 'Fenst-er']], ['Tafel', 'Ta-fel', ['Taf-el', 'T-afel']], ['Ritter', 'Rit-ter', ['Ri-tter', 'Ritt-er']], ['Tomate', 'To-ma-te', ['Tom-at-e', 'Tom-a-te']],
   ['Banane', 'Ba-na-ne', ['Ban-an-e', 'Bana-ne']], ['Schule', 'Schu-le', ['Sch-ule', 'Schul-e']], ['Wasser', 'Was-ser', ['Wa-sser', 'Wass-er']], ['Brücke', 'Brü-cke', ['Brück-e', 'Brüc-ke']],
   ['Schnecke', 'Schne-cke', ['Schneck-e', 'Schnec-ke']], ['Lehrerin', 'Leh-re-rin', ['Lehr-er-in', 'Le-hrer-in']], ['Kinder', 'Kin-der', ['Ki-nder', 'Kind-er']], ['Garten', 'Gar-ten', ['Ga-rten', 'Gart-en']],
+  ['Mutter', 'Mut-ter', ['Mu-tter', 'Mutt-er']], ['Blume', 'Blu-me', ['Bl-ume', 'Blum-e']], ['Hexe', 'He-xe', ['Hex-e', 'H-exe']], ['Wolke', 'Wol-ke', ['Wo-lke', 'Wolk-e']],
+  ['Kirsche', 'Kir-sche', ['Kirs-che', 'Ki-rsche']], ['Schokolade', 'Scho-ko-la-de', ['Schok-ol-ade', 'Sch-oko-la-de']], ['Rucksack', 'Ruck-sack', ['Ru-cksack', 'Rucks-ack']],
+  ['Pflaster', 'Pflas-ter', ['Pfla-ster', 'Pflast-er']], ['Zimmer', 'Zim-mer', ['Zi-mmer', 'Zimm-er']], ['Jacke', 'Ja-cke', ['Jac-ke', 'Jack-e']],
 ];
 function trennTask(r: Rng): Gen {
   const [w, ok, wrong] = pick(r, TRENN);

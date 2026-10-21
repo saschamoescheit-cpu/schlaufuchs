@@ -194,6 +194,15 @@ const BE: { s: string; ok: string; opts: string[]; tag: string; why: string }[] 
   { s: 'I have ☐ a dog. 🐶', ok: 'got', opts: ['get', 'go'], tag: 'have-got', why: 'I have got a dog. = Ich habe einen Hund.' },
   { s: 'She ☐ got a cat.', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'Nach he, she, it: has got.' },
   { s: '☐ name is Tom.', ok: 'My', opts: ['I', 'Me'], tag: 'my', why: 'My name is … = Mein Name ist …' },
+  { s: 'You ☐ my best friend.', ok: 'are', opts: ['am', 'is'], tag: 'to-be', why: 'Nach you steht „are“.' },
+  { s: 'It ☐ cold today. ❄️', ok: 'is', opts: ['am', 'are'], tag: 'to-be', why: 'Nach it steht „is“.' },
+  { s: 'Birds ☐ fly. 🐦', ok: 'can', opts: ["can't", 'is'], tag: 'can', why: 'Birds can fly. = Vögel können fliegen.' },
+  { s: 'Penguins ☐ fly. 🐧', ok: "can't", opts: ['can', 'are'], tag: 'can', why: "Penguins can't fly. = Pinguine können nicht fliegen." },
+  { s: 'My sister ☐ bananas. 🍌', ok: 'likes', opts: ['like', 'are'], tag: 'like', why: 'My sister = she → likes (mit -s).' },
+  { s: 'We ☐ ice cream. 🍦', ok: 'like', opts: ['likes', 'is'], tag: 'like', why: 'Nach we steht „like“ ohne -s.' },
+  { s: 'He ☐ got a bike. 🚲', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'Nach he, she, it: has got.' },
+  { s: 'They have ☐ two rabbits. 🐰', ok: 'got', opts: ['get', 'go'], tag: 'have-got', why: 'They have got … = Sie haben …' },
+  { s: 'This is ☐ bag. 🎒', ok: 'my', opts: ['I', 'me'], tag: 'my', why: 'my bag = meine Tasche.' },
 ];
 const sentences = E(2, 'e2-sentences', 'Little sentences', '💬', { text: ['I am – you are – he/she/it is – we are – they are.', 'I can swim. I can\'t fly.', 'I like apples. He likes apples (mit -s!).', 'I have got a dog. She has got a cat.'], visual: { kind: 'text', text: 'I am · she is · we are' }, videoQuery: 'verb to be am is are for kids' }, (r) => {
   const b = pick(r, BE);

@@ -300,6 +300,8 @@ const SAETZE_ZEICHEN: [string, '.' | '?' | '!'][] = [
   ['Wie heißt du', '?'], ['Kommst du mit zum Spielplatz', '?'], ['Wo wohnst du', '?'], ['Hast du einen Hund', '?'], ['Wann beginnt die Pause', '?'], ['Magst du Eis', '?'],
   ['Ich spiele gern Fußball', '.'], ['Die Katze schläft auf dem Sofa', '.'], ['Heute scheint die Sonne', '.'], ['Mein Bruder ist sechs Jahre alt', '.'], ['Wir gehen in den Zoo', '.'], ['Der Bus kommt um acht Uhr', '.'],
   ['Pass auf', '!'], ['Hilfe', '!'], ['Komm sofort her', '!'], ['Sei leise', '!'], ['Vorsicht, heiß', '!'], ['Lauf schnell weg', '!'],
+  ['Was machst du heute', '?'], ['Kannst du mir helfen', '?'], ['Wie spät ist es', '?'], ['Am Montag haben wir Sport', '.'], ['Lena malt ein Bild', '.'], ['Im Herbst fallen die Blätter', '.'],
+  ['Mach bitte sofort die Tür zu', '!'], ['Halt, stopp', '!'], ['Juhu, wir haben gewonnen', '!'],
 ];
 const satzzeichen = D(2, 'd2-satzzeichen', 'Satzzeichen . ? !', '❓', {
   text: ['Am Ende eines Satzes steht ein Satzzeichen.', 'Punkt (.): Ich erzähle etwas. „Ich spiele Fußball.“', 'Fragezeichen (?): Ich frage etwas. „Wie heißt du?“ Fragesätze beginnen oft mit W-Wörtern oder dem Verb.', 'Ausrufezeichen (!): Ich rufe, warne oder fordere auf. „Pass auf!“'],
@@ -581,6 +583,8 @@ const FAELLE: { s: string; mark: string; fall: 'Nominativ' | 'Genitiv' | 'Dativ'
   { s: '**Die Lehrerin** erklärt die Aufgabe.', mark: 'Die Lehrerin', fall: 'Nominativ' }, { s: 'Wir helfen **der Lehrerin**.', mark: 'der Lehrerin', fall: 'Dativ' }, { s: 'Wir begrüßen **die Lehrerin**.', mark: 'die Lehrerin', fall: 'Akkusativ' }, { s: 'Die Tasche **der Lehrerin** ist rot.', mark: 'der Lehrerin', fall: 'Genitiv' },
   { s: '**Das Kind** lacht laut.', mark: 'Das Kind', fall: 'Nominativ' }, { s: 'Oma schenkt **dem Kind** ein Buch.', mark: 'dem Kind', fall: 'Dativ' }, { s: 'Papa trägt **das Kind** nach Hause.', mark: 'das Kind', fall: 'Akkusativ' }, { s: 'Das Fahrrad **des Kindes** ist neu.', mark: 'des Kindes', fall: 'Genitiv' },
   { s: 'Lena ruft **ihren Bruder**.', mark: 'ihren Bruder', fall: 'Akkusativ' }, { s: 'Tim schreibt **seiner Freundin** einen Brief.', mark: 'seiner Freundin', fall: 'Dativ' }, { s: '**Mein Opa** repariert das Fahrrad.', mark: 'Mein Opa', fall: 'Nominativ' }, { s: 'Wir besuchen **den Zoo**.', mark: 'den Zoo', fall: 'Akkusativ' },
+  { s: '**Der Ball** liegt im Gras.', mark: 'Der Ball', fall: 'Nominativ' }, { s: 'Ich werfe **den Ball**.', mark: 'den Ball', fall: 'Akkusativ' }, { s: 'Der Hund rennt **dem Ball** hinterher.', mark: 'dem Ball', fall: 'Dativ' }, { s: 'Die Farbe **des Balles** ist rot.', mark: 'des Balles', fall: 'Genitiv' },
+  { s: 'Wir danken **dem Arzt**.', mark: 'dem Arzt', fall: 'Dativ' }, { s: 'Mama ruft **den Arzt** an.', mark: 'den Arzt', fall: 'Akkusativ' }, { s: 'Die Praxis **des Arztes** ist groß.', mark: 'des Arztes', fall: 'Genitiv' }, { s: '**Die Katze** jagt eine Maus.', mark: 'Die Katze', fall: 'Nominativ' }, { s: 'Die Katze jagt **eine Maus**.', mark: 'eine Maus', fall: 'Akkusativ' },
 ];
 const FRAGE = { Nominativ: 'Wer oder was?', Genitiv: 'Wessen?', Dativ: 'Wem?', Akkusativ: 'Wen oder was?' } as const;
 const faelle = D(4, 'd4-faelle', 'Die vier Fälle', '🗝️', {
@@ -642,6 +646,8 @@ const ssz = D(4, 'd4-s-ss-sz', 's, ss oder ß', '🐍', {
 const REDE: [string, string, string, '.' | '?' | '!'][] = [
   ['Mia', 'sagt', 'Ich habe Hunger', '.'], ['Tim', 'fragt', 'Kommst du mit', '?'], ['Mama', 'ruft', 'Das Essen ist fertig', '!'], ['Der Lehrer', 'sagt', 'Schlagt die Bücher auf', '.'],
   ['Oma', 'fragt', 'Möchtest du Kuchen', '?'], ['Ben', 'schreit', 'Pass auf', '!'], ['Lena', 'erzählt', 'Wir fahren ans Meer', '.'], ['Papa', 'fragt', 'Wer hat die Tür offen gelassen', '?'],
+  ['Lisa', 'ruft', 'Komm schnell her', '!'], ['Opa', 'erzählt', 'Früher gab es keine Handys', '.'], ['Emil', 'fragt', 'Wie spät ist es', '?'], ['Die Lehrerin', 'sagt', 'Heute schreiben wir ein Diktat', '.'],
+  ['Paul', 'fragt', 'Darf ich mitspielen', '?'], ['Mama', 'flüstert', 'Das Baby schläft', '.'], ['Jonas', 'ruft', 'Wir haben gewonnen', '!'],
 ];
 const rede = D(4, 'd4-woertliche-rede', 'Wörtliche Rede', '💬', {
   text: ['Was jemand genau sagt, steht in Anführungszeichen: unten „ … und oben “.', 'Begleitsatz vorne: Danach kommt ein Doppelpunkt. Mia sagt: „Ich habe Hunger.“', 'Begleitsatz hinten: Nach den Anführungszeichen kommt ein Komma. „Ich habe Hunger“, sagt Mia. (Bei Aussagen fällt der Punkt in der Rede weg.)', 'Fragezeichen und Ausrufezeichen bleiben immer in den Anführungszeichen.'],
