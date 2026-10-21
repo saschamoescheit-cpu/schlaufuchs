@@ -1,5 +1,5 @@
 // Wiederholen (Fehler-Kiste) und Lernstand.
-import { accuracy, dayKey, dueReviews, level, LEVEL_NAMES, openReviews, patterns, REVIEW_STREAK, streakDays, weaknesses, type Progress } from '../engine/learning';
+import { accuracy, addDays, dayKey, dueReviews, level, LEVEL_NAMES, openReviews, patterns, REVIEW_STREAK, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Skill, Subject } from '../engine/types';
 import { ALL_SKILLS, byArea, currentSkills, englishYear, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import type { Profile } from '../data/store';
@@ -140,7 +140,7 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
   const allCur = SUBJECTS.flatMap((s) => (s.id === 'englisch' && englishYear(profile) === 0 ? [] : currentSkills(s.id, profile)));
   const sure = allCur.filter((s) => level(progress, s.id) === 3).length;
   const days = Array.from({ length: 14 }, (_, i) => {
-    const t = now - (13 - i) * 86400000;
+    const t = addDays(now, i - 13);
     return { d: new Date(t), n: progress.days[dayKey(t)] ?? 0 };
   });
   const maxDay = Math.max(1, ...days.map((d) => d.n));

@@ -194,7 +194,7 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
               </span>
               <span className="grow">
                 <h3>{s.title}</h3>
-                <span className="row small" style={{ gap: 8, marginTop: 2 }}>
+                <span className="row small topic-meta" style={{ marginTop: 2 }}>
                   <LevelDots level={lvl} />
                   <span className="muted">{['Neu', 'Angefangen', 'Geübt', 'Sicher ✓'][lvl]}</span>
                   {s.staged && st?.stage && <span className="stage-pill">Stufe {st.stage}</span>}

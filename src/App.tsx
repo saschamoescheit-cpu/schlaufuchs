@@ -3,7 +3,7 @@ import { buildMix, buildPractice, buildReview } from './engine/session';
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
-import { useData } from './data/store';
+import { hasSaveError, useData } from './data/store';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
@@ -162,7 +162,14 @@ export default function App() {
   const activeTab = route.r === 'tab' ? route.tab : route.r === 'subject' ? 'home' : null;
   return (
     <>
-      <div className="app">{body}</div>
+      <div className="app">
+        {hasSaveError() && (
+          <div className="save-warn" role="alert">
+            ⚠️ <b>Speicher voll:</b> Dieses Gerät kann den Lernstand gerade nicht speichern. Bitte Eltern Bescheid sagen – mit Anmeldung (Abgleich) bleibt alles in der Cloud gesichert.
+          </div>
+        )}
+        {body}
+      </div>
       <nav className="tabbar" aria-label="Menü">
         <div className="tabbar-inner">
           {TABS.map((t) => (

@@ -79,6 +79,14 @@ export const LOG_MAX = 6000;
 export const REVIEW_GAP_MS = 30 * 60 * 1000;
 export const REVIEW_STREAK = 2;
 
+/** n Kalendertage weiter (12 Uhr mittags) – nicht n × 24 Stunden: die Zeitumstellung würde sonst Tage verschieben */
+export const addDays = (t: number, n: number) => {
+  const d = new Date(t);
+  d.setHours(12, 0, 0, 0);
+  d.setDate(d.getDate() + n);
+  return d.getTime();
+};
+
 export const dayKey = (t: number) => {
   const d = new Date(t);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
@@ -204,10 +212,10 @@ export function patterns(p: Progress, skills: Skill[], limit = 6): Pattern[] {
 export function streakDays(p: Progress, now: number): number {
   let n = 0;
   let t = now;
-  if (!p.days[dayKey(t)]) t -= 86400000;
+  if (!p.days[dayKey(t)]) t = addDays(t, -1);
   while (p.days[dayKey(t)]) {
     n++;
-    t -= 86400000;
+    t = addDays(t, -1);
   }
   return n;
 }

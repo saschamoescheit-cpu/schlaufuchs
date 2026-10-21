@@ -1,7 +1,7 @@
 // Eltern-Bereich: PIN, Überblick über alle Kinder, Lernstand im Detail, Wochenbericht, Einstellungen je Kind.
 import { useMemo, useState } from 'react';
 import type { Grade } from '../engine/types';
-import { dayKey, minutesByDay, openReviews, patterns, periodStats, weaknesses, type Progress } from '../engine/learning';
+import { addDays, dayKey, minutesByDay, openReviews, patterns, periodStats, weaknesses, type Progress } from '../engine/learning';
 import { GRADE_NAMES } from '../engine/grading';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
@@ -287,7 +287,7 @@ export function weekReport(p: Profile, pr: Progress, now = Date.now()): string {
   const pats = patterns(pr, rel, 3);
   const lines = [
     `Schlaufuchs – Wochenbericht für ${p.name} (Klasse ${p.grade})`,
-    `${fmtDate(now - 7 * DAY)} bis ${fmtDate(now)}`,
+    `${fmtDate(addDays(now, -7))} bis ${fmtDate(now)}`,
     '',
     `Geübt an ${w.days} von 7 Tagen, ca. ${w.minutes} Minuten, ${w.tasks} Aufgaben (${w.tasks ? Math.round((w.right / w.tasks) * 100) : 0} % richtig).`,
   ];
@@ -314,7 +314,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
   if (!p) return null;
   const set = (patch: Partial<Profile>) => saveProfile({ ...p, ...patch }, false);
   const days = Array.from({ length: 14 }, (_, i) => {
-    const t = now - (13 - i) * DAY;
+    const t = addDays(now, i - 13);
     return { t, n: pr.days[dayKey(t)] ?? 0, m: mins[dayKey(t)] ?? 0 };
   });
   const maxM = Math.max(5, ...days.map((d) => d.m));

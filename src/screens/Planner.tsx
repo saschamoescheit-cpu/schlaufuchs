@@ -1,7 +1,7 @@
 // Test-Termine: Schultest eintragen → Countdown, Vorbereitungsstand, täglich üben, Probetest.
 import { useState } from 'react';
 import type { Grade, Skill, Subject } from '../engine/types';
-import { level, type Progress } from '../engine/learning';
+import { addDays, level, type Progress } from '../engine/learning';
 import { buildTest } from '../engine/session';
 import { byArea, currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { saveProfile, type PlannedTest, type Profile } from '../data/store';
@@ -142,7 +142,7 @@ function PlanForm({ profile, onSave, onCancel }: { profile: Profile; onSave: (t:
   const [subject, setSubject] = useState<Subject>('mathe');
   const [lv, setLv] = useState<Grade>(currentLevel('mathe', profile));
   const [date, setDate] = useState(() => {
-    const d = new Date(Date.now() + 7 * DAY);
+    const d = new Date(addDays(Date.now(), 7));
     return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
   });
   const [note, setNote] = useState('');
