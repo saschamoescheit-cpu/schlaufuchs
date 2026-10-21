@@ -702,6 +702,21 @@ const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
 
 function story4(r: Rng): Gen {
   const stories = [
+    { t: 'Nele ist neu in der Klasse 4b. Am ersten Tag kennt sie niemanden und sitzt in der Pause allein auf der Bank. Da kommt Tarek und fragt, ob sie beim Fangen mitspielen möchte. Nele zögert erst, dann rennt sie mit. Am Nachmittag erzählt sie ihrer Mutter, dass sie schon einen Freund gefunden hat. Am nächsten Morgen freut sie sich auf die Schule.', qs: [
+      { q: 'Warum sitzt Nele in der Pause allein?', a: 'Sie ist neu und kennt noch niemanden.', w: ['Sie ist krank.', 'Sie mag keine Spiele.', 'Sie hat Streit mit Tarek.'] },
+      { q: 'Was fragt Tarek?', a: 'ob sie beim Fangen mitspielen möchte', w: ['ob sie ihm ein Brot gibt', 'wie spät es ist', 'ob sie neu ist'] },
+      { q: 'Wie hat sich Neles Gefühl am Ende verändert?', a: 'Erst war sie allein, am Ende freut sie sich.', w: ['Erst war sie fröhlich, am Ende traurig.', 'Sie war die ganze Zeit traurig.', 'Sie ist am Ende wütend.'] },
+    ] },
+    { t: 'In der Nacht hat es stark geschneit. Als Finn aufwacht, ist alles weiß. Der Schulbus kann nicht fahren, weil die Straßen nicht geräumt sind. Finn und seine Schwester bauen im Garten einen riesigen Schneemann. Als Nase bekommt er eine Möhre, als Augen zwei Kohlestücke. Am Abend ist Finn müde, aber glücklich.', qs: [
+      { q: 'Warum kann der Schulbus nicht fahren?', a: 'Die Straßen sind nicht geräumt.', w: ['Der Busfahrer ist krank.', 'Es ist Sonntag.', 'Der Bus ist kaputt.'] },
+      { q: 'Was bekommt der Schneemann als Nase?', a: 'eine Möhre', w: ['ein Kohlestück', 'einen Knopf', 'einen Ast'] },
+      { q: 'In welcher Jahreszeit spielt die Geschichte?', a: 'im Winter', w: ['im Sommer', 'im Herbst', 'im Frühling'] },
+    ] },
+    { t: 'Die Klasse 4a plant einen Flohmarkt. Jedes Kind bringt Spielsachen und Bücher mit, die es nicht mehr braucht. Der Flohmarkt findet in der Turnhalle statt. Am Ende haben die Kinder 236 Euro eingenommen. Das Geld spenden sie an ein Tierheim. Die Leiterin des Tierheims kommt in die Klasse und bedankt sich.', qs: [
+      { q: 'Wo findet der Flohmarkt statt?', a: 'in der Turnhalle', w: ['im Klassenzimmer', 'auf dem Schulhof', 'im Tierheim'] },
+      { q: 'Wie viel Geld nehmen die Kinder ein?', a: '236 Euro', w: ['263 Euro', '200 Euro', '36 Euro'] },
+      { q: 'Warum kommt die Leiterin des Tierheims in die Klasse?', a: 'Sie will sich für die Spende bedanken.', w: ['Sie will Tiere verkaufen.', 'Sie will beim Flohmarkt helfen.', 'Sie ist eine neue Lehrerin.'] },
+    ] },
     { t: 'Paula und ihr Bruder Max fahren mit dem Zug zu ihrer Tante nach Hamburg. Die Fahrt dauert vier Stunden. Unterwegs spielen sie Karten und essen belegte Brote. Max schläft nach zwei Stunden ein. Als sie ankommen, regnet es. Die Tante wartet mit einem großen roten Regenschirm am Bahnsteig.', qs: [
       { q: 'Wohin fahren Paula und Max?', a: 'nach Hamburg', w: ['nach Berlin', 'nach München', 'nach Köln'] },
       { q: 'Wie lange dauert die Fahrt?', a: 'vier Stunden', w: ['zwei Stunden', 'drei Stunden', 'einen Tag'] },

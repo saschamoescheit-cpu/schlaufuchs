@@ -239,7 +239,7 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
       (subject !== 'englisch' && l.grade === profile.grade) ||
       (subject === 'englisch' && englishYear(profile) > 0 && l.grade === (englishYear(profile) >= 2 ? 4 : 3)),
   );
-  if (!shown.length) return null;
+  if (!shown.length) return <div className="empty card">In {info.name} hast du noch nichts geübt.</div>;
   return (
     <div className="card">
       <h2 style={{ color: info.color }}>
