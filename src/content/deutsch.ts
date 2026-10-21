@@ -239,7 +239,7 @@ const NOMEN: { w: string; a: 'der' | 'die' | 'das'; e: string; pl: string }[] = 
   { w: 'Zahn', a: 'der', e: '🦷', pl: 'Zähne' }, { w: 'Hand', a: 'die', e: '✋', pl: 'Hände' }, { w: 'Kind', a: 'das', e: '🧒', pl: 'Kinder' },
   { w: 'Mond', a: 'der', e: '🌙', pl: 'Monde' }, { w: 'Gurke', a: 'die', e: '🥒', pl: 'Gurken' }, { w: 'Schwein', a: 'das', e: '🐷', pl: 'Schweine' },
 ];
-const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen'];
+const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen'];
 const ADJ = ['groß', 'klein', 'schnell', 'langsam', 'laut', 'leise', 'bunt', 'lustig', 'müde', 'warm', 'kalt', 'süß', 'nass', 'weich', 'hell', 'dunkel'];
 
 const nomen = D(2, 'd2-nomen', 'Nomen erkennen', '🏷️', {
@@ -281,7 +281,7 @@ const verben = D(2, 'd2-verben', 'Verben erkennen', '🏃', {
 }, (r) => {
   const v = pick(r, VERBEN);
   const opts = [pick(r, NOMEN).w, pick(r, NOMEN).w, pick(r, ADJ)].map((x) => x.toUpperCase());
-  return { key: v, prompt: 'Welches Wort ist ein Verb (Tunwort)?', answer: choice(r, v.toUpperCase(), opts), tags: ['verb'], solution: [`${v} ist ein Verb: ich ${v.replace(/en$/, 'e').replace(/ern$/, 're')}, wir ${v}.`, 'Verben sagen, was jemand tut.'] };
+  return { key: v, prompt: 'Welches Wort ist ein Verb (Tunwort)?', answer: choice(r, v.toUpperCase(), opts), tags: ['verb'], solution: [`${v} ist ein Verb: ich ${/eln$/.test(v) ? v.replace(/eln$/, 'le') : /ern$/.test(v) ? v.replace(/ern$/, 'ere') : v.replace(/en$/, 'e')}, wir ${v}.`, 'Verben sagen, was jemand tut.'] };
 }, { testSeconds: 15 });
 
 const GEGENTEIL: [string, string][] = [['groß', 'klein'], ['dick', 'dünn'], ['heiß', 'kalt'], ['hell', 'dunkel'], ['laut', 'leise'], ['schnell', 'langsam'], ['nass', 'trocken'], ['voll', 'leer'], ['hart', 'weich'], ['lang', 'kurz'], ['schwer', 'leicht'], ['früh', 'spät'], ['reich', 'arm'], ['fröhlich', 'traurig'], ['sauber', 'schmutzig'], ['stark', 'schwach'], ['offen', 'geschlossen'], ['hoch', 'tief']];
