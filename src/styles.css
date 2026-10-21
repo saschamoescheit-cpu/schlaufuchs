@@ -1685,6 +1685,7 @@ details.more .inner {
 }
 .goal-card {
   padding: 12px 16px;
+  text-align: left;
 }
 
 /* ---------- Tablet quer: zwei Spalten ---------- */

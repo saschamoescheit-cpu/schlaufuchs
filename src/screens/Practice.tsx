@@ -97,7 +97,9 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
       <div className="app full">
         {pct >= 0.7 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
-          <Fox size={130} mood="happy" className="fox-wiggle" />
+          <div>
+            <Fox size={130} mood="happy" className="fox-wiggle" />
+          </div>
           <h1>{pct >= 0.9 ? 'Fantastisch!' : pct >= 0.7 ? 'Super gemacht!' : 'Gut durchgehalten!'}</h1>
           <p className="muted">{title}</p>
           <div className="tiles" style={{ gridTemplateColumns: 'repeat(2, 1fr)' }}>

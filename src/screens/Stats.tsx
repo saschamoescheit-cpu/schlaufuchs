@@ -3,7 +3,8 @@ import { accuracy, dayKey, dueReviews, level, LEVEL_NAMES, openReviews, patterns
 import type { Skill, Subject } from '../engine/types';
 import { ALL_SKILLS, currentSkills, englishYear, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import type { Profile } from '../data/store';
-import { Fox, LevelDots, TopBar } from '../ui/common';
+import { useState } from 'react';
+import { Fox, LevelDots, Tabs, TopBar } from '../ui/common';
 import { GRADE_NAMES } from '../engine/grading';
 import { BadgeGrid, BadgeWatcher } from '../ui/Badges';
 
@@ -22,52 +23,75 @@ export function ReviewScreen({ profile, progress, onReviewAll, onPractice }: { p
   const waiting = progress.review.length - due.length;
   const weak = weaknesses(progress, relevantSkills(profile, progress), 6);
   const pats = patterns(progress, relevantSkills(profile, progress), 6);
+  const [tab, setTab] = useState<'kiste' | 'knobel' | 'muster'>('kiste');
   return (
     <div className="stack">
       <TopBar title="🧰 Wiederholen" />
-      <div className="hello">
-        <Fox size={64} mood={due.length ? 'think' : 'happy'} />
-        <div className="bubble">
-          {due.length
-            ? `Hier sammle ich alle Aufgaben, die noch nicht geklappt haben. Jede kommt so lange wieder, bis du sie ${REVIEW_STREAK}-mal hintereinander richtig hast.`
-            : progress.review.length
-              ? `Gerade ist nichts fällig. ${waiting} ${waiting === 1 ? 'Aufgabe kommt' : 'Aufgaben kommen'} später zur Kontrolle wieder.`
-              : 'Deine Fehler-Kiste ist leer. Super!'}
-        </div>
-      </div>
-
-      {due.length > 0 && (
+      <Tabs
+        value={tab}
+        onChange={setTab}
+        items={[
+          ['kiste', `Fehler-Kiste${due.length ? ` (${due.length})` : ''}`],
+          ['knobel', 'Knobel-Themen'],
+          ['muster', 'Fehlermuster'],
+        ]}
+      />
+      {tab === 'kiste' && (
         <>
-          <button className="btn block ok" onClick={() => onReviewAll()}>
-            Alle Fehler üben ({due.length})
-          </button>
-          <div className="chips">
-            {SUBJECTS.map((s) => {
-              const n = due.filter((r) => skillById(r.task.skillId)?.subject === s.id).length;
-              return n ? (
-                <button key={s.id} className="chip" onClick={() => onReviewAll(s.id)}>
-                  {s.icon} {s.name}: {n}
-                </button>
-              ) : null;
-            })}
+          <div className="hello">
+            <Fox size={64} mood={due.length ? 'think' : 'happy'} />
+            <div className="bubble">
+              {due.length
+                ? `Hier sammle ich alle Aufgaben, die noch nicht geklappt haben. Jede kommt so lange wieder, bis du sie ${REVIEW_STREAK}-mal hintereinander richtig hast.`
+                : progress.review.length
+                  ? `Gerade ist nichts fällig. ${waiting} ${waiting === 1 ? 'Aufgabe kommt' : 'Aufgaben kommen'} später zur Kontrolle wieder.`
+                  : 'Deine Fehler-Kiste ist leer. Super!'}
+            </div>
           </div>
+
+          {due.length > 0 && (
+            <>
+              <button className="btn block ok" onClick={() => onReviewAll()}>
+                Alle Fehler üben ({due.length})
+              </button>
+              <div className="chips">
+                {SUBJECTS.map((s) => {
+                  const n = due.filter((r) => skillById(r.task.skillId)?.subject === s.id).length;
+                  return n ? (
+                    <button key={s.id} className="chip" onClick={() => onReviewAll(s.id)}>
+                      {s.icon} {s.name}: {n}
+                    </button>
+                  ) : null;
+                })}
+              </div>
+            </>
+          )}
+          <div className="small muted">
+            Schon geschafft: {progress.solved} {progress.solved === 1 ? 'Aufgabe' : 'Aufgaben'} aus der Fehler-Kiste 🎉
+          </div>
+          {progress.review.length > 0 && <BoxList progress={progress} />}
         </>
       )}
-      <div className="small muted">
-        Schon geschafft: {progress.solved} {progress.solved === 1 ? 'Aufgabe' : 'Aufgaben'} aus der Fehler-Kiste 🎉
-      </div>
-      {progress.review.length > 0 && <BoxList progress={progress} />}
 
-      <h2 className="section-title">🧩 Hier knobelst du noch</h2>
-      {weak.length === 0 ? (
-        <div className="empty card">Noch keine Knobel-Themen – übe ein paar Runden, dann sehe ich, was dir schwerfällt.</div>
-      ) : (
-        weak.map((w) => <WeakRow key={w.skill.id} skill={w.skill} acc={w.acc} open={w.open} onPractice={onPractice} />)
+      {tab === 'knobel' && (
+        <>
+          <p className="muted" style={{ marginTop: -4 }}>
+            Hier knobelst du noch – diese Themen fallen dir gerade am schwersten.
+          </p>
+          {weak.length === 0 ? (
+            <div className="empty card">Noch keine Knobel-Themen – übe ein paar Runden, dann sehe ich, was dir schwerfällt.</div>
+          ) : (
+            weak.map((w) => <WeakRow key={w.skill.id} skill={w.skill} acc={w.acc} open={w.open} onPractice={onPractice} />)
+          )}
+        </>
       )}
 
-      {pats.length > 0 && (
+      {tab === 'muster' && pats.length === 0 && <div className="empty card">Noch keine typischen Fehler erkannt. Super – oder du hast noch nicht genug geübt.</div>}
+      {tab === 'muster' && pats.length > 0 && (
         <>
-          <h2 className="section-title">🔎 Typische Fehler</h2>
+          <p className="muted" style={{ marginTop: -4 }}>
+            Diese Fehler passieren dir öfter. Übe gezielt das Thema dazu.
+          </p>
           <div className="card" style={{ padding: '4px 14px' }}>
             {pats.map((p) => (
               <div key={p.skill.id + p.tag} className="list-row">
@@ -121,68 +145,87 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
   });
   const maxDay = Math.max(1, ...days.map((d) => d.n));
   const tests = progress.tests.slice(-10);
+  const [tab, setTab] = useState<'ueberblick' | 'abzeichen' | 'faecher'>('ueberblick');
+  const [subj, setSubj] = useState<Subject>('mathe');
   return (
     <div className="stack">
       <TopBar title="📊 Mein Lernstand" />
-      <div className="tiles">
-        <div className="tile">
-          <b>⭐ {progress.stars}</b>
-          <span>Sterne</span>
-        </div>
-        <div className="tile">
-          <b>🔥 {streakDays(progress, now)}</b>
-          <span>Tage in Folge</span>
-        </div>
-        <div className="tile">
-          <b>{total}</b>
-          <span>Aufgaben gelöst</span>
-        </div>
-        <div className="tile">
-          <b>
-            {sure}/{allCur.length}
-          </b>
-          <span>Lernziele sicher</span>
-        </div>
-      </div>
-
-      <div className="card">
-        <h3>Die letzten 14 Tage</h3>
-        <div className="mini-bars" style={{ marginTop: 10 }} aria-label="Aufgaben pro Tag">
-          {days.map((d, i) => (
-            <i key={i} title={`${d.d.toLocaleDateString('de-DE')}: ${d.n} Aufgaben`} style={{ height: `${(d.n / maxDay) * 100}%`, background: d.n ? 'var(--fox)' : 'var(--line)' }} />
-          ))}
-        </div>
-        <div className="row small muted" style={{ justifyContent: 'space-between', marginTop: 4 }}>
-          <span>{days[0].d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}</span>
-          <span>heute</span>
-        </div>
-      </div>
-
-      <h2 className="section-title">🏅 Abzeichen</h2>
-      <BadgeGrid profile={profile} progress={progress} />
       <BadgeWatcher profile={profile} progress={progress} />
-
-      {tests.length > 0 && (
-        <div className="card">
-          <h3>Lernzielkontrollen</h3>
-          <div className="mini-bars" style={{ marginTop: 10, height: 90 }}>
-            {tests.map((t) => (
-              <i key={t.id} title={`${subjectInfo(t.subject).name}: ${t.percent} %${t.grade ? ` – Note ${t.grade}` : ''}`} style={{ height: `${Math.max(4, t.percent)}%`, background: subjectInfo(t.subject).color }} onClick={() => onOpenTest(t.id)} />
+      <Tabs value={tab} onChange={setTab} items={[['ueberblick', 'Überblick'], ['faecher', 'Fächer'], ['abzeichen', 'Abzeichen']]} />
+      {tab === 'abzeichen' && <BadgeGrid profile={profile} progress={progress} />}
+      {tab === 'faecher' && (
+        <>
+          <div className="chips">
+            {SUBJECTS.map((x) => (
+              <button key={x.id} className={`chip ${subj === x.id ? 'on' : ''}`} onClick={() => setSubj(x.id)}>
+                {x.icon} {x.name}
+              </button>
             ))}
           </div>
-          <div className="small muted" style={{ marginTop: 6 }}>
-            Letzter Test: {subjectInfo(tests[tests.length - 1].subject).name}, {tests[tests.length - 1].percent} %{tests[tests.length - 1].grade ? ` – Note ${tests[tests.length - 1].grade} (${GRADE_NAMES[tests[tests.length - 1].grade!]})` : ''}
+          <SubjectStats subject={subj} profile={profile} progress={progress} onPractice={onPractice} />
+          <div className="card small muted">
+            <b>So rechnet Schlaufuchs den Lernstand:</b> Ein Thema ist <b>„Sicher“</b> (Lernziel erreicht), wenn von den letzten Aufgaben mindestens 8 gelöst und 90 % richtig sind und keine
+            Fehler-Aufgabe mehr offen ist. <b>„Geübt“</b> heißt: mindestens 5 Aufgaben mit 70 % richtig.
           </div>
-        </div>
+        </>
       )}
+      {tab === 'ueberblick' && (
+        <>
+          <div className="tiles">
+            <div className="tile">
+              <b>⭐ {progress.stars}</b>
+              <span>Sterne</span>
+            </div>
+            <div className="tile">
+              <b>🔥 {streakDays(progress, now)}</b>
+              <span>Tage in Folge</span>
+            </div>
+            <div className="tile">
+              <b>{total}</b>
+              <span>Aufgaben gelöst</span>
+            </div>
+            <div className="tile">
+              <b>
+                {sure}/{allCur.length}
+              </b>
+              <span>Lernziele sicher</span>
+            </div>
+          </div>
 
-      {SUBJECTS.map((s) => (
-        <SubjectStats key={s.id} subject={s.id} profile={profile} progress={progress} onPractice={onPractice} />
-      ))}
+          <div className="card">
+            <h3>Die letzten 14 Tage</h3>
+            <div className="mini-bars" style={{ marginTop: 10 }} aria-label="Aufgaben pro Tag">
+              {days.map((d, i) => (
+                <i key={i} title={`${d.d.toLocaleDateString('de-DE')}: ${d.n} Aufgaben`} style={{ height: `${(d.n / maxDay) * 100}%`, background: d.n ? 'var(--fox)' : 'var(--line)' }} />
+              ))}
+            </div>
+            <div className="row small muted" style={{ justifyContent: 'space-between', marginTop: 4 }}>
+              <span>{days[0].d.toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' })}</span>
+              <span>heute</span>
+            </div>
+          </div>
 
-      <div className="card small muted">
-        <b>So rechnet Schlaufuchs den Lernstand:</b> Ein Thema ist <b>„Sicher“</b> (Lernziel erreicht), wenn von den letzten Aufgaben mindestens 8 gelöst und 90 % richtig sind und keine Fehler-Aufgabe mehr offen ist. <b>„Geübt“</b> heißt: mindestens 5 Aufgaben mit 70 % richtig.
-      </div>
+          {tests.length > 0 && (
+            <div className="card">
+              <h3>Lernzielkontrollen</h3>
+              <div className="mini-bars" style={{ marginTop: 10, height: 90 }}>
+                {tests.map((t) => (
+                  <i
+                    key={t.id}
+                    title={`${subjectInfo(t.subject).name}: ${t.percent} %${t.grade ? ` – Note ${t.grade}` : ''}`}
+                    style={{ height: `${Math.max(4, t.percent)}%`, background: subjectInfo(t.subject).color }}
+                    onClick={() => onOpenTest(t.id)}
+                  />
+                ))}
+              </div>
+              <div className="small muted" style={{ marginTop: 6 }}>
+                Letzter Test: {subjectInfo(tests[tests.length - 1].subject).name}, {tests[tests.length - 1].percent} %
+                {tests[tests.length - 1].grade ? ` – Note ${tests[tests.length - 1].grade} (${GRADE_NAMES[tests[tests.length - 1].grade!]})` : ''}
+              </div>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
@@ -190,7 +233,12 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
 export function SubjectStats({ subject, profile, progress, onPractice }: { subject: Subject; profile: Profile; progress: Progress; onPractice?: (s: Skill) => void }) {
   const info = subjectInfo(subject);
   const levels = levelsFor(subject).filter((l) => (subject === 'englisch' ? true : l.grade <= profile.grade) || skillsOf(subject, l.grade).some((s) => progress.skills[s.id]));
-  const shown = levels.filter((l) => skillsOf(subject, l.grade).some((s) => progress.skills[s.id]) || (subject !== 'englisch' && l.grade === profile.grade) || (subject === 'englisch' && englishYear(profile) > 0 && l.grade === (englishYear(profile) >= 2 ? 4 : 3)));
+  const shown = levels.filter(
+    (l) =>
+      skillsOf(subject, l.grade).some((s) => progress.skills[s.id]) ||
+      (subject !== 'englisch' && l.grade === profile.grade) ||
+      (subject === 'englisch' && englishYear(profile) > 0 && l.grade === (englishYear(profile) >= 2 ? 4 : 3)),
+  );
   if (!shown.length) return null;
   return (
     <div className="card">
@@ -216,7 +264,12 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
               const acc = accuracy(progress.skills[s.id]);
               const open = openReviews(progress, s.id).length;
               return (
-                <button key={s.id} className="list-row" style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: onPractice ? 'pointer' : 'default', font: 'inherit' }} onClick={() => onPractice?.(s)}>
+                <button
+                  key={s.id}
+                  className="list-row"
+                  style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: onPractice ? 'pointer' : 'default', font: 'inherit' }}
+                  onClick={() => onPractice?.(s)}
+                >
                   <span>{s.icon}</span>
                   <span className="grow small">{s.title}</span>
                   {open > 0 && <span className="tag">{open}</span>}

@@ -65,7 +65,7 @@ function Choices({ task, value, onPick, reveal }: { task: Task; value: string; o
   const a = task.answer;
   if (a.type !== 'choice') return null;
   const maxLen = Math.max(...a.options.map((o) => o.length));
-  const cls = maxLen > 16 ? 'one' : (a.options.length === 3 && maxLen <= 6) || (a.options.length === 5 && maxLen <= 3) ? 'three' : '';
+  const cls = maxLen > 16 || (a.options.length === 3 && maxLen > 6) ? 'one' : (a.options.length === 3 && maxLen <= 6) || (a.options.length === 5 && maxLen <= 3) ? 'three' : '';
   return (
     <div className={`choices ${cls}`} role="group" aria-label="Antworten">
       {a.options.map((o, i) => {

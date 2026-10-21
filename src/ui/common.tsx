@@ -185,3 +185,16 @@ export function TopBar({ title, onBack, right }: { title: ReactNode; onBack?: ()
     </div>
   );
 }
+
+/** Reiter oben auf einer Seite (statt langer Einzelseiten) */
+export function Tabs<T extends string>({ value, onChange, items }: { value: T; onChange: (v: T) => void; items: [T, string][] }) {
+  return (
+    <div className="seg-light" role="tablist">
+      {items.map(([k, l]) => (
+        <button key={k} role="tab" aria-selected={value === k} className={value === k ? 'on' : ''} onClick={() => onChange(k)}>
+          {l}
+        </button>
+      ))}
+    </div>
+  );
+}
