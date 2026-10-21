@@ -27,7 +27,11 @@ export type Visual =
   | { kind: 'compare'; a: number; b: number }
   | { kind: 'text'; text: string; title?: string }
   | { kind: 'ruler'; cm: number; emoji?: string }
-  | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of' };
+  | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of' }
+  /** Zahlenmauer: Reihen von unten nach oben, null = gesuchter Stein */
+  | { kind: 'wall'; rows: (number | null)[][] }
+  /** Säulendiagramm */
+  | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string };
 
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }

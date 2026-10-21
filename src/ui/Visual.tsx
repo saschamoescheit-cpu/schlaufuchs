@@ -477,6 +477,73 @@ function Prep({ pos }: { pos: string }) {
   );
 }
 
+function Wall({ rows }: { rows: (number | null)[][] }) {
+  const bw = 64;
+  const bh = 40;
+  const base = rows[0].length;
+  const W = base * bw + 8;
+  const H = rows.length * bh + 8;
+  return (
+    <Svg w={W} h={H} label="Zahlenmauer" max={Math.min(380, W * 1.3)}>
+      {rows.map((row, ri) =>
+        row.map((v, i) => {
+          const x = 4 + (ri * bw) / 2 + i * bw;
+          const y = H - 4 - (ri + 1) * bh;
+          return (
+            <g key={`${ri}-${i}`}>
+              <rect x={x + 1} y={y + 1} width={bw - 2} height={bh - 2} rx={4} fill={v === null ? '#FFE3C7' : '#F6E3D3'} stroke={C.ink} strokeWidth={2} />
+              <text x={x + bw / 2} y={y + bh / 2 + 7} textAnchor="middle" fontSize={20} fontWeight={600} fill={v === null ? C.b : C.ink} fontFamily="Fredoka, sans-serif">
+                {v === null ? '?' : v}
+              </text>
+            </g>
+          );
+        }),
+      )}
+    </Svg>
+  );
+}
+
+function Bars({ title, items, unit }: { title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string }) {
+  const max = Math.max(...items.map((i) => i.value));
+  const top = Math.ceil(max / 2) * 2 + 2;
+  const W = 320;
+  const H = 220;
+  const left = 30;
+  const bottom = 46;
+  const bw = (W - left - 10) / items.length;
+  const y = (v: number) => H - bottom - (v / top) * (H - bottom - 24);
+  const COLS = [C.a, C.b, C.green, '#8E5BE8', C.red];
+  return (
+    <Svg w={W} h={H} label={title} max={400}>
+      <text x={W / 2} y={14} textAnchor="middle" fontSize={13} fontWeight={700} fill={C.ink} fontFamily="Nunito, sans-serif">
+        {title}
+        {unit ? ` (${unit})` : ''}
+      </text>
+      {Array.from({ length: top + 1 }, (_, v) => v).map((v) => (
+        <g key={v}>
+          <line x1={left} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v ? (v % 2 ? '#F1EEF7' : '#E2DCEE') : C.ink} strokeWidth={v ? 1 : 2} />
+          <text x={left - 6} y={y(v) + 4} textAnchor="end" fontSize={v % 2 ? 8 : 10} fill={v % 2 ? '#9A93AE' : C.ink} fontFamily="Fredoka, sans-serif">
+            {v}
+          </text>
+        </g>
+      ))}
+      {items.map((it, i) => (
+        <g key={it.label}>
+          <rect x={left + 6 + i * bw} y={y(it.value)} width={bw - 12} height={y(0) - y(it.value)} rx={4} fill={COLS[i % COLS.length]} />
+          {it.emoji && (
+            <text x={left + i * bw + bw / 2} y={H - bottom + 20} textAnchor="middle" fontSize={16}>
+              {it.emoji}
+            </text>
+          )}
+          <text x={left + i * bw + bw / 2} y={H - bottom + (it.emoji ? 38 : 18)} textAnchor="middle" fontSize={11} fill={C.ink} fontFamily="Nunito, sans-serif">
+            {it.label}
+          </text>
+        </g>
+      ))}
+    </Svg>
+  );
+}
+
 export function Visual({ v }: { v: V }) {
   switch (v.kind) {
     case 'dots':
@@ -529,5 +596,9 @@ export function Visual({ v }: { v: V }) {
       return <Ruler cm={v.cm} />;
     case 'prep':
       return <Prep pos={v.pos} />;
+    case 'wall':
+      return <Wall rows={v.rows} />;
+    case 'bars':
+      return <Bars {...v} />;
   }
 }

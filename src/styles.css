@@ -628,7 +628,9 @@ a {
   box-shadow: 0 4px 0 var(--line);
   transition: transform 0.08s;
   text-align: center;
-  word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  -webkit-hyphens: auto;
 }
 .choices.one .choice {
   text-align: left;
