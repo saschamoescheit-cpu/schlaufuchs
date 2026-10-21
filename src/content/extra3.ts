@@ -332,6 +332,46 @@ function teilenGrossTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Fahrplan lesen (Kl. 4) ----------
+
+const STOPS = ['Bahnhof', 'Marktplatz', 'Schule', 'Schwimmbad', 'Rathaus', 'Zoo', 'Bücherei', 'Sportplatz', 'Kirche', 'Park'];
+const hm = (min: number) => `${Math.floor(min / 60)}:${String(min % 60).padStart(2, '0')}`;
+function fahrplanTask(r: Rng, s: Stage): Gen {
+  const stops = pickN(r, STOPS, 4);
+  const legs = [0, ri(r, 3, 9), ri(r, 3, 9), ri(r, 4, 12)];
+  const offs = legs.map((_, i) => legs.slice(0, i + 1).reduce((a, b) => a + b, 0));
+  const first = 7 * 60 + ri(r, 0, 5) * 5;
+  const gap = pick(r, [15, 20, 30]);
+  const starts = [first, first + gap, first + 2 * gap];
+  const rows = stops.map((st, i) => [st, ...starts.map((t) => hm(t + offs[i]))]);
+  const table = { kind: 'table' as const, title: '🚌 Fahrplan Linie 5', head: ['Haltestelle', '1. Bus', '2. Bus', '3. Bus'], rows };
+  const name = pick(r, NAMES);
+  const v = s === 1 ? 0 : s === 2 ? ri(r, 0, 2) : ri(r, 1, 3);
+  if (v === 0) {
+    const bi = ri(r, 0, 2), si = ri(r, 1, 3);
+    const ok = `${rows[si][bi + 1]} Uhr`;
+    const wrong = [rows[si][((bi + 1) % 3) + 1], rows[si - 1][bi + 1], rows[Math.min(3, si + 1) === si ? si - 1 : si + 1][bi + 1]].map((x) => `${x} Uhr`);
+    return { key: `fp0-${rows.flat().join()}-${bi}-${si}`, prompt: `Wann ist der ${bi + 1}. Bus an der Haltestelle „${stops[si]}“?`, visual: { ...table }, answer: choice(r, ok, wrong), tags: ['ablesen'], solution: [`Suche die Zeile „${stops[si]}“ und die Spalte „${bi + 1}. Bus“.`, `Dort steht: ${ok}`], solutionVisual: { ...table, mark: [si, bi + 1] } };
+  }
+  if (v === 1) {
+    const a = ri(r, 0, 2), b = ri(r, a + 1, 3);
+    const dur = offs[b] - offs[a];
+    return { key: `fp1-${rows.flat().join()}-${a}-${b}`, prompt: `Wie viele Minuten fährt der Bus von „${stops[a]}“ bis „${stops[b]}“?`, visual: { ...table }, answer: { type: 'number', value: dur, unit: 'min' }, tags: ['zeitspanne'], solution: [`Nimm einen Bus, zum Beispiel den 1. Bus:`, `Ab ${stops[a]}: ${rows[a][1]} Uhr, an ${stops[b]}: ${rows[b][1]} Uhr`, `Von ${rows[a][1]} bis ${rows[b][1]} sind es ${dur} Minuten.`] };
+  }
+  if (v === 2) {
+    const target = ri(r, 1, 3);
+    const bi = ri(r, 0, 2);
+    const arrive = starts[bi] + offs[target];
+    const must = arrive + ri(r, 1, Math.min(gap - 1, 12));
+    const ok = `den ${bi + 1}. Bus`;
+    return { key: `fp2-${rows.flat().join()}-${target}-${must}`, prompt: `${name} muss um ${hm(must)} Uhr an der Haltestelle „${stops[target]}“ sein.\nWelchen Bus muss ${name} spätestens nehmen?`, visual: { ...table }, answer: choice(r, ok, ['den 1. Bus', 'den 2. Bus', 'den 3. Bus'].filter((x) => x !== ok)), tags: ['planen'], traps: bi < 2 ? [{ answer: `den ${bi + 2}. Bus`, tag: 'zu-spaet', hint: `Der ${bi + 2}. Bus ist erst um ${rows[target][bi + 2]} Uhr dort – das ist zu spät.` }] : [], solution: [`Schau in die Zeile „${stops[target]}“.`, `Der ${bi + 1}. Bus ist um ${rows[target][bi + 1]} Uhr dort – das passt.`, ...(bi < 2 ? [`Der ${bi + 2}. Bus kommt erst um ${rows[target][bi + 2]} Uhr – zu spät.`] : [])], solutionVisual: { ...table, mark: [target, bi + 1] } };
+  }
+  const bi = ri(r, 1, 2);
+  const come = starts[bi] - ri(r, 2, gap - 2);
+  const wait = starts[bi] - come;
+  return { key: `fp3-${rows.flat().join()}-${come}`, prompt: `${name} kommt um ${hm(come)} Uhr zur Haltestelle „${stops[0]}“.\nWie lange muss ${name} auf den nächsten Bus warten?`, visual: { ...table }, answer: { type: 'number', value: wait, unit: 'min' }, tags: ['zeitspanne'], solution: [`Der nächste Bus fährt um ${hm(starts[bi])} Uhr ab ${stops[0]}.`, `Von ${hm(come)} bis ${hm(starts[bi])} sind es ${wait} Minuten.`], solutionVisual: { ...table, mark: [0, bi + 1] } };
+}
+
 // ---------- Würfelgebäude (Kl. 3) ----------
 
 const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
@@ -370,6 +410,7 @@ export const MATHE_EXTRA3: Skill[] = [
   M(3, 'm3-geteilt-gross', 'Teilen mit großen Zahlen', '➗', { text: ['Große Zahlen teilst du in Schritten: Zerlege die Zahl in zwei Teile, die du gut teilen kannst.', '84 : 4 → 80 : 4 = 20 und 4 : 4 = 1 → zusammen 21.', 'Probe mit der Malaufgabe: 21 · 4 = 84 ✓'], visual: { kind: 'text', text: '84 : 4 = 80 : 4 + 4 : 4 = 21' }, videoQuery: 'halbschriftliche Division Klasse 3 erklärt' }, teilenGrossTask, { tagLabels: { zweistellig: 'zweistellige Zahlen teilen', dreistellig: 'dreistellige Zahlen teilen', 'teil-vergessen': 'einen Teil vergessen' }, testSeconds: 30 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🧊', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
+  M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
 ];
 
 // ---------- Orts- und Zeitangaben (Kl. 4) ----------

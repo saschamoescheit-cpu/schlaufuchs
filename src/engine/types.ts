@@ -38,7 +38,9 @@ export type Visual =
   /** Raster aus Bildern (Lagebeziehungen): Zeilen von oben nach unten, '' = leer */
   | { kind: 'grid'; rows: string[][]; mark?: [number, number] }
   /** Würfelgebäude im Schrägbild: Höhen je Feld, Zeilen von hinten nach vorne */
-  | { kind: 'cubes'; h: number[][] };
+  | { kind: 'cubes'; h: number[][] }
+  /** Tabelle (z. B. Fahrplan): erste Zeile = Kopf */
+  | { kind: 'table'; title?: string; head: string[]; rows: string[][]; mark?: [number, number] };
 
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }

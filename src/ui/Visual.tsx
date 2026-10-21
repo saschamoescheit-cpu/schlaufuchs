@@ -619,6 +619,32 @@ export function Visual({ v }: { v: V }) {
       return <TenFrames n={v.a} m={v.b} crossOut={v.crossOut} />;
     case 'numberline':
       return <NumberLine {...v} />;
+    case 'table':
+      return (
+        <div className="vis-table-wrap">
+          {v.title && <div className="vis-text-title">{v.title}</div>}
+          <table className="vis-table">
+            <thead>
+              <tr>
+                {v.head.map((h, i) => (
+                  <th key={i}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {v.rows.map((row, i) => (
+                <tr key={i}>
+                  {row.map((c, j) => (
+                    <td key={j} className={v.mark && v.mark[0] === i && v.mark[1] === j ? 'mark' : ''}>
+                      {c}
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
     case 'cubes':
       return <Cubes h={v.h} />;
     case 'grid':
