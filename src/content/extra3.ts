@@ -478,7 +478,7 @@ function zahlwortTask(r: Rng, s: Stage): Gen {
   return {
     key: `z-${n}`,
     prompt: `Welches Zahlwort passt zu ${n}?`,
-    answer: { ...choice(r, w, wrong), speakOptions: 'de' },
+    answer: choice(r, w, wrong), // ohne Vorlesen der Antworten – das würde die Lösung verraten
     tags: [n < 100 ? 'bis-100' : 'bis-1000'],
     traps: dreher !== n ? [{ answer: zahlwort(dreher), tag: 'zahlendreher', hint: 'Achtung Zahlendreher: Im Zahlwort kommen die Einer vor den Zehnern.' }] : [],
     solution: [`${n} = ${w}`, 'Lies Stück für Stück: erst die Hunderter, dann die Einer, dann die Zehner – „…hundert-vier-und-fünfzig“.'],
