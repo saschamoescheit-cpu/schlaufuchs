@@ -157,11 +157,6 @@ export function updateProgress(profileId: string, fn: (p: Progress) => void) {
   update((d) => fn((d.progress[profileId] ??= emptyProgress())));
 }
 
-/** Sicherung als Datei (alle Kinder) */
-export function exportJson(): string {
-  return JSON.stringify({ app: 'schlaufuchs', exported: new Date().toISOString(), data }, null, 1);
-}
-
 /** Kinder, die es zweimal gibt (vor dem Sync auf zwei Geräten getrennt angelegt): gleicher Name. */
 export function duplicateProfiles(d: AppData): [Profile, Profile][] {
   const out: [Profile, Profile][] = [];

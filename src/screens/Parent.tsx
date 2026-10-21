@@ -7,7 +7,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, exportJson, saveProfile, type AppData, type Profile } from '../data/store';
+import { deleteProfile, saveProfile, type AppData, type Profile } from '../data/store';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
@@ -546,18 +546,6 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                 </div>
               </div>
             </div>
-            <button
-              className="btn ghost block small"
-              onClick={() => {
-                const blob = new Blob([exportJson()], { type: 'application/json' });
-                const a = document.createElement('a');
-                a.href = URL.createObjectURL(blob);
-                a.download = `schlaufuchs-sicherung-${new Date().toISOString().slice(0, 10)}.json`;
-                a.click();
-              }}
-            >
-              💾 Lernstand als Datei speichern
-            </button>
             <button className="btn ghost block small" style={{ color: 'var(--bad)' }} onClick={() => setDel(true)}>
               {p.name} löschen
             </button>

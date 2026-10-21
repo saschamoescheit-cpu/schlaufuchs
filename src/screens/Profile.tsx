@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
-import { deleteProfile, duplicateProfiles, exportJson, mergeProfiles, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
+import { deleteProfile, duplicateProfiles, mergeProfiles, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
 import { forgetRemoved, removedList, restoreRemoved, signIn, signOut, syncNow, useSyncStatus } from '../data/sync';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
@@ -303,14 +303,6 @@ export function ProfileEdit({ profile, onDone, onCancel, limited }: { profile?: 
 
 export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { data: AppData; profile: Profile; onEdit: () => void; onNew: () => void; onParent: () => void; onBack: () => void }) {
   const [del, setDel] = useState(false);
-  const download = () => {
-    const blob = new Blob([exportJson()], { type: 'application/json' });
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = `schlaufuchs-sicherung-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-  };
   return (
     <div className="app full">
       <TopBar title="Einstellungen" onBack={onBack} />
@@ -354,10 +346,6 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
         <VoicePicker />
 
         <SyncCard data={data} />
-
-        <button className="btn ghost block small" onClick={download}>
-          💾 Lernstand als Datei speichern
-        </button>
 
         {!hasPin() && (
           <button className="btn ghost block small" style={{ marginTop: 16, color: 'var(--bad)' }} onClick={() => setDel(true)}>
