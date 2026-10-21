@@ -5,7 +5,7 @@ import { GRADE_NAMES, gradeFor, verbalFor } from '../engine/grading';
 import { record, type TestItem, type TestResult } from '../engine/learning';
 import { buildTest, PACES, type Pace } from '../engine/session';
 import type { Grade, Skill, Subject, Task } from '../engine/types';
-import { currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { byArea, currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { updateProgress, type Profile } from '../data/store';
 import type { Progress } from '../engine/learning';
 import { Confetti, Confirm, Rich, Sheet, Speak, Toast, TopBar } from '../ui/common';
@@ -95,13 +95,20 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
           ))}
         </div>
         <div className="card" style={{ padding: '4px 14px' }}>
-          {skills.map((s) => (
-            <label key={s.id} className="list-row" style={{ cursor: 'pointer' }}>
-              <input type="checkbox" checked={sel.has(s.id)} onChange={() => toggle(s.id)} style={{ width: 22, height: 22, accentColor: 'var(--ok)' }} />
-              <span style={{ fontSize: '1.3rem' }}>{s.icon}</span>
-              <span className="grow">{s.title}</span>
-            </label>
-          ))}
+          {byArea(subject, skills).flatMap((g, _, groups) => [
+            groups.length > 1 ? (
+              <div key={`a-${g.name}`} className="area-label">
+                {g.name}
+              </div>
+            ) : null,
+            ...g.skills.map((s) => (
+              <label key={s.id} className="list-row" style={{ cursor: 'pointer' }}>
+                <input type="checkbox" checked={sel.has(s.id)} onChange={() => toggle(s.id)} style={{ width: 22, height: 22, accentColor: 'var(--ok)' }} />
+                <span style={{ fontSize: '1.3rem' }}>{s.icon}</span>
+                <span className="grow">{s.title}</span>
+              </label>
+            )),
+          ])}
         </div>
         <div className="row small">
           <button className="btn ghost small" onClick={() => setSel(new Set(skills.map((s) => s.id)))}>

@@ -3,7 +3,7 @@ import { useState } from 'react';
 import type { Grade, Skill, Subject } from '../engine/types';
 import { level, type Progress } from '../engine/learning';
 import { buildTest } from '../engine/session';
-import { currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { byArea, currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { saveProfile, type PlannedTest, type Profile } from '../data/store';
 import { Confirm } from '../ui/common';
 import type { TestSpec } from './Tests';
@@ -192,13 +192,20 @@ function PlanForm({ profile, onSave, onCancel }: { profile: Profile; onSave: (t:
           ))}
         </div>
         <div style={{ padding: '0 4px' }}>
-          {skills.map((s) => (
-            <label key={s.id} className="list-row" style={{ cursor: 'pointer' }}>
-              <input type="checkbox" checked={sel.has(s.id)} onChange={() => toggle(s.id)} style={{ width: 22, height: 22, accentColor: 'var(--ok)' }} />
-              <span style={{ fontSize: '1.2rem' }}>{s.icon}</span>
-              <span className="grow">{s.title}</span>
-            </label>
-          ))}
+          {byArea(subject, skills).flatMap((g, _, groups) => [
+            groups.length > 1 ? (
+              <div key={`a-${g.name}`} className="area-label">
+                {g.name}
+              </div>
+            ) : null,
+            ...g.skills.map((s) => (
+              <label key={s.id} className="list-row" style={{ cursor: 'pointer' }}>
+                <input type="checkbox" checked={sel.has(s.id)} onChange={() => toggle(s.id)} style={{ width: 22, height: 22, accentColor: 'var(--ok)' }} />
+                <span style={{ fontSize: '1.2rem' }}>{s.icon}</span>
+                <span className="grow">{s.title}</span>
+              </label>
+            )),
+          ])}
         </div>
       </div>
       <div className="field">
