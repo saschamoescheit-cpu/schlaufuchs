@@ -15,6 +15,7 @@ import { useData } from '../data/store';
 import { sounds } from '../ui/sound';
 import { stopSpeaking } from '../ui/speech';
 import { OUTFITS } from '../ui/outfitArt';
+import { SayIt } from '../ui/SayIt';
 
 const PRAISE = ['Super!', 'Klasse!', 'Richtig!', 'Toll gemacht!', 'Spitze!', 'Genau!', 'Prima!', 'Stark!'];
 
@@ -193,6 +194,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
                 <div className="grow">
                   <h2>{praise} ⭐</h2>
                   {result.solved && <div className="small">Diese Fehler-Aufgabe sitzt jetzt! 🎉</div>}
+                  {profile.micPractice && item.task.pronounce && <SayIt key={item.task.key} text={item.task.pronounce.text} lang={item.task.pronounce.lang} />}
                 </div>
                 <button className="btn ok" onClick={next} autoFocus>
                   Weiter
@@ -240,6 +242,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
                     </span>
                   </div>
                 )}
+                {profile.micPractice && item.task.pronounce && <SayIt key={item.task.key} text={item.task.pronounce.text} lang={item.task.pronounce.lang} />}
                 <div className="again-note">
                   <span>🔁</span>
                   <span>

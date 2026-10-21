@@ -31,6 +31,8 @@ export interface Profile {
   blitz?: Record<string, number>;
   /** Fuchs-Outfit: ausgewählte Teile (je Platz Kopf/Hals eins), freigeschaltet mit Sternen */
   outfit?: string[];
+  /** Englisch: Nachsprechen mit Mikrofon (Spracherkennung von Apple/Google) – nur mit Erlaubnis der Eltern */
+  micPractice?: boolean;
   created: number;
 }
 

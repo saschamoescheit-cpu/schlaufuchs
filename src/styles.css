@@ -2015,3 +2015,16 @@ details.more .inner {
   letter-spacing: 0.04em;
   margin: 12px 0 2px;
 }
+
+/* Sprich nach */
+.sayit {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+}
+.sayit-ok {
+  color: var(--ok);
+  font-weight: 700;
+}

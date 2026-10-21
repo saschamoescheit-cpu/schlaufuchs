@@ -504,6 +504,13 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                   ))}
                 </div>
               </div>
+              <label className="switch">
+                <input type="checkbox" checked={!!p.micPractice} onChange={(e) => set({ micPractice: e.target.checked })} />
+                <span>
+                  <b>Englisch: Nachsprechen mit Mikrofon</b>
+                  <div className="small muted">Nach englischen Aufgaben erscheint „🎤 Sprich nach“. Die Spracherkennung des Geräts schickt die Stimme dazu an Apple bzw. Google. Nicht in jedem Browser verfügbar.</div>
+                </span>
+              </label>
               <div className="field">
                 <label htmlFor="pstate" className="label">
                   Bundesland
