@@ -27,6 +27,8 @@ export interface Profile {
   dailyGoal?: number;
   /** eingetragene Klassenarbeiten/Tests in der Schule */
   plannedTests?: PlannedTest[];
+  /** Blitzrunde: Rekord (richtige Aufgaben in 60 s) je Thema */
+  blitz?: Record<string, number>;
   created: number;
 }
 

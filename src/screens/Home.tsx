@@ -1,5 +1,5 @@
 // Startseite und Fächer.
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { dayKey, dueReviews, level, openReviews, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Grade, Skill, Subject } from '../engine/types';
 import { currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
@@ -9,6 +9,7 @@ import { ExplainSheet } from '../ui/Explain';
 import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
 import type { TestSpec } from './Tests';
+import { blitzable, BlitzPicker } from './Blitz';
 
 function greeting(name: string) {
   const h = new Date().getHours();
@@ -119,11 +120,13 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
   );
 }
 
-export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void }) {
+export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix, onBlitz }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void; onBlitz: (skill: Skill) => void }) {
   const info = subjectInfo(subject);
   const [lv, setLv] = useState<Grade>(currentLevel(subject, profile));
   const [explain, setExplain] = useState<Skill | null>(null);
+  const [blitz, setBlitz] = useState(false);
   const skills = skillsOf(subject, lv);
+  const canBlitz = useMemo(() => skills.some(blitzable), [skills]);
   const levels = levelsFor(subject);
   const lvLabel = levels.find((l) => l.grade === lv)!.label;
   const sure = skills.filter((k) => level(progress, k.id) === 3).length;
@@ -146,6 +149,22 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
       <button className={`btn block ${subject}`} onClick={() => onMix(skills, `Fuchs-Mix ${info.name} · ${lvLabel}`)}>
         🦊 Fuchs-Mix – alles gemischt
       </button>
+      {canBlitz && (
+        <button className="btn block ghost" onClick={() => setBlitz(true)}>
+          ⚡ Blitzrunde – 60 Sekunden
+        </button>
+      )}
+      {blitz && (
+        <BlitzPicker
+          skills={skills}
+          profile={profile}
+          onClose={() => setBlitz(false)}
+          onPick={(s) => {
+            setBlitz(false);
+            onBlitz(s);
+          }}
+        />
+      )}
       <div className="small muted center" style={{ marginTop: -6 }}>
         {sure} von {skills.length} Lernzielen sicher · Was dir schwerfällt, kommt öfter dran.
       </div>

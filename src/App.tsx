@@ -11,6 +11,7 @@ import { TestResultView, TestRun, TestSetup, type TestSpec } from './screens/Tes
 import { ProfileEdit, Settings, Welcome } from './screens/Profile';
 import { ParentChild, ParentHome, PinGate } from './screens/Parent';
 import { PrintView } from './screens/Print';
+import { Blitz } from './screens/Blitz';
 import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
 
@@ -21,6 +22,7 @@ type Route =
   | { r: 'practice'; title: string; tasks: Task[]; mode: Mode; again?: () => Task[]; n: number }
   | { r: 'test'; spec: TestSpec }
   | { r: 'print'; spec: TestSpec }
+  | { r: 'blitz'; skill: Skill; n: number }
   | { r: 'result'; id: string }
   | { r: 'profile-edit' }
   | { r: 'profile-new' }
@@ -117,7 +119,7 @@ export default function App() {
         );
       break;
     case 'subject':
-      body = <SubjectScreen profile={profile} progress={progress} subject={route.subject} onBack={back} onPractice={practiceSkill} onMix={practiceMix} />;
+      body = <SubjectScreen profile={profile} progress={progress} subject={route.subject} onBack={back} onPractice={practiceSkill} onMix={practiceMix} onBlitz={(skill) => push({ r: 'blitz', skill, n: 0 })} />;
       break;
     case 'practice':
       return (
@@ -131,6 +133,8 @@ export default function App() {
           onRestart={route.again ? () => replace({ ...route, tasks: route.again!(), n: route.n + 1 }) : dueReviews(data.progress[profile.id] ?? progress, Date.now()).length && route.mode === 'wiederholung' ? () => replace({ ...route, tasks: buildReview(ALL_SKILLS, data.progress[profile.id] ?? progress), n: route.n + 1 }) : undefined}
         />
       );
+    case 'blitz':
+      return <Blitz key={route.n} profile={profile} progress={progress} skill={route.skill} onExit={back} />;
     case 'print':
       return <PrintView profile={profile} spec={route.spec} onBack={back} />;
     case 'test':
