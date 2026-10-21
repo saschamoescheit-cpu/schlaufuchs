@@ -1,5 +1,6 @@
 // Antworten prüfen und typische Fehler (Fallen) erkennen.
 import type { Answer, Task } from './types';
+import { analyze, spellHint } from './spelling';
 
 export const normNumber = (s: string) => {
   const t = s.replace(/[\s  .]/g, '').replace(',', '.');
@@ -32,6 +33,8 @@ const formatNum = (n: number) => {
 export interface CheckResult {
   ok: boolean;
   trap?: { tag: string; hint: string };
+  /** Diktat: alle erkannten Fehlermuster */
+  tags?: string[];
 }
 
 export function check(task: Task, given: string): CheckResult {
@@ -42,6 +45,10 @@ export function check(task: Task, given: string): CheckResult {
   else {
     const g = normText(given, a.caseSensitive);
     ok = [a.value, ...(a.accept ?? [])].some((v) => normText(v, a.caseSensitive) === g);
+  }
+  if (!ok && a.type === 'text' && a.dictation) {
+    const tags = analyze(a.value, given).tags;
+    return { ok, trap: { tag: tags[0], hint: tags.map(spellHint).filter(Boolean).join(' ') }, tags };
   }
   if (ok || !task.traps?.length) return { ok };
   const shown = answerText(a, given);

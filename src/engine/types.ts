@@ -30,7 +30,7 @@ export type Visual =
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }
   | { type: 'choice'; options: string[]; correct: number; speakOptions?: Lang; big?: boolean }
-  | { type: 'text'; value: string; accept?: string[]; caseSensitive?: boolean; lang?: Lang };
+  | { type: 'text'; value: string; accept?: string[]; caseSensitive?: boolean; lang?: Lang; dictation?: boolean };
 
 /** Schriftliches Rechnen in Kästchen (Ziffer für Ziffer wie auf Papier) */
 export interface ColumnWork {
@@ -48,7 +48,7 @@ export interface Task {
   /** vorzulesender Text (sonst prompt) */
   speak?: string;
   /** Aufgabe zum Hören: der Lautsprecher ist das Wichtigste (z. B. englisches Wort) */
-  listen?: { text: string; lang: Lang };
+  listen?: { text: string; lang: Lang; slow?: boolean };
   visual?: Visual;
   /** Kästchen-Rechnung statt Ziffernblock (das Ergebnis bleibt answer.value) */
   work?: ColumnWork;

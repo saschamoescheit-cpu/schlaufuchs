@@ -45,14 +45,14 @@ export function speakable(text: string): string {
 
 let current: SpeechSynthesisUtterance | null = null;
 
-export function speak(text: string, lang: Lang = 'de', onEnd?: () => void) {
+export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
   if (!synth) return;
   synth.cancel();
   const u = new SpeechSynthesisUtterance(lang === 'de' ? speakable(text) : text.replace(/\*\*/g, ''));
   u.lang = lang === 'de' ? 'de-DE' : 'en-GB';
   const v = voiceFor(lang);
   if (v) u.voice = v;
-  u.rate = lang === 'en' ? 0.85 : 0.95;
+  u.rate = slow ? 0.75 : lang === 'en' ? 0.85 : 0.95;
   u.pitch = 1.05;
   u.onend = () => {
     if (current === u) current = null;

@@ -80,7 +80,11 @@ export const dayKey = (t: number) => {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 };
 
-export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: number, trapTag?: string): { reviewSolved: boolean; reviewAdded: boolean } {
+export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: number, trap?: string | string[]): { reviewSolved: boolean; reviewAdded: boolean } {
+  const traps = trap === undefined ? [] : Array.isArray(trap) ? trap : [trap];
+  const trapTag = traps[0];
+  // Muster der Aufgabe, die der erkannte Fehler betrifft (sonst gelten alle Muster der Aufgabe als falsch)
+  const hit = (task.tags ?? []).filter((t) => traps.includes(t));
   const st = (p.skills[task.skillId] ??= { n: 0, ok: 0, recent: [], last: 0, tags: {} });
   st.n++;
   if (ok) st.ok++;
@@ -89,10 +93,11 @@ export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: nu
   for (const tag of task.tags ?? []) {
     const c = (st.tags[tag] ??= [0, 0]);
     c[0]++;
-    if (!ok) c[1]++;
+    if (!ok && (!hit.length || hit.includes(tag))) c[1]++;
   }
-  if (!ok && trapTag) {
-    const c = (st.tags[trapTag] ??= [0, 0]);
+  if (!ok) for (const tag of traps) {
+    if (task.tags?.includes(tag)) continue;
+    const c = (st.tags[tag] ??= [0, 0]);
     c[0]++;
     c[1]++;
   }

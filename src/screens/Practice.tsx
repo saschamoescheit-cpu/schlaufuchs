@@ -9,6 +9,7 @@ import { CloseIcon, Confetti, Confirm, Fox, Speak } from '../ui/common';
 import { ExplainBody } from '../ui/Explain';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
+import { SpellDiff } from '../ui/SpellDiff';
 import { sounds } from '../ui/sound';
 import { stopSpeaking } from '../ui/speech';
 
@@ -41,7 +42,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
     const res = check(item.task, v);
     let solved = false;
     updateProgress(profile.id, (p) => {
-      const r = record(p, item.task, res.ok, mode, Date.now(), res.trap?.tag);
+      const r = record(p, item.task, res.ok, mode, Date.now(), res.tags ?? res.trap?.tag);
       solved = r.reviewSolved;
       if (r.reviewAdded) setNewInBox((n) => n + 1);
     });
@@ -162,6 +163,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
                 </div>
               </div>
             </div>
+            {a.type === 'text' && value && <SpellDiff correct={a.value} given={value} tags={result.tags} caseSensitive={a.caseSensitive} />}
             {result.trap && (
               <div className="hint">
                 <span>💡</span>

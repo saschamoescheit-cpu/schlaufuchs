@@ -26,8 +26,8 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
 
   useEffect(() => {
     const t = setTimeout(() => {
-      if (task.listen && !autoRead) speak(task.listen.text, task.listen.lang);
-      else if (autoRead) speak(speakText, 'de', task.listen ? () => setTimeout(() => speak(task.listen!.text, task.listen!.lang), 250) : undefined);
+      if (task.listen && !autoRead) speak(task.listen.text, task.listen.lang, undefined, task.listen.slow);
+      else if (autoRead) speak(speakText, 'de', task.listen ? () => setTimeout(() => speak(task.listen!.text, task.listen!.lang, undefined, task.listen!.slow), 250) : undefined);
     }, 350);
     return () => clearTimeout(t);
     // nur beim Wechsel der Aufgabe
@@ -45,7 +45,7 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
       </div>
       {task.listen && (
         <div className="listen-wrap">
-          <Speak big text={task.listen.text} lang={task.listen.lang} label="Anhören" />
+          <Speak big text={task.listen.text} lang={task.listen.lang} slow={task.listen.slow} label="Anhören" />
         </div>
       )}
       {task.work && <ColumnWork work={task.work} value={value} onChange={onChange} onSubmit={onSubmit} reveal={reveal} guided={!!onSubmit} />}

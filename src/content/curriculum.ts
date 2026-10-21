@@ -3,6 +3,7 @@ import type { Grade, Skill, Subject } from '../engine/types';
 import { MATHE } from './mathe';
 import { DEUTSCH } from './deutsch';
 import { ENGLISCH } from './englisch';
+import { DIKTAT } from './diktat';
 
 export interface StateInfo {
   code: string;
@@ -43,7 +44,7 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 ];
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
-export const ALL_SKILLS: Skill[] = [...MATHE, ...DEUTSCH, ...ENGLISCH];
+export const ALL_SKILLS: Skill[] = [...MATHE, ...DIKTAT, ...DEUTSCH, ...ENGLISCH];
 const BY_ID = new Map(ALL_SKILLS.map((s) => [s.id, s]));
 export const skillById = (id: string) => BY_ID.get(id);
 

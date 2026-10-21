@@ -12,6 +12,7 @@ import { Confetti, Confirm, Rich, Sheet, Speak, Toast, TopBar } from '../ui/comm
 import { ExplainBody } from '../ui/Explain';
 import { TaskView } from '../ui/TaskView';
 import { Visual } from '../ui/Visual';
+import { SpellDiff } from '../ui/SpellDiff';
 import { sounds } from '../ui/sound';
 
 const GRADE_COLORS = ['', '#2FA868', '#5BB450', '#E3B505', '#F08A24', '#E0533D', '#B4232A'];
@@ -214,7 +215,7 @@ export function TestRun({ profile, spec, onDone, onCancel }: { profile: Profile;
     };
     updateProgress(profile.id, (p) => {
       // nur Beantwortetes zählt für Lernstand und Fehler-Kiste (Ausgelassenes wurde nicht versucht)
-      for (const it of items) if (it.given) record(p, it.task, it.ok, 'test', t, check(it.task, it.given).trap?.tag);
+      for (const it of items) if (it.given) { const c = check(it.task, it.given); record(p, it.task, it.ok, 'test', t, c.tags ?? c.trap?.tag); };
       p.tests.push(result);
     });
     onDone(result.id);
@@ -417,6 +418,7 @@ function TestItemSheet({ item, onClose }: { item: TestItem; onClose: () => void 
           <div>
             Richtig ist: <b>{correctText(item.task.answer)}</b>
           </div>
+          {!item.ok && item.given && item.task.answer.type === 'text' && <SpellDiff correct={item.task.answer.value} given={item.given} tags={check(item.task, item.given).tags} caseSensitive={item.task.answer.caseSensitive} />}
           <div className="row" style={{ marginTop: 10 }}>
             <h3 className="grow">So geht&apos;s:</h3>
             <Speak text={item.task.solution.join(' ')} />

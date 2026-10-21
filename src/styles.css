@@ -1532,3 +1532,48 @@ details.more .inner {
     height: 46px;
   }
 }
+
+/* ---------- Diktat ---------- */
+.spell-diff {
+  background: #fff;
+  border-radius: 14px;
+  padding: 10px 12px;
+  margin-top: 10px;
+}
+.sd-row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.sd-label {
+  font-size: 0.85rem;
+  color: var(--muted);
+  width: 56px;
+  flex: none;
+}
+.sd-text {
+  font-family: var(--head);
+  font-size: 1.6rem;
+  letter-spacing: 1.5px;
+  word-break: break-word;
+  flex: 1;
+}
+.sd-bad {
+  color: var(--bad);
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+}
+.sd-good {
+  color: var(--ok-dark);
+  background: var(--ok-soft);
+  border-radius: 4px;
+  text-decoration: underline;
+  text-decoration-thickness: 3px;
+}
+.sd-gap {
+  color: var(--bad);
+}
+.sd-bad-plain {
+  color: var(--bad);
+}

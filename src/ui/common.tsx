@@ -73,7 +73,7 @@ export const CloseIcon = () => (
 );
 
 /** Lautsprecher-Knopf: liest Text vor (nochmal tippen = stopp) */
-export function Speak({ text, lang = 'de', big, label = 'Vorlesen', className = '' }: { text: string; lang?: Lang; big?: boolean; label?: string; className?: string }) {
+export function Speak({ text, lang = 'de', big, slow, label = 'Vorlesen', className = '' }: { text: string; lang?: Lang; big?: boolean; slow?: boolean; label?: string; className?: string }) {
   const [on, setOn] = useState(false);
   useEffect(() => () => stopSpeaking(), []);
   return (
@@ -90,7 +90,7 @@ export function Speak({ text, lang = 'de', big, label = 'Vorlesen', className = 
           return;
         }
         setOn(true);
-        speak(text, lang, () => setOn(false));
+        speak(text, lang, () => setOn(false), slow);
         setTimeout(() => setOn(false), Math.max(3000, text.length * 120));
       }}
     >
