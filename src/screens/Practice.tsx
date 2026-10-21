@@ -14,6 +14,7 @@ import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { useData } from '../data/store';
 import { sounds } from '../ui/sound';
 import { stopSpeaking } from '../ui/speech';
+import { OUTFITS } from '../ui/outfitArt';
 
 const PRAISE = ['Super!', 'Klasse!', 'Richtig!', 'Toll gemacht!', 'Spitze!', 'Genau!', 'Prima!', 'Stark!'];
 
@@ -93,6 +94,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
 
   if (done) {
     const pct = firstTry.total ? firstTry.right / firstTry.total : 0;
+    const newOutfits = live ? OUTFITS.filter((o) => o.stars > live.stars - stars && o.stars <= live.stars) : [];
     return (
       <div className="app full">
         {pct >= 0.7 && <Confetti />}
@@ -119,6 +121,11 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart }: { p
               🎯 <b>Lernziel geschafft:</b> {skillById(id)?.icon} {skillById(id)?.title} sitzt jetzt sicher!
             </div>
           ))}
+          {newOutfits.length > 0 && (
+            <div className="card tint" style={{ background: 'var(--ok-soft)', textAlign: 'left' }}>
+              👕 <b>Neu für deinen Fuchs:</b> {newOutfits.map((o) => o.name).join(', ')}! Tippe auf der Startseite auf den Fuchs – dann kannst du ihn verkleiden.
+            </div>
+          )}
           {live && <DailyGoal profile={profile} progress={live} />}
           {live && <BadgeWatcher profile={profile} progress={live} />}
           {newInBox > 0 && (
