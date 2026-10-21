@@ -5,7 +5,7 @@ import { open } from './lib.mjs';
 const url = process.argv[2] ?? 'http://localhost:5192/';
 const out = process.argv[3] ?? 'qa/shots/parent';
 const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
-const { p, shot, click, done } = await open({ url, out, grade: 3, progress });
+const { p, shot, click, done } = await open({ url, out, grade: 3, progress, profile: { blitz: { 'm3-kopfrechnen': 14, 'm2-einmaleins': 22 } } });
 
 await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
 await click('Eltern-Bereich');
@@ -17,6 +17,8 @@ await p.waitForTimeout(400);
 await shot('uebersicht', true);
 await p.locator('.parent-card').first().click();
 await shot('kind', true);
+const blitzRows = await p.getByText('in 60 s').count();
+console.log(blitzRows === 2 ? '✓ Blitz-Rekorde im Überblick' : '✗ Blitz-Rekorde fehlen: ' + blitzRows);
 await p.getByRole('button', { name: 'Zurück' }).first().click();
 await click('Sperren');
 await p.waitForTimeout(300);

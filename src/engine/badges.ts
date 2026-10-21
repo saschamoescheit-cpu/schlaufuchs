@@ -2,6 +2,9 @@
 import { ALL_SKILLS, currentSkills, englishYear, SUBJECTS, type ProfileLike } from '../content/curriculum';
 import { level, streakDays, type Progress } from './learning';
 
+/** was die Abzeichen vom Profil brauchen */
+export type BadgeProfile = ProfileLike & { dailyGoal?: number; blitz?: Record<string, number> };
+
 export interface Badge {
   id: string;
   icon: string;
@@ -9,7 +12,7 @@ export interface Badge {
   /** Text je Stufe, {n} = Schwelle */
   text: string;
   tiers: number[];
-  value: (p: Progress, prof: ProfileLike & { dailyGoal?: number }) => number;
+  value: (p: Progress, prof: BadgeProfile) => number;
 }
 
 const total = (p: Progress) => Object.values(p.skills).reduce((a, s) => a + s.n, 0);
@@ -25,6 +28,7 @@ export const BADGES: Badge[] = [
   { id: 'bestnote', icon: '🏆', title: 'Bestleistung', text: '{n}× eine Note 1 (oder 3 Sterne) im Test', tiers: [1, 3, 10], value: (p) => p.tests.filter((t) => (t.grade ? t.grade === 1 : t.percent >= 90)).length },
   { id: 'stufe3', icon: '🚀', title: 'Hoch hinaus', text: 'In {n} Themen die schwerste Stufe erreicht', tiers: [1, 5, 15], value: (p) => Object.values(p.skills).filter((s) => s.stage === 3).length },
   { id: 'tagesziel', icon: '📅', title: 'Zielstrebig', text: 'An {n} Tagen das Tagesziel geschafft', tiers: [1, 5, 20], value: (p, prof) => (prof.dailyGoal ? Object.values(p.days).filter((n) => n >= prof.dailyGoal!).length : 0) },
+  { id: 'blitz', icon: '⚡', title: 'Blitzmerker', text: 'In der Blitzrunde {n} Aufgaben in 60 Sekunden', tiers: [10, 20, 30], value: (_p, prof) => Math.max(0, ...Object.values(prof.blitz ?? {})) },
   {
     id: 'meister',
     icon: '👑',
@@ -39,14 +43,14 @@ export const TIER_NAMES = ['Bronze', 'Silber', 'Gold'];
 export const TIER_COLORS = ['#C98B53', '#A9B4C2', '#E8B923'];
 
 /** erreichte Stufe (0 = noch keine, 1–3) */
-export function tierOf(b: Badge, p: Progress, prof: ProfileLike & { dailyGoal?: number }): { tier: number; value: number; next?: number } {
+export function tierOf(b: Badge, p: Progress, prof: BadgeProfile): { tier: number; value: number; next?: number } {
   const v = b.value(p, prof);
   const tier = b.tiers.filter((t) => v >= t).length;
   return { tier, value: v, next: b.tiers[tier] };
 }
 
 /** alle erreichten Abzeichen-Stufen als Schlüssel „id:stufe“ */
-export function earnedKeys(p: Progress, prof: ProfileLike & { dailyGoal?: number }): string[] {
+export function earnedKeys(p: Progress, prof: BadgeProfile): string[] {
   return BADGES.flatMap((b) => {
     const { tier } = tierOf(b, p, prof);
     return Array.from({ length: tier }, (_, i) => `${b.id}:${i + 1}`);

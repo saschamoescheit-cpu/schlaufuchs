@@ -5,7 +5,7 @@ import { dayKey, minutesByDay, openReviews, patterns, periodStats, weaknesses, t
 import { GRADE_NAMES } from '../engine/grading';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
-import { ALL_SKILLS, currentSkills, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
 import { deleteProfile, saveProfile, type AppData, type Profile } from '../data/store';
 import { emptyProgress } from '../engine/learning';
@@ -410,6 +410,22 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                     </span>
                   </div>
                 ))}
+              </div>
+            )}
+            {Object.keys(p.blitz ?? {}).length > 0 && (
+              <div className="card" style={{ padding: '4px 14px' }}>
+                <h3 style={{ padding: '10px 0 4px' }}>⚡ Blitzrunde – Rekorde</h3>
+                {Object.entries(p.blitz!)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([id, n]) => (
+                    <div key={id} className="list-row small">
+                      <span>{skillById(id)?.icon}</span>
+                      <span className="grow">
+                        <b>{skillById(id)?.title ?? id}</b>
+                      </span>
+                      <span className="tag">{n} in 60 s</span>
+                    </div>
+                  ))}
               </div>
             )}
           </>

@@ -16,7 +16,7 @@ export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', d
     ...data,
   };
   // Abzeichen-Feier und Tagesziel-Konfetti stören die Klick-Abläufe: vorab als gesehen markieren (außer badges: true)
-  const ids = ['aufgaben', 'sterne', 'serie', 'lernziele', 'fehlerjaeger', 'tests', 'bestnote', 'stufe3', 'tagesziel', 'meister'];
+  const ids = ['aufgaben', 'sterne', 'serie', 'lernziele', 'fehlerjaeger', 'tests', 'bestnote', 'stufe3', 'tagesziel', 'blitz', 'meister'];
   const seen = badges ? null : JSON.stringify(ids.flatMap((b) => [1, 2, 3].map((t) => `${b}:${t}`)));
   await ctx.addInitScript(([d, seenKeys, pid]) => {
     if (!sessionStorage.getItem('qa-seeded')) {
