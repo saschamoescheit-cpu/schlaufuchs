@@ -5,6 +5,7 @@ import { DEUTSCH } from './deutsch';
 import { ENGLISCH } from './englisch';
 import { DIKTAT } from './diktat';
 import { DEUTSCH_EXTRA, ENGLISCH_EXTRA, MATHE_EXTRA } from './extra';
+import { DEUTSCH_EXTRA2, ENGLISCH_EXTRA2, MATHE_EXTRA2 } from './extra2';
 
 export interface StateInfo {
   code: string;
@@ -45,7 +46,7 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 ];
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
-export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...ENGLISCH, ...ENGLISCH_EXTRA];
+export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2];
 const BY_ID = new Map(ALL_SKILLS.map((s) => [s.id, s]));
 export const skillById = (id: string) => BY_ID.get(id);
 

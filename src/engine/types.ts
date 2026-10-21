@@ -30,6 +30,8 @@ export type Visual =
   | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of' }
   /** Zahlenmauer: Reihen von unten nach oben, null = gesuchter Stein */
   | { kind: 'wall'; rows: (number | null)[][] }
+  /** Netz aus Quadraten (Würfelnetz): Zellen [Spalte, Zeile] */
+  | { kind: 'net'; cells: [number, number][] }
   /** Säulendiagramm */
   | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string };
 

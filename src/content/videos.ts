@@ -123,4 +123,13 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'e2-hobbies': [{ id: 'N1o4oOXLOZc', title: "Hobbies and Interests [Kids Vocab] What Do You Like doing? 🎨⚽ Fun Hobbies", channel: "English Singsing", len: '4:27' }],
   'e2-listening': [{ id: 'by1QAoRcc-U', title: "Ch.1 Hello", channel: "LucyMax English", len: '8:43' }],
   'e2-questions': [{ id: 'Rl-NUa0ssD8', title: "10 Common English Questions for kids| With examples| About myself", channel: "Interesting English", len: '4:25' }],
+  'm4-wuerfelnetze': [{ id: 'calS0VVHKHc', title: "Klasse 2 3", channel: "Grundschulclips", len: '4:32' }],
+  'm4-ueberschlag': [{ id: 'sd2zPlxukYs', title: "Rechnen mit Überschlag", channel: "Lernen mit Freddy und Egon", len: '3:40' }],
+  'm4-kombinatorik': [{ id: 'D2DAptS7ecc', title: "Kombinatorik - so findest du geschickt alle Möglichkeiten (inkl. Arbeitsblatt)", channel: "Frau Weber digital", len: '4:19' }, { id: 'OzSA27VTMxE', title: "Baumdiagramm zeichnen, Einführung", channel: "Schule einfach einfach", len: '5:16' }],
+  'm4-massstab': [{ id: 'ohH0V444ugI', title: "Maßstab Klasse 4 (Mathematik)", channel: "Gut erklärt", len: '2:32' }],
+  'd1-silben-bauen': [{ id: 'YFZppyLVh1k', title: "Erste Silben lesen / Lesen lernen in Klasse 1 / einfach schlau üben", channel: "Der Kanal mit dem Fisch", len: '5:04' }],
+  'd1-buchstaben-zaehlen': [{ id: 'yXZQAOP6TuA', title: "Laute und Buchstaben der deutschen Sprache", channel: "Frau Ha", len: '6:30' }],
+  'd4-nachsilben': [{ id: 'k-9IIDon0pY', title: "Nomen mit -heit, -keit, -nis, -ung - das solltest du wissen", channel: "Frau Weber digital", len: '5:27' }],
+  'd4-sachtexte': [{ id: 'J71q1WzHhFc', title: "Wie liest man einen Sachtext? einfach erklärt – Deutsch 3. & 4. Klasse", channel: "sofatutor", len: '4:33' }],
+  'e1-classroom': [{ id: 'WsiRSWthV1k', title: "Stand Up, Sit Down", channel: "Fun Kids English", len: '2:57' }],
 };

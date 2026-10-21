@@ -503,6 +503,19 @@ function Wall({ rows }: { rows: (number | null)[][] }) {
   );
 }
 
+function Net({ cells }: { cells: [number, number][] }) {
+  const u = 40;
+  const W = (Math.max(...cells.map((c) => c[0])) + 1) * u + 8;
+  const H = (Math.max(...cells.map((c) => c[1])) + 1) * u + 8;
+  return (
+    <Svg w={W} h={H} label="Netz aus Quadraten" max={Math.min(300, W * 1.6)}>
+      {cells.map(([x, y], i) => (
+        <rect key={i} x={4 + x * u} y={4 + y * u} width={u} height={u} fill="#CFE0FF" stroke={C.ink} strokeWidth={2.5} />
+      ))}
+    </Svg>
+  );
+}
+
 function Bars({ title, items, unit }: { title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string }) {
   const max = Math.max(...items.map((i) => i.value));
   const top = Math.ceil(max / 2) * 2 + 2;
@@ -600,5 +613,7 @@ export function Visual({ v }: { v: V }) {
       return <Wall rows={v.rows} />;
     case 'bars':
       return <Bars {...v} />;
+    case 'net':
+      return <Net cells={v.cells} />;
   }
 }
