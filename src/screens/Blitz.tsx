@@ -4,6 +4,7 @@ import { check, correctText } from '../engine/check';
 import { record, stageOf, type Progress } from '../engine/learning';
 import type { Skill, Task } from '../engine/types';
 import { saveProfile, updateProgress, type Profile } from '../data/store';
+import { byArea } from '../content/curriculum';
 import { CloseIcon, Confetti, Fox, Rich, Sheet, Speak } from '../ui/common';
 import { Visual } from '../ui/Visual';
 import { sounds } from '../ui/sound';
@@ -32,18 +33,26 @@ export function BlitzPicker({ skills, profile, onPick, onClose }: { skills: Skil
           {BLITZ_SECONDS} Sekunden – wie viele Aufgaben schaffst du? Schlag deinen Rekord!
         </p>
         {list.length === 0 && <div className="empty card">In dieser Klasse gibt es keine Blitz-Themen.</div>}
-        {list.map((s) => (
-          <button key={s.id} className="topic" style={{ border: 0, cursor: 'pointer', font: 'inherit', textAlign: 'left' }} onClick={() => onPick(s)}>
-            <span className="ti" style={{ background: 'var(--fox-soft)' }}>
-              {s.icon}
-            </span>
-            <span className="grow">
-              <h3>{s.title}</h3>
-              <span className="small muted">{profile.blitz?.[s.id] ? `Rekord: ${profile.blitz[s.id]}` : 'noch kein Rekord'}</span>
-            </span>
-            <span style={{ fontSize: '1.4rem' }}>⚡</span>
-          </button>
-        ))}
+        {list.length > 0 &&
+          byArea(list[0].subject, list).flatMap((g, _, groups) => [
+            groups.length > 1 ? (
+              <div key={`a-${g.name}`} className="area-label">
+                {g.name}
+              </div>
+            ) : null,
+            ...g.skills.map((s) => (
+              <button key={s.id} className="topic" style={{ border: 0, cursor: 'pointer', font: 'inherit', textAlign: 'left' }} onClick={() => onPick(s)}>
+                <span className="ti" style={{ background: 'var(--fox-soft)' }}>
+                  {s.icon}
+                </span>
+                <span className="grow">
+                  <h3>{s.title}</h3>
+                  <span className="small muted">{profile.blitz?.[s.id] ? `Rekord: ${profile.blitz[s.id]}` : 'noch kein Rekord'}</span>
+                </span>
+                <span style={{ fontSize: '1.4rem' }}>⚡</span>
+              </button>
+            )),
+          ])}
       </div>
     </Sheet>
   );
