@@ -338,6 +338,14 @@ const LISTEN: [string, string, string[]][] = [
   ['We play football on Saturday.', 'Wir spielen am Samstag Fußball.', ['Wir spielen am Sonntag Fußball.', 'Wir spielen am Samstag Tennis.', 'Ich spiele am Samstag Fußball.']],
   ['Can you swim? – Yes, I can.', 'Kannst du schwimmen? – Ja.', ['Kannst du tanzen? – Ja.', 'Kannst du schwimmen? – Nein.', 'Magst du schwimmen? – Ja.']],
   ['The dog has got big brown eyes.', 'Der Hund hat große braune Augen.', ['Der Hund hat kleine braune Augen.', 'Die Katze hat große braune Augen.', 'Der Hund hat große braune Ohren.']],
+  ['I get up at seven o’clock.', 'Ich stehe um sieben Uhr auf.', ['Ich stehe um elf Uhr auf.', 'Ich gehe um sieben Uhr ins Bett.', 'Ich stehe um sechs Uhr auf.']],
+  ['My grandma has got a garden.', 'Meine Oma hat einen Garten.', ['Mein Opa hat einen Garten.', 'Meine Oma hat einen Hund.', 'Meine Oma ist im Garten.']],
+  ['There is a bird on the roof.', 'Auf dem Dach sitzt ein Vogel.', ['Auf dem Dach sitzt eine Katze.', 'Unter dem Dach sitzt ein Vogel.', 'Auf dem Baum sitzt ein Vogel.']],
+  ['We have got English on Monday.', 'Wir haben am Montag Englisch.', ['Wir haben am Montag Mathe.', 'Wir haben am Freitag Englisch.', 'Ich habe am Montag Englisch.']],
+  ['I can’t find my pencil.', 'Ich finde meinen Bleistift nicht.', ['Ich finde meinen Füller nicht.', 'Ich habe meinen Bleistift gefunden.', 'Kannst du meinen Bleistift finden?']],
+  ['The shop is next to the school.', 'Der Laden ist neben der Schule.', ['Der Laden ist hinter der Schule.', 'Die Schule ist neben dem Park.', 'Der Laden ist in der Schule.']],
+  ['My favourite food is spaghetti.', 'Mein Lieblingsessen ist Spaghetti.', ['Mein Lieblingsessen ist Pizza.', 'Ich mag keine Spaghetti.', 'Mein Lieblingstier ist ein Hund.']],
+  ['Please open the window.', 'Bitte öffne das Fenster.', ['Bitte schließ das Fenster.', 'Bitte öffne die Tür.', 'Das Fenster ist offen.']],
 ];
 function listenTask(r: Rng, s: Stage): Gen {
   const [en, de, w] = pick(r, LISTEN);
