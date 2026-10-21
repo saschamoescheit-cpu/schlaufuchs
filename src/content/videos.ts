@@ -141,6 +141,14 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'Wk8WUn7xOaY', title: 'Der Zahlenstrahl bis 1000 (Klasse 3)', channel: 'Anja Wanke', len: '5:08' },
     { id: 'g1J7fY7Ebfw', title: 'Zahldarstellungen - Zahlenraum bis 1000 - Klasse 3', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:55' },
   ],
+  'e1-festivals': [
+    { id: 'l91Pm_1BCbE', title: 'Halloween for Kids: The Story of Halloween + 14 English Words', channel: 'TevESL', len: '6:00' },
+    { id: 'vctndz-L4rE', title: 'Easter Vocabulary for kids', channel: 'Interesting English', len: '3:49' },
+  ],
+  'e2-shopping': [
+    { id: 'P5Vi4j1F4sE', title: 'How much is it? (In the store) – Easy Dialogue', channel: 'English Singsing', len: '2:32' },
+    { id: 'E0xAB-fDzXY', title: 'How Much Is It? | Shopping English Song for Kids', channel: 'Lyric Learners', len: '1:14' },
+  ],
   'd3-woerterbuch': [
     { id: 'X3_-GKFqtL0', title: 'Wörterbuch richtig benutzen | Erklärung und Übungen', channel: 'lernfoerderung', len: '2:45' },
     { id: 'g3qUzoziye0', title: 'Verben in der Grundform im Wörterbuch finden', channel: 'Grundschule Allendorf', len: '2:05' },

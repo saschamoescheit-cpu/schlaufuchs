@@ -303,10 +303,10 @@ export const DEUTSCH_EXTRA: Skill[] = [
 ];
 
 // ---------- Englisch ----------
-type W = { en: string; de: string; e: string };
+export type W = { en: string; de: string; e: string };
 const TOYS: W[] = [{ en: 'ball', de: 'Ball', e: '⚽' }, { en: 'teddy', de: 'Teddy', e: '🧸' }, { en: 'kite', de: 'Drachen', e: '🪁' }, { en: 'train', de: 'Zug', e: '🚂' }, { en: 'robot', de: 'Roboter', e: '🤖' }, { en: 'puzzle', de: 'Puzzle', e: '🧩' }, { en: 'doll', de: 'Puppe', e: '🪆' }, { en: 'yo-yo', de: 'Jo-Jo', e: '🪀' }, { en: 'dice', de: 'Würfel', e: '🎲' }, { en: 'balloon', de: 'Luftballon', e: '🎈' }];
 const HOBBIES: W[] = [{ en: 'play the guitar', de: 'Gitarre spielen', e: '🎸' }, { en: 'play the piano', de: 'Klavier spielen', e: '🎹' }, { en: 'play tennis', de: 'Tennis spielen', e: '🎾' }, { en: 'play basketball', de: 'Basketball spielen', e: '🏀' }, { en: 'ride a horse', de: 'reiten', e: '🏇' }, { en: 'go skiing', de: 'Ski fahren', e: '⛷️' }, { en: 'draw pictures', de: 'Bilder malen', e: '🖍️' }, { en: 'go fishing', de: 'angeln', e: '🎣' }, { en: 'play computer games', de: 'Computerspiele spielen', e: '🎮' }, { en: 'take photos', de: 'fotografieren', e: '📷' }];
-function wordTask(r: Rng, words: W[], s: Stage): Gen {
+export function wordTask(r: Rng, words: W[], s: Stage): Gen {
   const w = pick(r, words);
   const others = words.filter((x) => x !== w);
   const say = { text: w.en, lang: 'en' as const };
@@ -368,7 +368,7 @@ function qaTask(r: Rng, s: Stage): Gen {
   return { key: q, prompt: `Welche Antwort passt?\n${q}`, speak: 'Welche Antwort passt?', listen: { text: q, lang: 'en' }, answer: { ...choice(r, a, s === 1 ? w.slice(0, 2) : w), speakOptions: 'en' }, tags: [q.startsWith('Can') || q.startsWith('Have') || q.startsWith('Do') ? 'ja-nein-fragen' : 'w-fragen'], solution: [`${q} – ${a}`, q.startsWith('Can') ? 'Auf „Can you …?“ antwortet man „Yes, I can.“ oder „No, I can’t.“' : q.startsWith('Do') ? 'Auf „Do you …?“ antwortet man „Yes, I do.“ oder „No, I don’t.“' : q.startsWith('Have') ? 'Auf „Have you got …?“ antwortet man „Yes, I have.“ oder „No, I haven’t.“' : 'Hör auf das Fragewort: What, How old, Where …'], pronounce: { text: `${q} ${a}`, lang: 'en' } };
 }
 
-const VT = { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', schreiben: 'Wörter schreiben' };
+export const VT = { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', schreiben: 'Wörter schreiben' };
 export const ENGLISCH_EXTRA: Skill[] = [
   E(1, 'e1-toys', 'Toys – Spielsachen', '🧸', { text: ['ball, teddy, kite (Drachen), train, robot, puzzle, doll (Puppe).', "What's your favourite toy? – My favourite toy is my teddy."], visual: { kind: 'emoji', chars: '🧸' }, videoQuery: 'toys vocabulary English for kids' }, (r, s) => wordTask(r, TOYS, s), { tagLabels: VT, testSeconds: 15 }),
   E(2, 'e2-hobbies', 'Hobbies – Freizeit', '🎸', { text: ['play the guitar, play tennis, ride a horse, go skiing …', 'I like playing tennis. = Ich spiele gern Tennis.', 'Bei Instrumenten sagt man „the“: play the piano.'], visual: { kind: 'emoji', chars: '🎸' }, videoQuery: 'hobbies vocabulary English for kids' }, (r, s) => wordTask(r, HOBBIES, s), { tagLabels: VT, testSeconds: 15 }),
