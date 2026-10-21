@@ -264,7 +264,32 @@ function shopTask(r: Rng, s: Stage): Gen {
   return { key: `w-${en}`, prompt: `Du möchtest etwas kaufen. Wie fragst du?\n„Kann ich bitte ${de} haben?“`, answer: { ...choice(r, ok, [`Can I have ${art}, please?`, `I have ${en}.`, `How much is ${en.replace(/^an? /, 'the ')}?`]), speakOptions: 'en' }, tags: ['dialog'], traps: [{ answer: `Can I have ${art}, please?`, tag: 'a-an', hint: 'Vor a, e, i, o, u (gesprochen) steht „an“, sonst „a“.' }], solution: [ok, `= Kann ich bitte ${de} haben?`], pronounce: { text: ok, lang: 'en' } };
 }
 
+// ---------- Englisch: kurze Texte lesen (2. Lernjahr) ----------
+
+const EN_TEXTS: { t: string; qs: [string, string, string[], string][] }[] = [
+  { t: 'Hi! My name is Lucy. I am nine years old. I live in London with my mum, my dad and my little brother Sam. I have got a dog. His name is Max. Max is black and white. I like playing football with Max in the park.', qs: [['Wie alt ist Lucy?', 'neun Jahre', ['acht Jahre', 'zehn Jahre', 'sieben Jahre'], 'I am nine years old.'], ['Wie heißt Lucys Hund?', 'Max', ['Sam', 'Lucy', 'Rex'], 'His name is Max.'], ['Was macht Lucy gern mit Max?', 'Fußball spielen im Park', ['schwimmen im See', 'malen zu Hause', 'lesen im Bett'], 'I like playing football with Max in the park.']] },
+  { t: 'This is Tom. He is ten. Tom gets up at seven o’clock. He has got cornflakes and milk for breakfast. Then he goes to school by bike. His favourite subject is Maths. After school he plays the guitar.', qs: [['Wann steht Tom auf?', 'um sieben Uhr', ['um acht Uhr', 'um sechs Uhr', 'um zehn Uhr'], 'Tom gets up at seven o’clock.'], ['Wie kommt Tom zur Schule?', 'mit dem Fahrrad', ['mit dem Bus', 'zu Fuß', 'mit dem Auto'], 'He goes to school by bike.'], ['Welches Fach mag Tom am liebsten?', 'Mathe', ['Englisch', 'Sport', 'Kunst'], 'His favourite subject is Maths.']] },
+  { t: 'It is winter. It is cold and snowy. Anna and Ben are in the garden. They are making a big snowman. The snowman has got a carrot nose and a red hat. After that they drink hot chocolate in the kitchen.', qs: [['Welche Jahreszeit ist es?', 'Winter', ['Sommer', 'Herbst', 'Frühling'], 'It is winter.'], ['Was hat der Schneemann auf dem Kopf?', 'einen roten Hut', ['eine blaue Mütze', 'einen Topf', 'nichts'], 'The snowman has got … a red hat.'], ['Was trinken Anna und Ben danach?', 'heiße Schokolade', ['kalte Milch', 'Tee', 'Orangensaft'], 'they drink hot chocolate']] },
+  { t: 'My name is Emma. I have got a pet. It is small and brown. It has got long ears and it likes carrots. It lives in a big cage in my room. On Sunday I clean the cage.', qs: [['Was für ein Haustier hat Emma wahrscheinlich?', 'einen Hasen', ['einen Hund', 'eine Katze', 'einen Fisch'], 'small and brown … long ears … likes carrots'], ['Wo wohnt das Tier?', 'in einem Käfig in Emmas Zimmer', ['im Garten', 'in der Küche', 'im Keller'], 'It lives in a big cage in my room.'], ['Wann putzt Emma den Käfig?', 'am Sonntag', ['am Montag', 'jeden Tag', 'am Freitag'], 'On Sunday I clean the cage.']] },
+  { t: 'Today is Paul’s birthday. He is eight. His friends come to his party. They eat cake and play games. Paul gets a kite and a book. In the evening they go to the cinema.', qs: [['Wie alt wird Paul?', 'acht', ['neun', 'sieben', 'zehn'], 'He is eight.'], ['Was bekommt Paul geschenkt?', 'einen Drachen und ein Buch', ['einen Ball und ein Buch', 'einen Drachen und ein Spiel', 'ein Fahrrad'], 'Paul gets a kite and a book.'], ['Wohin gehen sie am Abend?', 'ins Kino', ['in den Zoo', 'ins Schwimmbad', 'nach Hause'], 'they go to the cinema']] },
+  { t: 'Look at my classroom! There are twenty-four children in my class. Our teacher is Mrs Brown. There is a big whiteboard and a computer. Next to the window there are plants. I sit next to my friend Mia.', qs: [['Wie viele Kinder sind in der Klasse?', '24', ['14', '20', '42'], 'There are twenty-four children in my class.'], ['Wie heißt die Lehrerin?', 'Mrs Brown', ['Mrs Black', 'Mia', 'Mrs Green'], 'Our teacher is Mrs Brown.'], ['Was steht neben dem Fenster?', 'Pflanzen', ['ein Computer', 'eine Tafel', 'Stühle'], 'Next to the window there are plants.']] },
+];
+function enReadTask(r: Rng, s: Stage): Gen {
+  const tx = pick(r, EN_TEXTS);
+  const [q, a, w, ev] = pick(r, tx.qs);
+  return {
+    key: `${tx.t.slice(0, 20)}|${q}`,
+    prompt: q,
+    visual: { kind: 'text', text: tx.t, title: '📖 Read the text' },
+    answer: choice(r, a, s === 1 ? w.slice(0, 2) : w),
+    tags: ['lesen'],
+    solution: [`Im Text steht: „${ev}“`, `Antwort: ${a}`],
+    pronounce: { text: ev.replace(/ … /g, ', '), lang: 'en' },
+  };
+}
+
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(2, 'e2-reading', 'Read and understand – Texte lesen', '📖', { text: ['Lies den englischen Text in Ruhe – du musst nicht jedes Wort kennen.', 'Suche die Wörter, die du kennst: Zahlen, Farben, Tiere, Namen.', 'Lies dann die Frage und suche die passende Stelle im Text.'], visual: { kind: 'text', text: 'My name is Lucy. I am nine years old.' }, videoQuery: 'English reading for kids short text Grundschule Klasse 4' }, enReadTask, { tagLabels: { lesen: 'englische Texte verstehen' }, testSeconds: 60 }),
   E(1, 'e1-festivals', 'Festivals – Feste im Jahr', '🎃', { text: ['Halloween: pumpkin (Kürbis), witch (Hexe), ghost (Gespenst). Kinder rufen „Trick or treat!“', 'Christmas: Christmas tree, present (Geschenk), candle (Kerze). Man wünscht „Merry Christmas!“', 'Easter: Easter egg, Easter bunny. „Happy Easter!“'], visual: { kind: 'emoji', chars: '🎃🎄🐰' }, videoQuery: 'Halloween Christmas Easter vocabulary for kids English' }, festTask, { tagLabels: { ...VT, wünsche: 'Wünsche zu Festen' }, testSeconds: 15 }),
   E(2, 'e2-shopping', 'Shopping – Einkaufen', '🛒', { text: ['Can I have an apple, please? = Kann ich bitte einen Apfel haben?', 'How much is it? – It’s two euros fifty. (2,50 €)', 'Achtung beim Hören: thirteen (13) – thirty (30), fifteen (15) – fifty (50).', 'Here you are. = Bitte schön (beim Geben). Thank you! = Danke!'], visual: { kind: 'emoji', chars: '🛒🍎💶' }, videoQuery: 'shopping dialogue English for kids how much is it' }, shopTask, { tagLabels: { preise: 'Preise verstehen', dialog: 'Einkaufsgespräch', 'teen-ty': '-teen und -ty verwechselt', 'a-an': 'a oder an' }, testSeconds: 20 }),
 ];
