@@ -565,7 +565,9 @@ a {
   color: var(--fox-dark);
   background: var(--fox-soft);
   border-radius: 6px;
-  padding: 0 4px;
+  padding: 0 2px;
+  -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 .speak-btn {
   appearance: none;
