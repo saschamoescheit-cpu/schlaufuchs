@@ -145,6 +145,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'uhXcy-X31nE', title: 'Rechnen mit Geld in Klasse 1 – einfach erklärt', channel: 'Mathe - Sivakids', len: '6:32' },
     { id: 'ihk1gUcr51E', title: 'Einführung Euro / Mathematik Klasse 1', channel: 'Lernen mit Leo', len: '6:22' },
   ],
+  'm3-geteilt-gross': [
+    { id: '9Ti_yRe0z_E', title: 'Halbschriftliches Dividieren - Klasse 3 Grundschule', channel: 'Nachhilfe vom Lehrer', len: '6:32' },
+    { id: 'ne727UBDkKs', title: 'Halbschriftliches Dividieren', channel: 'Lehrerschmidt', len: '5:12' },
+  ],
   'm3-wuerfelgebaeude': [
     { id: '1GJZeby2dxw', title: 'Erklärvideo Würfelgebäude: Baupläne', channel: 'Grundschule Ludwigsfeld', len: '3:56' },
     { id: '8CkMXnbJq9c', title: 'Was sind Würfelgebäude?', channel: 'Pflichtsender', len: '2:59' },

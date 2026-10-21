@@ -307,6 +307,31 @@ function geld1Task(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Teilen mit großen Zahlen (Kl. 3, halbschriftlich) ----------
+
+function teilenGrossTask(r: Rng, s: Stage): Gen {
+  const d = s === 1 ? pick(r, [2, 3, 4]) : ri(r, 2, 9);
+  // Ergebnis = Zehner + Einer; Stufe 1: Zehner-Teil sofort sichtbar (84 : 4 → 80 : 4 + 4 : 4)
+  const t = s === 1 ? ri(r, 1, 2) : s === 2 ? ri(r, 1, 4) : ri(r, 2, 9);
+  const o = ri(r, 1, s === 1 ? 4 : 9);
+  const q = t * 10 + o;
+  const a = d * q;
+  if (a > (s === 3 ? 999 : 100) || (s < 3 && a < 20)) return teilenGrossTask(r, s);
+  const big = d * t * 10;
+  const small = d * o;
+  return {
+    key: `${a}:${d}`,
+    prompt: `${a} : ${d} = ☐`,
+    answer: { type: 'number', value: q },
+    tags: [a >= 100 ? 'dreistellig' : 'zweistellig'],
+    traps: [
+      { answer: String(t * 10), tag: 'teil-vergessen', hint: `Du hast nur ${big} : ${d} gerechnet. Vergiss den Rest ${small} : ${d} nicht!` },
+      { answer: String(o), tag: 'teil-vergessen', hint: `Du hast nur ${small} : ${d} gerechnet. Es fehlt noch ${big} : ${d}.` },
+    ],
+    solution: [`Zerlege ${a} in ${big} und ${small} – beide kann man gut durch ${d} teilen.`, `${big} : ${d} = ${t * 10}`, `${small} : ${d} = ${o}`, `${t * 10} + ${o} = ${q}`, `Probe: ${q} · ${d} = ${a}`],
+  };
+}
+
 // ---------- Würfelgebäude (Kl. 3) ----------
 
 const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
@@ -342,6 +367,7 @@ export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-geld', 'Geld bis 20 €', '💶', { text: ['Auf jeder Münze und jedem Schein steht, wie viel sie wert sind: 1 €, 2 €, 5 €, 10 €.', 'Zähle immer vom größten zum kleinsten Wert und zähle dabei weiter: 10, 15, 17, 18.', 'Nicht die Münzen zählen – ihren Wert zählen!'], visual: { kind: 'money', items: [1000, 500, 200, 100] }, videoQuery: 'Geld zählen Euro Klasse 1' }, geld1Task, { tagLabels: { zaehlen: 'Geld zählen', rest: 'Restgeld', 'stueck-gezaehlt': 'Münzen statt Wert gezählt', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 25 }),
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
+  M(3, 'm3-geteilt-gross', 'Teilen mit großen Zahlen', '➗', { text: ['Große Zahlen teilst du in Schritten: Zerlege die Zahl in zwei Teile, die du gut teilen kannst.', '84 : 4 → 80 : 4 = 20 und 4 : 4 = 1 → zusammen 21.', 'Probe mit der Malaufgabe: 21 · 4 = 84 ✓'], visual: { kind: 'text', text: '84 : 4 = 80 : 4 + 4 : 4 = 21' }, videoQuery: 'halbschriftliche Division Klasse 3 erklärt' }, teilenGrossTask, { tagLabels: { zweistellig: 'zweistellige Zahlen teilen', dreistellig: 'dreistellige Zahlen teilen', 'teil-vergessen': 'einen Teil vergessen' }, testSeconds: 30 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🧊', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
 ];
