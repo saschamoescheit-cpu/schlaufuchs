@@ -921,6 +921,7 @@ a {
   font-family: var(--head);
   font-size: 1.9rem;
   text-align: center;
+  white-space: pre-line;
 }
 .vis-text-title {
   font-family: var(--head);

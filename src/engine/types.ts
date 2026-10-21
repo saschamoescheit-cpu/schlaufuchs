@@ -36,7 +36,9 @@ export type Visual =
   /** Säulendiagramm */
   | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string }
   /** Raster aus Bildern (Lagebeziehungen): Zeilen von oben nach unten, '' = leer */
-  | { kind: 'grid'; rows: string[][]; mark?: [number, number] };
+  | { kind: 'grid'; rows: string[][]; mark?: [number, number] }
+  /** Würfelgebäude im Schrägbild: Höhen je Feld, Zeilen von hinten nach vorne */
+  | { kind: 'cubes'; h: number[][] };
 
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }

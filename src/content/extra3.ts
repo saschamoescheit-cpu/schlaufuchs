@@ -269,10 +269,42 @@ export const ENGLISCH_EXTRA3: Skill[] = [
   E(2, 'e2-shopping', 'Shopping – Einkaufen', '🛒', { text: ['Can I have an apple, please? = Kann ich bitte einen Apfel haben?', 'How much is it? – It’s two euros fifty. (2,50 €)', 'Achtung beim Hören: thirteen (13) – thirty (30), fifteen (15) – fifty (50).', 'Here you are. = Bitte schön (beim Geben). Thank you! = Danke!'], visual: { kind: 'emoji', chars: '🛒🍎💶' }, videoQuery: 'shopping dialogue English for kids how much is it' }, shopTask, { tagLabels: { preise: 'Preise verstehen', dialog: 'Einkaufsgespräch', 'teen-ty': '-teen und -ty verwechselt', 'a-an': 'a oder an' }, testSeconds: 20 }),
 ];
 
+// ---------- Würfelgebäude (Kl. 3) ----------
+
+const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
+function cubesTask(r: Rng, s: Stage): Gen {
+  const D = s === 1 ? 1 : s === 2 ? 2 : 3;
+  const W = s === 1 ? ri(r, 3, 4) : 3;
+  // Zeilen von hinten nach vorne; hinten nie niedriger als vorne → alle Stapel sind von oben zu sehen
+  const h: number[][] = [];
+  for (let row = 0; row < D; row++) h.push(Array.from({ length: W }, (_, c) => (row === 0 ? ri(r, 1, 3) : ri(r, row === D - 1 ? 0 : 1, h[row - 1][c]))));
+  if (h.flat().every((x) => x === h[0][0])) h[0][0] = h[0][0] === 3 ? 2 : h[0][0] + 1;
+  const total = h.flat().reduce((a, b) => a + b, 0);
+  // was man „sieht“, wenn man die versteckten Würfel hinter/unter den vorderen vergisst
+  const seen = h.reduce((sum, rowH, row) => sum + rowH.reduce((a, x, c) => a + (row === D - 1 || x === 0 ? x : Math.max(x - (h[row + 1][c] ?? 0), 1)), 0), 0);
+  const names = D === 1 ? [''] : D === 2 ? ['hinten', 'vorne'] : ROW_NAMES;
+  return {
+    key: `w-${h.map((x) => x.join('')).join('-')}`,
+    prompt: 'Wie viele Würfel sind es?\n(Kein Würfel schwebt – unter jedem Würfel steht ein anderer oder der Boden.)',
+    speak: 'Wie viele Würfel sind es? Kein Würfel schwebt.',
+    visual: { kind: 'cubes', h },
+    answer: { type: 'number', value: total },
+    tags: [D === 1 ? 'eine-reihe' : 'mehrere-reihen'],
+    traps: seen !== total ? [{ answer: String(seen), tag: 'versteckte-vergessen', hint: 'Du hast nur die Würfel gezählt, die du siehst. Hinter den vorderen Würfeln stehen noch welche – sonst würden die oberen schweben!' }] : [],
+    solution: [
+      'Zähle Stapel für Stapel – wie hoch ist jeder Turm?',
+      ...h.map((rowH, i) => `${names[i] ? names[i][0].toUpperCase() + names[i].slice(1) + ': ' : ''}${rowH.filter((x) => x).join(' + ') || '0'}${rowH.filter((x) => x).length > 1 ? ` = ${rowH.reduce((a, b) => a + b, 0)}` : ''}`),
+      ...(D > 1 ? [`Zusammen: ${total} Würfel`] : []),
+    ],
+    solutionVisual: { kind: 'text', title: 'Bauplan (Draufsicht)', text: h.map((rowH) => rowH.join('  ')).join('\n') },
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
+  M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🧊', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
 ];
 
 export const DEUTSCH_EXTRA3: Skill[] = [

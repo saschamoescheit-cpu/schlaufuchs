@@ -107,6 +107,43 @@ function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number
   );
 }
 
+/** Würfelgebäude im Schrägbild (Kavalierperspektive wie im Schulbuch): Tiefe nach rechts oben, halbe Länge */
+function Cubes({ h }: { h: number[][] }) {
+  const s = 34;
+  const k = s / 2;
+  const D = h.length;
+  const W = Math.max(...h.map((r) => r.length));
+  const maxH = Math.max(1, ...h.flat());
+  const w = W * s + D * k + 8;
+  const ht = maxH * s + D * k + 8;
+  const ox = 4;
+  const oy = ht - 4;
+  const faces: ReactNode[] = [];
+  // hinten zuerst, unten zuerst, links zuerst – dann verdecken vordere Würfel die hinteren
+  for (let row = 0; row < D; row++) {
+    const d = D - 1 - row;
+    for (let z = 0; z < maxH; z++)
+      for (let c = 0; c < W; c++) {
+        if ((h[row][c] ?? 0) <= z) continue;
+        const x = ox + c * s + d * k;
+        const y = oy - z * s - d * k;
+        const key = `${row}-${c}-${z}`;
+        faces.push(
+          <g key={key} stroke={C.ink} strokeWidth={1.4} strokeLinejoin="round">
+            <polygon points={`${x + s},${y} ${x + s + k},${y - k} ${x + s + k},${y - s - k} ${x + s},${y - s}`} fill="#E07A1F" />
+            <polygon points={`${x},${y - s} ${x + k},${y - s - k} ${x + s + k},${y - s - k} ${x + s},${y - s}`} fill="#FFC27A" />
+            <rect x={x} y={y - s} width={s} height={s} fill="#F7A04B" />
+          </g>,
+        );
+      }
+  }
+  return (
+    <Svg w={w} h={ht} label={`Würfelgebäude`} max={300}>
+      {faces}
+    </Svg>
+  );
+}
+
 /** Bilder-Raster für oben/unten/links/rechts */
 function Grid({ rows, mark }: { rows: string[][]; mark?: [number, number] }) {
   return (
@@ -582,6 +619,8 @@ export function Visual({ v }: { v: V }) {
       return <TenFrames n={v.a} m={v.b} crossOut={v.crossOut} />;
     case 'numberline':
       return <NumberLine {...v} />;
+    case 'cubes':
+      return <Cubes h={v.h} />;
     case 'grid':
       return <Grid rows={v.rows} mark={v.mark} />;
     case 'blocks':
