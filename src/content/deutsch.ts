@@ -536,7 +536,7 @@ const satzglieder3 = D(3, 'd3-satzglieder', 'Subjekt und Prädikat', '🧱', {
     const wrongs = [t.s.slice(0, 2).join(' '), t.s.slice(-2).join(' '), t.s[t.s.length - 1], t.s.slice(0, 1).join(' ')].filter((x) => x !== subj);
     return { key: `s${sent}`, prompt: `Was ist das Subjekt?\n${sent}`, answer: choice(r, subj, wrongs), tags: ['subjekt'], solution: ['Frage: Wer oder was tut hier etwas?', `→ ${subj}. Das ist das Subjekt.`] };
   }
-  return { key: `p${sent}`, prompt: `Was ist das Prädikat?\n${sent}`, answer: choice(r, pred, t.s.filter((x, i) => i !== t.pred && x.length > 2)), tags: ['prädikat'], solution: [`Frage: Was tut ${subj}? / Was geschieht?`, `→ ${pred}. Das ist das Prädikat (das Verb).`] };
+  return { key: `p${sent}`, prompt: `Was ist das Prädikat?\n${sent}`, answer: choice(r, pred, t.s.filter((x, i) => i !== t.pred && x.length > 2)), tags: ['prädikat'], solution: [`Frage: Was ${/(en|sind)$/.test(pred) ? 'tun' : 'tut'} ${midSentence(subj)}? / Was geschieht?`, `→ ${pred}. Das ist das Prädikat (das Verb).`] };
 }, { tagLabels: { subjekt: 'Subjekt finden', prädikat: 'Prädikat finden' }, testSeconds: 20 });
 
 // Lesetexte aus Bausteinen
@@ -670,6 +670,10 @@ const SG4: { s: string; mark: string; was: 'Subjekt' | 'Prädikat' | 'Dativobjek
   { s: 'Tim schenkt **seiner Mutter** Blumen.', mark: 'seiner Mutter', was: 'Dativobjekt' }, { s: 'Tim schenkt seiner Mutter **Blumen**.', mark: 'Blumen', was: 'Akkusativobjekt' }, { s: '**Tim** schenkt seiner Mutter Blumen.', mark: 'Tim', was: 'Subjekt' },
   { s: 'Die Kinder **helfen** dem Hausmeister.', mark: 'helfen', was: 'Prädikat' }, { s: 'Die Kinder helfen **dem Hausmeister**.', mark: 'dem Hausmeister', was: 'Dativobjekt' }, { s: 'Am Morgen füttert **Oma** die Hühner.', mark: 'Oma', was: 'Subjekt' }, { s: 'Am Morgen füttert Oma **die Hühner**.', mark: 'die Hühner', was: 'Akkusativobjekt' },
 ];
+/** Satzanfang mitten im Satz: Begleiter und Pronomen klein ("Meine Schwester" → "meine Schwester"), Nomen bleiben groß */
+function midSentence(w: string): string {
+  return /^(Der|Die|Das|Den|Dem|Ein|Eine|Einen|Mein|Meine|Dein|Deine|Sein|Seine|Ihr|Ihre|Unser|Unsere|Euer|Eure|Alle|Viele|Zwei|Drei|Vier|Fünf|Ich|Du|Er|Sie|Es|Wir)\b/.test(w) ? w[0].toLowerCase() + w.slice(1) : w;
+}
 const SG_Q = { Subjekt: 'Wer oder was?', Prädikat: 'Was tut jemand?', Dativobjekt: 'Wem?', Akkusativobjekt: 'Wen oder was?' } as const;
 const satzglieder4 = D(4, 'd4-satzglieder', 'Satzglieder', '🧩', {
   text: ['Subjekt: Wer oder was? – Prädikat: Was tut jemand?', 'Dativobjekt: Wem? „Tim schenkt seiner Mutter Blumen.“ Wem? → seiner Mutter.', 'Akkusativobjekt: Wen oder was? Was schenkt Tim? → Blumen.', 'Satzglieder kann man umstellen (Umstellprobe): „Blumen schenkt Tim seiner Mutter.“'],
@@ -684,7 +688,7 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: 'Leise ☐ Tim seiner Freundin ein Geheimnis ins Ohr.', ok: 'flüstert', opts: ['schreit', 'ruft', 'antwortet'], feld: 'sagen' },
   { s: '„Hilfe!“, ☐ das Kind, so laut es kann.', ok: 'schreit', opts: ['flüstert', 'murmelt', 'antwortet'], feld: 'sagen' },
   { s: '„Wie spät ist es?“, ☐ Lea.', ok: 'fragt', opts: ['antwortet', 'flüstert', 'befiehlt'], feld: 'sagen' },
-  { s: '„Es ist drei Uhr“, ☐ Papa.', ok: 'antwortet', opts: ['fragt', 'schreit', 'jammert'], feld: 'sagen' },
+  { s: 'Lea fragt: „Wie spät ist es?“ – „Es ist drei Uhr“, ☐ Papa.', ok: 'antwortet', opts: ['fragt', 'schreit', 'jammert'], feld: 'sagen' },
   { s: 'Die Katze ☐ ganz leise an die Maus heran.', ok: 'schleicht', opts: ['rennt', 'stampft', 'hüpft'], feld: 'gehen' },
   { s: 'Der Läufer ☐ so schnell er kann ins Ziel.', ok: 'rennt', opts: ['schleicht', 'bummelt', 'humpelt'], feld: 'gehen' },
   { s: 'Mit dem verletzten Fuß ☐ Ben zum Arzt.', ok: 'humpelt', opts: ['rennt', 'hüpft', 'springt'], feld: 'gehen' },

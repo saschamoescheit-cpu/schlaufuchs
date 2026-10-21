@@ -151,17 +151,17 @@ function buildTask(r: Rng, s: Stage): Gen {
 }
 
 // ---------- Deutsch Kl. 4 ----------
-const NACH: [string, string, string][] = [
+const NACH: [string, string, string, string?][] = [
   ['frei', 'Freiheit', 'heit'], ['krank', 'Krankheit', 'heit'], ['schön', 'Schönheit', 'heit'], ['dunkel', 'Dunkelheit', 'heit'], ['gesund', 'Gesundheit', 'heit'],
   ['ehrlich', 'Ehrlichkeit', 'keit'], ['freundlich', 'Freundlichkeit', 'keit'], ['sauber', 'Sauberkeit', 'keit'], ['traurig', 'Traurigkeit', 'keit'], ['pünktlich', 'Pünktlichkeit', 'keit'],
   ['wohnen', 'Wohnung', 'ung'], ['zeichnen', 'Zeichnung', 'ung'], ['hoffen', 'Hoffnung', 'ung'], ['meinen', 'Meinung', 'ung'], ['bewegen', 'Bewegung', 'ung'],
-  ['erleben', 'Erlebnis', 'nis'], ['ergeben', 'Ergebnis', 'nis'], ['zeugen', 'Zeugnis', 'nis'],
+  ['erleben', 'Erlebnis', 'nis', 'das'], ['ergeben', 'Ergebnis', 'nis', 'das'], ['zeugen', 'Zeugnis', 'nis', 'das'], ['geheim', 'Geheimnis', 'nis', 'das'], ['erlauben', 'Erlaubnis', 'nis'],
 ];
 function nachTask(r: Rng, s: Stage): Gen {
-  const [base, noun, suf] = pick(r, NACH);
+  const [base, noun, suf, art = 'die'] = pick(r, NACH);
   const stem = noun.slice(0, noun.length - suf.length);
-  if (s === 3) return { key: `${noun}-t`, prompt: `Bilde das Nomen und schreibe es mit Artikel:\n${base} → die ☐`, speak: `Bilde das Nomen zu ${base}.`, answer: { type: 'text', value: noun, caseSensitive: true }, tags: [`nachsilbe-${suf}`, 'gross-klein'], solution: [`${base} → die ${noun}`, 'Wörter mit -heit, -keit, -ung und -nis sind Nomen – man schreibt sie groß!'] };
-  return { key: noun, prompt: `Aus „${base}“ wird ein Nomen:\ndie ${stem}☐`, speak: `Aus ${base} wird ein Nomen. Welche Endung passt?`, answer: { ...fixedChoice(['heit', 'keit', 'ung', 'nis'], suf), big: true }, tags: [`nachsilbe-${suf}`], solution: [`${base} → die ${noun}`, 'Mit den Nachsilben -heit, -keit, -ung und -nis werden aus Adjektiven und Verben Nomen. Diese Nomen schreibt man groß.', suf === 'keit' ? 'Tipp: Adjektive auf -lich und -ig bekommen meist -keit.' : suf === 'ung' ? 'Tipp: Verben bekommen oft -ung: wohnen → Wohnung.' : ''].filter(Boolean) };
+  if (s === 3) return { key: `${noun}-t`, prompt: `Bilde das Nomen:\n${base} → ${art} ☐`, speak: `Bilde das Nomen zu ${base}.`, answer: { type: 'text', value: noun, caseSensitive: true }, tags: [`nachsilbe-${suf}`, 'gross-klein'], solution: [`${base} → ${art} ${noun}`, 'Wörter mit -heit, -keit, -ung und -nis sind Nomen – man schreibt sie groß!'] };
+  return { key: noun, prompt: `Aus „${base}“ wird ein Nomen:\n${art} ${stem}☐`, speak: `Aus ${base} wird ein Nomen. Welche Endung passt?`, answer: { ...fixedChoice(['heit', 'keit', 'ung', 'nis'], suf), big: true }, tags: [`nachsilbe-${suf}`], solution: [`${base} → ${art} ${noun}`, 'Mit den Nachsilben -heit, -keit, -ung und -nis werden aus Adjektiven und Verben Nomen. Diese Nomen schreibt man groß.', suf === 'keit' ? 'Tipp: Adjektive auf -lich und -ig bekommen meist -keit.' : suf === 'ung' ? 'Tipp: Verben bekommen oft -ung: wohnen → Wohnung.' : ''].filter(Boolean) };
 }
 const SACH: { title: string; t: string; qs: [string, string, string[]][] }[] = [
   { title: 'Der Maulwurf', t: 'Der Maulwurf lebt fast immer unter der Erde. Mit seinen großen, schaufelartigen Vorderpfoten gräbt er lange Gänge. Die Erde, die er dabei wegschiebt, drückt er nach oben – so entstehen die Maulwurfshügel auf Wiesen. Maulwürfe sehen sehr schlecht, aber sie können sehr gut riechen und fühlen. Sie fressen vor allem Regenwürmer und Insektenlarven.', qs: [['Wie entstehen Maulwurfshügel?', 'Der Maulwurf drückt die Erde nach oben.', ['Der Wind weht die Erde zusammen.', 'Kinder bauen sie.', 'Regenwürmer graben sie.']], ['Womit gräbt der Maulwurf?', 'mit seinen Vorderpfoten', ['mit seiner Nase', 'mit den Zähnen', 'mit dem Schwanz']], ['Warum findet der Maulwurf sein Futter trotz schlechter Augen?', 'Er kann sehr gut riechen und fühlen.', ['Er hat eine Taschenlampe.', 'Er sieht im Dunkeln sehr gut.', 'Andere Tiere helfen ihm.']]] },

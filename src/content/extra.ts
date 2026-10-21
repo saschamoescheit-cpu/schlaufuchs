@@ -234,7 +234,9 @@ const PRONOMEN: [string, string, string][] = [
 function pronTask(r: Rng): Gen {
   const [who, pr, s] = pick(r, PRONOMEN);
   const text = s;
-  return { key: text, prompt: `Welches Pronomen passt?\n${text}`, speak: text.replace('☐', 'Lücke'), answer: choice(r, pr, ['Er', 'Sie', 'Es', 'Wir', 'Ihr'].filter((x) => x !== pr)), tags: [`pronomen-${pr.toLowerCase()}`], solution: [`„${who}“ kann man ersetzen durch: ${pr}.`, text.replace('☐', pr), 'der → er, die → sie, das → es, mehrere → sie'] };
+  // Lücke mitten im Satz (z. B. nach einem Komma): Pronomen klein
+  const cap = (x: string) => (/^☐|[.!?]\s*☐/.test(text) ? x : x.toLowerCase());
+  return { key: text, prompt: `Welches Pronomen passt?\n${text}`, speak: text.replace('☐', 'Lücke'), answer: choice(r, cap(pr), ['Er', 'Sie', 'Es', 'Wir', 'Ihr'].filter((x) => x !== pr).map(cap)), tags: [`pronomen-${pr.toLowerCase()}`], solution: [`„${who}“ kann man ersetzen durch: ${cap(pr)}.`, text.replace('☐', cap(pr)), 'der → er, die → sie, das → es, mehrere → sie'] };
 }
 
 const VERBS: [string, Record<string, string>, boolean][] = [
@@ -250,13 +252,18 @@ const VERBS: [string, Record<string, string>, boolean][] = [
   ['schlafen', { ich: 'schlafe', du: 'schläfst', er: 'schläft', wir: 'schlafen', ihr: 'schlaft', sie: 'schlafen' }, true],
 ];
 const PERSON: Record<string, string> = { ich: 'ich', du: 'du', er: 'er/sie/es', wir: 'wir', ihr: 'ihr', sie: 'sie (mehrere)' };
+/** so sähe die Form aus, wenn das Verb ganz regelmäßig wäre */
+const regularForm = (inf: string, p: string) => {
+  const st = inf.replace(/e?n$/, '');
+  return ({ ich: st + 'e', du: st + 'st', er: st + 't', wir: inf, ihr: st + 't', sie: inf } as Record<string, string>)[p];
+};
 function verbTask(r: Rng, s: Stage): Gen {
   const [inf, forms, irr] = pick(r, s === 1 ? VERBS.filter((v) => !v[2]) : s === 3 ? VERBS.filter((v) => v[2]) : VERBS);
   const p = pick(r, Object.keys(forms));
   const right = forms[p];
   const wrongs = [...new Set([...Object.values(forms), inf.replace(/en$/, 'st'), inf.replace(/en$/, 't')])].filter((x) => x !== right);
-  if (s === 3 && chance(r, 0.5)) return { key: `${inf}-${p}-t`, prompt: `Schreibe die richtige Form:\n${PERSON[p].split('/')[0]} ☐ (${inf})`, speak: `Schreibe die richtige Form von ${inf} für ${PERSON[p].split('/')[0]}.`, answer: { type: 'text', value: right, caseSensitive: true }, tags: [irr ? 'unregelmaessig' : 'regelmaessig'], solution: [`${PERSON[p]} ${right}`, ...(irr ? [`${inf} ist ein besonderes Verb – ${Object.entries(forms).map(([k, v]) => `${k} ${v}`).join(', ')}`] : [])] };
-  return { key: `${inf}-${p}`, prompt: `Welche Form passt?\n${PERSON[p]} ☐ (${inf})`, speak: `Welche Form von ${inf} passt zu ${PERSON[p].split('/')[0]}?`, answer: choice(r, right, wrongs), tags: [irr ? 'unregelmaessig' : 'regelmaessig', `person-${p}`], solution: [`${PERSON[p]} ${right}`, 'Die Endung zeigt die Person: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie -en.', ...(irr ? ['Bei diesem Verb ändert sich auch der Wortstamm.'] : [])] };
+  if (s === 3 && chance(r, 0.5)) return { key: `${inf}-${p}-t`, prompt: `Schreibe die richtige Form:\n${PERSON[p].split('/')[0]} ☐ (${inf})`, speak: `Schreibe die richtige Form von ${inf} für ${PERSON[p].split('/')[0]}.`, answer: { type: 'text', value: right, caseSensitive: true }, tags: [irr ? 'unregelmaessig' : 'regelmaessig'], solution: [`${PERSON[p]} ${right}`, ...(right !== regularForm(inf, p) ? [`${inf} ist ein besonderes Verb – ${Object.entries(forms).map(([k, v]) => `${k} ${v}`).join(', ')}`] : [])] };
+  return { key: `${inf}-${p}`, prompt: `Welche Form passt?\n${PERSON[p]} ☐ (${inf})`, speak: `Welche Form von ${inf} passt zu ${PERSON[p].split('/')[0]}?`, answer: choice(r, right, wrongs), tags: [irr ? 'unregelmaessig' : 'regelmaessig', `person-${p}`], solution: [`${PERSON[p]} ${right}`, 'Die Endung zeigt die Person: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie -en.', ...(right !== regularForm(inf, p) ? [`Diese Form ist besonders – merke sie dir: ${PERSON[p].split('/')[0]} ${right}.`] : [])] };
 }
 
 const BAUSTEINE: [string, string, string[]][] = [
