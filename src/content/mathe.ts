@@ -179,7 +179,7 @@ const plus20 = M(1, 'm1-plus20', 'Plus bis 20', '🚀', {
   };
 }, { tagLabels: ueber, testSeconds: 20 });
 
-const minus20 = M(1, 'm1-minus20', 'Minus bis 20', '🛝', {
+const minus20 = M(1, 'm1-minus20', 'Minus bis 20', '🎢', {
   text: [
     'Geht es unter die 10, rechnest du in zwei Schritten: Erst bis zur 10 zurück, dann den Rest weg.',
     '13 − 5: Erst 13 − 3 = 10. Von der 5 sind noch 2 übrig. 10 − 2 = 8.',

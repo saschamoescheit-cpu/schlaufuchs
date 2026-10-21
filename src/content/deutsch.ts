@@ -329,7 +329,7 @@ const cktz = D(2, 'd2-ck-tz', 'ck und tz', '🧦', {
   videoQuery: 'ck und tz Rechtschreibung Klasse 2',
 }, (r, s) => spellTask(r, s, CKTZ, (p) => (p[0].includes('ck') ? 'ck' : p[0].includes('tz') ? 'tz' : 'kein-ck-tz'), (p) => (p[0].includes('ck') || p[0].includes('tz') ? ['Der Selbstlaut davor ist kurz – deshalb ck oder tz.'] : ['Davor steht ein langer Selbstlaut, ein Doppellaut oder l, n, r – deshalb nur k oder z.'])), { tagLabels: { ck: 'Wörter mit ck', tz: 'Wörter mit tz', 'kein-ck-tz': 'k/z nach l, n, r oder langem Vokal' }, testSeconds: 12 });
 
-const IE: Pair[] = [['Biene', 'Bine', '🐝'], ['Brief', 'Brif', '✉️'], ['Spiegel', 'Spigel', '🪞'], ['Ziege', 'Zige', '🐐'], ['Fliege', 'Flige', '🪰'], ['Riese', 'Rise', '🧌'], ['Wiese', 'Wise', '🌾'], ['Papier', 'Papir', '📄'], ['Tier', 'Tir', '🐾'], ['vier', 'vir', '4️⃣'], ['Dieb', 'Dib', '🦹'], ['Knie', 'Kni', '🦵'], ['Stiefel', 'Stifel', '🥾'],
+const IE: Pair[] = [['Biene', 'Bine', '🐝'], ['Brief', 'Brif', '✉️'], ['Spiegel', 'Spigel', '🪞'], ['Ziege', 'Zige', '🐐'], ['Fliege', 'Flige', '🪰'], ['Riese', 'Rise', '🗿'], ['Wiese', 'Wise', '🌾'], ['Papier', 'Papir', '📄'], ['Tier', 'Tir', '🐾'], ['vier', 'vir', '4️⃣'], ['Dieb', 'Dib', '🦹'], ['Knie', 'Kni', '🦵'], ['Stiefel', 'Stifel', '🥾'],
   ['Tiger', 'Tieger', '🐯'], ['Kino', 'Kieno', '🎬'], ['Igel', 'Iegel', '🦔'], ['Krokodil', 'Krokodiel', '🐊'], ['Bibel', 'Biebel', '📕'], ['Fisch', 'Fiesch', '🐟'], ['Kiste', 'Kieste', '📦']];
 const ie = D(2, 'd2-ie', 'ie oder i', '🐝', {
   text: ['Hörst du ein langes i, schreibst du meistens ie: Biene, Wiese, vier.', 'Hörst du ein kurzes i, schreibst du i: Fisch, Kiste.', 'Ausnahmen musst du dir merken (Merkwörter): Tiger, Igel, Kino, Krokodil, Bibel.'],
@@ -429,7 +429,7 @@ const ZUSAMMEN: [string, string, string, string, string, string][] = [
   ['der', 'Fuß', 'der', 'Ball', 'Fußball', '⚽'], ['die', 'Sonne', 'die', 'Blume', 'Sonnenblume', '🌻'], ['der', 'Zahn', 'die', 'Bürste', 'Zahnbürste', '🪥'],
   ['die', 'Hand', 'der', 'Schuh', 'Handschuh', '🧤'], ['der', 'Regen', 'der', 'Schirm', 'Regenschirm', '☂️'], ['das', 'Feuer', 'das', 'Werk', 'Feuerwerk', '🎆'],
   ['die', 'Schule', 'die', 'Tasche', 'Schultasche', '🎒'], ['das', 'Wasser', 'die', 'Flasche', 'Wasserflasche', '🍶'], ['der', 'Garten', 'das', 'Haus', 'Gartenhaus', '🏡'],
-  ['das', 'Spiel', 'der', 'Platz', 'Spielplatz', '🛝'], ['die', 'Erde', 'die', 'Beere', 'Erdbeere', '🍓'], ['der', 'Stuhl', 'das', 'Bein', 'Stuhlbein', '🪑'],
+  ['das', 'Spiel', 'der', 'Platz', 'Spielplatz', '🎠'], ['die', 'Erde', 'die', 'Beere', 'Erdbeere', '🍓'], ['der', 'Stuhl', 'das', 'Bein', 'Stuhlbein', '🪑'],
 ];
 const zusammen = D(3, 'd3-zusammengesetzt', 'Zusammengesetzte Nomen', '🔗', {
   text: ['Aus zwei Nomen kann man ein neues Nomen bauen: das Haus + die Tür = die Haustür.', 'Das letzte Wort bestimmt den Artikel: die Tür → die Haustür.', 'Das erste Wort sagt genauer, was gemeint ist: eine Tür am Haus.', 'Das neue Wort schreibt man zusammen und groß.'],
