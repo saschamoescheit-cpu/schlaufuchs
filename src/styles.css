@@ -2005,3 +2005,13 @@ details.more .inner {
   background: var(--ok-soft);
   box-shadow: inset 0 0 0 2px var(--ok);
 }
+
+/* Bereichs-Zwischenzeilen in Themenlisten (Lernstand, Eltern) */
+.area-label {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 12px 0 2px;
+}

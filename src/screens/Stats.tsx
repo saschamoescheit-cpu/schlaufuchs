@@ -1,7 +1,7 @@
 // Wiederholen (Fehler-Kiste) und Lernstand.
 import { accuracy, dayKey, dueReviews, level, LEVEL_NAMES, openReviews, patterns, REVIEW_STREAK, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Skill, Subject } from '../engine/types';
-import { ALL_SKILLS, currentSkills, englishYear, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { ALL_SKILLS, byArea, currentSkills, englishYear, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import type { Profile } from '../data/store';
 import { useState } from 'react';
 import { Fox, LevelDots, Tabs, TopBar } from '../ui/common';
@@ -259,7 +259,13 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
             <div className="bar on-light">
               <i style={{ width: `${(sure / skills.length) * 100}%` }} />
             </div>
-            {skills.map((s) => {
+            {byArea(subject, skills).flatMap((g, _, groups) => [
+              groups.length > 1 ? (
+                <div key={`a-${g.name}`} className="area-label">
+                  {g.name}
+                </div>
+              ) : null,
+              ...g.skills.map((s) => {
               const lv = level(progress, s.id);
               const acc = accuracy(progress.skills[s.id]);
               const open = openReviews(progress, s.id).length;
@@ -281,7 +287,8 @@ export function SubjectStats({ subject, profile, progress, onPractice }: { subje
                   </span>
                 </button>
               );
-            })}
+              }),
+            ])}
           </div>
         );
       })}
