@@ -2,7 +2,7 @@
 // Lagebeziehungen (Kl. 1), Zahlenstrahl bis 100 (Kl. 2) und bis 1000 (Kl. 3), Im Wörterbuch nachschlagen (Kl. 3).
 import { chance, choice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
-import { skill, type Gen } from './helpers';
+import { NAMES, skill, type Gen } from './helpers';
 import { VT, wordTask, type W } from './extra';
 
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
@@ -269,6 +269,44 @@ export const ENGLISCH_EXTRA3: Skill[] = [
   E(2, 'e2-shopping', 'Shopping – Einkaufen', '🛒', { text: ['Can I have an apple, please? = Kann ich bitte einen Apfel haben?', 'How much is it? – It’s two euros fifty. (2,50 €)', 'Achtung beim Hören: thirteen (13) – thirty (30), fifteen (15) – fifty (50).', 'Here you are. = Bitte schön (beim Geben). Thank you! = Danke!'], visual: { kind: 'emoji', chars: '🛒🍎💶' }, videoQuery: 'shopping dialogue English for kids how much is it' }, shopTask, { tagLabels: { preise: 'Preise verstehen', dialog: 'Einkaufsgespräch', 'teen-ty': '-teen und -ty verwechselt', 'a-an': 'a oder an' }, testSeconds: 20 }),
 ];
 
+// ---------- Geld bis 20 € (Kl. 1) ----------
+
+const KAUF = [['ein Buch', '📕'], ['ein Eis', '🍦'], ['einen Ball', '⚽'], ['ein Spielzeugauto', '🚗'], ['einen Teddy', '🧸'], ['Stifte', '🖍️']];
+function geld1Task(r: Rng, s: Stage): Gen {
+  const pool = s === 1 ? [100, 200, 500] : [100, 200, 500, 1000];
+  const max = s === 1 ? 10 : 20;
+  let items: number[];
+  do items = Array.from({ length: ri(r, s === 1 ? 2 : 3, s === 1 ? 3 : 4) }, () => pick(r, pool)).sort((x, y) => y - x);
+  while (items.reduce((a, b) => a + b, 0) / 100 > max);
+  const total = items.reduce((a, b) => a + b, 0) / 100;
+  let run = 0;
+  const running = items.map((x) => `${(run += x) / 100} €`).join(', ');
+  const countTrap = items.length !== total ? [{ answer: String(items.length), tag: 'stueck-gezaehlt', hint: 'Du hast die Münzen und Scheine gezählt. Zähle ihren Wert: Was steht darauf?' }] : [];
+  if (s === 3 && total >= 3 && chance(r, 0.5)) {
+    const price = ri(r, 1, total - 1);
+    const [thing, e] = pick(r, KAUF);
+    const name = pick(r, NAMES);
+    return {
+      key: `k-${items.join('-')}-${price}`,
+      prompt: `${name} hat dieses Geld und kauft ${thing} ${e} für ${price} €.\nWie viel Geld bleibt übrig?`,
+      visual: { kind: 'money', items },
+      answer: { type: 'number', value: total - price, unit: '€' },
+      tags: ['rest'],
+      traps: [{ answer: String(total + price), tag: 'plus-statt-minus', hint: 'Beim Bezahlen wird das Geld weniger – du musst minus rechnen.' }],
+      solution: [`Erst zählen: ${running} → ${total} €`, `Dann bezahlen: ${total} € − ${price} € = ${total - price} €`],
+    };
+  }
+  return {
+    key: items.join('-'),
+    prompt: 'Wie viel Geld ist das?',
+    visual: { kind: 'money', items },
+    answer: { type: 'number', value: total, unit: '€' },
+    tags: ['zaehlen'],
+    traps: countTrap,
+    solution: ['Zähle vom größten zum kleinsten Wert weiter:', running, `Zusammen: ${total} €`],
+  };
+}
+
 // ---------- Würfelgebäude (Kl. 3) ----------
 
 const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
@@ -302,6 +340,7 @@ function cubesTask(r: Rng, s: Stage): Gen {
 
 export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
+  M(1, 'm1-geld', 'Geld bis 20 €', '💶', { text: ['Auf jeder Münze und jedem Schein steht, wie viel sie wert sind: 1 €, 2 €, 5 €, 10 €.', 'Zähle immer vom größten zum kleinsten Wert und zähle dabei weiter: 10, 15, 17, 18.', 'Nicht die Münzen zählen – ihren Wert zählen!'], visual: { kind: 'money', items: [1000, 500, 200, 100] }, videoQuery: 'Geld zählen Euro Klasse 1' }, geld1Task, { tagLabels: { zaehlen: 'Geld zählen', rest: 'Restgeld', 'stueck-gezaehlt': 'Münzen statt Wert gezählt', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 25 }),
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🧊', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
