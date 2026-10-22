@@ -232,3 +232,30 @@ function wordOrderTask(r: Rng, s: Stage): Gen {
 export const ENGLISCH_EXTRA4: Skill[] = [
   E(2, 'e2-wordorder', 'Sentence builder – Sätze bauen', '🧱', { text: ['Im Englischen ist die Reihenfolge wichtig: Wer? – tut was? – Rest. I like apples.', 'Fragen beginnen mit einem Fragewort (What, Where, How) oder mit can, do, is: Can you swim?', 'Tipp: Lies den Satz am Ende laut – klingt er richtig?'], visual: { kind: 'text', text: 'I · like · apples' }, videoQuery: 'English word order simple sentences for kids' }, wordOrderTask, { tagLabels: { aussagesatz: 'Aussagesätze bauen', fragesatz: 'Fragen bauen' }, testSeconds: 30 }),
 ];
+
+// ---------- Englisch: Leben in Großbritannien (2. Lernjahr) – NRW „Interkulturelles Lernen“ ----------
+
+const UK: { q: string; a: string; w: string[]; e: string; info: string }[] = [
+  { q: 'Wie heißt die Hauptstadt von Großbritannien?', a: 'London', w: ['Manchester', 'Dublin', 'Liverpool'], e: '🏙️', info: 'London ist die Hauptstadt – dort steht auch Big Ben.' },
+  { q: 'Womit bezahlt man in Großbritannien?', a: 'mit Pfund (pounds)', w: ['mit Euro', 'mit Dollar', 'mit Franken'], e: '💷', info: 'In Großbritannien bezahlt man mit Pfund und Pence: 1 pound = 100 pence.' },
+  { q: 'Auf welcher Straßenseite fahren die Autos in Großbritannien?', a: 'links', w: ['rechts', 'in der Mitte', 'mal links, mal rechts'], e: '🚗', info: 'In Großbritannien fährt man links – beim Überqueren der Straße zuerst nach rechts schauen!' },
+  { q: 'Was tragen viele Kinder in Großbritannien in der Schule?', a: 'eine Schuluniform', w: ['einen Schlafanzug', 'ein Kostüm', 'eine Ritterrüstung'], e: '👔', info: 'An vielen Schulen tragen alle Kinder die gleiche Schuluniform (school uniform).' },
+  { q: 'Wie heißt die berühmte große Uhr in London?', a: 'Big Ben', w: ['Big Bus', 'Tower Clock', 'London Eye'], e: '🕰️', info: 'Big Ben ist eigentlich der Name der großen Glocke im Uhrturm.' },
+  { q: 'Welche Farbe haben die berühmten Doppeldeckerbusse in London?', a: 'rot', w: ['gelb', 'blau', 'grün'], e: '🚌', info: 'Die roten Doppeldeckerbusse (double-decker buses) sind ein Wahrzeichen von London.' },
+  { q: 'Welches Essen ist in Großbritannien besonders beliebt?', a: 'Fish and Chips', w: ['Sushi', 'Currywurst', 'Tacos'], e: '🐟', info: 'Fish and Chips: frittierter Fisch mit Pommes – oft mit Essig.' },
+  { q: 'Was trinken viele Menschen in Großbritannien gern – oft mit Milch?', a: 'Tee', w: ['Kakao', 'Apfelsaft', 'Limonade'], e: '☕', info: 'Tea time! Viele trinken Schwarztee mit einem Schuss Milch.' },
+  { q: 'Wer ist das Staatsoberhaupt von Großbritannien?', a: 'ein König', w: ['ein Präsident', 'ein Bürgermeister', 'ein Kaiser'], e: '👑', info: 'Großbritannien hat einen König (King Charles III.).' },
+  { q: 'Wie heißt der Fluss, der durch London fließt?', a: 'die Themse (Thames)', w: ['der Rhein', 'die Donau', 'die Elbe'], e: '🌉', info: 'Die Themse (River Thames) fließt mitten durch London.' },
+  { q: 'Wie nennt man in Großbritannien die Pommes?', a: 'chips', w: ['crisps', 'fries', 'cookies'], e: '🍟', info: 'Achtung: chips = Pommes, crisps = Kartoffelchips (aus der Tüte).' },
+  { q: 'Welcher Tag wird am 5. November in Großbritannien mit Feuerwerk gefeiert?', a: 'Bonfire Night', w: ['Halloween', 'Christmas', 'Easter'], e: '🎆', info: 'Bonfire Night (Guy Fawkes Night): Feuerwerk und große Lagerfeuer am 5. November.' },
+  { q: 'Welche Länder gehören zu Großbritannien (Great Britain)?', a: 'England, Schottland und Wales', w: ['England und Irland', 'England, Frankreich und Spanien', 'nur England'], e: '🗺️', info: 'Zur Insel Großbritannien gehören England, Schottland (Scotland) und Wales.' },
+  { q: 'Wie sagen Kinder in Großbritannien zu ihrer Mutter?', a: 'Mum', w: ['Mom', 'Mama', 'Mother Mary'], e: '👩', info: 'In Großbritannien sagt man Mum, in Amerika Mom.' },
+];
+function ukTask(r: Rng, s: Stage): Gen {
+  const x = pick(r, UK);
+  return { key: x.q, prompt: x.q, visual: { kind: 'emoji', chars: x.e }, answer: choice(r, x.a, s === 1 ? x.w.slice(0, 2) : x.w), tags: ['landeskunde'], solution: [`Richtig: ${x.a}`, x.info] };
+}
+
+export const ENGLISCH_EXTRA4B: Skill[] = [
+  E(2, 'e2-britain', 'Life in Great Britain – Leben in Großbritannien', '💂', { text: ['In Großbritannien spricht man Englisch. Die Hauptstadt ist London.', 'Manches ist anders als bei uns: Man bezahlt mit Pfund, die Autos fahren links und viele Kinder tragen eine Schuluniform.', 'Typisch britisch: Tee mit Milch, Fish and Chips und rote Doppeldeckerbusse.'], visual: { kind: 'row', items: ['🚌', '☕', '💷', '👑'] }, videoQuery: 'Great Britain facts for kids London' }, ukTask, { tagLabels: { landeskunde: 'Leben in Großbritannien' }, testSeconds: 20 }),
+];

@@ -297,6 +297,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '5dqiCDYZEI4', title: 'Umkehraufgaben Klasse 1 | Addition und Subtraktion', channel: 'Frau_Willms', len: '3:25' },
   ],
   'e2-wordorder': [{ id: 'LBsQ-iYZXPI', title: 'Word Order for Kids | Sentence Structure', channel: 'Kids Academy', len: '3:06' }],
+  'e2-britain': [
+    { id: 'qMqf7Y1IPzc', title: 'Reise nach Großbritannien - eine Zusammenfassung | Erdkunde für Kinder', channel: 'Kinderweltreise', len: '3:49' },
+    { id: 'KtqVoo8iqeo', title: 'Ein Reiseführer durch London für Kinder', channel: 'Twinkl Kids TV', len: '3:22' },
+  ],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },

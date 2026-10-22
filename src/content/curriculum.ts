@@ -7,7 +7,7 @@ import { DIKTAT } from './diktat';
 import { DEUTSCH_EXTRA, ENGLISCH_EXTRA, MATHE_EXTRA } from './extra';
 import { DEUTSCH_EXTRA2, ENGLISCH_EXTRA2, MATHE_EXTRA2 } from './extra2';
 import { DEUTSCH_EXTRA3, ENGLISCH_EXTRA3, MATHE_EXTRA3 } from './extra3';
-import { DEUTSCH_EXTRA4, ENGLISCH_EXTRA4, MATHE_EXTRA4, MATHE_EXTRA4B } from './extra4';
+import { DEUTSCH_EXTRA4, ENGLISCH_EXTRA4, ENGLISCH_EXTRA4B, MATHE_EXTRA4, MATHE_EXTRA4B } from './extra4';
 
 export interface StateInfo {
   code: string;
@@ -48,7 +48,7 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 ];
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
-export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...MATHE_EXTRA4, ...MATHE_EXTRA4B, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...DEUTSCH_EXTRA4, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3, ...ENGLISCH_EXTRA4];
+export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...MATHE_EXTRA4, ...MATHE_EXTRA4B, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...DEUTSCH_EXTRA4, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3, ...ENGLISCH_EXTRA4, ...ENGLISCH_EXTRA4B];
 // Erklärbilder für Themen, die (noch) keins im Inhalt mitbringen – zu jedem Erklärtext gehört ein Bild
 const EXPLAIN_VISUALS: Record<string, Visual> = {
   'm2-verdoppeln': { kind: 'array', rows: 2, cols: 8 },
@@ -114,7 +114,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   ],
   englisch: [
     { name: 'Vokabeln', re: VOCAB_RE },
-    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading|myday|health|wordorder/ },
+    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading|myday|health|wordorder|britain/ },
     { name: 'ABC und Aussprache', re: /./ },
   ],
 };
