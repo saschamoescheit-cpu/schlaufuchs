@@ -33,3 +33,4 @@ Bis zur Entscheidung läuft alles wie bisher unter `https://saschamoescheit-cpu.
    Adresse leer aus. Darum vor dem Umzug: Eltern melden sich mit Konto an (dann holt die neue Adresse alles vom Server).
    Die alte Adresse bleibt unverändert erreichbar – nichts wird dort gelöscht.
 7. **Impressum und Datenschutz:** Platzhalter füllen, Abschnitt „Bereitstellung“ prüfen.
+8. **Homepage:** `og:image` in `home/index.html` auf die neue Adresse umstellen.

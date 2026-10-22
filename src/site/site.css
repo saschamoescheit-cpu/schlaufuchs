@@ -284,6 +284,34 @@ main,
   gap: 18px;
 }
 
+/* Häufige Fragen */
+.faq {
+  padding: 8px 0 48px;
+  max-width: 760px;
+}
+.faq details {
+  background: var(--card);
+  border-radius: 18px;
+  box-shadow: var(--shadow);
+  margin-bottom: 10px;
+  padding: 0 18px;
+}
+.faq summary {
+  cursor: pointer;
+  font: 600 1.08rem var(--head);
+  padding: 16px 0;
+  list-style-position: outside;
+}
+.faq summary:focus-visible {
+  outline: 3px solid var(--fox);
+  outline-offset: 3px;
+  border-radius: 8px;
+}
+.faq details p {
+  margin: 0 0 16px;
+  color: var(--muted);
+}
+
 /* Rechtstexte */
 .doc {
   max-width: 760px;
