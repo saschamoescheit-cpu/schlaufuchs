@@ -344,8 +344,8 @@ function ArrayDots({ rows, cols, split }: { rows: number; cols: number; split?: 
   );
 }
 
-function Shape({ shape, rot = 0 }: { shape: string; rot?: number }) {
-  const st = { fill: '#CFE0FF', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
+function Shape({ shape, rot = 0, fill }: { shape: string; rot?: number; fill?: string }) {
+  const st = { fill: fill ?? '#CFE0FF', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
   const side = { fill: '#9DBDF5', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
   const top = { fill: '#E4EEFF', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
   const dash = { fill: 'none', stroke: C.ink, strokeWidth: 1.5, strokeDasharray: '5 4' };
@@ -740,7 +740,7 @@ export function Visual({ v }: { v: V }) {
     case 'array':
       return <ArrayDots {...v} />;
     case 'shape':
-      return <Shape shape={v.shape} rot={v.rot} />;
+      return <Shape shape={v.shape} rot={v.rot} fill={v.fill} />;
     case 'lines':
       return <Lines a={v.a} b={v.b} right={v.right} />;
     case 'shapemix':

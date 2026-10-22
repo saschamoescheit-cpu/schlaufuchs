@@ -290,6 +290,7 @@ function enReadTask(r: Rng, s: Stage): Gen {
 }
 
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(1, 'e1-shapes', 'Shapes and colours – Formen', '🔷', { text: ['circle = Kreis, square = Quadrat, triangle = Dreieck, rectangle = Rechteck.', 'Die Farbe steht vor der Form – wie im Deutschen: a red circle = ein roter Kreis.', 'Sprich mit: a blue square, a green triangle!'], visual: { kind: 'shape', shape: 'Kreis', fill: '#F06A6A' }, videoQuery: 'shapes song for kids circle square triangle rectangle' }, shapesTask, { tagLabels: { hoeren: 'Formen hören', uebersetzen: 'Deutsch → Englisch', schreiben: 'Formen schreiben', reihenfolge: 'Farbe und Form vertauscht' }, testSeconds: 20 }),
   E(2, 'e2-reading', 'Read and understand – Texte lesen', '📖', { text: ['Lies den englischen Text in Ruhe – du musst nicht jedes Wort kennen.', 'Suche die Wörter, die du kennst: Zahlen, Farben, Tiere, Namen.', 'Lies dann die Frage und suche die passende Stelle im Text.'], visual: { kind: 'text', text: 'My name is Lucy. I am nine years old.' }, videoQuery: 'English reading for kids short text Grundschule Klasse 4' }, enReadTask, { tagLabels: { lesen: 'englische Texte verstehen' }, testSeconds: 60 }),
   E(1, 'e1-festivals', 'Festivals – Feste im Jahr', '🎃', { text: ['Halloween: pumpkin (Kürbis), witch (Hexe), ghost (Gespenst). Kinder rufen „Trick or treat!“', 'Christmas: Christmas tree, present (Geschenk), candle (Kerze). Man wünscht „Merry Christmas!“', 'Easter: Easter egg, Easter bunny. „Happy Easter!“'], visual: { kind: 'emoji', chars: '🎃🎄🐰' }, videoQuery: 'Halloween Christmas Easter vocabulary for kids English' }, festTask, { tagLabels: { ...VT, wünsche: 'Wünsche zu Festen' }, testSeconds: 15 }),
   E(2, 'e2-shopping', 'Shopping – Einkaufen', '🛒', { text: ['Can I have an apple, please? = Kann ich bitte einen Apfel haben?', 'How much is it? – It’s two euros fifty. (2,50 €)', 'Achtung beim Hören: thirteen (13) – thirty (30), fifteen (15) – fifty (50).', 'Here you are. = Bitte schön (beim Geben). Thank you! = Danke!'], visual: { kind: 'emoji', chars: '🛒🍎💶' }, videoQuery: 'shopping dialogue English for kids how much is it' }, shopTask, { tagLabels: { preise: 'Preise verstehen', dialog: 'Einkaufsgespräch', 'teen-ty': '-teen und -ty verwechselt', 'a-an': 'a oder an' }, testSeconds: 20 }),
@@ -759,6 +760,57 @@ ${text}`,
     tags: [`wa-${t.t.toLowerCase()}`],
     solution: [`„${t.w}“ ist ${t.t === 'Pr' ? 'eine' : 'ein'} ${WA[t.t].name}.`, WA[t.t].why],
   };
+}
+
+// ---------- Shapes and colours (Englisch, 1. Lernjahr) ----------
+
+const SH_EN: { s: string; en: string; de: string; art: 'ein' | 'eine'; m?: boolean }[] = [
+  { s: 'Kreis', en: 'circle', de: 'Kreis', art: 'ein', m: true },
+  { s: 'Quadrat', en: 'square', de: 'Quadrat', art: 'ein' },
+  { s: 'Dreieck', en: 'triangle', de: 'Dreieck', art: 'ein' },
+  { s: 'Rechteck', en: 'rectangle', de: 'Rechteck', art: 'ein' },
+];
+// Farbe: Englisch, deutscher Wortstamm (Endung je nach Form: ein roter Kreis, ein rotes Quadrat; lila bleibt), Füllfarbe, Emoji-Kreis, Emoji-Quadrat
+const COL_EN: { en: string; de: string; hex: string; c: string; q: string }[] = [
+  { en: 'red', de: 'rot', hex: '#F06A6A', c: '🔴', q: '🟥' },
+  { en: 'blue', de: 'blau', hex: '#5B8DEF', c: '🔵', q: '🟦' },
+  { en: 'green', de: 'grün', hex: '#58C27D', c: '🟢', q: '🟩' },
+  { en: 'yellow', de: 'gelb', hex: '#F7D046', c: '🟡', q: '🟨' },
+  { en: 'orange', de: 'orangefarben', hex: '#F7A23B', c: '🟠', q: '🟧' },
+  { en: 'purple', de: 'lila', hex: '#A879E0', c: '🟣', q: '🟪' },
+];
+const deCol = (c: { de: string }, masc?: boolean) => (c.de === 'lila' ? 'lila' : c.de + (masc ? 'er' : 'es'));
+/** a oder an (an orange circle) */
+const an = (w: string) => `${/^[aeiou]/.test(w) ? 'an' : 'a'} ${w}`;
+function shapesTask(r: Rng, s: Stage): Gen {
+  const v = s === 1 ? ri(r, 0, 1) : ri(r, 0, s === 3 ? 3 : 2);
+  // Hören: Kreis oder Quadrat in einer Farbe – passendes Emoji wählen
+  if (v === 1) {
+    const sq = chance(r, 0.5);
+    // ohne Orange: rotes und oranges Emoji-Quadrat sehen sich auf manchen Geräten zu ähnlich
+    const cols = COL_EN.filter((x) => x.en !== 'orange');
+    const col = pick(r, cols);
+    const others = pickN(r, cols.filter((x) => x !== col), 2);
+    const opts = [sq ? col.q : col.c, sq ? col.c : col.q, ...others.map((o) => (sq ? o.q : o.c))];
+    const say = `${an(col.en)} ${sq ? 'square' : 'circle'}`;
+    return { key: `h-${say}`, prompt: 'Hör gut zu! Welches Bild passt?', listen: { text: say, lang: 'en' }, answer: { ...choice(r, opts[0], opts.slice(1)), big: true }, tags: ['hoeren'], solution: [`${say} = ein ${deCol(col, !sq)} ${sq ? 'Quadrat' : 'Kreis'}`], pronounce: { text: say, lang: 'en' } };
+  }
+  const sh = pick(r, SH_EN);
+  const col = pick(r, COL_EN);
+  const phrase = `${an(col.en)} ${sh.en}`;
+  const de = `${sh.art} ${deCol(col, sh.m)} ${sh.de}`;
+  // Deutsch → Englisch
+  if (v === 2) {
+    const wrong = [`${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${sh.en}`, `${an(col.en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`, `${an(sh.en)} ${col.en}`];
+    return { key: `d-${phrase}`, prompt: `Wie sagt man auf Englisch?\n„${de}“`, answer: { ...choice(r, phrase, wrong), speakOptions: 'en' }, tags: ['uebersetzen'], traps: [{ answer: `${an(sh.en)} ${col.en}`, tag: 'reihenfolge', hint: 'Im Englischen steht die Farbe vor der Form – genau wie im Deutschen: a red circle.' }], solution: [`${de} = ${phrase}`, 'Erst die Farbe, dann die Form.'], pronounce: { text: phrase, lang: 'en' } };
+  }
+  // Form auf Englisch schreiben
+  if (v === 3) {
+    return { key: `w-${sh.en}`, prompt: 'Write the shape in English:', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { type: 'text', value: sh.en, lang: 'en' }, tags: ['schreiben'], solution: [`${sh.de} = ${sh.en}`], pronounce: { text: sh.en, lang: 'en' } };
+  }
+  // Bild → Englisch
+  const wrong = [`${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${sh.en}`, `${an(col.en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`, `${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`];
+  return { key: `b-${phrase}`, prompt: 'What is it?', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { ...choice(r, phrase, wrong), speakOptions: 'en' }, tags: [`form-${sh.en}`], solution: [`Das ist ${de}.`, `${de} = ${phrase}`], pronounce: { text: phrase, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [
