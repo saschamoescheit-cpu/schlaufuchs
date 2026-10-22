@@ -79,6 +79,8 @@ const token = `${b64({ alg: 'none' })}.${b64({ sub: '00000000-0000-0000-0000-000
 const errs = [];
 async function device(name, dev) {
   const ctx = await b.newContext({ ...devices[dev], locale: 'de-DE' });
+  // ein Test-Projekt statt des echten (sync.ts liest window.__schlaufuchsSupabase)
+  await ctx.addInitScript(() => { window.__schlaufuchsSupabase = { url: 'https://test-sf.supabase.co', key: 'test', google: true }; });
   await ctx.route(/supabase\.co\/rest\/v1\/schlaufuchs_items/, rest);
   await ctx.routeWebSocket(/supabase\.co\/realtime/, realtime);
   const p = await ctx.newPage();
@@ -87,7 +89,7 @@ async function device(name, dev) {
   await p.goto(url);
   await p.evaluate((t) => {
     localStorage.clear();
-    localStorage.setItem('schlaufuchs:auth.v1', JSON.stringify({ access_token: t, refresh_token: 'r', expires_at: Math.floor(Date.now() / 1000) + 3600, email: 'eltern@example.com' }));
+    localStorage.setItem('schlaufuchs:auth.v1', JSON.stringify({ access_token: t, refresh_token: 'r', expires_at: Math.floor(Date.now() / 1000) + 3600, email: 'eltern@example.com', url: 'https://test-sf.supabase.co' }));
   }, token);
   await p.reload();
   return p;

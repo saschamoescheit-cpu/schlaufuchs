@@ -126,6 +126,8 @@ const errs = [];
 const b = await webkit.launch();
 async function device(name, dev) {
   const ctx = await b.newContext({ ...devices[dev], locale: 'de-DE' });
+  // ein Test-Projekt statt des echten (sync.ts liest window.__schlaufuchsSupabase)
+  await ctx.addInitScript(() => { window.__schlaufuchsSupabase = { url: 'https://test-sf.supabase.co', key: 'test', google: true }; });
   await ctx.route(/supabase\.co\/(auth|rest)\//, server);
   await ctx.routeWebSocket(/supabase\.co\/realtime/, realtime);
   const p = await ctx.newPage();

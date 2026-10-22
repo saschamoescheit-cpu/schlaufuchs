@@ -352,8 +352,14 @@ export function forgetRemoved(profileId: string, dev: Device = browserDevice): v
 
 // ---------- im Browser: localStorage und Supabase (REST, keine Bibliothek) ----------
 
-export const SUPABASE_URL = 'https://rgisfnilwehnqpmbrxmp.supabase.co'; // Saschas Supabase-Projekt (EU), wie GolfOS
-export const SUPABASE_KEY = 'sb_publishable_41ASfBWeORDK7Mlql3pZyA_XjmtGWvC'; // öffentlich – die Zeilen-Regel schützt die Daten
+// Eigenes Supabase-Projekt „Schlaufuchs“ (Sascha 22.10.2026: nicht das GolfOS-Projekt). Solange die beiden Werte leer
+// sind, ist der Abgleich aus und die Anmeldung ausgeblendet. Die Browser-Prüfungen setzen window.__schlaufuchsSupabase.
+const TEST = (typeof window !== 'undefined' ? (window as unknown as { __schlaufuchsSupabase?: { url: string; key: string; google?: boolean } }).__schlaufuchsSupabase : undefined) ?? null;
+export const SUPABASE_URL: string = TEST?.url ?? ''; // Project URL des Schlaufuchs-Projekts (EU)
+export const SUPABASE_KEY: string = TEST?.key ?? ''; // öffentlicher (publishable) Schlüssel – die Zeilen-Regel schützt die Daten
+/** „Mit Google anmelden“ erst zeigen, wenn Google im Schlaufuchs-Projekt eingerichtet ist. */
+export const GOOGLE_LOGIN: boolean = TEST?.google ?? false;
+export const syncConfigured = (): boolean => SUPABASE_URL !== '' && SUPABASE_KEY !== '';
 const TABLE = 'schlaufuchs_items';
 
 const ls = {
@@ -388,9 +394,14 @@ interface Session {
   email: string | null;
   /** der Benutzername der Familie (wenn festgelegt) – damit melden sich die anderen Geräte an */
   name?: string | null;
+  /** zu welchem Supabase-Projekt die Anmeldung gehört – eine aus einem anderen Projekt gilt nicht */
+  url?: string;
 }
-const loadSession = (): Session | null => parse<Session | null>(ls.read(AUTH), null);
-const saveSession = (s: Session | null) => ls.write(AUTH, s ? JSON.stringify(s) : null);
+const loadSession = (): Session | null => {
+  const s = parse<Session | null>(ls.read(AUTH), null);
+  return s && s.url === SUPABASE_URL && syncConfigured() ? s : null;
+};
+const saveSession = (s: Session | null) => ls.write(AUTH, s ? JSON.stringify({ ...s, url: SUPABASE_URL }) : null);
 
 /** „Mit Google anmelden“: Supabase schickt zu Google und mit den Schlüsseln in der Adresse zurück in die App. */
 export function signIn(): void {
@@ -626,6 +637,10 @@ function supabaseRemote(bearer: string): Remote {
 const LAST = 'schlaufuchs:sync.last.v1';
 const ERROR = 'schlaufuchs:sync.error.v1';
 export interface SyncStatus {
+  /** Supabase-Projekt eingetragen? Sonst keine Anmeldung zeigen. */
+  configured: boolean;
+  /** Google-Anmeldung im Projekt eingerichtet */
+  google: boolean;
   signedIn: boolean;
   email: string | null;
   /** Benutzername der Familie (null: nur Google, noch keiner festgelegt) */
@@ -640,7 +655,7 @@ let status: SyncStatus = readStatus();
 const watchers = new Set<() => void>();
 function readStatus(): SyncStatus {
   const s = loadSession();
-  return { signedIn: !!s, email: s?.email ?? null, name: s?.name ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
+  return { configured: syncConfigured(), google: GOOGLE_LOGIN, signedIn: !!s, email: s?.email ?? null, name: s?.name ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
 }
 function changed() {
   status = readStatus();
@@ -662,7 +677,7 @@ export function useSyncStatus(): SyncStatus {
 let again = false;
 /** Gleicht jetzt ab, wenn angemeldet und online. Immer nur einer zugleich; eine Änderung währenddessen → gleich noch einer. */
 export function syncNow(): Promise<SyncResult | null> {
-  if (!loadSession() || (typeof navigator !== 'undefined' && navigator.onLine === false)) return Promise.resolve(null);
+  if (!syncConfigured() || !loadSession() || (typeof navigator !== 'undefined' && navigator.onLine === false)) return Promise.resolve(null);
   if (running) {
     again = true;
     return running;
@@ -697,7 +712,7 @@ export function syncNow(): Promise<SyncResult | null> {
 let soon = 0;
 /** Etwas wurde gespeichert: in ein paar Sekunden abgleichen (mehrere Antworten hintereinander werden ein Abgleich). */
 export function syncSoon(ms = 2500): void {
-  if (!loadSession()) return;
+  if (!syncConfigured() || !loadSession()) return;
   window.clearTimeout(soon);
   soon = window.setTimeout(() => void syncNow(), ms);
 }
@@ -705,6 +720,7 @@ export function syncSoon(ms = 2500): void {
 /** Beim Start: Rückkehr von Google auswerten, abgleichen, live verbinden; dann beim Zurückkehren in die App, beim
  *  Verlassen (gleich hochschicken), wenn das Netz wiederkommt und alle 3 Minuten. */
 export async function startSync(): Promise<void> {
+  if (!syncConfigured()) return;
   await finishSignIn();
   void syncNow();
   document.addEventListener('visibilitychange', () => void syncNow());
@@ -735,7 +751,7 @@ function userId(): string | null {
 }
 
 export function liveConnect(): void {
-  if (typeof WebSocket === 'undefined') return;
+  if (typeof WebSocket === 'undefined' || !syncConfigured()) return;
   const id = userId();
   if (!id) return liveClose();
   const topic = `realtime:schlaufuchs-${id}`;

@@ -55,7 +55,7 @@ export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () =>
             </button>
             {sync.signedIn ? (
               <p className="small muted">{sync.running || !sync.last ? 'Kinder von deinen anderen Geräten werden geladen …' : 'Auf deinen anderen Geräten ist noch kein Kind angelegt.'}</p>
-            ) : login ? (
+            ) : !sync.configured ? null : login ? (
               <div className="card stack" style={{ gap: 12, width: '100%', textAlign: 'left' }}>
                 <AccountForm />
               </div>
@@ -81,6 +81,7 @@ const typing = { autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false }
 
 /** Anmelden (Benutzername oder E-Mail + Passwort) oder einmal ein Konto anlegen; Google als zweiter Weg. */
 function AccountForm() {
+  const { google } = useSyncStatus();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -135,10 +136,14 @@ function AccountForm() {
       <button className="btn block" type="submit" disabled={busy || !ready}>
         {busy ? 'Einen Moment …' : mode === 'login' ? 'Anmelden' : 'Konto anlegen'}
       </button>
-      <div className="small muted center">oder</div>
-      <button className="btn ghost block small" type="button" onClick={signIn}>
-        Mit Google anmelden
-      </button>
+      {google && (
+        <>
+          <div className="small muted center">oder</div>
+          <button className="btn ghost block small" type="button" onClick={signIn}>
+            Mit Google anmelden
+          </button>
+        </>
+      )}
     </form>
   );
 }
@@ -200,8 +205,8 @@ function SyncCard({ data }: { data: AppData }) {
   const dups = duplicateProfiles(data);
   return (
     <>
-      <h3 style={{ marginTop: 8 }}>Auf allen Geräten</h3>
-      {sync.signedIn ? (
+      {sync.configured && <h3 style={{ marginTop: 8 }}>Auf allen Geräten</h3>}
+      {!sync.configured ? null : sync.signedIn ? (
         <div className="card stack" style={{ gap: 10 }}>
           <div>
             <b>☁️ Angemeldet{sync.name ? ` als ${sync.name}` : sync.email ? ` als ${sync.email}` : ''}</b>
