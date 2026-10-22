@@ -152,8 +152,11 @@ export async function checkMirror(): Promise<'local' | 'mirror'> {
   return 'mirror';
 }
 
+// structuredClone gibt es in Safari erst ab iOS 15.4 – auf älteren iPads per JSON kopieren (die Daten sind reines JSON)
+const clone = <T,>(x: T): T => (typeof structuredClone === 'function' ? structuredClone(x) : (JSON.parse(JSON.stringify(x)) as T));
+
 function commit(fn: (d: AppData) => void) {
-  const next = structuredClone(data);
+  const next = clone(data);
   fn(next);
   data = next;
   persist();

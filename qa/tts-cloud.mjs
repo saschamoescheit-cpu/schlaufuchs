@@ -39,9 +39,18 @@ if (await p.getByRole('button', { name: 'Anhören' }).count()) await p.getByRole
 await p.waitForTimeout(1800);
 await p.getByRole('button', { name: 'Aufgabe vorlesen' }).first().click();
 await p.waitForTimeout(1800);
+// lange Erklärung (> 400 Zeichen) vorlesen: muss in mehreren Stücken über die Cloud laufen
+const before = asked.length;
+await p.getByRole('button', { name: /Hilfe/ }).first().click().catch(() => {});
+await p.waitForTimeout(500);
+await p.getByRole('button', { name: 'Erklärung vorlesen' }).first().click().catch(() => {});
+await p.waitForTimeout(4500);
+const parts = asked.slice(before).filter((x) => x.startsWith('de'));
+const longOk = parts.length >= 1 && parts.every((x) => x.length < 430);
+console.log(`Erklärung in ${parts.length} Stück(en) geladen`);
 const synth = await p.evaluate(() => window.__synth);
 console.log('Server bekam:\n  ' + asked.join('\n  '));
-const ok = asked.some((a) => a.startsWith('en')) && asked.some((a) => a.startsWith('de')) && synth === 0;
+const ok = asked.some((a) => a.startsWith('en')) && asked.some((a) => a.startsWith('de')) && synth === 0 && longOk;
 console.log(`Gerätestimme benutzt: ${synth}×`);
 console.log(ok ? '✓ Cloud-Stimme spielt (Englisch und Deutsch), keine Gerätestimme nötig' : '✗ Cloud-Weg nicht vollständig');
 await b.close();

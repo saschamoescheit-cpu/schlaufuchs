@@ -345,12 +345,48 @@ async function fetchAudio(url: string): Promise<string> {
 if (!synth && TTS_URL && typeof fetch !== 'undefined' && cloudVoiceOn()) void getAudio(cloudUrl('Hallo', 'de', false)).catch(() => {});
 
 export function prefetchSpeech(text: string, lang: Lang = 'de', slow = false) {
+  text = cloudChunks(text, lang)[0];
   if (!cloudUsable() || !text.trim()) return;
   getAudio(cloudUrl(text, lang, slow)).catch(() => {});
 }
 
+/** Die Cloud-Stimme nimmt höchstens 400 Zeichen: lange Texte (z. B. Erklärungen) an Satzgrenzen in Stücke teilen */
+const CLOUD_MAX = 380;
+export function cloudChunks(text: string, lang: Lang): string[] {
+  const len = (t: string) => (lang === 'de' ? speakable(t) : t).length;
+  if (len(text) <= CLOUD_MAX) return [text];
+  // an Satzenden teilen – ohne Lookbehind (kennt Safari erst ab iOS 16.4; ältere iPads würden die App nicht starten)
+  const parts = text.replace(/([.!?…:])\s+/g, '$1\n').split(/\n+/).filter((x) => x.trim());
+  const out: string[] = [];
+  let cur = '';
+  for (const part of parts) {
+    const next = cur ? `${cur} ${part}` : part;
+    if (len(next) <= CLOUD_MAX) cur = next;
+    else {
+      if (cur) out.push(cur);
+      // ein einzelner sehr langer Satz: an Kommas weiter teilen, notfalls hart schneiden
+      if (len(part) > CLOUD_MAX) {
+        let rest = part;
+        while (len(rest) > CLOUD_MAX) {
+          const cut = Math.max(rest.lastIndexOf(', ', CLOUD_MAX - 20), 80);
+          out.push(rest.slice(0, cut + 1));
+          rest = rest.slice(cut + 1).trim();
+        }
+        cur = rest;
+      } else cur = part;
+    }
+  }
+  if (cur) out.push(cur);
+  return out;
+}
+
 export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
   if (!cloudUsable() || !player) return speakDevice(text, lang, onEnd, slow);
+  const chunks = cloudChunks(text, lang);
+  if (chunks.length > 1) {
+    const [first, ...rest] = chunks;
+    return speak(first, lang, () => speak(rest.join(' '), lang, onEnd, slow), slow);
+  }
   const my = ++seq;
   unlocked = true;
   if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
