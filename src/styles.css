@@ -2186,7 +2186,7 @@ details.more .inner {
   hyphens: auto;
 }
 
-/* Schulschrift (Andika: einbäuchiges a/g wie in der Fibel) – nur für Aufgaben, Antworten, Wörter und Lesetexte */
+/* Schulschrift (Leseschrift Andika: I und l unterscheidbar) – nur für Aufgaben, Antworten, Wörter und Lesetexte */
 html[data-school-font] .prompt,
 html[data-school-font] .choice,
 html[data-school-font] .text-input,

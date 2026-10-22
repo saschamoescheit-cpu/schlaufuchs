@@ -1,20 +1,14 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-// Nur lateinische Schriftteile (inkl. Umlaute, ß, „…“) – spart beim Offline-Vorladen Hebräisch/Kyrillisch/Vietnamesisch
+// Nur der lateinische Schriftteil (inkl. Umlaute, ß, €, „…“). Kein latin-ext: Die Einzeldateien haben keinen
+// unicode-range – sonst überdeckt latin-ext die Grundbuchstaben (Leinwand in Safari zeigte dann Ersatzschrift).
 import '@fontsource/fredoka/latin-400.css';
 import '@fontsource/fredoka/latin-500.css';
 import '@fontsource/fredoka/latin-600.css';
-import '@fontsource/fredoka/latin-ext-400.css';
-import '@fontsource/fredoka/latin-ext-500.css';
-import '@fontsource/fredoka/latin-ext-600.css';
 import '@fontsource/nunito/latin-400.css';
 import '@fontsource/nunito/latin-700.css';
-import '@fontsource/nunito/latin-ext-400.css';
-import '@fontsource/nunito/latin-ext-700.css';
 import '@fontsource/andika/latin-400.css';
 import '@fontsource/andika/latin-700.css';
-import '@fontsource/andika/latin-ext-400.css';
-import '@fontsource/andika/latin-ext-700.css';
 import './styles.css';
 import App from './App';
 import { ErrorBoundary } from './ui/ErrorBoundary';

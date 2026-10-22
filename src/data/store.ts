@@ -35,7 +35,7 @@ export interface Profile {
   micPractice?: boolean;
   /** Schuljahr (Startjahr, z. B. 2026 für 2026/27), für das die Klasse zuletzt bestätigt wurde */
   gradeYear?: number;
-  /** Schulschrift (Andika: einbäuchiges a und g wie in der Fibel) für Aufgaben – ohne Angabe an in Klasse 1 und 2 */
+  /** Schulschrift (Leseschrift Andika: eindeutige Buchstaben, z. B. I und l verschieden) für Aufgaben – ohne Angabe an in Klasse 1 und 2 */
   schoolFont?: boolean;
   created: number;
 }

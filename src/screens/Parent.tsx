@@ -520,7 +520,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                 <input type="checkbox" checked={usesSchoolFont(p)} onChange={(e) => set({ schoolFont: e.target.checked })} />
                 <span>
                   <b>Schulschrift in Aufgaben</b>
-                  <div className="small muted">Aufgaben und Wörter in einer Leseschrift mit „a“ und „g“ wie in der Fibel. Hilft Leseanfängern; in Klasse 1 und 2 von Anfang an eingeschaltet.</div>
+                  <div className="small muted">Aufgaben und Wörter in der Leseschrift Andika mit eindeutigen Buchstaben – z. B. sehen großes I und kleines l verschieden aus („Igel“). Hilft Leseanfängern; in Klasse 1 und 2 von Anfang an eingeschaltet.</div>
                 </span>
               </label>
               <label className="switch">
