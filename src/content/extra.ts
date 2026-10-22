@@ -263,6 +263,22 @@ function readTask(r: Rng, stories: typeof STORIES2): Gen {
   return { key: `${st.t.slice(0, 24)}|${q}`, prompt: q, visual: { kind: 'text', text: st.t, title: 'Lies genau:' }, answer: choice(r, a, w), tags: [q.startsWith('Warum') || q.startsWith('Wie fühlt') ? 'schlussfolgern' : 'informationen-finden'], solution: ['Suche die Stelle im Text, die zur Frage passt.', `Antwort: ${a}`] };
 }
 
+// Zuhören (NRW „Sprechen und Zuhören“): dieselben kurzen Geschichten – nur vorgelesen, der Text erscheint erst in der Lösung
+function zuhoerTask(r: Rng, s: Stage): Gen {
+  const st = pick(r, STORIES2);
+  const [q, a, w] = pick(r, st.qs) as [string, string, string[]];
+  return {
+    key: `z-${st.t.slice(0, 24)}|${q}`,
+    prompt: `Hör gut zu!
+${q}`,
+    speak: `Hör gut zu! ${q}`,
+    listen: { text: st.t, lang: 'de', slow: s === 1 },
+    answer: choice(r, a, s === 1 ? w.slice(0, 2) : w),
+    tags: ['zuhoeren'],
+    solution: [`Antwort: ${a}`, `Die Geschichte: ${st.t}`],
+  };
+}
+
 const PRONOMEN: [string, string, string][] = [
   ['Lena', 'Sie', 'Lena liest ein Buch. ☐ findet es sehr spannend.'], ['Tim', 'Er', 'Tim spielt Fußball. ☐ schießt ein Tor.'], ['Das Kind', 'Es', 'Das Kind lacht. ☐ freut sich über das Geschenk.'], ['Die Kinder', 'Sie', 'Die Kinder rennen. ☐ wollen zum Spielplatz.'],
   ['Der Hund', 'Er', 'Der Hund bellt. ☐ hat Hunger.'], ['Die Katze', 'Sie', 'Die Katze miaut. ☐ will hinaus.'], ['Das Pferd', 'Es', 'Das Pferd wiehert. ☐ steht im Stall.'], ['Mama und ich', 'Wir', 'Mama und ich backen. ☐ machen Waffeln.'],
@@ -329,6 +345,7 @@ function bausteinTask(r: Rng): Gen {
 }
 
 export const DEUTSCH_EXTRA: Skill[] = [
+  D(2, 'd2-zuhoeren', 'Gut zuhören', '👂', { text: ['Du hörst eine kurze Geschichte – der Text wird nicht angezeigt.', 'Hör ganz genau hin: Wer? Was? Wo? Wann?', 'Du kannst die Geschichte so oft anhören, wie du willst – auch langsam.'], visual: { kind: 'emoji', chars: '👂📖' }, videoQuery: 'Zuhören üben Grundschule Hörgeschichte Klasse 2' }, zuhoerTask, { tagLabels: { zuhoeren: 'Geschichten zuhören' }, testSeconds: 50 }),
   D(1, 'd1-saetze', 'Sätze lesen', '🖼️', { text: ['Lies den Satz Wort für Wort.', 'Schau dann aufs Bild: Passt alles? Wer macht was?', 'Oft ist nur ein einziges Wort anders – lies genau!'], visual: { kind: 'emoji', chars: '🐶💤', label: 'Der Hund schläft.' }, videoQuery: 'Sätze lesen Klasse 1 Leseverständnis' }, satzBild, { tagLabels: { 'satz-bild': 'Satz zum Bild finden' }, testSeconds: 25 }),
   D(2, 'd2-silbentrennung', 'Wörter trennen', '✂️', { text: ['Am Zeilenende trennt man Wörter nach Sprechsilben: Son-ne, To-ma-te.', 'Sprich das Wort langsam und klatsche mit.', 'ck bleibt zusammen und kommt auf die neue Zeile: Zu-cker, Brü-cke.', 'Einen einzelnen Buchstaben trennt man nicht ab.'], visual: { kind: 'syllables', parts: ['Zu', 'cker'], emoji: '🍬' }, videoQuery: 'Silbentrennung Wörter trennen Klasse 2' }, trennTask, { tagLabels: { silben: 'nach Silben trennen', 'ck-trennen': 'ck beim Trennen' }, testSeconds: 20 }),
   D(2, 'd2-lesen', 'Lesen und verstehen', '📗', { text: ['Lies den kurzen Text in Ruhe.', 'Lies dann die Frage und suche die Antwort im Text.', 'Bei „Warum“-Fragen musst du ein bisschen nachdenken.'], videoQuery: 'Leseverständnis Klasse 2 üben' }, (r) => readTask(r, STORIES2), { tagLabels: { schlussfolgern: 'Schlussfolgern (Warum?)', 'informationen-finden': 'Informationen im Text finden' }, testSeconds: 45 }),
