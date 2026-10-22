@@ -462,7 +462,23 @@ const uhr2 = M(2, 'm2-uhr', 'Uhrzeit: volle, halbe, Viertel', '🕒', {
   text: ['Der kleine Zeiger zeigt die Stunden, der große Zeiger die Minuten.', 'Großer Zeiger oben auf der 12: volle Stunde („drei Uhr“).', 'Großer Zeiger unten auf der 6: halbe Stunde. „Halb vier“ heißt: Es ist eine halbe Stunde bis vier Uhr – also 3:30 Uhr!', 'Auf der 3: „Viertel nach“, auf der 9: „Viertel vor“.'],
   visual: { kind: 'clock', h: 3, m: 30 },
   videoQuery: 'Uhrzeit lernen halb Viertel nach Viertel vor Grundschule',
-}, (r) => {
+}, (r, st) => {
+  // Zeitspannen ab Stufe 2: in Viertelstunden weiterrechnen
+  if (st > 1 && chance(r, 0.35)) {
+    const h0 = ri(r, 1, 10);
+    const m0 = pick(r, [0, 15, 30, 45]);
+    const d = pick(r, st === 2 ? [15, 30, 60] : [15, 30, 45, 60, 90]);
+    const t1 = h0 * 60 + m0 + d;
+    const h1 = Math.floor(t1 / 60), m1 = t1 % 60;
+    const dWord = d === 15 ? 'eine Viertelstunde' : d === 30 ? 'eine halbe Stunde' : d === 45 ? 'eine Dreiviertelstunde' : d === 60 ? 'eine Stunde' : 'anderthalb Stunden';
+    if (chance(r, 0.5)) {
+      return { key: `d${h0}:${m0}+${d}`, prompt: `Es ist ${timePhrase(h0, m0)}. Wie spät ist es ${dWord} später?`, visual: { kind: 'clock', h: h0, m: m0 }, answer: choice(r, timePhrase(h1, m1), [timePhrase(h1, (m1 + 15) % 60), timePhrase(h0, m0 === 30 ? 0 : 30), timePhrase(h1 % 12 + 1, m1)]), tags: ['zeitspanne'], solution: [`${dWord} = ${d} Minuten`, `${h0}:${pad(m0)} Uhr + ${d} min = ${h1}:${pad(m1)} Uhr`, `Das ist ${timePhrase(h1, m1)}.`], solutionVisual: { kind: 'clock', h: h1, m: m1 } };
+    }
+    // digital: Uhrzeiten am Tag (8 bis 18 Uhr)
+    const H0 = h0 + 7, H1 = h1 + 7;
+    const act = d === 15 ? ['Die Pause', 'sie'] : d === 30 ? ['Das Fußballspiel', 'es'] : d === 45 ? ['Die Schulstunde', 'sie'] : d === 60 ? ['Die Turnstunde', 'sie'] : ['Der Film', 'er'];
+    return { key: `s${h0}:${m0}-${d}`, prompt: `${act[0]} beginnt um ${H0}:${pad(m0)} Uhr und endet um ${H1}:${pad(m1)} Uhr. Wie viele Minuten dauert ${act[1]}?`, answer: { type: 'number', value: d, unit: 'min' }, tags: ['zeitspanne'], traps: d >= 60 ? [{ answer: String(d === 60 ? 100 : 130), tag: 'hundert-minuten', hint: 'Eine Stunde hat 60 Minuten, nicht 100!' }] : [], solution: ['Eine Stunde hat 60 Minuten, eine halbe Stunde 30, eine Viertelstunde 15.', `Von ${H0}:${pad(m0)} bis ${H1}:${pad(m1)} Uhr sind es ${dWord}: ${d} Minuten.`] };
+  }
   const h = ri(r, 1, 12);
   const m = pick(r, [0, 15, 30, 45]);
   const correct = timePhrase(h, m);
