@@ -2269,3 +2269,49 @@ html[data-school-font] .prompt.long {
   border-radius: 12px;
   padding: 8px 12px;
 }
+
+/* Urkunde */
+.certificate {
+  text-align: center;
+  border: 6px double var(--fox, #f7862a);
+  border-radius: 18px;
+  padding: 28px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+.cert-title {
+  font-family: var(--head);
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: var(--fox-dark, #d96a12);
+  letter-spacing: 0.04em;
+}
+.cert-for {
+  font-size: 1.2rem;
+  margin: 4px 0;
+}
+.cert-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  columns: 2;
+  column-gap: 24px;
+  text-align: left;
+  font-size: 1rem;
+}
+.cert-list li {
+  break-inside: avoid;
+  padding: 3px 0;
+}
+.cert-end {
+  font-family: var(--head);
+  font-size: 1.2rem;
+  margin-top: 8px;
+}
+@media (max-width: 420px) {
+  .cert-list {
+    columns: 1;
+  }
+}

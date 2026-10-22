@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Fox, LevelDots, Tabs, TopBar } from '../ui/common';
 import { GRADE_NAMES } from '../engine/grading';
 import { BadgeGrid, BadgeWatcher } from '../ui/Badges';
+import { Certificate } from './Report';
 
 /** Themen, die für das Kind relevant sind: aktuelle Stufe und alles darunter + alles, was schon geübt wurde */
 function relevantSkills(profile: Profile, p: Progress): Skill[] {
@@ -147,6 +148,9 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
   const tests = progress.tests.slice(-10);
   const [tab, setTab] = useState<'ueberblick' | 'abzeichen' | 'faecher'>('ueberblick');
   const [subj, setSubj] = useState<Subject>('mathe');
+  const [cert, setCert] = useState(false);
+  const sureInSubj = ALL_SKILLS.filter((s) => s.subject === subj && level(progress, s.id) === 3).length;
+  if (cert) return <Certificate profile={profile} progress={progress} subject={subj} onBack={() => setCert(false)} />;
   return (
     <div className="stack">
       <TopBar title="📊 Mein Lernstand" />
@@ -163,6 +167,11 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
             ))}
           </div>
           <SubjectStats subject={subj} profile={profile} progress={progress} onPractice={onPractice} />
+          {sureInSubj > 0 && (
+            <button className="btn ghost block" onClick={() => setCert(true)}>
+              🏅 Urkunde drucken – {sureInSubj} {sureInSubj === 1 ? 'Lernziel' : 'Lernziele'} sicher
+            </button>
+          )}
           <div className="card small muted">
             <b>So rechnet Schlaufuchs den Lernstand:</b> Ein Thema ist <b>„Sicher“</b> (Lernziel erreicht), wenn von den letzten Aufgaben mindestens 8 gelöst und 90 % richtig sind und keine
             Fehler-Aufgabe mehr offen ist. <b>„Geübt“</b> heißt: mindestens 5 Aufgaben mit 70 % richtig.

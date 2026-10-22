@@ -3,7 +3,8 @@ import { ALL_SKILLS, byArea, currentSkills, englishYear, stateInfo, SUBJECTS } f
 import { accuracy, addDays, LEVEL_NAMES, level, openReviews, patterns, periodStats, weaknesses, type Progress } from '../engine/learning';
 import { GRADE_NAMES } from '../engine/grading';
 import type { Profile } from '../data/store';
-import { TopBar } from '../ui/common';
+import { Fox, TopBar } from '../ui/common';
+import type { Subject } from '../engine/types';
 
 const fmt = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' });
 
@@ -116,6 +117,43 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
             </ul>
           </section>
         )}
+      </div>
+    </div>
+  );
+}
+
+/** Urkunde zum Ausdrucken: Lernziele eines Fachs, die das Kind sicher kann */
+export function Certificate({ profile: p, progress: pr, subject, onBack }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void }) {
+  const info = SUBJECTS.find((s) => s.id === subject)!;
+  const sure = ALL_SKILLS.filter((s) => s.subject === subject && level(pr, s.id) === 3);
+  return (
+    <div className="print-page">
+      <div className="no-print">
+        <TopBar title="🏅 Urkunde" onBack={onBack} />
+        <div className="row" style={{ gap: 8, marginBottom: 16 }}>
+          <button className="btn" onClick={() => window.print()}>
+            Drucken
+          </button>
+          <button className="btn ghost" onClick={onBack}>
+            Zurück
+          </button>
+        </div>
+      </div>
+      <div className="sheet-paper certificate">
+        <div className="cert-title">Urkunde</div>
+        <Fox size={120} mood="happy" outfit={p.outfit} />
+        <p className="cert-for">
+          <b>{p.name}</b> kann in {info.name} schon richtig gut:
+        </p>
+        <ul className="cert-list">
+          {sure.map((s) => (
+            <li key={s.id}>
+              {s.icon} {s.title}
+            </li>
+          ))}
+        </ul>
+        <p className="cert-end">Weiter so! – dein Schlaufuchs 🦊</p>
+        <div className="small muted">{fmt(Date.now())}</div>
       </div>
     </div>
   );
