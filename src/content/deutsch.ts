@@ -184,6 +184,9 @@ const lesen1 = D(1, 'd1-lesen', 'Wörter lesen', '👀', {
 const LUECKE: [string, string][] = [
   ['Hund', '🐶'], ['Mond', '🌙'], ['Hand', '✋'], ['Fisch', '🐟'], ['Hase', '🐰'], ['Hut', '🎩'], ['Bus', '🚌'], ['Sofa', '🛋️'], ['Igel', '🦔'], ['Rad', '🚲'],
   ['Wal', '🐋'], ['Kamel', '🐫'], ['Pilz', '🍄'], ['Tomate', '🍅'], ['Rose', '🌹'], ['Zebra', '🦓'], ['Lama', '🦙'], ['Schal', '🧣'], ['Tiger', '🐯'], ['Ente', '🦆'],
+  // ohne ie/ei/au: dort wäre ein einzelner fehlender Selbstlaut nicht eindeutig zu hören
+  ['Nase', '👃'], ['Ufo', '🛸'], ['Banane', '🍌'], ['Rakete', '🚀'], ['Nudel', '🍝'], ['Kuh', '🐮'],
+  ['Gabel', '🍴'], ['Lupe', '🔍'], ['Salat', '🥗'], ['Dino', '🦕'], ['Melone', '🍉'], ['Sonne', '☀️'],
 ];
 const luecke = D(1, 'd1-luecke', 'Welcher Buchstabe fehlt?', '🧩', {
   text: ['Sprich das Wort ganz langsam und hör genau hin: H – u – n – d.', 'Die Selbstlaute (a, e, i, o, u) hört man meistens deutlich.'],
