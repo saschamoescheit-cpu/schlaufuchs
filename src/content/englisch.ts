@@ -160,7 +160,7 @@ const PHRASES: { en: string; de: string; sit: string }[] = [
   { en: 'Good morning!', de: 'Guten Morgen!', sit: 'Es ist früh am Morgen und du kommst in die Klasse.' }, { en: 'Good night!', de: 'Gute Nacht!', sit: 'Du gehst ins Bett.' },
   { en: 'Thank you!', de: 'Danke!', sit: 'Jemand schenkt dir etwas.' }, { en: 'Please.', de: 'Bitte.', sit: 'Du möchtest höflich um etwas bitten.' },
   { en: 'Sorry!', de: 'Entschuldigung!', sit: 'Du hast jemanden aus Versehen angerempelt.' }, { en: 'How are you?', de: 'Wie geht es dir?', sit: 'Du möchtest wissen, wie es jemandem geht.' },
-  { en: "I'm fine, thank you.", de: 'Mir geht es gut, danke.', sit: 'Jemand fragt: How are you?' }, { en: "What's your name?", de: 'Wie heißt du?', sit: 'Du möchtest den Namen eines Kindes wissen.' },
+  { en: "I'm fine, thank you.", de: 'Mir geht es gut, danke.', sit: 'Jemand fragt dich, wie es dir geht.' }, { en: "What's your name?", de: 'Wie heißt du?', sit: 'Du möchtest den Namen eines Kindes wissen.' },
   { en: 'My name is Tom.', de: 'Ich heiße Tom.', sit: 'Tom stellt sich vor.' }, { en: 'Happy birthday!', de: 'Alles Gute zum Geburtstag!', sit: 'Deine Freundin hat Geburtstag.' },
 ];
 const phrases = E(1, 'e1-phrases', 'Hello! – Begrüßen und Sätze', '👋', { text: ['Hello = Hallo, Goodbye = Tschüss.', 'Good morning = Guten Morgen, Good night = Gute Nacht.', 'Höflich sein: Please = Bitte, Thank you = Danke, Sorry = Entschuldigung.', 'Fragen: How are you? – I\'m fine, thank you. What\'s your name? – My name is …'], visual: { kind: 'emoji', chars: '👋' }, videoQuery: 'hello song greetings for kids English' }, (r) => {
