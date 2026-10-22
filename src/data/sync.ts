@@ -355,8 +355,8 @@ export function forgetRemoved(profileId: string, dev: Device = browserDevice): v
 // Eigenes Supabase-Projekt „Schlaufuchs“ (Sascha 22.10.2026: nicht das GolfOS-Projekt). Solange die beiden Werte leer
 // sind, ist der Abgleich aus und die Anmeldung ausgeblendet. Die Browser-Prüfungen setzen window.__schlaufuchsSupabase.
 const TEST = (typeof window !== 'undefined' ? (window as unknown as { __schlaufuchsSupabase?: { url: string; key: string; google?: boolean } }).__schlaufuchsSupabase : undefined) ?? null;
-export const SUPABASE_URL: string = TEST?.url ?? ''; // Project URL des Schlaufuchs-Projekts (EU)
-export const SUPABASE_KEY: string = TEST?.key ?? ''; // öffentlicher (publishable) Schlüssel – die Zeilen-Regel schützt die Daten
+export const SUPABASE_URL: string = TEST?.url ?? 'https://gypgaepmlftnqwywupeq.supabase.co'; // Projekt „Schlaufuchs“ (EU, Frankfurt)
+export const SUPABASE_KEY: string = TEST?.key ?? 'sb_publishable_o6xh8QQjKQBq1NXuVbBBRA_uJhRKAo9'; // öffentlich – die Zeilen-Regel schützt die Daten
 /** „Mit Google anmelden“ erst zeigen, wenn Google im Schlaufuchs-Projekt eingerichtet ist. */
 export const GOOGLE_LOGIN: boolean = TEST?.google ?? false;
 export const syncConfigured = (): boolean => SUPABASE_URL !== '' && SUPABASE_KEY !== '';
