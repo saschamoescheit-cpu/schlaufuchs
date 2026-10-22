@@ -640,6 +640,35 @@ function zahlwortTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Mini-Texte lesen (Kl. 1) ----------
+
+// [Text, Frage, richtige Antwort (Bild), falsche Bilder]
+const MINI: [string, string, string, string[]][] = [
+  ['Tim hat einen Ball. Der Ball ist rot.', 'Was hat Tim?', '⚽', ['🧸', '🚗', '🎈']],
+  ['Lea mag Eis. Sie isst ein Eis mit Erdbeeren.', 'Was isst Lea?', '🍦', ['🍕', '🍌', '🥨']],
+  ['Der Hund schläft. Er liegt im Körbchen.', 'Wer schläft?', '🐶', ['🐱', '🐰', '🐦']],
+  ['Oma hat eine Katze. Die Katze heißt Mimi.', 'Welches Tier hat Oma?', '🐱', ['🐶', '🐟', '🐴']],
+  ['Ben fährt mit dem Rad zur Schule.', 'Womit fährt Ben?', '🚲', ['🚗', '🚌', '🛴']],
+  ['Es regnet. Mia nimmt ihren Schirm mit.', 'Was nimmt Mia mit?', '☂️', ['🎒', '🧢', '🧤']],
+  ['Papa backt einen Kuchen. Der Kuchen ist lecker.', 'Was backt Papa?', '🎂', ['🍞', '🍪', '🥐']],
+  ['Im Teich schwimmt eine Ente. Sie ist gelb.', 'Was schwimmt im Teich?', '🦆', ['🐟', '🐸', '🐢']],
+  ['Am Himmel ist der Mond. Es ist Nacht.', 'Was ist am Himmel?', '🌙', ['☀️', '🌈', '⚡']],
+  ['Emil malt ein Haus. Das Haus hat ein rotes Dach.', 'Was malt Emil?', '🏠', ['🌳', '🚗', '🌼']],
+  ['Ida pflückt eine Blume. Sie schenkt sie Mama.', 'Was pflückt Ida?', '🌼', ['🍎', '🍄', '🍀']],
+  ['Der Bus ist gelb. Er hält an der Schule.', 'Was hält an der Schule?', '🚌', ['🚲', '🚂', '✈️']],
+];
+function miniTask(r: Rng, s: Stage): Gen {
+  const [t, q, ok, wrong] = pick(r, MINI);
+  return {
+    key: q,
+    prompt: `${t}\n**${q}**`,
+    speak: s === 1 ? `${t} ${q}` : q,
+    answer: { ...choice(r, ok, s === 1 ? wrong.slice(0, 2) : wrong), big: true },
+    tags: ['mini-text'],
+    solution: [`Im Text steht: ${t}`, `Antwort: ${ok}`],
+  };
+}
+
 // ---------- V oder F (Kl. 2) ----------
 
 const VF: [string, string, string][] = [
@@ -804,6 +833,7 @@ function advTask(r: Rng, s: Stage): Gen {
 
 export const DEUTSCH_EXTRA3: Skill[] = [
   D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
+  D(1, 'd1-minitexte', 'Mini-Texte lesen', '📄', { text: ['Lies den kurzen Text in Ruhe – Wort für Wort.', 'Lies dann die Frage. Die Antwort steht im Text.', 'Tippe auf das Bild, das passt.'], visual: { kind: 'text', text: 'Tim hat einen Ball. Der Ball ist rot.' }, videoQuery: 'Lesen lernen Klasse 1 kurze Texte verstehen' }, miniTask, { tagLabels: { 'mini-text': 'kurze Texte verstehen' }, testSeconds: 25 }),
   D(2, 'd2-v-f', 'V oder F?', '🐦', { text: ['Den f-Laut schreibt man meistens mit F: Fisch, Fuchs, fünf.', 'Merkwörter mit V: Vogel, Vater, vier, viel, von, vor – und alle Wörter mit ver- und vor-.', 'Diese Wörter musst du dir merken – man hört f, schreibt aber v.'], visual: { kind: 'text', text: 'Vogel · Vater · vier · viel' }, videoQuery: 'Wörter mit V Merkwörter Grundschule Klasse 2' }, vfTask, { tagLabels: { 'merkwort-v': 'Merkwörter mit V', f: 'Wörter mit F' }, testSeconds: 15 }),
   D(4, 'd4-orts-zeitangaben', 'Orts- und Zeitangaben', '🕰️', { text: ['Zeitangaben sagen, wann etwas passiert. Frage: Wann? – „Am Morgen“, „gestern“, „um drei Uhr“.', 'Ortsangaben sagen, wo oder wohin etwas passiert. Frage: Wo? – „im Park“. Wohin? – „ans Meer“.', 'Wo oder wohin? Bewegt sich etwas zu einem Ort hin, fragst du „Wohin?“.'], visual: { kind: 'text', text: 'Am Morgen (Wann?) fährt Lea in die Schule (Wohin?).' }, videoQuery: 'Zeitangaben Ortsangaben adverbiale Bestimmung Klasse 4' }, advTask, { tagLabels: { zeitangabe: 'Zeitangaben (Wann?)', ortsangabe: 'Ortsangaben (Wo? Wohin?)', 'wo-wohin': 'Wo und Wohin verwechselt' }, testSeconds: 20 }),
   D(4, 'd4-nominalisierung', 'Verben und Adjektive werden Nomen', '🔠', { text: ['Verben und Adjektive können zu Nomen werden – dann schreibt man sie groß.', 'Signalwörter zeigen es an: das, beim, zum, vom, im (das Lesen, beim Schwimmen) – und viel, etwas, nichts, alles (etwas Schönes, viel Gutes).', 'Ohne Signalwort bleiben sie klein: Wir gehen schwimmen. Der Film ist lustig.'], visual: { kind: 'text', text: 'beim Schwimmen · etwas Schönes' }, videoQuery: 'Nominalisierung Verben Adjektive großschreiben Klasse 4' }, nomiTask, { tagLabels: { gross: 'Großschreibung mit Signalwort', klein: 'Kleinschreibung ohne Signalwort', 'signalwort-uebersehen': 'Signalwort übersehen', 'zu-gross': 'zu viel großgeschrieben' }, testSeconds: 20 }),

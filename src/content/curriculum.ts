@@ -83,7 +83,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   ],
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben/ },
-    { name: 'Lesen', re: /lesen|saetze|sachtexte/ },
+    { name: 'Lesen', re: /lesen|saetze|sachtexte|minitexte/ },
     { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|ck-tz|-ie$|grossschreibung|nominalisierung|v-f|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch/ },
     { name: 'Sprache untersuchen', re: /./ },
   ],
