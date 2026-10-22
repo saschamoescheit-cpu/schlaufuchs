@@ -528,7 +528,24 @@ function cubesTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Ziffern schreiben (Kl. 1) ----------
+
+const ZIFFER_WORT = ['Null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun'];
+function zifferTask(r: Rng, s: Stage): Gen {
+  // Stufe 1: 1–5, danach alle Ziffern
+  const d = s === 1 ? ri(r, 1, 5) : ri(r, 0, 9);
+  return {
+    key: `z${d}`,
+    prompt: `Spure die ${d} nach${d ? ` – ${'🍎'.repeat(d)}` : ' – keine Äpfel'}`,
+    speak: `Spure die ${ZIFFER_WORT[d]} nach.`,
+    answer: { type: 'trace', value: String(d) },
+    tags: ['ziffern'],
+    solution: ['Fang am grünen Punkt an.', `Fahre die graue ${d} mit dem Finger nach, bis sie ganz bunt ist.`, 'Tipp: Tippe auf ▶ unten rechts – dann siehst du, wie man die Ziffer schreibt.'],
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(1, 'm1-ziffern', 'Ziffern schreiben', '✏️', { text: ['Jede Ziffer hat ihre feste Form – und eine Richtung, in die man sie schreibt.', 'Fang am grünen Punkt an und fahre die graue Ziffer mit dem Finger nach.', 'Tippe auf ▶, dann zeigt dir der Fuchs, wie es geht.'], visual: { kind: 'word', word: '1 2 3' }, videoQuery: 'Ziffern schreiben lernen Kinder Schreibrichtung' }, zifferTask, { tagLabels: { ziffern: 'Ziffern schreiben' }, testSeconds: 40 }),
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-ordnen', 'Zahlen ordnen', '🔢', { text: ['Am Zahlenstrahl stehen die kleinen Zahlen links, die großen rechts.', 'Zum Ordnen suchst du zuerst die kleinste Zahl, dann die nächstgrößere – bis zur größten.', 'Das Zeichen < heißt „kleiner als“: 3 < 7.'], visual: { kind: 'numberline', from: 0, to: 10, start: 7, jumps: [] }, videoQuery: 'Zahlen ordnen der Größe nach Klasse 1' }, ordnenTask, { tagLabels: { kleinste: 'kleinste Zahl finden', groesste: 'größte Zahl finden', ordnen: 'Zahlen der Reihe nach ordnen', verwechselt: 'kleinste und größte verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-geld', 'Geld bis 20 €', '💶', { text: ['Auf jeder Münze und jedem Schein steht, wie viel sie wert sind: 1 €, 2 €, 5 €, 10 €.', 'Zähle immer vom größten zum kleinsten Wert und zähle dabei weiter: 10, 15, 17, 18.', 'Nicht die Münzen zählen – ihren Wert zählen!'], visual: { kind: 'money', items: [1000, 500, 200, 100] }, videoQuery: 'Geld zählen Euro Klasse 1' }, geld1Task, { tagLabels: { zaehlen: 'Geld zählen', rest: 'Restgeld', 'stueck-gezaehlt': 'Münzen statt Wert gezählt', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 25 }),

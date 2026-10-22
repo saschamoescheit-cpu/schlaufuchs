@@ -158,6 +158,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'ne727UBDkKs', title: 'Halbschriftliches Dividieren', channel: 'Lehrerschmidt', len: '5:12' },
   ],
   'd1-minitexte': [{ id: '_kiAmNzgLTs', title: 'Was steht im Text? - Teil 1', channel: 'Lernwiese', len: '8:57' }],
+  'm1-ziffern': [
+    { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
+    { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
+  ],
   'd1-nachspuren': [
     { id: 'NhF9Kaa50B0', title: 'Buchstaben schreiben lernen; Schreibrichtung', channel: 'Kinder Lern Kanal', len: '4:02' },
   ],

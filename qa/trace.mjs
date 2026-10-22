@@ -3,7 +3,8 @@ import { open } from './lib.mjs';
 const url = process.argv[2] ?? 'http://localhost:5192/';
 const device = process.argv[3] ?? 'iPhone 13';
 const stage = Number(process.argv[4] ?? 1);
-const progress = { skills: { 'd1-nachspuren': { n: 0, ok: 0, recent: [], last: 0, tags: {}, stage } }, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} };
+const [subj, topic, sid] = process.argv[5] === 'ziffern' ? ['Mathe', 'Ziffern schreiben', 'm1-ziffern'] : ['Deutsch', 'Buchstaben nachspuren', 'd1-nachspuren'];
+const progress = { skills: { [sid]: { n: 0, ok: 0, recent: [], last: 0, tags: {}, stage } }, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} };
 let bad = 0;
 // Striche (Bildschirm-Koordinaten), die den Buchstaben zeilenweise vollständig abdecken
 const fillStrokes = (p) =>
@@ -42,8 +43,8 @@ const draw = async (p, strokes) => {
 };
 for (const mode of ['gut', 'kritzel', 'gut', 'gut']) {
   const { p, shot, click, done } = await open({ url, out: 'qa/shots/trace', grade: 1, device, progress });
-  await click('Deutsch');
-  await p.locator('.topic-main', { hasText: 'Buchstaben nachspuren' }).first().click();
+  await click(subj);
+  await p.locator('.topic-main', { hasText: topic }).first().click();
   await p.locator('.trace-canvas').waitFor();
   await p.waitForTimeout(600);
   const { letter, out } = await fillStrokes(p);

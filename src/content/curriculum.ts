@@ -76,7 +76,7 @@ export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((
 /** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
 const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   mathe: [
-    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen/ },
+    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen|ziffern/ },
     { name: 'Rechnen', re: /plus|minus|ergaenzen|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|ueberschlag/ },
     { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|fahrplan|massstab/ },
     { name: 'Geometrie und Daten', re: /formen|lage|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
