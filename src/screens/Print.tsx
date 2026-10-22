@@ -30,7 +30,7 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
         <div className="paper-head">
           <div>
             <b>
-              {info.name} – Lernzielkontrolle
+              {info.name} – {spec.kind === 'vokabeln' ? 'Vokabeltest' : 'Lernzielkontrolle'}
             </b>
             <div className="small">Schlaufuchs · {spec.tasks.length} Aufgaben · Zeit: {Math.round(spec.limit / 60)} Minuten</div>
           </div>
