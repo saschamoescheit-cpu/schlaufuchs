@@ -12,10 +12,17 @@ for (let i = 0; i < 30; i++) {
   const prompt = await p.locator('.prompt').first().innerText();
   const m = prompt.match(/(\d+)\s*·\s*(\d+)/) ?? prompt.match(/(\d+)\s*:\s*(\d+)/);
   const ans = m ? (prompt.includes(':') ? Number(m[1]) / Number(m[2]) : Number(m[1]) * Number(m[2])) : 1;
-  for (const ch of String(ans)) await p.keyboard.press(ch);
-  await p.keyboard.press('Enter');
+  // Auswahl-Aufgaben (z. B. Punktefeld): erste Antwort antippen, sonst die Zahl tippen
+  const choices = p.locator('.choice');
+  if (await choices.count()) await choices.first().click();
+  else {
+    for (const ch of String(ans)) await p.keyboard.press(ch);
+    await p.keyboard.press('Enter');
+  }
   await p.waitForTimeout(150);
-  await click('Weiter');
+  const weiter = p.getByRole('button', { name: 'Weiter' }).first();
+  if (await weiter.isVisible().catch(() => false)) await weiter.click();
+  else console.log('kein Weiter bei:', prompt.split('\n').join(' / '));
   await p.waitForTimeout(150);
 }
 await shot('ende', true);
