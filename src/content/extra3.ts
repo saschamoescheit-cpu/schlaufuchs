@@ -853,11 +853,11 @@ function shapesTask(r: Rng, s: Stage): Gen {
   }
   // Form auf Englisch schreiben
   if (v === 3) {
-    return { key: `w-${sh.en}`, prompt: 'Write the shape in English:', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { type: 'text', value: sh.en, lang: 'en' }, tags: ['schreiben'], solution: [`${sh.de} = ${sh.en}`], pronounce: { text: sh.en, lang: 'en' } };
+    return { key: `w-${sh.en}`, prompt: 'Write the shape in English:', speak: 'Schreibe die Form auf Englisch.', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { type: 'text', value: sh.en, lang: 'en' }, tags: ['schreiben'], solution: [`${sh.de} = ${sh.en}`], pronounce: { text: sh.en, lang: 'en' } };
   }
   // Bild → Englisch
   const wrong = [`${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${sh.en}`, `${an(col.en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`, `${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`];
-  return { key: `b-${phrase}`, prompt: 'What is it?', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { ...choice(r, phrase, wrong), speakOptions: 'en' }, tags: [`form-${sh.en}`], solution: [`Das ist ${de}.`, `${de} = ${phrase}`], pronounce: { text: phrase, lang: 'en' } };
+  return { key: `b-${phrase}`, prompt: 'What is it?', speak: 'Was ist das? Welcher Satz passt?', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { ...choice(r, phrase, wrong), speakOptions: 'en' }, tags: [`form-${sh.en}`], solution: [`Das ist ${de}.`, `${de} = ${phrase}`], pronounce: { text: phrase, lang: 'en' } };
 }
 
 // ---------- My day – Tagesablauf (Englisch, 2. Lernjahr) ----------
@@ -884,7 +884,7 @@ function mydayTask(r: Rng, s: Stage): Gen {
     const ok = `at ${HOURS_EN[h]} o'clock`;
     const wrong = [`at ${HOURS_EN[(h % 12) + 1]} o'clock`, `at half past ${HOURS_EN[h]}`, `at ${HOURS_EN[h === 1 ? 12 : h - 1]} o'clock`];
     const sent = `${d.en.replace(/\.$/, '')} ${ok}.`;
-    return { key: `t-${d.en}`, prompt: `${d.e} ${d.en.replace(/\.$/, '')} …`, visual: { kind: 'clock', h, m: 0 }, answer: { ...choice(r, ok, wrong), speakOptions: 'en' }, tags: ['uhrzeit'], solution: [sent, `Die Uhr zeigt ${h} Uhr: ${HOURS_EN[h]} o'clock.`], pronounce: { text: sent, lang: 'en' } };
+    return { key: `t-${d.en}`, prompt: `${d.e} ${d.en.replace(/\.$/, '')} …`, speak: 'Schau auf die Uhr. Welcher Satz passt?', visual: { kind: 'clock', h, m: 0 }, answer: { ...choice(r, ok, wrong), speakOptions: 'en' }, tags: ['uhrzeit'], solution: [sent, `Die Uhr zeigt ${h} Uhr: ${HOURS_EN[h]} o'clock.`], pronounce: { text: sent, lang: 'en' } };
   }
   // Was kommt zuerst?
   if (v === 3) {
@@ -893,7 +893,7 @@ function mydayTask(r: Rng, s: Stage): Gen {
     while (Math.abs(MYDAY.indexOf(a) - MYDAY.indexOf(b)) < 2) [a, b] = [pick(r, MYDAY), pick(r, MYDAY)];
     const ia = MYDAY.indexOf(a), ib = MYDAY.indexOf(b);
     const first = ia < ib ? a : b;
-    return { key: `o-${a.en}-${b.en}`, prompt: 'What do you do first?', answer: { ...fixedChoice([a.en, b.en], first.en), speakOptions: 'en' }, tags: ['reihenfolge'], solution: [`Zuerst: ${first.en} (${first.de})`, `Danach: ${(first === a ? b : a).en}`], pronounce: { text: first.en, lang: 'en' } };
+    return { key: `o-${a.en}-${b.en}`, prompt: 'What do you do first?', speak: 'Was machst du zuerst?', answer: { ...fixedChoice([a.en, b.en], first.en), speakOptions: 'en' }, tags: ['reihenfolge'], solution: [`Zuerst: ${first.en} (${first.de})`, `Danach: ${(first === a ? b : a).en}`], pronounce: { text: first.en, lang: 'en' } };
   }
   // Deutsch → Englisch
   if (v === 1) {
@@ -902,7 +902,7 @@ function mydayTask(r: Rng, s: Stage): Gen {
   }
   // Bild → Satz
   const wrong = pickN(r, MYDAY.filter((x) => x.e !== d.e), 3).map((x) => x.en);
-  return { key: `b-${d.en}`, prompt: 'What do you do?', visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, wrong), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
+  return { key: `b-${d.en}`, prompt: 'What do you do?', speak: 'Was machst du? Welcher Satz passt zum Bild?', visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, wrong), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
 }
 
 // ---------- Wo hörst du den Laut? (Kl. 1) ----------
@@ -1100,12 +1100,12 @@ function healthTask(r: Rng, s: Stage): Gen {
   const others = ILL.filter((x) => x !== d);
   const v = s === 1 ? ri(r, 0, 1) : ri(r, 0, 2);
   if (v === 1) {
-    return { key: `h-${d.en}`, prompt: "What's the matter? Hör gut zu! Welches Bild passt?", listen: { text: d.en, lang: 'en' }, answer: { ...choice(r, d.e, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.e)), big: true }, tags: ['hoeren'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
+    return { key: `h-${d.en}`, prompt: "What's the matter? Hör gut zu! Welches Bild passt?", speak: 'Hör gut zu! Welches Bild passt?', listen: { text: d.en, lang: 'en' }, answer: { ...choice(r, d.e, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.e)), big: true }, tags: ['hoeren'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
   }
   if (v === 2) {
     return { key: `d-${d.en}`, prompt: `Wie sagt man auf Englisch?\n„${d.de}“`, answer: { ...choice(r, d.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.de} = ${d.en}`], pronounce: { text: d.en, lang: 'en' } };
   }
-  return { key: `b-${d.en}`, prompt: "What's the matter?", visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
+  return { key: `b-${d.en}`, prompt: "What's the matter?", speak: 'Was fehlt dir? Welcher Satz passt zum Bild?', visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [

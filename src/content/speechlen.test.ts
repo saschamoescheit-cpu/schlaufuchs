@@ -16,4 +16,16 @@ describe('Vorlesetexte', () => {
         }
     expect([...new Set(long)]).toEqual([]);
   });
+  // Die Aufgabe liest die App mit deutscher Stimme vor: englische Fragezeilen brauchen einen deutschen Vorlesetext (speak)
+  it('englische Aufgabenzeilen haben einen deutschen Vorlesetext', () => {
+    const r = mulberry32(12);
+    const bad = new Set<string>();
+    for (const s of ALL_SKILLS.filter((x) => x.subject === 'englisch'))
+      for (const st of [1, 2, 3] as const)
+        for (let i = 0; i < 40; i++) {
+          const t = s.generate(r, st);
+          if (!t.speak && /^(\S+ )?(What|Where|Write|Who|How|Is|Are|Can|Do|I|The)\b/.test(t.prompt)) bad.add(`${s.id}: ${t.prompt.split('\n')[0]}`);
+        }
+    expect([...bad]).toEqual([]);
+  });
 });
