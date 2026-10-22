@@ -943,7 +943,40 @@ function musterTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Geld mit Komma (Kl. 3) ----------
+
+function geld3Task(r: Rng, s: Stage): Gen {
+  const v = s === 1 ? ri(r, 0, 1) : ri(r, 0, s === 3 ? 3 : 2);
+  // Geld im Bild: Scheine und Münzen zählen, mit Komma schreiben
+  if (v === 0) {
+    const notes = pickN(r, [500, 1000, 2000], s === 1 ? 1 : ri(r, 1, 2));
+    const euros = pickN(r, [200, 100], ri(r, 0, 2));
+    const cents = s === 1 ? [50] : pickN(r, s === 3 ? [50, 20, 10, 5, 2] : [50, 20, 10], ri(r, 1, s === 3 ? 4 : 3));
+    const items = [...notes.sort((a, b) => b - a), ...euros, ...cents];
+    const sum = items.reduce((a, b) => a + b, 0);
+    const c = sum % 100;
+    // typischer Fehler: 5 ct als ,5 statt ,05 geschrieben
+    const wrongComma = c < 10 ? `${Math.floor(sum / 100)},${c}0 €` : eur(sum + 100);
+    const wrong = [...new Set([wrongComma, eur(sum - (c >= 10 ? 10 : 1)), eur(sum + 10), eur(sum + 100)])].filter((x) => x !== eur(sum)).slice(0, 3);
+    return { key: `b-${items.join('.')}`, prompt: 'Wie viel Geld ist das?', visual: { kind: 'money', items }, answer: choice(r, eur(sum), wrong), tags: ['zaehlen'], traps: c < 10 ? [{ answer: wrongComma, tag: 'komma-null', hint: `${c} Cent schreibt man mit einer Null: ,0${c} €.` }] : [], solution: [`Euro: ${items.filter((x) => x >= 100).map((x) => x / 100).join(' + ')} = ${Math.floor(sum / 100)} €`, `Cent: ${items.filter((x) => x < 100).join(' + ')} = ${c} ct`, `Zusammen: ${eur(sum)}`] };
+  }
+  const e = ri(r, 1, 9), c = s === 1 ? pick(r, [50, 20, 10]) : pick(r, [5, 9, 15, 30, 45, 75, 80, 95, 99]);
+  const ct = e * 100 + c;
+  // Euro mit Komma → Cent
+  if (v === 1) return { key: `c-${ct}`, prompt: `${eur(ct)} = ☐ ct`, answer: { type: 'number', value: ct, unit: 'ct' }, tags: ['umrechnen'], traps: [{ answer: String(e * 10 + c), tag: 'umrechnungszahl', hint: '1 € sind 100 ct – also 3 € = 300 ct.' }], solution: ['1 € = 100 ct', `${eur(ct)} = ${e} € und ${c} ct`, `${e * 100} ct + ${c} ct = ${ct} ct`] };
+  // Cent → Euro mit Komma
+  if (v === 2) {
+    const wrong = [...new Set([c < 10 ? `${e},${c}0 €` : `${e * 10 + Math.floor(c / 10)},${c % 10}0 €`, eur(ct + 100), `${Math.floor(ct / 1000)},${String(ct % 1000).padStart(3, '0')} €`])].filter((x) => x !== eur(ct));
+    return { key: `e-${ct}`, prompt: `${ct} ct = ☐`, answer: choice(r, eur(ct), wrong), tags: ['umrechnen'], solution: ['100 ct = 1 €', `${ct} ct = ${e * 100} ct + ${c} ct = ${e} € ${c} ct`, `Mit Komma: ${eur(ct)}`] };
+  }
+  // Was ist teurer? ,50 oder ,05
+  const a = e * 100 + 50, b = e * 100 + 5;
+  const pair = shuffle(r, [eur(a), eur(b)]);
+  return { key: `t-${e}`, prompt: `Was ist teurer?`, answer: fixedChoice(pair, eur(a)), tags: ['vergleichen'], solution: [`${eur(a)} = ${e} € und 50 ct`, `${eur(b)} = ${e} € und 5 ct`, `Also ist ${eur(a)} teurer.`] };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(3, 'm3-geld', 'Geld mit Komma', '💰', { text: ['3,45 € heißt: 3 Euro und 45 Cent.', 'Nach dem Komma stehen immer zwei Stellen für die Cent: 5 Cent schreibt man 0,05 €, 50 Cent 0,50 €.', '100 Cent sind 1 Euro – also sind 345 ct = 3,45 €.'], visual: { kind: 'money', items: [200, 100, 20, 20, 5] }, videoQuery: 'Geld Kommaschreibweise Euro Cent Klasse 3' }, geld3Task, { tagLabels: { zaehlen: 'Geld zählen', umrechnen: 'Euro und Cent umrechnen', vergleichen: 'Preise vergleichen', 'komma-null': 'Null nach dem Komma vergessen', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 }),
   M(1, 'm1-muster', 'Muster fortsetzen', '🔁', { text: ['Ein Muster wiederholt sich immer wieder auf die gleiche Weise.', 'Suche den Teil, der sich wiederholt: 🔺 🟦 | 🔺 🟦 | 🔺 🟦', 'Dann weißt du, was als Nächstes kommt.'], visual: { kind: 'row', items: ['🔺', '🟦', '🔺', '🟦', '🔺', '❓'] }, videoQuery: 'Muster fortsetzen Klasse 1 Mathematik' }, musterTask, { tagLabels: { 'muster-2': 'einfache Muster', 'muster-lang': 'längere Muster' }, testSeconds: 20 }),
   M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),
   M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),

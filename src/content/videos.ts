@@ -191,6 +191,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'f_vnfIk48Gc', title: 'Lernvideo: Muster erkennen (ab Klasse 1)', channel: 'Schule Online', len: '6:28' },
     { id: 'tKOyyai3GzA', title: 'Einführung Thema „Muster“ – 1. Klasse Mathe', channel: 'LASO GS Sprachheilpädagogik', len: '12:56' },
   ],
+  'm3-geld': [
+    { id: '1sqyS6tH2go', title: 'Geldbeträge umwandeln – schnell erklärt, Klasse 3', channel: 'Frau Weber digital', len: '7:05' },
+    { id: 'dDtKWbXVO0M', title: 'Geldwerte mit der Kommaschreibweise – Erklärung & Beispiele', channel: 'sofatutor', len: '6:27' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
