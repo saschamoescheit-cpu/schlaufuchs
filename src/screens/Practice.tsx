@@ -1,5 +1,5 @@
 // Übungsrunde: Aufgabe → sofortige Rückmeldung → bei Fehlern Erklärung, Wiederholung in der Runde und in der Fehler-Kiste.
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { check, correctText, type CheckResult } from '../engine/check';
 import { level, record, stageOf, type Mode } from '../engine/learning';
 import type { Stage, Task } from '../engine/types';
@@ -29,6 +29,11 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
   const [idx, setIdx] = useState(0);
   const [value, setValue] = useState('');
   const [result, setResult] = useState<(CheckResult & { solved?: boolean }) | null>(null);
+  // Tastatur: nach einer falschen Antwort steht der Fokus auf „Weiter“, ohne zu scrollen (der Lösungsweg bleibt im Blick)
+  const nextRef = useRef<HTMLButtonElement>(null);
+  useEffect(() => {
+    if (result && !result.ok) nextRef.current?.focus({ preventScroll: true });
+  }, [result]);
   const [firstTry, setFirstTry] = useState({ right: 0, total: 0 });
   const [stars, setStars] = useState(0);
   const [newInBox, setNewInBox] = useState(0);
@@ -280,7 +285,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
                     <ExplainBody skill={skill} />
                   </div>
                 )}
-                <button className="btn block" style={{ marginTop: 14 }} onClick={next}>
+                <button ref={nextRef} className="btn block" style={{ marginTop: 14 }} onClick={next}>
                   Weiter
                 </button>
               </div>
