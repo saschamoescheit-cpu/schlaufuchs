@@ -12,10 +12,14 @@ describe('Wortlisten der Englisch-Wortfelder', () => {
     const missing = vocab.filter((s) => !WORDS[s.id]?.length && s.id !== 'e2-numbers100').map((s) => s.id);
     expect(missing).toEqual([]);
   });
-  it('Wörter sind je Wortfeld eindeutig', () => {
+  it('Wörter, Übersetzungen und Bilder sind je Wortfeld eindeutig (sonst wären Aufgaben mehrdeutig)', () => {
     for (const [id, words] of Object.entries(WORDS)) {
       const en = words.map((w) => w.en);
-      expect(new Set(en).size, id).toBe(en.length);
+      expect(new Set(en).size, `${id}: englisch doppelt`).toBe(en.length);
+      const de = words.map((w) => w.de);
+      expect(new Set(de).size, `${id}: deutsch doppelt`).toBe(de.length);
+      const pics = words.filter((w) => w.e).map((w) => w.e);
+      expect(new Set(pics).size, `${id}: Bild doppelt`).toBe(pics.length);
     }
   });
   it('Aufgaben der Wortfelder mit Wortliste tragen ihr Wort (zählt für die Karteikarten)', () => {
