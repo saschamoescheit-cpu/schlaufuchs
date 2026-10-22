@@ -915,7 +915,7 @@ function alphabetTask(r: Rng, s: Stage): Gen {
   }
   const L = pick(r, Object.keys(ABC_EN));
   const x = ABC_EN[L];
-  return { key: `l-${L}`, prompt: 'Hör gut zu! Welchen Buchstaben hörst du?', listen: { text: L, lang: 'en', slow: true }, answer: { ...choice(r, L, s === 1 ? x.mix.slice(0, 2) : x.mix), big: true }, tags: ['buchstaben'], solution: [`Auf Englisch heißt ${L} „${x.say}“.`, L === 'E' ? 'Achtung: Das englische E klingt wie ein deutsches „i“!' : L === 'I' ? 'Achtung: Das englische I klingt wie „ai“!' : L === 'G' || L === 'J' ? 'G („dschii“) und J („dschäi“) klingen ähnlich – genau hinhören!' : `Sprich nach: ${x.say}.`], pronounce: { text: L, lang: 'en' } };
+  return { key: `l-${L}`, prompt: 'Hör gut zu! Welchen Buchstaben hörst du?', listen: { text: `The letter ${L}.`, lang: 'en', slow: true }, answer: { ...choice(r, L, s === 1 ? x.mix.slice(0, 2) : x.mix), big: true }, tags: ['buchstaben'], solution: [`Auf Englisch heißt ${L} „${x.say}“.`, L === 'E' ? 'Achtung: Das englische E klingt wie ein deutsches „i“!' : L === 'I' ? 'Achtung: Das englische I klingt wie „ai“!' : L === 'G' || L === 'J' ? 'G („dschii“) und J („dschäi“) klingen ähnlich – genau hinhören!' : `Sprich nach: ${x.say}.`], pronounce: { text: `The letter ${L}.`, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [
