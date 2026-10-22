@@ -54,7 +54,7 @@ const EXPLAIN_VISUALS: Record<string, Visual> = {
   'm3-kopfrechnen': { kind: 'numberline', from: 400, to: 700, start: 456, jumps: [200, 30], step: 100, minor: 50 },
   'm4-kopfrechnen': { kind: 'numberline', from: 40000, to: 80000, start: 45000, jumps: [20000, 3000], step: 10000, minor: 5000 },
   'm4-runden': { kind: 'numberline', from: 3400, to: 3500, start: 3437, jumps: [], step: 50, minor: 10, ask: false },
-  'm3-division-rest': { kind: 'array', rows: 3, cols: 4 },
+  'm3-division-rest': { kind: 'dots', n: 20, m: 3 }, // 23 : 5 – vier Fünfer, 3 bleiben übrig
   'm3-laengen': { kind: 'ruler', cm: 7 },
   'm3-gewichte': { kind: 'table', head: ['Gegenstand', 'wiegt etwa'], rows: [['🍫 Tafel Schokolade', '100 g'], ['🍎 Apfel', '150 g'], ['🥛 1 Liter Milch', '1 kg']] },
   'm4-groessen': { kind: 'table', head: ['groß', 'klein'], rows: [['1 km', '1000 m'], ['1 m', '100 cm'], ['1 kg', '1000 g'], ['1 €', '100 ct'], ['1 h', '60 min']] },

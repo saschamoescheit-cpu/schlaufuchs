@@ -2,10 +2,10 @@
 import { webkit, devices } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', device = 'iPhone 13', grade = 3, name = 'Mia', progress, profile = {}, data = {}, badges = false } = {}) {
+export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', device = 'iPhone 13', grade = 3, name = 'Mia', progress, profile = {}, data = {}, badges = false, dpr } = {}) {
   mkdirSync(out, { recursive: true });
   const b = await webkit.launch();
-  const ctx = await b.newContext({ ...devices[device], locale: 'de-DE' });
+  const ctx = await b.newContext({ ...devices[device], ...(dpr ? { deviceScaleFactor: dpr } : {}), locale: 'de-DE' });
   const id = 'testkind1';
   const app = {
     schema: 1,

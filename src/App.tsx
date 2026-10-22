@@ -99,6 +99,15 @@ export default function App() {
     setStack([{ r: 'tab', tab: 'home' }]);
   }, [data.activeId]);
 
+  // Sprungmarken von der Homepage: …/#anmelden (Konto in den Einstellungen), …/#eltern (Eltern-Bereich)
+  useEffect(() => {
+    const jump = location.hash.slice(1);
+    if (jump !== 'anmelden' && jump !== 'eltern') return;
+    history.replaceState(history.state, '', location.pathname + location.search);
+    if (profile) push(jump === 'eltern' ? { r: 'parent' } : { r: 'settings' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!profile) {
     if (route.r === 'profile-new') return <ProfileEdit onDone={() => setStack([{ r: 'tab', tab: 'home' }])} onCancel={() => setStack([{ r: 'tab', tab: 'home' }])} />;
     if (route.r === 'parent' || route.r === 'parent-child')

@@ -9,6 +9,12 @@ const pkg = JSON.parse(readFileSync('package.json', 'utf-8')) as { version: stri
 export default defineConfig({
   base: './',
   define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+  // Homepage und Rechtliches als eigene, schlanke Seiten neben der App (Vorschau unter …/home/)
+  build: {
+    rollupOptions: {
+      input: { main: 'index.html', home: 'home/index.html', datenschutz: 'datenschutz/index.html', impressum: 'impressum/index.html' },
+    },
+  },
   plugins: [
     react(),
     VitePWA({
@@ -32,6 +38,8 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
+        // Homepage-Seiten nicht durch die App ersetzen
+        navigateFallbackDenylist: [/\/home\//, /\/datenschutz\//, /\/impressum\//],
         runtimeCaching: [
           {
             // Vorschaubilder der Erklärvideos
