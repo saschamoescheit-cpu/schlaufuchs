@@ -340,6 +340,10 @@ async function fetchAudio(url: string): Promise<string> {
   }
 }
 /** schon vorab laden (z. B. den Hör-Satz einer Aufgabe), damit das Vorlesen sofort startet */
+// Ohne Gerätestimme hängt alles an der Cloud-Stimme: einmal beim Start prüfen, ob sie erreichbar ist –
+// sonst erschiene der Hinweis „Dieses Gerät kann nicht vorlesen“ erst nach dem ersten Fehlversuch.
+if (!synth && TTS_URL && typeof fetch !== 'undefined' && cloudVoiceOn()) void getAudio(cloudUrl('Hallo', 'de', false)).catch(() => {});
+
 export function prefetchSpeech(text: string, lang: Lang = 'de', slow = false) {
   if (!cloudUsable() || !text.trim()) return;
   getAudio(cloudUrl(text, lang, slow)).catch(() => {});

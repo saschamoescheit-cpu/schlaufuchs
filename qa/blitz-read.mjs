@@ -5,6 +5,8 @@ const out = process.argv[3] ?? 'qa/shots/blitz-read';
 const { ctx, p, shot, click, done } = await open({ url, out, grade: 1, profile: { autoRead: true } });
 await ctx.addInitScript(() => {
   // Sprachausgabe-Attrappe (WebKit unter Playwright hat keine): merkt sich, was vorgelesen würde
+  // Gerätestimme prüfen: Cloud-Stimme aus (sonst geht das Vorlesen zuerst über den Sprachdienst)
+  localStorage.setItem('schlaufuchs:cloudvoice', '0');
   window.__spoken = [];
   if (!window.SpeechSynthesisUtterance) window.SpeechSynthesisUtterance = class { constructor(t) { this.text = t; } };
   const fake = { speak: (u) => window.__spoken.push(u.text), cancel: () => {}, getVoices: () => [], addEventListener: () => {}, removeEventListener: () => {}, speaking: false };

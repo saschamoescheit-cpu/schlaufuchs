@@ -4,6 +4,8 @@ const url = process.argv[2] ?? 'http://localhost:5192/';
 const out = process.argv[3] ?? 'qa/shots/no-voice';
 const { ctx, p, shot, click, done } = await open({ url, out, grade: 2 });
 await ctx.addInitScript(() => {
+  // Gerätestimme prüfen: Cloud-Stimme aus (sonst geht das Vorlesen zuerst über den Sprachdienst)
+  localStorage.setItem('schlaufuchs:cloudvoice', '0');
   Object.defineProperty(window, 'speechSynthesis', { value: undefined, configurable: true });
 });
 await p.reload();
