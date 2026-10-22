@@ -408,6 +408,10 @@ const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Mia', 'füttert', 'ihren', 'Hasen'], noun: [0, 3] }, { w: ['Die', 'Ente', 'schwimmt', 'auf', 'dem', 'See'], noun: [1, 5] },
   { w: ['Am', 'Montag', 'haben', 'wir', 'Sport'], noun: [1, 4] }, { w: ['Der', 'Wind', 'weht', 'die', 'Blätter', 'vom', 'Baum'], noun: [1, 4, 6] },
   { w: ['Jonas', 'schreibt', 'einen', 'Brief', 'an', 'Oma'], noun: [0, 3, 5] }, { w: ['Die', 'Kinder', 'singen', 'ein', 'Lied'], noun: [1, 4] },
+  { w: ['Der', 'Hase', 'hoppelt', 'über', 'die', 'Wiese'], noun: [1, 5] }, { w: ['Lisa', 'gießt', 'die', 'Blumen', 'im', 'Garten'], noun: [0, 3, 5] },
+  { w: ['Im', 'Herbst', 'fallen', 'die', 'Blätter'], noun: [1, 4] }, { w: ['Mama', 'kauft', 'frische', 'Brötchen'], noun: [0, 3] },
+  { w: ['Der', 'Hund', 'bellt', 'den', 'Briefträger', 'an'], noun: [1, 4] }, { w: ['Wir', 'gehen', 'heute', 'in', 'den', 'Zoo'], noun: [5] },
+  { w: ['Die', 'Maus', 'frisst', 'ein', 'Stück', 'Käse'], noun: [1, 4, 5] }, { w: ['Am', 'Wochenende', 'besuchen', 'wir', 'Oma'], noun: [1, 4] },
 ];
 const grossschreibung = D(2, 'd2-grossschreibung', 'Groß oder klein?', '🔠', {
   text: ['Groß schreibt man: das erste Wort im Satz und alle Nomen (Namenwörter).', 'Klein schreibt man: Verben (Tunwörter), Adjektive (Wiewörter) und kleine Wörter wie mit, auf, ein.', 'Probe für Nomen: Passt der, die oder das davor?'],
