@@ -16,7 +16,8 @@ export const vocabUpTo = (lv: Grade): { label: string; skills: Skill[] }[] =>
     .filter((g) => g.skills.length);
 
 export type VocabKind = 'mix' | 'karten' | 'diktat';
-export type CardDir = 'de-en' | 'en-de';
+/** Karten: Englisch vorne, Deutsch vorne – oder Deutsch vorne und das englische Wort selbst schreiben (die App prüft) */
+export type CardDir = 'de-en' | 'en-de' | 'write';
 export interface VocabStart {
   skills: Skill[];
   n: number;
@@ -26,7 +27,7 @@ export interface VocabStart {
 
 const KINDS: { id: VocabKind; label: string; info: string }[] = [
   { id: 'mix', label: '🔀 Gemischt', info: 'Bild, Hören, Übersetzen und Schreiben.' },
-  { id: 'karten', label: '🗂️ Karteikarten', info: 'Karte umdrehen und selbst sagen, ob du das Wort wusstest. Gewusste Karten kommen erst nach 1, 3, 7, 14 und 30 Tagen wieder.' },
+  { id: 'karten', label: '🗂️ Karteikarten', info: 'Karte umdrehen und selbst sagen, ob du das Wort wusstest – oder das englische Wort schreiben. Gewusste Karten kommen erst nach 1, 3, 7, 14 und 30 Tagen wieder.' },
   { id: 'diktat', label: '🎧 Diktat', info: 'Du hörst ein englisches Wort und schreibst es auf.' },
 ];
 
@@ -141,6 +142,9 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
               </button>
               <button role="radio" aria-checked={dir === 'de-en'} className={`chip ${dir === 'de-en' ? 'on' : ''}`} onClick={() => setDir('de-en')}>
                 Deutsch → Englisch
+              </button>
+              <button role="radio" aria-checked={dir === 'write'} className={`chip ${dir === 'write' ? 'on' : ''}`} onClick={() => setDir('write')}>
+                ✍️ Englisch schreiben
               </button>
             </div>
           </div>

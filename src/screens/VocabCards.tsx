@@ -9,6 +9,7 @@ import { CloseIcon, Confetti, Fox, Speak } from '../ui/common';
 import { Visual } from '../ui/Visual';
 import { sounds } from '../ui/sound';
 import { prefetchSpeech, speak, stopSpeaking } from '../ui/speech';
+import { normText } from '../engine/check';
 import { CardBoxes, type CardDir } from './Vocab';
 
 /** Wie oft eine nicht gewusste Karte in derselben Runde höchstens wiederkommt */
@@ -29,6 +30,10 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const total = useRef(queue.length);
   const [idx, setIdx] = useState(0);
   const [flipped, setFlipped] = useState(false);
+  // Schreib-Karten: getippte Antwort und ob sie stimmt (die App bewertet selbst)
+  const write = dir === 'write';
+  const [typed, setTyped] = useState('');
+  const [checked, setChecked] = useState<boolean | null>(null);
   const [known, setKnown] = useState(0);
   const [again, setAgain] = useState(0);
   const tries = useRef(new Map<string, number>());
@@ -50,7 +55,13 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const flip = () => {
     if (flipped) return;
     setFlipped(true);
-    if (dir === 'de-en') speak(card.en, 'en');
+    if (dir !== 'en-de') speak(card.en, 'en');
+  };
+  const submit = () => {
+    if (!card || flipped || !typed.trim()) return;
+    setChecked(normText(typed) === normText(card.en));
+    setFlipped(true);
+    speak(card.en, 'en');
   };
   const rate = (ok: boolean) => {
     if (!card || !flipped) return;
@@ -69,15 +80,23 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
       }
     }
     setFlipped(false);
+    setTyped('');
+    setChecked(null);
     setIdx((i) => i + 1);
   };
 
   // Tastatur: Leertaste/Enter dreht um, → oder J = gewusst, ← oder N = noch nicht
-  const keys = useRef({ flip, rate, flipped });
-  keys.current = { flip, rate, flipped };
+  const keys = useRef({ flip, rate, flipped, write, checked });
+  keys.current = { flip, rate, flipped, write, checked };
   useEffect(() => {
     const k = (e: KeyboardEvent) => {
       if ((e.target as HTMLElement)?.closest?.('button, input, textarea')) return;
+      if (keys.current.write && !keys.current.flipped) return;
+      if (keys.current.write && keys.current.flipped && e.key === 'Enter') {
+        e.preventDefault();
+        keys.current.rate(keys.current.checked === true);
+        return;
+      }
       if (e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
         keys.current.flip();
@@ -150,9 +169,9 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
           </span>
           <span>{box.seen ? `Fach ${Math.max(1, box.box)}` : 'neue Karte'}</span>
         </div>
-        <button type="button" className={`vcard ${flipped ? 'flipped' : ''}`} onClick={flip} aria-label={flipped ? `${front} – ${back}` : `${front}. Tippe zum Umdrehen.`} aria-live="polite">
+        <button type="button" className={`vcard ${flipped ? 'flipped' : ''}`} onClick={write ? undefined : flip} aria-label={flipped ? `${front} – ${back}` : write ? `${front}. Schreibe das englische Wort.` : `${front}. Tippe zum Umdrehen.`} aria-live="polite">
           <span className="vcard-face">
-            {(dir === 'de-en' || flipped) && (
+            {(dir !== 'en-de' || flipped) && (
               <span className="vcard-vis" aria-hidden>
                 <Visual v={visualOf(card)} />
               </span>
@@ -164,15 +183,52 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
               <span className="vcard-back" lang={dir === 'en-de' ? 'de' : 'en'}>
                 {back}
               </span>
-            ) : (
+            ) : write ? null : (
               <span className="small muted">Tippe zum Umdrehen</span>
             )}
           </span>
         </button>
-        <div className="center">
-          <Speak text={card.en} lang="en" label="Englisch anhören" />
-        </div>
-        {flipped ? (
+        {(!write || flipped) && (
+          <div className="center">
+            <Speak text={card.en} lang="en" label="Englisch anhören" />
+          </div>
+        )}
+        {write && !flipped ? (
+          <form
+            className="stack"
+            style={{ gap: 10 }}
+            onSubmit={(e) => {
+              e.preventDefault();
+              submit();
+            }}
+          >
+            <input
+              className="text-input"
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              lang="en"
+              placeholder="English …"
+              aria-label="Englisches Wort"
+              autoFocus
+            />
+            <button type="submit" className="btn block englisch" disabled={!typed.trim()}>
+              Prüfen
+            </button>
+          </form>
+        ) : write && flipped ? (
+          <>
+            <div className={`vcard-check ${checked ? 'ok' : 'bad'}`} role="status">
+              {checked ? '✓ Richtig geschrieben!' : <>✗ Du hast „{typed.trim()}“ geschrieben. Richtig: <b lang="en">{card.en}</b></>}
+            </div>
+            <button className="btn block englisch" onClick={() => rate(checked === true)}>
+              Weiter
+            </button>
+          </>
+        ) : flipped ? (
           <div className="choices">
             <button className="btn vrate bad" onClick={() => rate(false)}>
               ✗ Noch nicht

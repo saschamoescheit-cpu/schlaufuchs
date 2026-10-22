@@ -2531,3 +2531,19 @@ html[data-school-font] .prompt.long {
   justify-content: center;
   max-width: 100%;
 }
+
+/* Schreib-Karten: Rückmeldung nach dem Prüfen */
+.vcard-check {
+  border-radius: 14px;
+  padding: 12px 14px;
+  font-weight: 700;
+  text-align: center;
+}
+.vcard-check.ok {
+  background: var(--ok-soft);
+  color: var(--ok-dark);
+}
+.vcard-check.bad {
+  background: var(--bad-soft);
+  color: var(--bad);
+}
