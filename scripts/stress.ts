@@ -31,7 +31,11 @@ for (const s of ALL_SKILLS) {
       if (!Number.isFinite(a.value) || a.value < 0) fail('Zahl ungültig ' + a.value);
       if (!check(t, String(a.value)).ok) fail('Zahl wird nicht akzeptiert');
     } else if (!check(t, a.value).ok) fail('Text wird nicht akzeptiert ' + correctText(a));
-    for (const trap of t.traps ?? []) if (check(t, trap.answer).ok) fail('Falle gilt als richtig: ' + trap.answer);
+    // bei Auswahl-Aufgaben wird mit dem Index der Option geprüft, nicht mit ihrem Text
+    for (const trap of t.traps ?? []) {
+      const given = a.type === 'choice' ? String(a.options.indexOf(trap.answer)) : trap.answer;
+      if (given !== '-1' && check(t, given).ok) fail('Falle gilt als richtig: ' + trap.answer);
+    }
   }
 }
 console.log(problems ? `${problems} Probleme` : 'keine Probleme');
