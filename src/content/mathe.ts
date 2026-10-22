@@ -247,6 +247,16 @@ const verdoppeln1 = M(1, 'm1-verdoppeln', 'Verdoppeln und Halbieren', '🦋', {
   videoQuery: 'Verdoppeln Halbieren Klasse 1',
 }, (r, s) => {
   const top = s === 1 ? 5 : 10;
+  // Sachaufgabe: Marienkäfer mit gleich vielen Punkten auf beiden Flügeln
+  if (chance(r, 0.2)) {
+    const n = ri(r, s === 1 ? 1 : 3, s === 1 ? 5 : 9);
+    return { key: `k${n}`, prompt: `Ein Marienkäfer hat auf jedem Flügel ${n} ${n === 1 ? 'Punkt' : 'Punkte'}.\nWie viele Punkte hat er zusammen?`, visual: { kind: 'emoji', chars: '🐞' }, answer: { type: 'number', value: 2 * n }, tags: ['verdoppeln'], solution: [`Beide Flügel haben gleich viele Punkte – also verdoppeln.`, `${n} + ${n} = ${2 * n}`], solutionVisual: { kind: 'dots', n, m: n } };
+  }
+  // Umkehrung: Welche Zahl wurde verdoppelt?
+  if (s !== 1 && chance(r, 0.25)) {
+    const n = ri(r, s === 3 ? 5 : 2, top);
+    return { key: `u${2 * n}`, prompt: `☐ + ☐ = ${2 * n}\nIn beide Kästchen gehört dieselbe Zahl.`, speak: `Welche Zahl plus dieselbe Zahl ergibt ${2 * n}?`, answer: { type: 'number', value: n }, tags: ['halbieren'], solution: [`Gesucht ist die Hälfte von ${2 * n}.`, `${n} + ${n} = ${2 * n}`], solutionVisual: { kind: 'dots', n, m: n } };
+  }
   if (chance(r, s === 3 ? 0.3 : 0.5)) {
     const n = ri(r, s === 3 ? 6 : 1, top);
     return { key: `d${n}`, prompt: `Verdopple ${n}.`, answer: { type: 'number', value: 2 * n }, tags: ['verdoppeln'], solution: [`Verdoppeln: ${n} + ${n} = ${2 * n}`], solutionVisual: { kind: 'dots', n, m: n } };
