@@ -398,6 +398,54 @@ function fahrplanTask(r: Rng, s: Stage): Gen {
   return { key: `fp3-${rows.flat().join()}-${come}`, prompt: `${name} kommt um ${hm(come)} Uhr zur Haltestelle „${stops[0]}“.\nWie lange muss ${name} auf den nächsten Bus warten?`, visual: { ...table }, answer: { type: 'number', value: wait, unit: 'min' }, tags: ['zeitspanne'], solution: [`Der nächste Bus fährt um ${hm(starts[bi])} Uhr ab ${stops[0]}.`, `Von ${hm(come)} bis ${hm(starts[bi])} sind es ${wait} Minuten.`], solutionVisual: { ...table, mark: [0, bi + 1] } };
 }
 
+// ---------- Rechnen mit Geld: Kommazahlen (Kl. 4) ----------
+
+const eur = (ct: number) => `${Math.floor(ct / 100)},${String(ct % 100).padStart(2, '0')} €`;
+// Ware, Bild, realistischer Preis von–bis in Cent
+const WAREN: [string, string, number, number][] = [
+  ['ein Heft', '📒', 80, 250], ['einen Saft', '🧃', 90, 220], ['ein Brötchen', '🥐', 40, 90], ['einen Radiergummi', '🧽', 50, 150], ['eine Brezel', '🥨', 60, 120],
+  ['Stifte', '🖍️', 200, 600], ['ein Comicheft', '📗', 250, 500], ['einen Apfel', '🍎', 30, 90], ['ein Buch', '📕', 600, 1200], ['einen Ball', '⚽', 500, 1500],
+];
+const list = (xs: string[]) => (xs.length > 1 ? `${xs.slice(0, -1).join(', ')} und ${xs[xs.length - 1]}` : xs[0]);
+const priceOf = (r: Rng, w: [string, string, number, number]) => ri(r, w[2] / 5, w[3] / 5) * 5;
+function geldKommaTask(r: Rng, s: Stage): Gen {
+  const v = s === 1 ? 'plus' : s === 2 ? pick(r, ['plus', 'rueck']) : pick(r, ['plus3', 'rueck', 'rueck']);
+  const price = () => ri(r, 2, s === 1 ? 9 : 19) * 50 + (s === 1 ? 0 : pick(r, [0, 5, 15, 25, 35, 45]));
+  const name = pick(r, NAMES);
+  if (v === 'rueck') {
+    const items = pickN(r, WAREN, s === 3 ? 3 : 2);
+    const prices = items.map((w) => priceOf(r, w));
+    const sum = prices.reduce((a, b) => a + b, 0);
+    const paid = sum <= 1000 ? 1000 : sum <= 2000 ? 2000 : 5000;
+    const back = paid - sum;
+    const wrongCents = back % 100 ? back + (100 - 2 * (back % 100)) : back + 50; // typischer Fehler beim Cent-Ergänzen
+    const ok = eur(back);
+    const wrong = [...new Set([eur(wrongCents), eur(back + 100), eur(Math.max(5, back - 100)), eur(sum)])].filter((x) => x !== ok).slice(0, 3);
+    return {
+      key: `r-${prices.join('-')}`,
+      prompt: `${name} kauft ${list(items.map(([w, e], i) => `${w} ${e} (${eur(prices[i])})`))} und bezahlt mit ${paid / 100} €.\nWie viel Rückgeld bekommt ${name}?`,
+      answer: choice(r, ok, wrong),
+      tags: ['rueckgeld'],
+      traps: [{ answer: eur(wrongCents), tag: 'cent-ergaenzen', hint: 'Ergänze erst die Cent bis zum vollen Euro, dann die Euro bis zum bezahlten Betrag.' }],
+      solution: [`Zusammen: ${prices.map(eur).join(' + ')} = ${eur(sum)}`, `Ergänze bis ${paid / 100} €: ${eur(sum)} + ${ok} = ${paid / 100},00 €`, `Rückgeld: ${ok}`],
+    };
+  }
+  const n = v === 'plus3' ? 3 : 2;
+  const prices = Array.from({ length: n }, price);
+  const sum = prices.reduce((a, b) => a + b, 0);
+  const ok = eur(sum);
+  const noCarry = prices.reduce((a, p) => a + Math.floor(p / 100), 0) * 100 + (prices.reduce((a, p) => a + (p % 100), 0) % 100);
+  const wrong = [...new Set([eur(noCarry), eur(sum + 100), eur(sum - 10 > 0 ? sum - 10 : sum + 10), eur(sum + 10)])].filter((x) => x !== ok).slice(0, 3);
+  return {
+    key: `p-${prices.join('-')}`,
+    prompt: `${prices.map(eur).join(' + ')} = ☐`,
+    answer: choice(r, ok, wrong),
+    tags: ['addieren'],
+    traps: noCarry !== sum ? [{ answer: eur(noCarry), tag: 'cent-uebertrag', hint: '100 Cent sind 1 Euro – die Cent über 100 werden zu einem Euro mehr.' }] : [],
+    solution: [`Euro zusammen: ${prices.map((p) => Math.floor(p / 100)).join(' + ')} = ${prices.reduce((a, p) => a + Math.floor(p / 100), 0)} €`, `Cent zusammen: ${prices.map((p) => p % 100).join(' + ')} = ${prices.reduce((a, p) => a + (p % 100), 0)} ct`, `Zusammen: ${ok}`],
+  };
+}
+
 // ---------- Würfelgebäude (Kl. 3) ----------
 
 const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
@@ -441,6 +489,7 @@ export const MATHE_EXTRA3: Skill[] = [
   M(3, 'm3-wuerfelgebaeude', 'Würfelgebäude', '🏗️', { text: ['Kein Würfel schwebt: Unter jedem Würfel steht ein anderer Würfel oder der Boden.', 'Zähle Turm für Turm: Wie hoch ist jeder Stapel? Dann rechnest du alles zusammen.', 'Hinter vorderen Würfeln können Würfel versteckt sein – denk sie mit!', 'Ein Bauplan zeigt von oben, wie viele Würfel auf jedem Feld stehen.'], visual: { kind: 'cubes', h: [[3, 2, 1], [1, 1, 0]] }, videoQuery: 'Würfelgebäude Würfel zählen Bauplan Klasse 3' }, cubesTask, { tagLabels: { 'eine-reihe': 'Würfel in einer Reihe', 'mehrere-reihen': 'Würfel in mehreren Reihen', 'versteckte-vergessen': 'versteckte Würfel vergessen' }, testSeconds: 30 }),
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
   M(4, 'm4-bruchgroessen', 'Brüche bei Größen: ½, ¼, ¾', '🍰', { text: ['½ heißt: die Hälfte. ½ kg = 500 g, ½ h = 30 min.', '¼ heißt: ein Viertel – das Ganze durch 4. ¼ l = 250 ml, ¼ h = 15 min.', '¾ sind drei Viertel: ¾ h = 45 min, ¾ kg = 750 g.'], visual: { kind: 'text', text: '½ kg = 500 g · ¼ h = 15 min' }, videoQuery: 'Brüche bei Größen halb viertel Klasse 4' }, fracTask, { tagLabels: { halb: 'halbe Größen', viertel: 'Viertel und Dreiviertel', 'prozent-gedacht': 'Umrechnungszahl vergessen' }, testSeconds: 25 }),
+  M(4, 'm4-geld-komma', 'Rechnen mit Geld: Kommazahlen', '💶', { text: ['3,45 € heißt: 3 Euro und 45 Cent. 100 Cent sind 1 Euro.', 'Beim Zusammenrechnen: erst die Euro, dann die Cent. Sind es 100 Cent oder mehr, wird daraus ein Euro mehr.', 'Rückgeld: Ergänze erst die Cent bis zum vollen Euro, dann bis zum bezahlten Betrag.'], visual: { kind: 'money', items: [500, 200, 50, 20, 5] }, videoQuery: 'Rechnen mit Geld Kommazahlen Rückgeld Klasse 4' }, geldKommaTask, { tagLabels: { addieren: 'Preise zusammenrechnen', rueckgeld: 'Rückgeld berechnen', 'cent-uebertrag': '100 Cent = 1 Euro vergessen', 'cent-ergaenzen': 'Cent falsch ergänzt' }, testSeconds: 40 }),
 ];
 
 // ---------- Ergänzen und Platzhalter bis 100 (Kl. 2) ----------

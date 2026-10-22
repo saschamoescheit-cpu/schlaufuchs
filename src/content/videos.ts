@@ -166,6 +166,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 's1oDa3DiXus', title: 'Wörter mit V', channel: 'Grundschule Ludwigsfeld', len: '1:40' },
   ],
   'm4-bruchgroessen': [{ id: '9x8mSib0ETk', title: 'Brüche umrechnen in die nächstkleinere Maßeinheit', channel: 'LehrerBros - Mathe leicht gemacht', len: '4:35' }],
+  'm4-geld-komma': [
+    { id: 'rdiMSCH7JZQ', title: 'Geldwerte mit Kommazahlen einfach erklärt', channel: 'sofatutor', len: '1:51' },
+    { id: 'kpxvLo4bzy4', title: 'Rechnen mit Geld - Wechselgeld / Rückgeld berechnen', channel: 'OberFuchs', len: '7:59' },
+  ],
   'm4-fahrplan': [{ id: '9NkM9qlxNBc', title: 'Fahrplan - lesen und verstehen', channel: 'LehrerTEF', len: '4:12' }],
   'm3-zahlwoerter': [
     { id: 'gv_5KM9CCk8', title: 'Zahlwörter bis 1000', channel: 'Grundschul-Lernleitern', len: '3:42' },
