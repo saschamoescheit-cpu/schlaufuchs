@@ -880,6 +880,9 @@ const BODY_OBJ = [
   { name: 'eine Rolle Klopapier', e: '🧻', s: 'Zylinder', why: 'Die Rolle ist oben und unten rund und dazwischen gerade.' },
   { name: 'eine Batterie', e: '🔋', s: 'Zylinder', why: 'Eine Batterie hat oben und unten eine runde Fläche.' },
   { name: 'ein Partyhut', e: '🥳', s: 'Kegel', why: 'Ein Partyhut ist unten rund und oben spitz.' },
+  { name: 'ein Saftkarton', e: '🧃', s: 'Quader', why: 'Ein Saftkarton hat 6 rechteckige Flächen.' },
+  { name: 'eine Trommel', e: '🥁', s: 'Zylinder', why: 'Eine Trommel hat oben und unten eine runde Fläche.' },
+  { name: 'ein Basketball', e: '🏀', s: 'Kugel', why: 'Ein Basketball ist überall rund.' },
 ];
 const BODY_Q = [
   { q: 'Welcher Körper hat keine Ecken und keine Kanten?', s: 'Kugel', why: 'Die Kugel ist ganz rund – nirgends eine Ecke oder Kante.' },
@@ -893,6 +896,9 @@ const BODY_Q = [
   { q: 'Welcher Körper hat 12 gleich lange Kanten?', s: 'Würfel', why: 'Beim Würfel sind alle 12 Kanten gleich lang.' },
   { q: 'Welcher Körper hat eine viereckige Grundfläche und eine Spitze?', s: 'Pyramide', why: 'Die Pyramide steht auf einem Viereck und läuft oben spitz zu.' },
   { q: 'Welcher Körper besteht nur aus einer gebogenen Fläche?', s: 'Kugel', why: 'Die Kugel hat nur eine Fläche – und die ist überall gebogen.' },
+  { q: 'Welcher Körper kann rollen, kann gerade stehen und hat keine Spitze?', s: 'Zylinder', why: 'Der Zylinder rollt auf seiner gebogenen Fläche und steht auf einer runden Fläche – eine Spitze hat er nicht.' },
+  { q: 'Welcher Körper hat genau eine Kante?', s: 'Kegel', why: 'Der Kegel hat nur eine Kante: den Rand seiner runden Grundfläche.' },
+  { q: 'Welcher Körper hat 5 Flächen?', s: 'Pyramide', why: 'Die Pyramide hat unten ein Viereck und 4 dreieckige Seitenflächen: 5 Flächen.' },
 ];
 const koerper3 = M(3, 'm3-koerper', 'Geometrische Körper', '🧊', {
   text: ['Körper sind räumlich – man kann sie anfassen.', 'Würfel und Quader haben 8 Ecken, 12 Kanten und 6 Flächen.', 'Kugel, Zylinder und Kegel haben runde Flächen.'],
