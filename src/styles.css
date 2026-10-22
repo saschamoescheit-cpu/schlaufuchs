@@ -2150,3 +2150,21 @@ details.more .inner {
   background: var(--card);
   box-shadow: var(--shadow);
 }
+@media (max-width: 400px) {
+  .vis-table {
+    font-size: 0.88rem;
+  }
+  .vis-table th,
+  .vis-table td {
+    padding: 4px 5px;
+  }
+}
+@media (max-width: 340px) {
+  .vis-table {
+    font-size: 0.8rem;
+  }
+  .vis-table th,
+  .vis-table td {
+    padding: 3px 4px;
+  }
+}

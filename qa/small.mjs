@@ -1,0 +1,34 @@
+// node qa/small.mjs [url] [out] – kleiner Bildschirm (iPhone SE): wichtige Seiten auf waagerechten Überlauf prüfen
+import { readFileSync } from 'node:fs';
+import { open } from './lib.mjs';
+const url = process.argv[2] ?? 'http://localhost:5192/';
+const out = process.argv[3] ?? 'qa/shots/se';
+const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
+const { p, shot, click, done } = await open({ url, out, grade: 4, progress, device: 'iPhone SE' });
+const over = async (name) => {
+  const w = await p.evaluate(() => [document.documentElement.scrollWidth, window.innerWidth]);
+  console.log(`${w[0] > w[1] + 1 ? '✗' : '✓'} ${name}: ${w[0]} / ${w[1]}`);
+  await shot(name);
+  return w[0] > w[1] + 1 ? 1 : 0;
+};
+let bad = 0;
+bad += await over('start');
+await click('Mathe');
+bad += await over('mathe');
+await p.locator('.topic-main', { hasText: 'Schriftliche Multiplikation' }).first().click();
+await p.waitForTimeout(300);
+bad += await over('multiplikation');
+await p.getByRole('button', { name: 'Übung beenden' }).click();
+const y = p.getByRole('button', { name: 'Ja, beenden' });
+if (await y.isVisible({ timeout: 800 }).catch(() => false)) await y.click();
+await p.locator('.topic-main', { hasText: 'Fahrplan' }).first().click();
+await p.waitForTimeout(300);
+bad += await over('fahrplan');
+await p.getByRole('button', { name: 'Übung beenden' }).click();
+if (await y.isVisible({ timeout: 800 }).catch(() => false)) await y.click();
+await click('Lernen');
+await click('Tests');
+bad += await over('tests');
+await click('Lernstand');
+bad += await over('lernstand');
+process.exit((await done()) + bad);
