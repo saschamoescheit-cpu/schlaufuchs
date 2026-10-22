@@ -15,7 +15,8 @@ const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄',
 
 export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () => void; onParent: () => void }) {
   const sync = useSyncStatus();
-  const [login, setLoginOpen] = useState(false);
+  // von der Homepage (…/#anmelden) direkt zur Anmeldung
+  const [login, setLoginOpen] = useState(() => typeof location !== 'undefined' && location.hash === '#anmelden');
   return (
     <div className="app full">
       <div className="stack center" style={{ paddingTop: 48 }}>
