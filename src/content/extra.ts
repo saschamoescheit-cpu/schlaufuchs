@@ -209,6 +209,15 @@ const SATZBILD: [string, string, string[]][] = [
   ['🐭🧀', 'Die Maus frisst Käse.', ['Die Maus frisst Brot.', 'Die Katze frisst Käse.', 'Die Maus schläft.']],
   ['🚒🔥', 'Die Feuerwehr löscht das Feuer.', ['Die Polizei löscht das Feuer.', 'Die Feuerwehr fährt nach Hause.', 'Das Feuer ist aus.']],
   ['🌙⭐', 'Am Himmel leuchten Mond und Sterne.', ['Am Himmel scheint die Sonne.', 'Am Himmel fliegt ein Vogel.', 'Es regnet in der Nacht.']],
+  ['🐴🌾', 'Das Pferd frisst Heu.', ['Das Pferd trinkt Wasser.', 'Die Kuh frisst Heu.', 'Das Pferd springt.']],
+  ['✈️☁️', 'Das Flugzeug fliegt über den Wolken.', ['Das Flugzeug steht am Boden.', 'Der Vogel fliegt über den Wolken.', 'Das Schiff fährt über das Meer.']],
+  ['🐢🏖️', 'Die Schildkröte liegt am Strand.', ['Die Schildkröte frisst Salat.', 'Der Hund liegt am Strand.', 'Die Schildkröte schläft im Haus.']],
+  ['👧🎈', 'Das Mädchen hat einen Luftballon.', ['Das Mädchen hat einen Ball.', 'Der Junge hat einen Luftballon.', 'Das Mädchen hat ein Eis.']],
+  ['🦆🌊', 'Die Ente schwimmt auf dem Wasser.', ['Die Ente fliegt am Himmel.', 'Der Fisch schwimmt auf dem Wasser.', 'Die Ente schläft im Nest.']],
+  ['🐌🍃', 'Die Schnecke kriecht über ein Blatt.', ['Die Schnecke kriecht über einen Stein.', 'Der Käfer kriecht über ein Blatt.', 'Die Schnecke fliegt weg.']],
+  ['🧒🛁', 'Das Kind badet in der Wanne.', ['Das Kind schläft im Bett.', 'Die Katze badet in der Wanne.', 'Das Kind spielt im Garten.']],
+  ['🎅🎁', 'Der Weihnachtsmann bringt Geschenke.', ['Der Osterhase bringt Geschenke.', 'Der Weihnachtsmann backt Plätzchen.', 'Der Weihnachtsmann schläft.']],
+  ['🚂🌉', 'Der Zug fährt über die Brücke.', ['Das Auto fährt über die Brücke.', 'Der Zug steht im Bahnhof.', 'Das Schiff fährt unter der Brücke.']],
 ];
 function satzBild(r: Rng, s: Stage): Gen {
   const [e, ok, wrong] = pick(r, SATZBILD);
@@ -338,6 +347,9 @@ const BAUSTEINE: [string, string, string[]][] = [
   ['Iss bitte alles ☐!', 'auf', ['zer', 'ver', 'vor']], ['Ich ☐gesse oft meine Hausaufgaben.', 'ver', ['ab', 'an', 'zer']], ['Der Kuchen ist ☐brannt – er ist ganz schwarz.', 'ver', ['zer', 'vor', 'mit']],
   ['Räum bitte dein Zimmer ☐!', 'auf', ['zer', 'ver', 'vor']], ['Die Kinder ☐schneiden das Papier in kleine Stücke.', 'zer', ['an', 'auf', 'mit']], ['Ich möchte dir etwas ☐zählen.', 'er', ['zer', 'ver', 'an']],
   ['Nach den Ferien ☐kennen wir unsere Lehrerin kaum wieder.', 'er', ['zer', 'mit', 'an']], ['Morgen ☐reisen wir in den Urlaub.', 'ab', ['zer', 'vor', 'er']],
+  ['Zieh dir die Jacke ☐, es ist kalt!', 'an', ['zer', 'ver', 'er']], ['Mach bitte den Fernseher ☐, wir gehen schlafen.', 'aus', ['zer', 'ver', 'er']],
+  ['Ich ☐danke mich für das Geschenk.', 'be', ['zer', 'ab', 'vor']], ['Der Arzt ☐sucht das kranke Kind.', 'unter', ['zer', 'ab', 'vor']],
+  ['Kannst du mir beim Tragen ☐helfen?', 'mit', ['zer', 'ver', 'er']], ['Die Blumen in der Vase sind ☐welkt.', 'ver', ['zer', 'ab', 'mit']],
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
