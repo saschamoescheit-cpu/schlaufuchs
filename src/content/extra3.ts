@@ -298,7 +298,25 @@ function enReadTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// Hörverstehen: dieselben Texte – nur vorgelesen, nicht gezeigt (NRW: Hörverstehen, längere Texte)
+function storyListenTask(r: Rng, s: Stage): Gen {
+  const tx = pick(r, EN_TEXTS);
+  const [q, a, w, ev] = pick(r, tx.qs);
+  return {
+    key: `h-${tx.t.slice(0, 20)}|${q}`,
+    prompt: `Hör dir die Geschichte an.
+${q}`,
+    speak: `Hör dir die Geschichte an. ${q}`,
+    listen: { text: tx.t, lang: 'en', slow: s === 1 },
+    answer: choice(r, a, s === 1 ? w.slice(0, 2) : w),
+    tags: ['geschichte-hoeren'],
+    solution: [`In der Geschichte heißt es: „${ev}“`, `Antwort: ${a}`, `Der ganze Text: ${tx.t}`],
+    pronounce: { text: ev.replace(/ … /g, ', '), lang: 'en' },
+  };
+}
+
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(2, 'e2-story', 'Listen to a story – Geschichten hören', '👂', { text: ['Du hörst eine kurze Geschichte auf Englisch – der Text wird nicht angezeigt.', 'Hör sie dir zuerst ganz an. Du kannst sie so oft abspielen, wie du willst – auch langsam.', 'Achte auf Namen, Zahlen, Farben und Orte. Du musst nicht jedes Wort verstehen!'], visual: { kind: 'emoji', chars: '🎧📖' }, videoQuery: 'English listening for kids short stories' }, storyListenTask, { tagLabels: { 'geschichte-hoeren': 'Geschichten hören' }, testSeconds: 60 }),
   E(2, 'e2-health', "What's the matter? – Wie geht's dir?", '🤒', { text: ["What's the matter? = Was ist los?", "I've got a headache. = Ich habe Kopfschmerzen. I've got a cold. = Ich bin erkältet.", "Gute Besserung heißt: Get well soon!"], visual: { kind: 'emoji', chars: '🤕 🤧 🤒' }, videoQuery: "what's the matter song kids I have a headache" }, healthTask, { tagLabels: { hoeren: 'Sätze hören', saetze: 'Sätze verstehen' }, testSeconds: 20 }),
   E(1, 'e1-alphabet', 'The alphabet – ABC auf Englisch', '🔤', { text: ['Die englischen Buchstaben heißen anders als die deutschen.', 'Achtung: E klingt wie „i“, I klingt wie „ai“, A klingt wie „äi“.', 'G („dschii“) und J („dschäi“) verwechselt man leicht. Z heißt in England „zed“.'], visual: { kind: 'word', word: 'A · E · I · G · J', mark: [[4, 5], [8, 9]] }, videoQuery: 'ABC song British English phonics alphabet' }, alphabetTask, { tagLabels: { buchstaben: 'englische Buchstaben hören', buchstabieren: 'buchstabierte Wörter verstehen' }, testSeconds: 20 }),
   E(2, 'e2-myday', 'My day – Tagesablauf', '⏰', { text: ['I get up. = Ich stehe auf. I go to school. = Ich gehe zur Schule.', "Mit Uhrzeit: I get up at seven o'clock.", 'Am Abend: I have dinner. I go to bed.'], visual: { kind: 'clock', h: 7, m: 0 }, videoQuery: 'daily routine song for kids English' }, mydayTask, { tagLabels: { saetze: 'Sätze zum Tagesablauf', uhrzeit: 'mit Uhrzeit', reihenfolge: 'Reihenfolge am Tag' }, testSeconds: 20 }),

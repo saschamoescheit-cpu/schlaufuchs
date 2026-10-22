@@ -114,7 +114,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   ],
   englisch: [
     { name: 'Vokabeln', re: VOCAB_RE },
-    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading|myday|health|wordorder|britain/ },
+    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading|myday|health|wordorder|britain|story/ },
     { name: 'ABC und Aussprache', re: /./ },
   ],
 };
