@@ -158,6 +158,13 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'ne727UBDkKs', title: 'Halbschriftliches Dividieren', channel: 'Lehrerschmidt', len: '5:12' },
   ],
   'd1-minitexte': [{ id: '_kiAmNzgLTs', title: 'Was steht im Text? - Teil 1', channel: 'Lernwiese', len: '8:57' }],
+  'd2-sp-st': [
+    { id: 'J_ltJZvMYMA', title: 'st und sp richtig einsetzen – Erklärung und Mini-Test', channel: 'lernfoerderung', len: '3:23' },
+    { id: '4AoeIKSkvYw', title: 'Kurs Rechtschreibung – Wörter mit Sp und St', channel: 'MasteryX', len: '1:57' },
+  ],
+  'd2-ei-ie': [
+    { id: 'OIdROwDsFCI', title: 'Wörter mit ie: Erklärung für Schüler (Grundschule)', channel: 'Nachhilfe vom Lehrer', len: '11:51' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },

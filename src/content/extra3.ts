@@ -544,6 +544,68 @@ function zifferTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Sp und St am Wortanfang (Kl. 2) ----------
+
+const SPST: [string, string][] = [
+  ['Spinne', '🕷️'], ['Spiegel', '🪞'], ['Spiel', '🎲'], ['Spritze', '💉'], ['Spinat', '🥬'], ['spielen', '🧩'], ['springen', '🤸'], ['sparen', '🪙'],
+  ['Stern', '⭐'], ['Stuhl', '🪑'], ['Stein', '🪨'], ['Stiefel', '👢'], ['Straße', '🛣️'], ['Strand', '🏖️'], ['Stadt', '🏙️'], ['stehen', '🧍'],
+];
+function spstTask(r: Rng, s: Stage): Gen {
+  const [w, e] = pick(r, SPST);
+  const sp = /^sp/i.test(w);
+  const up = w[0] === w[0].toUpperCase();
+  const right = up ? (sp ? 'Sp' : 'St') : sp ? 'sp' : 'st';
+  const heard = up ? (sp ? 'Schp' : 'Scht') : sp ? 'schp' : 'scht';
+  const tag = sp ? 'sp' : 'st';
+  const why = `Am Wortanfang hört man „${sp ? 'schp' : 'scht'}“ – geschrieben wird aber nur „${right}“.`;
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${w}`, prompt: 'Hör gut zu und schreibe das Wort.', speak: w, listen: { text: w, lang: 'de' }, visual: { kind: 'emoji', chars: e }, answer: { type: 'text', value: w, dictation: true, caseSensitive: true }, tags: [tag], traps: [{ answer: heard + w.slice(2), tag: 'sch-geschrieben', hint: why }], solution: [`So schreibt man es: ${w}`, why] };
+  }
+  const other = up ? (sp ? 'St' : 'Sp') : sp ? 'st' : 'sp';
+  return {
+    key: `c-${w}`,
+    prompt: `Was fehlt am Anfang?
+_ _${w.slice(2)}`,
+    speak: `Was fehlt am Anfang von ${w}?`,
+    visual: { kind: 'emoji', chars: e },
+    answer: { ...choice(r, right, s === 1 ? [heard] : [heard, other, up ? (sp ? 'Scht' : 'Schp') : sp ? 'scht' : 'schp']), big: true },
+    tags: [tag],
+    traps: [{ answer: heard, tag: 'sch-geschrieben', hint: why }],
+    solution: [`Richtig: ${w}`, why],
+  };
+}
+
+// ---------- ei oder ie (Kl. 2) ----------
+
+const EIIE: [string, string][] = [
+  ['Eis', '🍦'], ['Bein', '🦵'], ['Kleid', '👗'], ['Pfeil', '🏹'], ['Eimer', '🪣'], ['Schwein', '🐷'], ['Seil', '🪢'], ['Eichhörnchen', '🐿️'], ['Kreis', '⭕'],
+  ['Biene', '🐝'], ['Brief', '✉️'], ['Fliege', '🪰'], ['Ziege', '🐐'], ['Wiese', '🌾'], ['Spiegel', '🪞'], ['Riegel', '🍫'], ['Lied', '🎵'], ['Dieb', '🦹'],
+];
+function eiieTask(r: Rng, s: Stage): Gen {
+
+  const [w, e] = pick(r, EIIE);
+  const m = /ei|ie/i.exec(w)!;
+  const part = m[0];
+  const isEi = part.toLowerCase() === 'ei';
+  const up = m.index === 0;
+  const opts = up ? ['Ei', 'Ie'] : ['ei', 'ie'];
+  const right = up ? part[0].toUpperCase() + part.slice(1).toLowerCase() : part;
+  const why = isEi ? `In „${w}“ hört man „ai“ – das schreibt man „ei“.` : `In „${w}“ hört man ein langes „i“ – das schreibt man meistens „ie“.`;
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${w}`, prompt: 'Hör gut zu und schreibe das Wort.', speak: w, listen: { text: w, lang: 'de' }, visual: { kind: 'emoji', chars: e }, answer: { type: 'text', value: w, dictation: true, caseSensitive: true }, tags: [isEi ? 'ei' : 'ie'], traps: [{ answer: w.slice(0, m.index) + (isEi ? 'ie' : 'ei') + w.slice(m.index + 2), tag: 'ei-ie-vertauscht', hint: why }], solution: [`So schreibt man es: ${w}`, why] };
+  }
+  return {
+    key: `c-${w}`,
+    prompt: `ei oder ie?
+${w.slice(0, m.index)}_ _${w.slice(m.index + 2)}`,
+    speak: `ei oder ie? ${w}`,
+    visual: { kind: 'emoji', chars: e },
+    answer: { ...fixedChoice(opts, right), big: true },
+    tags: [isEi ? 'ei' : 'ie'],
+    solution: [`Richtig: ${w}`, why, 'Merke: ei klingt wie „ai“ (Eis, Bein), ie ist ein langes i (Biene, Brief).'],
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-ziffern', 'Ziffern schreiben', '✏️', { text: ['Jede Ziffer hat ihre feste Form – und eine Richtung, in die man sie schreibt.', 'Fang am grünen Punkt an und fahre die graue Ziffer mit dem Finger nach.', 'Tippe auf ▶, dann zeigt dir der Fuchs, wie es geht.'], visual: { kind: 'word', word: '1 2 3' }, videoQuery: 'Ziffern schreiben lernen Kinder Schreibrichtung' }, zifferTask, { tagLabels: { ziffern: 'Ziffern schreiben' }, testSeconds: 40 }),
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
@@ -911,6 +973,8 @@ function spurTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(2, 'd2-sp-st', 'Sp und St am Wortanfang', '🕷️', { text: ['Am Wortanfang hört man oft „schp“ oder „scht“: Spinne, Stern.', 'Geschrieben wird aber nur Sp oder St – ohne ch!', 'Sprich langsam und denk dran: Hört man schp → schreib Sp. Hört man scht → schreib St.'], visual: { kind: 'word', word: 'Spinne · Stern', mark: [[0, 2], [9, 11]] }, videoQuery: 'Wörter mit Sp und St Grundschule Klasse 2' }, spstTask, { tagLabels: { sp: 'Wörter mit Sp', st: 'Wörter mit St', 'sch-geschrieben': 'sch geschrieben statt S' }, testSeconds: 15 }),
+  D(2, 'd2-ei-ie', 'ei oder ie?', '🐝', { text: ['ei klingt wie „ai“: Eis, Bein, Schwein.', 'ie ist ein langes i: Biene, Brief, Wiese.', 'Achtung, die beiden sehen sich ähnlich: Beine 🦵 – Biene 🐝!'], visual: { kind: 'word', word: 'Beine · Biene', mark: [[1, 3], [9, 11]] }, videoQuery: 'ei oder ie Grundschule Rechtschreibung' }, eiieTask, { tagLabels: { ei: 'Wörter mit ei', ie: 'Wörter mit ie', 'ei-ie-vertauscht': 'ei und ie vertauscht' }, testSeconds: 15 }),
   D(1, 'd1-nachspuren', 'Buchstaben nachspuren', '✍️', { text: ['Jeder Buchstabe hat eine feste Form – und eine Richtung, in die man ihn schreibt.', 'Fang oben am grünen Punkt an und fahre den grauen Buchstaben mit dem Finger nach.', 'Sprich dabei leise mit: A wie Affe!'], visual: { kind: 'word', word: 'A a' }, videoQuery: 'Buchstaben schreiben lernen Druckschrift Klasse 1' }, spurTask, { tagLabels: { gross: 'große Buchstaben', klein: 'kleine Buchstaben' }, testSeconds: 40 }),
   D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
   D(1, 'd1-minitexte', 'Mini-Texte lesen', '📄', { text: ['Lies den kurzen Text in Ruhe – Wort für Wort.', 'Lies dann die Frage. Die Antwort steht im Text.', 'Tippe auf das Bild, das passt.'], visual: { kind: 'text', text: 'Tim hat einen Ball. Der Ball ist rot.' }, videoQuery: 'Lesen lernen Klasse 1 kurze Texte verstehen' }, miniTask, { tagLabels: { 'mini-text': 'kurze Texte verstehen' }, testSeconds: 25 }),
