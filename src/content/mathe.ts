@@ -645,6 +645,19 @@ const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
   text: ['Nutze, was du kannst: 340 + 250 ist wie 34 + 25, nur mit Zehnern: 590.', 'Rechne in Schritten: 456 + 230 = 456 + 200 + 30 = 686.', 'Bei Minus ebenso: 700 − 260 = 700 − 200 − 60 = 440.'],
   videoQuery: 'Kopfrechnen bis 1000 Addition Subtraktion Klasse 3',
 }, (r, st) => {
+  // Platzhalter (ab Stufe 2): mit der Umkehraufgabe lösen
+  if (st > 1 && chance(r, 0.3)) {
+    const unit = st === 2 ? 10 : 1;
+    const c = ri(r, 30, 99) * 10 + (unit === 1 ? ri(r, 0, 9) : 0);
+    const x = ri(r, 5, Math.floor((c - 100) / unit)) * unit;
+    const minus = chance(r, 0.5);
+    if (!minus) {
+      const a = c - x;
+      return { key: `p${a}+x=${c}`, prompt: `${a} + ☐ = ${c}`, answer: { type: 'number', value: x }, tags: ['platzhalter'], traps: [{ answer: String(a + c), tag: 'umkehr-falsch', hint: 'Gesucht ist, was noch fehlt – nicht die Summe. Rechne die Umkehraufgabe mit minus.' }], solution: [`Umkehraufgabe: ${c} − ${a} = ${x}`, `Probe: ${a} + ${x} = ${c}`] };
+    }
+    const a = c + x;
+    if (a <= 1000) return { key: `p${a}-x=${c}`, prompt: `${a} − ☐ = ${c}`, answer: { type: 'number', value: x }, tags: ['platzhalter'], traps: [{ answer: String(a + c), tag: 'umkehr-falsch', hint: 'Gesucht ist, wie viel weggenommen wurde. Rechne: größere Zahl minus Ergebnis.' }], solution: [`Rechne: ${a} − ${c} = ${x}`, `Probe: ${a} − ${x} = ${c}`] };
+  }
   const kind = st === 1 ? ri(r, 0, 1) : st === 3 ? ri(r, 2, 3) : ri(r, 0, 3);
   let a: number, b: number, minus: boolean;
   if (kind === 0) { a = ri(r, 10, 60) * 10; b = ri(r, 10, 99 - a / 10) * 10; minus = false; }
@@ -658,7 +671,7 @@ const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
   let cur = a;
   for (const part of [bh, bt, bo].filter(Boolean)) { const nx = minus ? cur - part : cur + part; steps.push(`${cur} ${s} ${part} = ${nx}`); cur = nx; }
   return { key: `${a}${s}${b}`, prompt: `${a} ${s} ${b} = ☐`, answer: { type: 'number', value: res }, tags: [minus ? 'minus' : 'plus'], traps: minus || a >= b ? [{ answer: String(minus ? a + b : a - b), tag: 'rechenzeichen', hint: 'Achte auf das Rechenzeichen.' }] : [], solution: ['Rechne in Schritten:', ...steps] };
-}, { testSeconds: 30 });
+}, { tagLabels: { plus: 'plus', minus: 'minus', platzhalter: 'Platzhalter-Aufgaben', 'umkehr-falsch': 'Platzhalter: Umkehraufgabe vergessen' }, testSeconds: 30 });
 
 /** Stufe 1 ohne Übertrag, Stufe 2 mit Übertrag, Stufe 3 drei Zahlen oder mehrere Überträge */
 function plusNumbers(r: Rng, s: Stage): number[] {
