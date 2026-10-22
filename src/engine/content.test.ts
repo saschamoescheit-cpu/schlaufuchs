@@ -33,6 +33,10 @@ describe('Inhalte', () => {
           expect(Number.isFinite(a.value), ctx).toBe(true);
           expect(a.value, ctx).toBeGreaterThanOrEqual(0);
           expect(check(t, String(a.value)).ok, ctx).toBe(true);
+        } else if (a.type === 'trace') {
+          expect(check(t, 'ok').ok, ctx).toBe(true);
+          expect(check(t, 'daneben').ok, ctx).toBe(false);
+          expect([...a.value].length, ctx).toBe(1);
         } else {
           expect(check(t, a.value).ok, ctx).toBe(true);
           expect(check(t, a.value.toUpperCase()).ok, ctx).toBe(!a.caseSensitive);

@@ -870,7 +870,31 @@ function advTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Buchstaben nachspuren (Kl. 1) ----------
+
+// [großer Buchstabe, Anlautwort, Bild]
+const SPUR: [string, string, string][] = [
+  ['A', 'Affe', '🐒'], ['B', 'Ball', '⚽'], ['D', 'Dino', '🦕'], ['E', 'Ente', '🦆'], ['F', 'Fisch', '🐟'], ['G', 'Gabel', '🍴'], ['H', 'Hund', '🐶'],
+  ['I', 'Igel', '🦔'], ['J', 'Jacke', '🧥'], ['K', 'Katze', '🐱'], ['L', 'Löwe', '🦁'], ['M', 'Maus', '🐭'], ['N', 'Nase', '👃'], ['O', 'Ohr', '👂'],
+  ['P', 'Pilz', '🍄'], ['R', 'Rad', '🚲'], ['S', 'Sonne', '☀️'], ['T', 'Tomate', '🍅'], ['U', 'Uhr', '⌚'], ['W', 'Wal', '🐳'], ['Z', 'Zebra', '🦓'],
+];
+function spurTask(r: Rng, s: Stage): Gen {
+  const [L, w, e] = pick(r, SPUR);
+  // Stufe 1 große, Stufe 2 kleine Buchstaben, Stufe 3 gemischt
+  const small = s === 2 || (s === 3 && chance(r, 0.6));
+  const letter = small ? L.toLowerCase() : L;
+  return {
+    key: letter,
+    prompt: `Spure das ${letter} nach – ${letter} wie ${w} ${e}`,
+    speak: `Spure das ${small ? 'kleine' : 'große'} ${L} nach. ${L} wie ${w}.`,
+    answer: { type: 'trace', value: letter },
+    tags: [small ? 'klein' : 'gross'],
+    solution: ['Fang am grünen Punkt an.', `Fahre mit dem Finger auf dem grauen ${letter} entlang, bis der ganze Buchstabe bunt ist – ohne daneben zu malen.`, `${letter} wie ${w} ${e}`],
+  };
+}
+
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(1, 'd1-nachspuren', 'Buchstaben nachspuren', '✍️', { text: ['Jeder Buchstabe hat eine feste Form – und eine Richtung, in die man ihn schreibt.', 'Fang oben am grünen Punkt an und fahre den grauen Buchstaben mit dem Finger nach.', 'Sprich dabei leise mit: A wie Affe!'], visual: { kind: 'word', word: 'A a' }, videoQuery: 'Buchstaben schreiben lernen Druckschrift Klasse 1' }, spurTask, { tagLabels: { gross: 'große Buchstaben', klein: 'kleine Buchstaben' }, testSeconds: 40 }),
   D(1, 'd1-selbstlaute', 'Selbstlaute: a, e, i, o, u', '🅰️', { text: ['Die Selbstlaute heißen a, e, i, o, u. Man nennt sie auch Vokale.', 'Alle anderen Buchstaben sind Mitlaute (Konsonanten): b, d, f, g …', 'In fast jeder Silbe steckt ein Selbstlaut: Ba – na – ne.'], visual: { kind: 'text', text: 'A E I O U' }, videoQuery: 'Selbstlaute Vokale Klasse 1 Grundschule' }, vokalTask, { tagLabels: { erkennen: 'Selbstlaute erkennen', zaehlen: 'Selbstlaute zählen', 'mitlaute-gezaehlt': 'Mitlaute statt Selbstlaute gezählt' }, testSeconds: 15 }),
   D(1, 'd1-minitexte', 'Mini-Texte lesen', '📄', { text: ['Lies den kurzen Text in Ruhe – Wort für Wort.', 'Lies dann die Frage. Die Antwort steht im Text.', 'Tippe auf das Bild, das passt.'], visual: { kind: 'text', text: 'Tim hat einen Ball. Der Ball ist rot.' }, videoQuery: 'Lesen lernen Klasse 1 kurze Texte verstehen' }, miniTask, { tagLabels: { 'mini-text': 'kurze Texte verstehen' }, testSeconds: 25 }),
   D(2, 'd2-v-f', 'V oder F?', '🐦', { text: ['Den f-Laut schreibt man meistens mit F: Fisch, Fuchs, fünf.', 'Merkwörter mit V: Vogel, Vater, vier, viel, von, vor – und alle Wörter mit ver- und vor-.', 'Diese Wörter musst du dir merken – man hört f, schreibt aber v.'], visual: { kind: 'text', text: 'Vogel · Vater · vier · viel' }, videoQuery: 'Wörter mit V Merkwörter Grundschule Klasse 2' }, vfTask, { tagLabels: { 'merkwort-v': 'Merkwörter mit V', f: 'Wörter mit F' }, testSeconds: 15 }),

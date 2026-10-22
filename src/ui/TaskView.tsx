@@ -5,6 +5,7 @@ import { Rich, Speak, SpeakerIcon } from './common';
 import { canSpeak, speak } from './speech';
 import { Visual } from './Visual';
 import { ColumnWork } from './ColumnWork';
+import { TraceInput } from './Trace';
 
 interface Props {
   task: Task;
@@ -62,6 +63,7 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
       )}
       {a.type === 'choice' && <Choices task={task} value={value} onPick={(v) => (onSubmit ? onSubmit(v) : onChange(v))} reveal={reveal} />}
       {a.type === 'number' && !task.work && <NumberInput value={value} unit={a.unit} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal ? (Number(value.replace(',', '.')) === a.value ? 'right' : 'wrong') : undefined} submitLabel={submitLabel} />}
+      {a.type === 'trace' && <TraceInput letter={a.value} onDone={(v) => (onSubmit ? onSubmit(v) : onChange(v))} reveal={reveal} ok={value === 'ok'} />}
       {a.type === 'text' && !task.work && <TextInput value={value} lang={a.lang} onChange={onChange} onSubmit={onSubmit ? () => onSubmit(value) : undefined} reveal={reveal} submitLabel={submitLabel} />}
     </div>
   );

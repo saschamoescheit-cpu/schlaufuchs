@@ -14,6 +14,7 @@ export const normText = (s: string, cs = false) => {
 /** die gegebene Antwort als Text (für Fallen und Anzeige) */
 export function answerText(a: Answer, given: string): string {
   if (a.type === 'choice') return a.options[Number(given)] ?? '';
+  if (a.type === 'trace') return given === 'ok' ? a.value : 'daneben gemalt';
   return given;
 }
 
@@ -42,6 +43,7 @@ export function check(task: Task, given: string): CheckResult {
   let ok = false;
   if (a.type === 'number') ok = Math.abs(normNumber(given) - a.value) < 1e-9;
   else if (a.type === 'choice') ok = Number(given) === a.correct;
+  else if (a.type === 'trace') ok = given === 'ok' || given === a.value;
   else {
     const g = normText(given, a.caseSensitive);
     ok = [a.value, ...(a.accept ?? [])].some((v) => normText(v, a.caseSensitive) === g);

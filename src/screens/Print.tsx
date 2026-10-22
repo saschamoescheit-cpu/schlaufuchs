@@ -59,6 +59,8 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
                       <span key={k}>○ {o}</span>
                     ))}
                   </div>
+                ) : a.type === 'trace' ? (
+                  <div className="paper-trace">{`${a.value} `.repeat(5)}</div>
                 ) : t.work ? (
                   <div className="paper-grid" />
                 ) : (

@@ -46,7 +46,9 @@ export type Visual =
 export type Answer =
   | { type: 'number'; value: number; unit?: string; prefix?: string; suffix?: string }
   | { type: 'choice'; options: string[]; correct: number; speakOptions?: Lang; big?: boolean }
-  | { type: 'text'; value: string; accept?: string[]; caseSensitive?: boolean; lang?: Lang; dictation?: boolean };
+  | { type: 'text'; value: string; accept?: string[]; caseSensitive?: boolean; lang?: Lang; dictation?: boolean }
+  /** Buchstaben mit dem Finger nachspuren – die Ansicht bewertet und liefert 'ok' oder 'daneben' */
+  | { type: 'trace'; value: string };
 
 /** Schriftliches Rechnen in Kästchen (Ziffer für Ziffer wie auf Papier) */
 export interface ColumnWork {

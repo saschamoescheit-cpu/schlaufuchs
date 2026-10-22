@@ -17,7 +17,7 @@ export function blitzable(s: Skill): boolean {
   if ((s.testSeconds ?? 30) > 30) return false;
   for (let i = 0; i < 6; i++) {
     const t = s.generate(Math.random, 2);
-    if (t.work || t.listen || t.answer.type === 'text' || t.prompt.length > 90) return false;
+    if (t.work || t.listen || t.answer.type === 'text' || t.answer.type === 'trace' || t.prompt.length > 90) return false;
     if (t.answer.type === 'choice' && t.answer.options.some((o) => o.length > 14)) return false;
   }
   return true;
