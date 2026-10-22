@@ -63,7 +63,7 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
                   <div className="paper-trace">{`${a.value} `.repeat(5)}</div>
                 ) : t.work ? (
                   <div className="paper-grid" />
-                ) : (
+                ) : t.prompt.includes('☐') ? null : (
                   <div className="paper-line">
                     Antwort: ________________________{a.type === 'number' && a.unit ? ` ${a.unit}` : ''}
                   </div>
