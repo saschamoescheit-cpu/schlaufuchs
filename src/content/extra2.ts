@@ -182,6 +182,8 @@ function sachTask(r: Rng): Gen {
 const CLASS: [string, string, string][] = [
   ['Stand up.', 'Steh auf.', '🧍'], ['Sit down.', 'Setz dich.', '🪑'], ['Open your book.', 'Öffne dein Buch.', '📖'], ['Close the door.', 'Schließ die Tür.', '🚪'], ['Listen.', 'Hör zu.', '👂'],
   ['Be quiet, please.', 'Sei bitte leise.', '🤫'], ['Raise your hand.', 'Melde dich.', '✋'], ['Look at the board.', 'Schau an die Tafel.', '👀'], ['Write your name.', 'Schreib deinen Namen.', '✍️'], ['Draw a picture.', 'Mal ein Bild.', '🖍️'],
+  ['Take out your pencil.', 'Nimm deinen Bleistift heraus.', '✏️'], ['Clean the board.', 'Wisch die Tafel.', '🧽'], ['Make a circle.', 'Bildet einen Kreis.', '⭕'], ['Work with a partner.', 'Arbeite mit einem Partner.', '👫'],
+  ['Pack your schoolbag.', 'Pack deine Schultasche.', '🎒'], ['Sing a song.', 'Sing ein Lied.', '🎵'], ['Cut it out.', 'Schneide es aus.', '✂️'], ['Count to ten.', 'Zähl bis zehn.', '🔟'],
 ];
 function classTask(r: Rng, s: Stage): Gen {
   const [en, de, e] = pick(r, CLASS);
