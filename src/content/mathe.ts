@@ -189,7 +189,7 @@ const plus20 = M(1, 'm1-plus20', 'Plus bis 20', '🚀', {
       answer: { type: 'number', value: a + b },
       tags: ['zehnerübergang'],
       traps: [{ answer: String(a + b - 10), tag: 'übertrag-vergessen', hint: 'Du hast vergessen, dass das Ergebnis über 10 geht. Erst bis zur 10 rechnen, dann weiter.' }],
-      solution: [`Erst bis zur 10: ${a} + ${toTen} = 10`, `Von der ${b} sind noch ${b - toTen} übrig.`, `10 + ${b - toTen} = ${a + b}`],
+      solution: [`Erst bis zur 10: ${a} + ${toTen} = 10`, `Von der ${b} ${b - toTen === 1 ? 'ist noch 1' : `sind noch ${b - toTen}`} übrig.`, `10 + ${b - toTen} = ${a + b}`],
       solutionVisual: { kind: 'numberline', from: Math.max(0, a - 2), to: Math.min(20, a + b + 2), start: a, jumps: [toTen, b - toTen] },
     };
   }
@@ -224,7 +224,7 @@ const minus20 = M(1, 'm1-minus20', 'Minus bis 20', '🎢', {
       answer: { type: 'number', value: a - b },
       tags: ['zehnerübergang'],
       traps: [{ answer: String(10 + Math.abs(toTen - b)), tag: 'einer-vertauscht', hint: `Bei den Einern geht ${toTen} − ${b} nicht. Rechne lieber in zwei Schritten über die 10.` }].filter((t) => Number(t.answer) !== a - b),
-      solution: [`Erst bis zur 10: ${a} − ${toTen} = 10`, `Von der ${b} sind noch ${b - toTen} übrig.`, `10 − ${b - toTen} = ${a - b}`],
+      solution: [`Erst bis zur 10: ${a} − ${toTen} = 10`, `Von der ${b} ${b - toTen === 1 ? 'ist noch 1' : `sind noch ${b - toTen}`} übrig.`, `10 − ${b - toTen} = ${a - b}`],
       solutionVisual: { kind: 'numberline', from: Math.max(0, a - b - 2), to: Math.min(20, a + 2), start: a, jumps: [-toTen, -(b - toTen)] },
     };
   }
@@ -351,7 +351,9 @@ function plusMinus100(r: Rng, minus: boolean, s: Stage): Gen {
     b < 10
       ? cross
         ? minus
-          ? [`Erst bis zum Zehner: ${a} − ${a % 10} = ${a - (a % 10)}`, `Dann den Rest: ${a - (a % 10)} − ${b - (a % 10)} = ${res}`]
+          ? a % 10 === 0
+            ? [`Erst einen ganzen Zehner weg: ${a} − 10 = ${a - 10}`, `Das war ${10 - b} zu viel – also ${10 - b} wieder dazu: ${a - 10} + ${10 - b} = ${res}`]
+            : [`Erst bis zum Zehner: ${a} − ${a % 10} = ${a - (a % 10)}`, `Dann den Rest: ${a - (a % 10)} − ${b - (a % 10)} = ${res}`]
           : [`Erst bis zum nächsten Zehner: ${a} + ${10 - (a % 10)} = ${a + 10 - (a % 10)}`, `Dann den Rest: ${a + 10 - (a % 10)} + ${b - (10 - (a % 10))} = ${res}`]
         : [`Nur die Einer ändern sich: ${a % 10} ${sg} ${b} = ${minus ? (a % 10) - b : (a % 10) + b}`, `${a} ${sg} ${b} = ${res}`]
       : be === 0
@@ -605,7 +607,7 @@ function storyGen(r: Rng, level: 2 | 3 | 4): Story {
     const a = ri(r, 25, 60), b = ri(r, 10, a - 5), c = ri(r, 10, 40); return { text: `Am Kiosk liegen ${a} Brezeln. Vormittags werden ${b} verkauft, mittags kommen ${c} frische dazu.`, q: 'Wie viele Brezeln liegen jetzt am Kiosk?', calc: `${a} − ${b} = ${a - b}, dann ${a - b} + ${c} = ${a - b + c}`, res: a - b + c, unit: 'Brezeln', ant: `Es liegen ${a - b + c} Brezeln am Kiosk.`, op: 'zwei-schritte', wrong: a - b };
   }
   if (t === 0) { const p = ri(r, 12, 45), k = ri(r, 12, 28); return { text: `Die Klasse 4b fährt in den Zoo. Der Bus kostet ${p * 10} €, der Eintritt ${k} € pro Kind. Es fahren 25 Kinder mit.`, q: 'Wie viel kostet der Ausflug insgesamt?', calc: `25 · ${k} € = ${25 * k} €, dann ${25 * k} € + ${p * 10} € = ${25 * k + p * 10} €`, res: 25 * k + p * 10, unit: '€', ant: `Der Ausflug kostet ${25 * k + p * 10} €.`, op: 'zwei-schritte', wrong: 25 * k }; }
-  if (t === 1) { const km = ri(r, 120, 480), h = pick(r, [2, 3, 4]); return { text: `Familie Yilmaz fährt in den Urlaub. Die Strecke ist ${km * h} km lang. Sie fahren ${h} Stunden.`, q: 'Wie viele Kilometer schaffen sie im Durchschnitt pro Stunde?', calc: `${km * h} : ${h} = ${km}`, res: km, unit: 'km', ant: `Sie fahren ${km} km pro Stunde.`, op: 'geteilt', wrong: km * h - h }; }
+  if (t === 1) { const km = ri(r, 65, 110), h = pick(r, [2, 3, 4, 5]); /* realistisch: 65–110 km pro Stunde */ return { text: `Familie Yilmaz fährt in den Urlaub. Die Strecke ist ${km * h} km lang. Sie fahren ${h} Stunden.`, q: 'Wie viele Kilometer schaffen sie im Durchschnitt pro Stunde?', calc: `${km * h} : ${h} = ${km}`, res: km, unit: 'km', ant: `Sie fahren ${km} km pro Stunde.`, op: 'geteilt', wrong: km * h - h }; }
   if (t === 2) { const a = ri(r, 1200, 4800), b = ri(r, 800, a - 200); return { text: `Ein Fahrradhändler hat ${a} € eingenommen. Davon bezahlt er eine Rechnung über ${b} €.`, q: 'Wie viel Geld bleibt übrig?', calc: `${a} − ${b} = ${a - b}`, res: a - b, unit: '€', ant: `Es bleiben ${a - b} € übrig.`, op: 'minus', wrong: a + b }; }
   if (t === 3) { const k = ri(r, 3, 9), s = ri(r, 120, 450); return { text: `Eine Kiste Mineralwasser wiegt 9 kg ${s} g. Ein Lieferwagen bringt ${k} Kisten.`, q: 'Wie viel Gramm wiegen alle Kisten zusammen?', calc: `9 kg ${s} g = ${9000 + s} g, ${k} · ${9000 + s} g = ${k * (9000 + s)} g`, res: k * (9000 + s), unit: 'g', ant: `Die Kisten wiegen ${fmt(k * (9000 + s))} g.`, op: 'zwei-schritte', wrong: k * (9 + s) }; }
   if (t === 4) { const pp = ri(r, 3, 8), c = ri(r, 4, 9); return { text: `Für das Schulfest backen ${c} Eltern je ${pp} Bleche Kuchen. Auf jedes Blech passen 20 Stücke.`, q: 'Wie viele Kuchenstücke gibt es?', calc: `${c} · ${pp} = ${c * pp} Bleche, ${c * pp} · 20 = ${c * pp * 20} Stücke`, res: c * pp * 20, unit: 'Stücke', ant: `Es gibt ${c * pp * 20} Kuchenstücke.`, op: 'zwei-schritte', wrong: c * pp }; }

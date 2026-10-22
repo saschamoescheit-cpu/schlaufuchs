@@ -71,7 +71,7 @@ function netTask(r: Rng): Gen {
     tags: [valid ? 'netz-ja' : 'netz-nein'],
     solution: valid
       ? ['Ja! Beim Falten liegt jedes Quadrat auf einer anderen Würfelseite – keine Seite fehlt, keine liegt doppelt.', 'Tipp: Stell dir vor, ein Quadrat ist der Boden, und klappe die anderen hoch.']
-      : ['Nein. Beim Falten würden zwei Quadrate auf derselben Würfelseite landen – dafür fehlt eine andere Seite.', 'Typisch: Mehr als 4 Quadrate in einer Reihe oder ein 2×3-Block klappt nie.'],
+      : ['Nein. Beim Falten würden zwei Quadrate auf derselben Würfelseite landen – dafür fehlt eine andere Seite.', 'Typisch: Mehr als 4 Quadrate in einer Reihe oder ein 2×2-Block klappt nie.'],
   };
 }
 
@@ -84,10 +84,15 @@ function estimateTask(r: Rng, s: Stage): Gen {
     const est = ra * b;
     return { key: `${a}x${b}`, prompt: `Überschlage:\n${a} · ${b} ≈ ?`, speak: `Überschlage: ${a} mal ${b}. Ungefähr wie viel?`, answer: choice(r, String(est), [String(est + b * 10), String(est - b * 10), String(ra + b), String(est * 10)]), tags: ['ueberschlag-mal'], solution: [`Runde ${a} auf ${ra}.`, `${ra} · ${b} = ${est}`, `Also ist ${a} · ${b} ungefähr ${est} (genau: ${a * b}).`] };
   }
-  const a = ri(r, 120, 880);
-  const b = ri(r, 110, op === '+' ? 990 - a : a - 50);
-  const ra = Math.round(a / 100) * 100;
-  const rb = Math.round(b / 100) * 100;
+  // Minus: keine Überschläge wie 100 − 100 = 0 (sagen nichts über das Ergebnis)
+  let a = 0, b = 0, ra = 0, rb = 0;
+  for (let i = 0; i < 20; i++) {
+    a = ri(r, op === '+' ? 120 : 260, 880);
+    b = ri(r, 110, op === '+' ? 990 - a : a - 120);
+    ra = Math.round(a / 100) * 100;
+    rb = Math.round(b / 100) * 100;
+    if (op === '+' || ra - rb >= 100) break;
+  }
   const est = op === '+' ? ra + rb : ra - rb;
   const exact = op === '+' ? a + b : a - b;
   return { key: `${a}${op}${b}`, prompt: `Überschlage:\n${a} ${op} ${b} ≈ ?`, speak: `Überschlage: ${a} ${op === '+' ? 'plus' : 'minus'} ${b}. Ungefähr wie viel?`, answer: choice(r, String(est), [String(est + 100), String(est - 100), String(est + 200), String(Math.round(exact / 10) * 10 === est ? est + 300 : Math.round(exact / 10) * 10)].filter((x) => Number(x) > 0)), tags: [op === '+' ? 'ueberschlag-plus' : 'ueberschlag-minus'], solution: [`Runde auf Hunderter: ${a} ≈ ${ra}, ${b} ≈ ${rb}`, `${ra} ${op} ${rb} = ${est}`, `Genau wäre es ${exact} – der Überschlag ist nah dran.`] };
