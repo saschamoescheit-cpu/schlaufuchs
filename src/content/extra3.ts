@@ -606,7 +606,53 @@ ${w.slice(0, m.index)}_ _${w.slice(m.index + 2)}`,
   };
 }
 
+// ---------- Rechengeschichten (Kl. 1) ----------
+
+const STORY1: { e: string; n: string; start: (a: number) => string; add: (b: number) => string; sub: (b: number) => string }[] = [
+  { e: '🦆', n: 'Enten', start: (a) => `Im Teich schwimmen ${a} Enten.`, add: (b) => `${b} Enten kommen dazu.`, sub: (b) => `${b} Enten schwimmen weg.` },
+  { e: '🐦', n: 'Vögel', start: (a) => `Auf dem Baum sitzen ${a} Vögel.`, add: (b) => `${b} Vögel fliegen dazu.`, sub: (b) => `${b} Vögel fliegen weg.` },
+  { e: '🐰', n: 'Hasen', start: (a) => `Auf der Wiese sind ${a} Hasen.`, add: (b) => `${b} Hasen hoppeln dazu.`, sub: (b) => `${b} Hasen hoppeln weg.` },
+  { e: '🧒', n: 'Kinder', start: (a) => `Auf dem Spielplatz spielen ${a} Kinder.`, add: (b) => `${b} Kinder kommen dazu.`, sub: (b) => `${b} Kinder gehen nach Hause.` },
+  { e: '🍎', n: 'Äpfel', start: (a) => `Im Korb liegen ${a} Äpfel.`, add: (b) => `Mama legt ${b} Äpfel dazu.`, sub: (b) => `Ben nimmt ${b} Äpfel heraus.` },
+  { e: '🎈', n: 'Luftballons', start: (a) => `Lea hat ${a} Luftballons.`, add: (b) => `Sie bekommt ${b} Luftballons dazu.`, sub: (b) => `${b} Luftballons platzen.` },
+  { e: '🐟', n: 'Fische', start: (a) => `Im Aquarium schwimmen ${a} Fische.`, add: (b) => `Papa setzt ${b} Fische dazu.`, sub: (b) => `${b} Fische verstecken sich hinter dem Stein. Wie viele siehst du noch?` },
+];
+function story1Task(r: Rng, s: Stage): Gen {
+  const st = pick(r, STORY1);
+  const plus = chance(r, 0.5);
+  const max = s === 1 ? 10 : 20;
+  let a: number, b: number;
+  if (plus) {
+    a = ri(r, 2, max - 2);
+    b = ri(r, 2, Math.min(9, max - a));
+  } else {
+    a = ri(r, 4, max);
+    b = ri(r, 2, Math.min(9, a - 1));
+  }
+  const res = plus ? a + b : a - b;
+  const text = `${st.start(a)} ${plus ? st.add(b) : st.sub(b)}`;
+  const q = text.endsWith('?') ? '' : `Wie viele ${st.n} sind es jetzt?`;
+  const term = `${a} ${plus ? '+' : '−'} ${b}`;
+  const sv = { kind: 'tenframe' as const, a, ...(plus ? { b } : { crossOut: b }) };
+  // „Welche Rechnung passt?“ ab Stufe 2
+  if (s > 1 && chance(r, 0.35)) {
+    const wrong = [`${a} ${plus ? '−' : '+'} ${b}`, `${b} + ${b}`, `${a} + ${a}`].filter((x) => x !== term);
+    return { key: `r-${st.n}-${a}-${b}-${plus}`, prompt: `${text}\n**Welche Rechnung passt?**`, visual: { kind: 'emoji', chars: st.e }, answer: choice(r, term, wrong), tags: ['rechnung-finden'], solution: [plus ? `„dazu“ heißt: es werden mehr → plus.` : `„weg“ heißt: es werden weniger → minus.`, `${term} = ${res}`], solutionVisual: sv };
+  }
+  return {
+    key: `${st.n}-${a}-${b}-${plus}`,
+    prompt: q ? `${text}\n**${q}**` : text.replace(/ (Wie viele[^?]*\?)$/, '\n**$1**'),
+    visual: s === 1 ? sv : s === 2 ? { kind: 'emoji', chars: st.e } : undefined,
+    answer: { type: 'number', value: res },
+    tags: [plus ? 'plus' : 'minus'],
+    traps: [{ answer: String(plus ? Math.abs(a - b) : a + b), tag: 'falsche-rechenart', hint: plus ? 'Es kommen welche dazu – also wird es mehr: plus rechnen!' : 'Es gehen welche weg – also wird es weniger: minus rechnen!' }],
+    solution: [plus ? 'Es kommen welche dazu → plus.' : 'Es gehen welche weg → minus.', `${term} = ${res}`, `Es sind jetzt ${res} ${st.n}.`],
+    solutionVisual: sv,
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),
   M(1, 'm1-ziffern', 'Ziffern schreiben', '✏️', { text: ['Jede Ziffer hat ihre feste Form – und eine Richtung, in die man sie schreibt.', 'Fang am grünen Punkt an und fahre die graue Ziffer mit dem Finger nach.', 'Tippe auf ▶, dann zeigt dir der Fuchs, wie es geht.'], visual: { kind: 'word', word: '1 2 3' }, videoQuery: 'Ziffern schreiben lernen Kinder Schreibrichtung' }, zifferTask, { tagLabels: { ziffern: 'Ziffern schreiben' }, testSeconds: 40 }),
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-ordnen', 'Zahlen ordnen', '🔢', { text: ['Am Zahlenstrahl stehen die kleinen Zahlen links, die großen rechts.', 'Zum Ordnen suchst du zuerst die kleinste Zahl, dann die nächstgrößere – bis zur größten.', 'Das Zeichen < heißt „kleiner als“: 3 < 7.'], visual: { kind: 'numberline', from: 0, to: 10, start: 7, jumps: [] }, videoQuery: 'Zahlen ordnen der Größe nach Klasse 1' }, ordnenTask, { tagLabels: { kleinste: 'kleinste Zahl finden', groesste: 'größte Zahl finden', ordnen: 'Zahlen der Reihe nach ordnen', verwechselt: 'kleinste und größte verwechselt' }, testSeconds: 15 }),
