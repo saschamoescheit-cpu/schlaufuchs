@@ -205,7 +205,9 @@ function wordOrderTask(r: Rng, s: Stage): Gen {
   const words = en.slice(0, -1).split(' ');
   const plain = words.map((w, i) => (i === 0 ? lowFirst(w) : w));
   const sentence = (ws: string[]) => capFirst(ws.join(' ')) + end;
-  const mixed = shuffle(r, plain);
+  // gemischt heißt gemischt: zufällig schon richtig sortiert würde die Lösung verraten
+  let mixed = shuffle(r, plain);
+  if (mixed.join(' ') === plain.join(' ')) mixed = [...plain.slice(1), plain[0]];
   // Ablenker = typische Lernerfehler: zwei Nachbarwörter vertauscht (auch zweimal). Nicht als Ablenker:
   // Aussagen, die wie eine Frage anfangen (Is it sunny today.), und Umstellungen, die mit dem letzten Wort beginnen
   // (Apples I like.) – die wären teils richtiges Englisch.

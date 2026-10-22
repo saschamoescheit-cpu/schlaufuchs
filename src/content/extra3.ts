@@ -1153,8 +1153,10 @@ function ergaenzenTask(r: Rng, s: Stage): Gen {
 
 function ordnenTask(r: Rng, s: Stage): Gen {
   const n = s === 1 ? 3 : 4;
-  const nums = pickN(r, Array.from({ length: s === 1 ? 10 : 20 }, (_, i) => i + 1), n);
+  let nums = pickN(r, Array.from({ length: s === 1 ? 10 : 20 }, (_, i) => i + 1), n);
   const sorted = [...nums].sort((a, b) => a - b);
+  // zufällig schon sortiert gezeigt wäre die Reihe verraten
+  if (nums.join() === sorted.join()) nums = [...nums.slice(1), nums[0]];
   const v = s === 1 ? pick(r, ['klein', 'gross']) : pick(r, ['klein', 'gross', 'reihe']);
   if (v === 'reihe') {
     const ok = sorted.join(' < ');
