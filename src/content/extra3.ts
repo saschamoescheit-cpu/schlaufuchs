@@ -290,6 +290,7 @@ function enReadTask(r: Rng, s: Stage): Gen {
 }
 
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(1, 'e1-alphabet', 'The alphabet – ABC auf Englisch', '🔤', { text: ['Die englischen Buchstaben heißen anders als die deutschen.', 'Achtung: E klingt wie „i“, I klingt wie „ai“, A klingt wie „äi“.', 'G („dschii“) und J („dschäi“) verwechselt man leicht. Z heißt in England „zed“.'], visual: { kind: 'word', word: 'A · E · I · G · J', mark: [[4, 5], [8, 9]] }, videoQuery: 'ABC song British English phonics alphabet' }, alphabetTask, { tagLabels: { buchstaben: 'englische Buchstaben hören', buchstabieren: 'buchstabierte Wörter verstehen' }, testSeconds: 20 }),
   E(2, 'e2-myday', 'My day – Tagesablauf', '⏰', { text: ['I get up. = Ich stehe auf. I go to school. = Ich gehe zur Schule.', "Mit Uhrzeit: I get up at seven o'clock.", 'Am Abend: I have dinner. I go to bed.'], visual: { kind: 'clock', h: 7, m: 0 }, videoQuery: 'daily routine song for kids English' }, mydayTask, { tagLabels: { saetze: 'Sätze zum Tagesablauf', uhrzeit: 'mit Uhrzeit', reihenfolge: 'Reihenfolge am Tag' }, testSeconds: 20 }),
   E(1, 'e1-shapes', 'Shapes and colours – Formen', '🔷', { text: ['circle = Kreis, square = Quadrat, triangle = Dreieck, rectangle = Rechteck.', 'Die Farbe steht vor der Form – wie im Deutschen: a red circle = ein roter Kreis.', 'Sprich mit: a blue square, a green triangle!'], visual: { kind: 'shape', shape: 'Kreis', fill: '#F06A6A' }, videoQuery: 'shapes song for kids circle square triangle rectangle' }, shapesTask, { tagLabels: { hoeren: 'Formen hören', uebersetzen: 'Deutsch → Englisch', schreiben: 'Formen schreiben', reihenfolge: 'Farbe und Form vertauscht' }, testSeconds: 20 }),
   E(2, 'e2-reading', 'Read and understand – Texte lesen', '📖', { text: ['Lies den englischen Text in Ruhe – du musst nicht jedes Wort kennen.', 'Suche die Wörter, die du kennst: Zahlen, Farben, Tiere, Namen.', 'Lies dann die Frage und suche die passende Stelle im Text.'], visual: { kind: 'text', text: 'My name is Lucy. I am nine years old.' }, videoQuery: 'English reading for kids short text Grundschule Klasse 4' }, enReadTask, { tagLabels: { lesen: 'englische Texte verstehen' }, testSeconds: 60 }),
@@ -889,6 +890,32 @@ function lautposTask(r: Rng, s: Stage): Gen {
     solution: [`Sprich langsam: ${w}.`, `Das „${l}“ hörst du ${pos}.`],
     solutionVisual: { kind: 'word', word: w, mark: [[i, end]] },
   };
+}
+
+// ---------- The alphabet – ABC auf Englisch (1. Lernjahr) ----------
+
+// Buchstaben, deren englische Namen deutsche Kinder leicht verwechseln
+const ABC_EN: Record<string, { say: string; mix: string[] }> = {
+  A: { say: 'ay', mix: ['E', 'I', 'R'] }, E: { say: 'ee', mix: ['I', 'A', 'Y'] }, I: { say: 'eye', mix: ['E', 'A', 'Y'] },
+  G: { say: 'jee', mix: ['J', 'Z', 'C'] }, J: { say: 'jay', mix: ['G', 'Y', 'H'] }, Y: { say: 'why', mix: ['W', 'I', 'J'] },
+  W: { say: 'double-you', mix: ['V', 'Y', 'U'] }, V: { say: 'vee', mix: ['W', 'B', 'F'] }, R: { say: 'ar', mix: ['A', 'H', 'E'] },
+  H: { say: 'aitch', mix: ['A', 'R', 'K'] }, U: { say: 'you', mix: ['O', 'Q', 'W'] }, Z: { say: 'zed', mix: ['S', 'C', 'G'] },
+  K: { say: 'kay', mix: ['Q', 'C', 'A'] }, C: { say: 'see', mix: ['S', 'Z', 'K'] },
+};
+const SPELL_EN: string[][] = [
+  ['cat', 'cap', 'car', 'can'], ['dog', 'dot', 'dig', 'dug'], ['pen', 'pin', 'pan', 'pet'], ['red', 'rod', 'rid', 'bed'],
+  ['bus', 'bun', 'but', 'bug'], ['sun', 'son', 'run', 'fun'], ['hat', 'ham', 'hit', 'hot'], ['big', 'bag', 'beg', 'bit'],
+];
+function alphabetTask(r: Rng, s: Stage): Gen {
+  if (s > 1 && chance(r, 0.5)) {
+    const set = pick(r, SPELL_EN);
+    const w = pick(r, set);
+    const spelled = w.toUpperCase().split('').join(', ');
+    return { key: `w-${w}`, prompt: 'Hör gut zu! Welches Wort wird buchstabiert?', listen: { text: spelled, lang: 'en', slow: true }, answer: { ...choice(r, w, set.filter((x) => x !== w)), speakOptions: 'en' }, tags: ['buchstabieren'], solution: [`Buchstabiert: ${spelled}`, `Das Wort heißt „${w}“.`], pronounce: { text: `${spelled}. ${w}`, lang: 'en' } };
+  }
+  const L = pick(r, Object.keys(ABC_EN));
+  const x = ABC_EN[L];
+  return { key: `l-${L}`, prompt: 'Hör gut zu! Welchen Buchstaben hörst du?', listen: { text: L, lang: 'en', slow: true }, answer: { ...choice(r, L, s === 1 ? x.mix.slice(0, 2) : x.mix), big: true }, tags: ['buchstaben'], solution: [`Auf Englisch heißt ${L} „${x.say}“.`, L === 'E' ? 'Achtung: Das englische E klingt wie ein deutsches „i“!' : L === 'I' ? 'Achtung: Das englische I klingt wie „ai“!' : L === 'G' || L === 'J' ? 'G („dschii“) und J („dschäi“) klingen ähnlich – genau hinhören!' : `Sprich nach: ${x.say}.`], pronounce: { text: L, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [
