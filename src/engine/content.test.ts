@@ -66,3 +66,20 @@ describe('Zahlenraum je Klasse', () => {
     });
   }
 });
+
+describe('Bilder eindeutig', () => {
+  it('ein Bild (Emoji) gehört je Thema immer zur selben richtigen Antwort', () => {
+    for (const s of ALL_SKILLS) {
+      const r = mulberry32(5);
+      const seen = new Map<string, string>();
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, ((i % 3) + 1) as 1 | 2 | 3);
+        if (t.visual?.kind !== 'emoji' || t.prompt !== 'Wie heißt das auf Englisch?') continue;
+        const ans = correctText(t.answer);
+        const before = seen.get(t.visual.chars);
+        expect(before === undefined || before === ans, `${s.id}: ${t.visual.chars} = ${before} oder ${ans}?`).toBe(true);
+        seen.set(t.visual.chars, ans);
+      }
+    }
+  });
+});
