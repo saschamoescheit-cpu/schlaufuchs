@@ -7,7 +7,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, saveProfile, type AppData, type Profile } from '../data/store';
+import { deleteProfile, saveProfile, schoolYear, type AppData, type Profile } from '../data/store';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
@@ -487,7 +487,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                 <span className="label">Klasse</span>
                 <div className="chips">
                   {[1, 2, 3, 4].map((g) => (
-                    <button key={g} className={`chip ${p.grade === g ? 'on' : ''}`} onClick={() => set({ grade: g as Grade })}>
+                    <button key={g} className={`chip ${p.grade === g ? 'on' : ''}`} onClick={() => set({ grade: g as Grade, gradeYear: schoolYear() })}>
                       {g}.
                     </button>
                   ))}

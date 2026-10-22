@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
-import { deleteProfile, duplicateProfiles, mergeProfiles, newProfile, saveProfile, setActive, type AppData, type Profile } from '../data/store';
+import { deleteProfile, duplicateProfiles, mergeProfiles, newProfile, saveProfile, schoolYear, setActive, type AppData, type Profile } from '../data/store';
 import { forgetRemoved, removedList, restoreRemoved, signIn, signOut, syncNow, useSyncStatus } from '../data/sync';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
@@ -179,7 +179,7 @@ export function ProfileEdit({ profile, onDone, onCancel, limited }: { profile?: 
           <span className="label">In welche Klasse gehst du?</span>
           <div className="chips">
             {[1, 2, 3, 4].map((g) => (
-              <button key={g} className={`chip ${p.grade === g ? 'on' : ''}`} style={{ minWidth: 64, fontSize: '1.2rem' }} onClick={() => set({ grade: g as Grade, ...(isNew ? { age: 5 + g, autoRead: g === 1 } : {}) })}>
+              <button key={g} className={`chip ${p.grade === g ? 'on' : ''}`} style={{ minWidth: 64, fontSize: '1.2rem' }} onClick={() => set({ grade: g as Grade, gradeYear: schoolYear(), ...(isNew ? { age: 5 + g, autoRead: g === 1 } : {}) })}>
                 {g}.
               </button>
             ))}

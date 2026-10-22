@@ -33,6 +33,8 @@ export interface Profile {
   outfit?: string[];
   /** Englisch: Nachsprechen mit Mikrofon (Spracherkennung von Apple/Google) – nur mit Erlaubnis der Eltern */
   micPractice?: boolean;
+  /** Schuljahr (Startjahr, z. B. 2026 für 2026/27), für das die Klasse zuletzt bestätigt wurde */
+  gradeYear?: number;
   created: number;
 }
 
@@ -114,6 +116,12 @@ export function useData(): AppData {
   );
 }
 
+/** Schuljahr als Startjahr: ab August zählt das neue Schuljahr (2026/27 → 2026) */
+export const schoolYear = (t = Date.now()) => {
+  const d = new Date(t);
+  return d.getMonth() >= 7 ? d.getFullYear() : d.getFullYear() - 1;
+};
+
 export function newProfile(partial: Partial<Profile>): Profile {
   const st = stateInfo(partial.state ?? DEFAULT_STATE);
   const grade = partial.grade ?? 1;
@@ -132,6 +140,7 @@ export function newProfile(partial: Partial<Profile>): Profile {
     pace: 'schule',
     dailyGoal: 20,
     created: Date.now(),
+    gradeYear: schoolYear(),
     ...partial,
   };
 }

@@ -9,7 +9,7 @@ export async function open({ url = 'http://localhost:5192/', out = 'qa/shots', d
   const id = 'testkind1';
   const app = {
     schema: 1,
-    profiles: [{ id, name, avatar: '🦊', age: 5 + grade, grade, state: 'NW', englishFrom: 3, gradesFrom: 3, gradeKey: [95, 80, 65, 50, 25], autoRead: false, sound: false, pace: 'schule', created: 1, ...profile }],
+    profiles: [{ id, name, avatar: '🦊', age: 5 + grade, grade, state: 'NW', englishFrom: 3, gradesFrom: 3, gradeKey: [95, 80, 65, 50, 25], autoRead: false, sound: false, pace: 'schule', created: 1, gradeYear: 9999, ...profile }],
     progress: { [id]: progress ?? { skills: {}, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} } },
     activeId: id,
     parent: { pin: null },

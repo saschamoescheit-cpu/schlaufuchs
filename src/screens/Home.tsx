@@ -3,7 +3,8 @@ import { useMemo, useState } from 'react';
 import { dayKey, dueReviews, level, openReviews, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Grade, Skill, Subject } from '../engine/types';
 import { byArea, currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
-import type { Profile } from '../data/store';
+import { saveProfile, schoolYear, type Profile } from '../data/store';
+import { hasPin } from '../data/parent';
 import { Fox, LevelDots, TopBar } from '../ui/common';
 import { ExplainSheet } from '../ui/Explain';
 import { BadgeWatcher, DailyGoal } from '../ui/Badges';
@@ -70,6 +71,7 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
       </div>
 
       {wardrobe && <Wardrobe profile={profile} stars={progress.stars} onClose={() => setWardrobe(false)} />}
+      <NewSchoolYear profile={profile} />
       {planned && <PlannedCard t={planned} progress={progress} onPractice={onMix} onStart={onStartTest} />}
       <DailyGoal profile={profile} progress={progress} />
       <BadgeWatcher profile={profile} progress={progress} />
@@ -123,6 +125,37 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
           <span className="btn small ok">Üben</span>
         </button>
       )}
+    </div>
+  );
+}
+
+/** Neues Schuljahr (ab August): einmal fragen, ob das Kind jetzt eine Klasse höher ist */
+function NewSchoolYear({ profile }: { profile: Profile }) {
+  const now = schoolYear();
+  const confirmed = profile.gradeYear ?? schoolYear(profile.created);
+  if (confirmed >= now || profile.grade >= 4) return null;
+  const next = (profile.grade + 1) as Grade;
+  const done = (grade: Grade) => saveProfile({ ...profile, grade, age: grade !== profile.grade ? profile.age + 1 : profile.age, gradeYear: now }, false);
+  if (hasPin())
+    return (
+      <div className="card tint" style={{ background: 'var(--ok-soft)' }}>
+        🎒 <b>Neues Schuljahr!</b> Bist du jetzt in Klasse {next}? Dann sag deinen Eltern Bescheid – sie stellen es im Eltern-Bereich um.
+        <button className="btn ghost block small" style={{ marginTop: 8 }} onClick={() => done(profile.grade)}>
+          Okay
+        </button>
+      </div>
+    );
+  return (
+    <div className="card tint" style={{ background: 'var(--ok-soft)' }}>
+      🎒 <b>Neues Schuljahr!</b> Bist du jetzt in Klasse {next}?
+      <div className="row" style={{ gap: 8, marginTop: 8 }}>
+        <button className="btn ok grow" onClick={() => done(next)}>
+          Ja, Klasse {next}
+        </button>
+        <button className="btn ghost grow" onClick={() => done(profile.grade)}>
+          Nein
+        </button>
+      </div>
     </div>
   );
 }
