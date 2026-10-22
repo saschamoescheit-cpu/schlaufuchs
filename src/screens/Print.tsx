@@ -12,6 +12,11 @@ const strip = (s: string) => s.replace(/\*\*/g, '');
 export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: TestSpec; onBack: () => void }) {
   const info = subjectInfo(spec.subject);
   const withGrades = profile.grade >= profile.gradesFrom;
+  // Hör-Aufgaben (Diktat, Zuhören, englische Wörter): Auf Papier liest ein Erwachsener vor. Die Texte stehen auf einem
+  // eigenen Vorlese-Blatt – neben der Aufgabe würden sie die Lösung verraten.
+  // (Steht der Hörtext schon in der Aufgabe – „Was heißt „January“ auf Deutsch?“ –, braucht es keinen Vorleser.)
+  const mustRead = (t: (typeof spec.tasks)[number]) => !!t.listen && !t.prompt.includes(t.listen.text);
+  const reads = spec.tasks.flatMap((t, i) => (mustRead(t) ? [{ nr: i + 1, text: t.listen!.text, lang: t.listen!.lang }] : []));
   return (
     <div className="print-page">
       <div className="no-print">
@@ -45,7 +50,7 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
             return (
               <li key={i}>
                 <div className="paper-prompt">
-                  <Rich text={t.listen && t.listen.lang === 'en' ? `${t.prompt}\n(Wort zum Vorlesen: „${t.listen.text}“)` : t.prompt} />
+                  <Rich text={mustRead(t) ? `${t.prompt}\n(🔊 Ein Erwachsener liest vor – Vorlese-Blatt, Nr. ${i + 1})` : t.prompt} />
                 </div>
                 {t.visual && t.visual.kind !== 'text' && (
                   <div className="paper-visual">
@@ -78,6 +83,23 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
           </div>
         )}
       </div>
+
+      {reads.length > 0 && (
+        <div className="sheet-paper page-break">
+          <div className="paper-head">
+            <b>🔊 Vorlese-Blatt – für Erwachsene</b>
+            <div className="small">Lies bei diesen Aufgaben den Text deutlich vor, gern zweimal. Das Kind sieht dieses Blatt nicht.</div>
+          </div>
+          <ol className="paper-solutions">
+            {reads.map((x) => (
+              <li key={x.nr} value={x.nr}>
+                <span lang={x.lang}>{x.text}</span>
+                {x.lang === 'en' && <span className="muted"> (Englisch)</span>}
+              </li>
+            ))}
+          </ol>
+        </div>
+      )}
 
       <div className="sheet-paper page-break">
         <div className="paper-head">
