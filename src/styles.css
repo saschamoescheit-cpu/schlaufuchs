@@ -2213,7 +2213,7 @@ html[data-school-font] .prompt.long {
 }
 .trace-wrap {
   position: relative;
-  width: min(420px, 100%, 52vh);
+  width: max(220px, min(420px, 100%, 52vh));
 }
 .trace-canvas {
   display: block;
@@ -2228,10 +2228,11 @@ html[data-school-font] .prompt.long {
 /* „Zeig's mir“: rundes Abspiel-Symbol unten rechts im Bild */
 .trace-play {
   position: absolute;
-  right: 10px;
-  bottom: 10px;
-  width: 46px;
-  height: 46px;
+  right: 8px;
+  bottom: 8px;
+  width: min(46px, 13%);
+  height: auto;
+  aspect-ratio: 1;
   border-radius: 50%;
   border: none;
   background: var(--ok, #2fa868);
@@ -2242,7 +2243,7 @@ html[data-school-font] .prompt.long {
   cursor: pointer;
 }
 .trace-btns {
-  width: min(420px, 100%, 52vh);
+  width: max(220px, min(420px, 100%, 52vh));
 }
 .paper-trace {
   font-family: 'Andika', var(--body);
@@ -2263,7 +2264,7 @@ html[data-school-font] .prompt.long {
   width: 110px !important;
 }
 .trace-tip {
-  width: min(420px, 100%, 52vh);
+  width: max(220px, min(420px, 100%, 52vh));
   font-size: 0.95rem;
   background: var(--ok-soft, #e3f6ea);
   border-radius: 12px;
