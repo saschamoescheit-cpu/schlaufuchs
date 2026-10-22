@@ -200,6 +200,15 @@ const SATZBILD: [string, string, string[]][] = [
   ['👶🍼', 'Das Baby trinkt aus der Flasche.', ['Das Baby isst ein Brot.', 'Die Katze trinkt aus der Flasche.', 'Das Baby spielt Ball.']],
   ['🦒🌳', 'Die Giraffe frisst Blätter vom Baum.', ['Der Elefant frisst Blätter vom Baum.', 'Die Giraffe trinkt Wasser.', 'Die Giraffe schläft.']],
   ['🐄🌾', 'Die Kuh steht auf der Wiese.', ['Das Schaf steht auf der Wiese.', 'Die Kuh liegt im Stall.', 'Die Kuh schwimmt im See.']],
+  // Nachtlauf 22.10.2026: mehr Bilder
+  ['🐶🦴', 'Der Hund hat einen Knochen.', ['Der Hund hat einen Ball.', 'Die Katze hat einen Knochen.', 'Der Hund frisst Gras.']],
+  ['👦🍦', 'Der Junge isst ein Eis.', ['Der Junge isst eine Banane.', 'Das Mädchen isst ein Eis.', 'Der Junge trinkt Saft.']],
+  ['🐔🥚', 'Das Huhn legt ein Ei.', ['Das Huhn frisst Körner.', 'Die Ente legt ein Ei.', 'Das Huhn schläft.']],
+  ['🧒🎨', 'Das Kind malt ein Bild.', ['Das Kind liest ein Buch.', 'Das Kind singt ein Lied.', 'Die Oma malt ein Bild.']],
+  ['🐒🍌', 'Der Affe isst eine Banane.', ['Der Affe isst einen Apfel.', 'Der Bär isst eine Banane.', 'Der Affe schläft.']],
+  ['🐭🧀', 'Die Maus frisst Käse.', ['Die Maus frisst Brot.', 'Die Katze frisst Käse.', 'Die Maus schläft.']],
+  ['🚒🔥', 'Die Feuerwehr löscht das Feuer.', ['Die Polizei löscht das Feuer.', 'Die Feuerwehr fährt nach Hause.', 'Das Feuer ist aus.']],
+  ['🌙⭐', 'Am Himmel leuchten Mond und Sterne.', ['Am Himmel scheint die Sonne.', 'Am Himmel fliegt ein Vogel.', 'Es regnet in der Nacht.']],
 ];
 function satzBild(r: Rng, s: Stage): Gen {
   const [e, ok, wrong] = pick(r, SATZBILD);
@@ -252,6 +261,10 @@ const PRONOMEN: [string, string, string][] = [
   ['Papa und ich', 'Wir', 'Papa und ich gehen angeln. ☐ fangen einen Fisch.'], ['Lisa und Tom', 'Sie', 'Lisa und Tom spielen. ☐ bauen einen Turm.'], ['Die Vögel', 'Sie', 'Die Vögel zwitschern. ☐ sitzen im Baum.'],
   ['Das Auto', 'Es', 'Das Auto ist schmutzig. ☐ muss gewaschen werden.'], ['Du und Lea', 'Ihr', 'Du und Lea, ☐ dürft zuerst spielen.'], ['Der Lehrer', 'Er', 'Der Lehrer kommt. ☐ bringt Hefte mit.'],
   ['Oma', 'Sie', 'Oma strickt. ☐ macht einen Schal für mich.'], ['Anna und ich', 'Wir', 'Anna und ich sind Freundinnen. ☐ treffen uns jeden Tag.'],
+  // Nachtlauf 22.10.2026: mehr Sätze
+  ['Der Hase', 'Er', 'Der Hase hoppelt. ☐ sucht eine Möhre.'], ['Die Lehrerin', 'Sie', 'Die Lehrerin lacht. ☐ erzählt einen Witz.'], ['Das Buch', 'Es', 'Das Buch ist spannend. ☐ handelt von Piraten.'],
+  ['Die Äpfel', 'Sie', 'Die Äpfel sind reif. ☐ hängen am Baum.'], ['Ben und ich', 'Wir', 'Ben und ich sind Brüder. ☐ teilen ein Zimmer.'], ['Du und Mia', 'Ihr', 'Du und Mia, ☐ habt gewonnen!'],
+  ['Der Baum', 'Er', 'Der Baum ist hoch. ☐ steht im Garten.'], ['Das Fahrrad', 'Es', 'Das Fahrrad ist neu. ☐ hat eine Klingel.'], ['Die Sonne', 'Sie', 'Die Sonne geht auf. ☐ scheint hell.'],
 ];
 function pronTask(r: Rng): Gen {
   const [who, pr, s] = pick(r, PRONOMEN);
@@ -295,6 +308,10 @@ const BAUSTEINE: [string, string, string[]][] = [
   ['Der Hund hat meinen Hausschuh ☐bissen.', 'zer', ['an', 'mit', 'vor']], ['Papa will mich heute von der Schule ☐holen.', 'ab', ['zer', 'ver', 'mit']], ['Die Sonne geht am Morgen ☐.', 'auf', ['zer', 'ver', 'mit']],
   ['Kannst du bitte das Fenster ☐machen? Es zieht.', 'zu', ['zer', 'vor', 'ver']], ['Wir ☐stecken uns hinter dem Baum.', 'ver', ['ab', 'an', 'mit']], ['Der Teller fällt herunter und ☐bricht in viele Stücke.', 'zer', ['an', 'mit', 'vor']],
   ['Kannst du mir das Spiel ☐klären?', 'er', ['ab', 'zer', 'mit']], ['Ich habe mir die Hände ☐getrocknet.', 'ab', ['zer', 'ver', 'vor']], ['Wann fängt der Film ☐?', 'an', ['ver', 'zer', 'er']],
+  // Nachtlauf 22.10.2026: mehr Sätze
+  ['Iss bitte alles ☐!', 'auf', ['zer', 'ver', 'vor']], ['Ich ☐gesse oft meine Hausaufgaben.', 'ver', ['ab', 'an', 'zer']], ['Der Kuchen ist ☐brannt – er ist ganz schwarz.', 'ver', ['zer', 'vor', 'mit']],
+  ['Räum bitte dein Zimmer ☐!', 'auf', ['zer', 'ver', 'vor']], ['Die Kinder ☐schneiden das Papier in kleine Stücke.', 'zer', ['an', 'auf', 'mit']], ['Ich möchte dir etwas ☐zählen.', 'er', ['zer', 'ver', 'an']],
+  ['Nach den Ferien ☐kennen wir unsere Lehrerin kaum wieder.', 'er', ['zer', 'mit', 'an']], ['Morgen ☐reisen wir in den Urlaub.', 'ab', ['zer', 'vor', 'er']],
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
