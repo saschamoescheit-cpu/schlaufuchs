@@ -2169,3 +2169,12 @@ details.more .inner {
     padding: 3px 4px;
   }
 }
+
+/* Beispiel in der Erklärung */
+.example {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  background: #f6f9ff;
+  box-shadow: inset 0 0 0 2px #dbe6fb;
+}

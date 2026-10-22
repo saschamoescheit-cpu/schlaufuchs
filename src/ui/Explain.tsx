@@ -1,8 +1,9 @@
 // Erklärung eines Themas: Text, Bild, Vorlesen und passende YouTube-Videos.
 import { useState } from 'react';
-import type { Skill } from '../engine/types';
+import type { Skill, Stage } from '../engine/types';
 import { VIDEOS, type VideoRef } from '../content/videos';
-import { Sheet, Speak } from './common';
+import { Rich, Sheet, Speak } from './common';
+import { correctText } from '../engine/check';
 import { Visual } from './Visual';
 
 export function VideoCard({ v, onPlay }: { v: VideoRef; onPlay: () => void }) {
@@ -87,7 +88,67 @@ export function ExplainBody({ skill }: { skill: Skill }) {
           <Visual v={skill.explain.visual} />
         </div>
       )}
+      <Example skill={skill} />
       <Videos skill={skill} />
+    </div>
+  );
+}
+
+/** Vorgerechnetes Beispiel: eine echte (leichte) Aufgabe des Themas – erst selbst überlegen, dann Lösungsweg aufklappen */
+function Example({ skill }: { skill: Skill }) {
+  // Hör-Aufgaben taugen nicht als Beispiel – ein paar Versuche, eine lesbare Aufgabe zu finden
+  const make = () => {
+    let t = skill.generate(Math.random, 1);
+    for (let i = 0; i < 12 && t.listen; i++) t = skill.generate(Math.random, (1 + (i % 3)) as Stage);
+    return t;
+  };
+  const [task, setTask] = useState(make);
+  const [open, setOpen] = useState(false);
+  if (task.listen) return null; // nur Hör-Aufgaben (Diktat)
+  return (
+    <div className="card example">
+      <div className="row">
+        <h3 className="grow">✏️ Ein Beispiel</h3>
+        <button
+          className="btn ghost small"
+          onClick={() => {
+            setTask(make());
+            setOpen(false);
+          }}
+        >
+          Neues Beispiel
+        </button>
+      </div>
+      <div className="prompt" style={{ fontSize: '1.15rem' }}>
+        <Rich text={task.prompt} />
+      </div>
+      {task.visual && (
+        <div className="visual-box">
+          <Visual v={task.visual} />
+        </div>
+      )}
+      {task.answer.type === 'choice' && <div className="small muted">Auswahl: {task.answer.options.join(' · ')}</div>}
+      {!open ? (
+        <button className="btn ok block small" style={{ marginTop: 8 }} onClick={() => setOpen(true)}>
+          Überlege selbst – dann Lösung zeigen
+        </button>
+      ) : (
+        <>
+          <ol className="steps">
+            {task.solution.map((s, i) => (
+              <li key={i}>{s}</li>
+            ))}
+          </ol>
+          {task.solutionVisual && (
+            <div className="visual-box">
+              <Visual v={task.solutionVisual} />
+            </div>
+          )}
+          <div>
+            Lösung: <b>{correctText(task.answer)}</b>
+          </div>
+        </>
+      )}
     </div>
   );
 }
