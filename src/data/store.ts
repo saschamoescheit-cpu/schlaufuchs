@@ -8,6 +8,7 @@ import type { Grade, Subject } from '../engine/types';
 import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
 import { mergeTwo } from './merge';
+import { askPersist, choose, putMirror, readMirror, writeMirror } from './mirror';
 
 export interface Profile {
   id: string;
@@ -62,6 +63,7 @@ export interface AppData {
 }
 
 const KEY = 'schlaufuchs:v1';
+const AT_KEY = 'schlaufuchs:v1:at';
 const empty = (): AppData => ({ schema: 1, profiles: [], progress: {}, activeId: null, parent: { pin: null } });
 
 /** fehlende oder kaputte Felder auffüllen (nichts wird entfernt) – sonst stürzen Bildschirme ab */
@@ -102,12 +104,52 @@ let onChange: (() => void) | null = null;
 export const setChangeHook = (fn: (() => void) | null) => void (onChange = fn);
 
 function persist() {
+  const json = JSON.stringify(data);
+  const at = Date.now();
   try {
-    localStorage.setItem(KEY, JSON.stringify(data));
+    localStorage.setItem(KEY, json);
+    localStorage.setItem(AT_KEY, String(at));
     saveError = false;
   } catch {
     saveError = true;
   }
+  // immer auch in den Zweitspeicher (springt ein, wenn localStorage voll ist)
+  writeMirror({ json, at });
+}
+
+/**
+ * Beim Start einmal: Zweitspeicher mit dem normalen Speicher vergleichen. Ist die Kopie neuer (der normale Speicher war
+ * voll) oder der normale Speicher leer, gilt die Kopie; der bisherige Stand bleibt als Sicherung im Zweitspeicher.
+ */
+export async function checkMirror(): Promise<'local' | 'mirror'> {
+  askPersist();
+  let at = 0;
+  let has = false;
+  try {
+    has = !!localStorage.getItem(KEY);
+    at = Number(localStorage.getItem(AT_KEY) ?? 0) || 0;
+  } catch {
+    /* nicht lesbar – dann zählt die Kopie */
+  }
+  const m = await readMirror();
+  const pick = choose({ has: has && data.profiles.length > 0, at }, m);
+  if (pick === 'local' || !m) {
+    if (data.profiles.length) writeMirror({ json: JSON.stringify(data), at: at || Date.now() });
+    return 'local';
+  }
+  let restored: AppData;
+  try {
+    restored = repair(JSON.parse(m.json) as AppData);
+  } catch {
+    return 'local';
+  }
+  if (!restored.profiles.length) return 'local';
+  if (data.profiles.length) await putMirror({ json: JSON.stringify(data), at: at || Date.now() }, `vor-wiederherstellung:${Date.now()}`);
+  data = restored;
+  persist();
+  listeners.forEach((l) => l());
+  onChange?.();
+  return 'mirror';
 }
 
 function commit(fn: (d: AppData) => void) {

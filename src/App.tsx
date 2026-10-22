@@ -4,6 +4,7 @@ import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
 import { hasSaveError, useData, usesSchoolFont } from './data/store';
+import { mirrorOk } from './data/mirror';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
@@ -198,7 +199,15 @@ export default function App() {
       <div className="app">
         {hasSaveError() && (
           <div className="save-warn" role="alert">
-            ⚠️ <b>Speicher voll:</b> Dieses Gerät kann den Lernstand gerade nicht speichern. Bitte Eltern Bescheid sagen – mit Anmeldung (Abgleich) bleibt alles in der Cloud gesichert.
+            {mirrorOk() ? (
+              <>
+                ⚠️ <b>Speicher fast voll:</b> Der Lernstand wird gerade im Zweitspeicher des Browsers gesichert. Bitte Eltern Bescheid sagen – mit Anmeldung (Abgleich) bleibt alles zusätzlich in der Cloud.
+              </>
+            ) : (
+              <>
+                ⚠️ <b>Speicher voll:</b> Dieses Gerät kann den Lernstand gerade nicht speichern. Bitte Eltern Bescheid sagen – mit Anmeldung (Abgleich) bleibt alles in der Cloud gesichert.
+              </>
+            )}
           </div>
         )}
         {body}

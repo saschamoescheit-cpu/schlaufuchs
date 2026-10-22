@@ -13,13 +13,16 @@ import './styles.css';
 import App from './App';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { SpeechHint } from './ui/common';
-import { getData, setChangeHook, updateFromSync } from './data/store';
+import { checkMirror, getData, setChangeHook, updateFromSync } from './data/store';
 import { connectStore, startSync, syncSoon } from './data/sync';
 
 // Abgleich zwischen den Geräten: jede Änderung geht ein paar Sekunden später hoch
 connectStore(getData, updateFromSync);
 setChangeHook(() => syncSoon());
-void startSync();
+// erst den Zweitspeicher prüfen (stellt einen neueren Stand wieder her), dann abgleichen
+void checkMirror()
+  .catch(() => undefined)
+  .finally(() => void startSync());
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
