@@ -78,25 +78,103 @@ export function speakable(text: string): string {
 
 let current: SpeechSynthesisUtterance | null = null;
 
+// --- Robustheit (iPad/iPhone/Safari, Chrome) -------------------------------------------------------
+// 1) Safari spricht erst, nachdem eine Sprachausgabe direkt durch Antippen ausgelöst wurde. Beim ersten
+//    Tippen irgendwo in der App wird sie deshalb einmal stumm „aufgeschlossen“ – danach klappt auch das
+//    automatische Vorlesen (z. B. bei Hör-Aufgaben).
+// 2) Abbrechen und sofort neu sprechen bleibt auf iOS manchmal stumm: nur abbrechen, wenn wirklich etwas
+//    läuft, und dann kurz versetzt sprechen.
+// 3) Startet die Ausgabe nicht, wird es einmal neu versucht; klappt es dann noch nicht, erfahren es die
+//    Zuhörer von onSpeechProblem (Hinweis „Kein Ton?“).
+let unlocked = false;
+const UNLOCK_EVENTS = ['touchend', 'click', 'keydown'] as const;
+function unlock() {
+  if (unlocked || !synth) return;
+  unlocked = true;
+  for (const ev of UNLOCK_EVENTS) window.removeEventListener(ev, unlock, true);
+  try {
+    if (synth.paused) synth.resume();
+    const u = new SpeechSynthesisUtterance(' ');
+    u.volume = 0;
+    synth.speak(u);
+  } catch {
+    /* egal */
+  }
+}
+if (synth && typeof window !== 'undefined') for (const ev of UNLOCK_EVENTS) window.addEventListener(ev, unlock, true);
+
+export type SpeechState = 'idle' | 'start' | 'end' | 'problem';
+let state: SpeechState = 'idle';
+const listeners = new Set<(s: SpeechState, info?: string) => void>();
+function setState(s: SpeechState, info?: string) {
+  state = s;
+  listeners.forEach((fn) => fn(s, info));
+}
+/** Zustand der Sprachausgabe beobachten (z. B. für „Ton testen“ oder den Hinweis „Kein Ton?“) */
+export function onSpeech(fn: (s: SpeechState, info?: string) => void) {
+  listeners.add(fn);
+  return () => void listeners.delete(fn);
+}
+export const speechState = () => state;
+
 export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
   if (!synth) return;
-  synth.cancel();
-  const u = new SpeechSynthesisUtterance(lang === 'de' ? speakable(text) : text.replace(/\*\*/g, ''));
-  u.lang = lang === 'de' ? 'de-DE' : 'en-GB';
-  const v = voiceFor(lang);
-  if (v) u.voice = v;
-  u.rate = slow ? 0.75 : lang === 'en' ? 0.85 : 0.95;
-  u.pitch = 1.05;
-  u.onend = () => {
-    if (current === u) current = null;
-    onEnd?.();
+  // ein Antippen des Lautsprechers ist selbst eine Berührung – also gilt die Ausgabe als aufgeschlossen
+  const wasUnlocked = unlocked;
+  unlocked = true;
+  const busy = !!current && (synth.speaking || synth.pending);
+  if (busy) synth.cancel();
+  if (synth.paused) synth.resume();
+  const make = () => {
+    const u = new SpeechSynthesisUtterance(lang === 'de' ? speakable(text) : text.replace(/\*\*/g, ''));
+    u.lang = lang === 'de' ? 'de-DE' : 'en-GB';
+    const v = voiceFor(lang);
+    if (v) u.voice = v;
+    u.rate = slow ? 0.75 : lang === 'en' ? 0.85 : 0.95;
+    u.pitch = 1.05;
+    return u;
   };
-  u.onerror = u.onend as never;
-  current = u;
-  synth.speak(u);
+  let tries = 0;
+  const go = () => {
+    const u = make();
+    let started = false;
+    u.onstart = () => {
+      started = true;
+      setState('start');
+    };
+    u.onend = () => {
+      if (current === u) current = null;
+      setState('end');
+      onEnd?.();
+    };
+    u.onerror = (e) => {
+      if (current === u) current = null;
+      // „interrupted“/„canceled“ heißt nur: eine neue Ausgabe hat diese abgelöst
+      if (e.error !== 'interrupted' && e.error !== 'canceled') setState('problem', e.error);
+      onEnd?.();
+    };
+    current = u;
+    synth.speak(u);
+    // Wächter: nichts zu hören? einmal neu versuchen, dann Bescheid geben
+    setTimeout(() => {
+      if (started || current !== u) return;
+      if (tries++ === 0) {
+        synth.cancel();
+        synth.resume();
+        setTimeout(go, 80);
+      } else {
+        current = null;
+        setState('problem', 'nostart');
+        onEnd?.();
+      }
+    }, 4000);
+  };
+  // nach einem Abbruch kurz warten (iOS), sonst sofort – so bleibt ein Antippen eine Berührung für Safari
+  if (busy && wasUnlocked) setTimeout(go, 60);
+  else go();
 }
 
 export function stopSpeaking() {
-  synth?.cancel();
+  if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
   current = null;
 }

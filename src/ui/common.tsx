@@ -1,6 +1,6 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Lang } from '../engine/types';
-import { speak, stopSpeaking } from './speech';
+import { onSpeech, speak, stopSpeaking } from './speech';
 import { OUTFITS } from './outfitArt';
 
 /** Der Schlaufuchs – Maskottchen und Logo */
@@ -197,6 +197,23 @@ export function Tabs<T extends string>({ value, onChange, items }: { value: T; o
           {l}
         </button>
       ))}
+    </div>
+  );
+}
+
+/** Hinweis „Kein Ton?“, wenn das Gerät nicht vorliest (Lautlos-Modus, Lautstärke, fehlende Stimme) */
+export function SpeechHint() {
+  const [show, setShow] = useState(false);
+  useEffect(() => onSpeech((s) => (s === 'problem' ? setShow(true) : s === 'start' ? setShow(false) : undefined)), []);
+  if (!show) return null;
+  return (
+    <div className="speech-hint" role="alert">
+      <div className="grow">
+        <b>🔇 Kein Ton?</b> Schalte am iPad oder iPhone den Lautlos-Modus aus und dreh die Lautstärke hoch. Hilft das nicht: Profil und Einstellungen → Vorlese-Stimme → 🔊 testen.
+      </div>
+      <button className="icon-btn" aria-label="Hinweis schließen" onClick={() => setShow(false)}>
+        ✕
+      </button>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import '@fontsource/andika/latin-700.css';
 import './styles.css';
 import App from './App';
 import { ErrorBoundary } from './ui/ErrorBoundary';
+import { SpeechHint } from './ui/common';
 import { getData, setChangeHook, updateFromSync } from './data/store';
 import { connectStore, startSync, syncSoon } from './data/sync';
 
@@ -24,6 +25,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ErrorBoundary>
       <App />
+      <SpeechHint />
     </ErrorBoundary>
   </StrictMode>,
 );

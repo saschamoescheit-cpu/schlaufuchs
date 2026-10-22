@@ -8,7 +8,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
-import { canSpeak, chooseVoice, chosenVoice, onVoicesChanged, speak, voicesFor } from '../ui/speech';
+import { canSpeak, chooseVoice, chosenVoice, onSpeech, onVoicesChanged, speak, voicesFor } from '../ui/speech';
 import { hasPin } from '../data/parent';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
@@ -527,7 +527,14 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
 /** Vorlese-Stimmen wählen (je Gerät) – viele iPads haben bessere „verbesserte“ Stimmen */
 function VoicePicker() {
   const [, setTick] = useState(0);
+  // Ergebnis von „Ton testen“: läuft die Stimme wirklich?
+  const [status, setStatus] = useState<'' | 'test' | 'ok' | 'problem'>('');
   useEffect(() => onVoicesChanged(() => setTick((t) => t + 1)), []);
+  useEffect(() => onSpeech((st) => setStatus((cur) => (cur === '' ? cur : st === 'start' ? 'ok' : st === 'problem' ? 'problem' : cur))), []);
+  const test = (sample: string, lang: 'de' | 'en') => {
+    setStatus('test');
+    speak(sample, lang);
+  };
   if (!canSpeak()) return null;
   const row = (lang: 'de' | 'en', label: string, sample: string) => {
     const list = voicesFor(lang);
@@ -545,7 +552,7 @@ function VoicePicker() {
             onChange={(e) => {
               chooseVoice(lang, e.target.value || null);
               setTick((t) => t + 1);
-              speak(sample, lang);
+              test(sample, lang);
             }}
           >
             <option value="">Automatisch (beste Stimme)</option>
@@ -555,7 +562,7 @@ function VoicePicker() {
               </option>
             ))}
           </select>
-          <button className="icon-btn" aria-label={`${label} testen`} onClick={() => speak(sample, lang)}>
+          <button className="icon-btn" aria-label={`${label} testen`} onClick={() => test(sample, lang)}>
             🔊
           </button>
         </div>
@@ -569,6 +576,13 @@ function VoicePicker() {
       <div className="inner">
         {row('de', 'Deutsch', 'Hallo! Ich bin der Schlaufuchs. So klinge ich, wenn ich vorlese.')}
         {row('en', 'Englisch', 'Hello! I am the clever fox. This is how I sound in English.')}
+        {status === 'test' && <div className="small muted">Teste …</div>}
+        {status === 'ok' && <div className="small" style={{ color: 'var(--ok-dark)' }}>✓ Die Stimme spricht. Hörst du nichts, ist das Gerät stumm geschaltet oder sehr leise.</div>}
+        {status === 'problem' && (
+          <div className="small" style={{ color: 'var(--bad)' }}>
+            🔇 Das Gerät liest gerade nicht vor. Bitte prüfen: Lautlos-Modus aus (iPhone: Schalter an der Seite, iPad: Kontrollzentrum), Lautstärke hoch, kein Bluetooth-Kopfhörer verbunden. Danach die Seite einmal neu laden.
+          </div>
+        )}
         <div className="small muted">Tipp fürs iPad: Unter Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen kannst du eine „verbesserte“ Stimme laden. Sie klingt viel natürlicher.</div>
       </div>
     </details>
