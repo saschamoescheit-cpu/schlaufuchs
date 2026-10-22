@@ -1032,6 +1032,9 @@ const IGICH: [string, 'ig' | 'ich', string, string][] = [
   // Nachtlauf 22.10.2026: mehr Aufgaben
   ['wichtig', 'ig', 'eine wichtige Aufgabe', '❗'], ['traurig', 'ig', 'ein trauriges Kind', '😢'], ['richtig', 'ig', 'die richtige Antwort', '✔️'], ['windig', 'ig', 'ein windiger Tag', '🌬️'],
   ['gemütlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🛋️'], ['ordentlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🧹'], ['heimlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🤫'], ['höflich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🎩'],
+  ['Essig', 'ig', 'Merke: Essig schreibt man mit g', '🥗'], ['Wellensittich', 'ich', 'die Wellensittiche', '🦜'], ['giftig', 'ig', 'eine giftige Schlange', '🐍'],
+  ['sonnig', 'ig', 'ein sonniger Tag', '☀️'], ['neugierig', 'ig', 'ein neugieriges Kätzchen', '🐱'], ['witzig', 'ig', 'eine witzige Geschichte', '😂'], ['kräftig', 'ig', 'ein kräftiger Ringer', '💪'],
+  ['sportlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🏅'], ['täglich', 'ich', 'Merke: -lich schreibt man immer mit ch', '📅'], ['schrecklich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😱'],
 ];
 function igichTask(r: Rng, s: Stage): Gen {
   const [w, end, hilfe, e] = pick(r, IGICH);
@@ -1273,6 +1276,8 @@ const VF: [string, string, string][] = [
   ['verstecken', 'v', '🙈'], ['vergessen', 'v', '🤔'], ['vorlesen', 'v', '📖'], ['voll', 'v', '🥛'], ['Vorsicht', 'V', '⚠️'],
   ['Feuer', 'F', '🔥'], ['Fuß', 'F', '🦶'], ['Fee', 'F', '🧚'], ['Flasche', 'F', '🍾'], ['Ferien', 'F', '🏖️'], ['finden', 'f', '🔎'],
   ['Fisch', 'F', '🐟'], ['Fuchs', 'F', '🦊'], ['Feder', 'F', '🪶'], ['Fahrrad', 'F', '🚲'], ['fünf', 'f', '5️⃣'], ['Frosch', 'F', '🐸'], ['Fenster', 'F', '🪟'], ['fliegen', 'f', '✈️'],
+  ['verkaufen', 'v', '🏪'], ['vorbei', 'v', '🏃'], ['Vorname', 'V', '📛'], ['Verkehr', 'V', '🚦'], ['vorne', 'v', '⬆️'], ['Verband', 'V', '🩹'],
+  ['Fahne', 'F', '🚩'], ['Feld', 'F', '🌾'], ['Frühling', 'F', '🌷'], ['Freund', 'F', '🤝'], ['fallen', 'f', '🍂'], ['Familie', 'F', '👪'],
 ];
 function vfTask(r: Rng, s: Stage): Gen {
   const [w, l, e] = pick(r, VF);
