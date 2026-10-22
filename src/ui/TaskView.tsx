@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import type { Task } from '../engine/types';
 import { Rich, Speak, SpeakerIcon } from './common';
-import { speak } from './speech';
+import { canSpeak, speak } from './speech';
 import { Visual } from './Visual';
 import { ColumnWork } from './ColumnWork';
 
@@ -46,6 +46,12 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
       {task.listen && (
         <div className="listen-wrap">
           <Speak big text={task.listen.text} lang={task.listen.lang} slow={task.listen.slow} label="Anhören" />
+          {!canSpeak() && (
+            <details className="no-voice small">
+              <summary>Dieses Gerät kann nicht vorlesen – für Erwachsene: zum Vorlesen anzeigen</summary>
+              <b>{task.listen.text}</b>
+            </details>
+          )}
         </div>
       )}
       {task.work && <ColumnWork work={task.work} value={value} onChange={onChange} onSubmit={onSubmit} reveal={reveal} guided={!!onSubmit} />}

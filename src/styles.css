@@ -595,7 +595,8 @@ a {
 }
 .listen-wrap {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   padding: 6px 0;
 }
 .visual-box {
@@ -2084,4 +2085,17 @@ details.more .inner {
   .report-table td {
     border-bottom-color: #ccc;
   }
+}
+
+/* Hör-Aufgabe ohne Sprachausgabe */
+.no-voice {
+  margin-top: 8px;
+  text-align: center;
+  color: var(--muted);
+}
+.no-voice b {
+  display: block;
+  margin-top: 6px;
+  font-size: 1.2rem;
+  color: var(--ink, #2b2340);
 }
