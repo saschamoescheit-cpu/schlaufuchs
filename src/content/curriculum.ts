@@ -7,7 +7,7 @@ import { DIKTAT } from './diktat';
 import { DEUTSCH_EXTRA, ENGLISCH_EXTRA, MATHE_EXTRA } from './extra';
 import { DEUTSCH_EXTRA2, ENGLISCH_EXTRA2, MATHE_EXTRA2 } from './extra2';
 import { DEUTSCH_EXTRA3, ENGLISCH_EXTRA3, MATHE_EXTRA3 } from './extra3';
-import { MATHE_EXTRA4 } from './extra4';
+import { DEUTSCH_EXTRA4, MATHE_EXTRA4 } from './extra4';
 
 export interface StateInfo {
   code: string;
@@ -48,7 +48,7 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 ];
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
-export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...MATHE_EXTRA4, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3];
+export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...MATHE_EXTRA4, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...DEUTSCH_EXTRA4, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3];
 // Erklärbilder für Themen, die (noch) keins im Inhalt mitbringen – zu jedem Erklärtext gehört ein Bild
 const EXPLAIN_VISUALS: Record<string, Visual> = {
   'm2-verdoppeln': { kind: 'array', rows: 2, cols: 8 },
@@ -108,7 +108,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   ],
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben|nachspuren|lautposition/ },
-    { name: 'Lesen', re: /lesen|saetze|sachtexte|minitexte/ },
+    { name: 'Lesen', re: /lesen|saetze|sachtexte|minitexte|reihenfolge/ },
     { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|sp-st|ei-ie|ig-ich|ck-tz|-ie$|grossschreibung|nominalisierung|v-f|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch/ },
     { name: 'Sprache untersuchen', re: /./ },
   ],

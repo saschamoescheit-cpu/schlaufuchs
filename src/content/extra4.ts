@@ -1,6 +1,6 @@
 // Weitere Themen (Nachtlauf 22./23.10.2026) nach Abgleich mit dem NRW-Lehrplan Mathematik, Klasse 1/2:
 // „Daten, Häufigkeiten und Wahrscheinlichkeiten“ – Strichlisten und Tabellen, sicher/möglich/unmöglich.
-import { chance, fixedChoice, pick, ri, shuffle, type Rng } from '../engine/rng';
+import { chance, choice, fixedChoice, pick, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
 
@@ -104,4 +104,52 @@ function datenTask(r: Rng, s: Stage): Gen {
 export const MATHE_EXTRA4: Skill[] = [
   M(2, 'm2-zufall', 'Sicher, möglich oder unmöglich?', '🎲', { text: ['Sicher: Es passiert auf jeden Fall – nach dem Montag kommt der Dienstag.', 'Möglich: Es kann passieren, muss aber nicht – morgen regnet es.', 'Unmöglich: Es kann gar nicht passieren – ein Fisch klettert auf einen Baum.'], visual: { kind: 'marbles', colors: { rot: 4, blau: 2 } }, videoQuery: 'sicher möglich unmöglich Klasse 2 Mathe' }, zufallTask, { tagLabels: { sicher: 'sicher', möglich: 'möglich', unmöglich: 'unmöglich' }, testSeconds: 20 }),
   M(2, 'm2-daten', 'Strichlisten lesen', '📋', { text: ['Mit einer Strichliste zählt man schnell: Für jedes Mal kommt ein Strich dazu.', 'Der fünfte Strich geht quer über die anderen vier – so entsteht ein Fünferbündel.', 'Zählen: erst die Bündel in Fünferschritten (5, 10, 15 …), dann die einzelnen Striche dazu.'], visual: { kind: 'tally', rows: [{ label: '🍎 Apfel', n: 7 }, { label: '🍌 Banane', n: 4 }] }, videoQuery: 'Strichliste Klasse 2 Mathe' }, datenTask, { tagLabels: { 'strichliste-lesen': 'Strichliste lesen', fuenferbuendel: 'Fünferbündel falsch gezählt', vergleichen: 'am meisten / am wenigsten', unterschied: 'Unterschied („wie viele mehr?“)', 'plus-statt-minus': 'plus statt minus gerechnet', zusammen: 'alles zusammenzählen' }, testSeconds: 30 }),
+];
+
+// ---------- Deutsch: Geschichten ordnen (Kl. 2) – NRW „Texte planen“: Was passiert zuerst, was danach? ----------
+
+const D = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('deutsch', grade, ...a);
+const ABLAUF: [string, string[]][] = [
+  ['🦷', ['Ben nimmt seine Zahnbürste.', 'Er drückt Zahnpasta darauf.', 'Er putzt drei Minuten lang die Zähne.', 'Zum Schluss spült er den Mund aus.']],
+  ['🌱', ['Lea gräbt ein kleines Loch.', 'Sie legt den Samen hinein.', 'Sie gießt die Erde.', 'Nach ein paar Tagen wächst eine kleine Pflanze.']],
+  ['🥞', ['Papa holt Mehl, Milch und Eier.', 'Er verrührt alles zu einem Teig.', 'Er brät den Teig in der Pfanne.', 'Die Kinder essen die Pfannkuchen.']],
+  ['⛄', ['Es schneit die ganze Nacht.', 'Am Morgen rollen die Kinder große Kugeln.', 'Sie setzen die Kugeln aufeinander.', 'Zum Schluss bekommt der Schneemann eine Möhre als Nase.']],
+  ['✉️', ['Mia schreibt einen Brief an Oma.', 'Sie steckt ihn in einen Umschlag.', 'Sie klebt eine Briefmarke darauf.', 'Sie wirft den Brief in den Briefkasten.']],
+  ['🚲', ['Tims Fahrrad hat einen Platten.', 'Opa holt das Flickzeug.', 'Zusammen flicken sie den Reifen.', 'Dann kann Tim wieder fahren.']],
+  ['🛁', ['Mama lässt Wasser in die Wanne.', 'Lina steigt in die Wanne.', 'Sie wäscht sich die Haare.', 'Danach trocknet sie sich ab.']],
+  ['🐣', ['Die Henne legt ein Ei.', 'Sie brütet das Ei aus.', 'Das Küken pickt die Schale auf.', 'Das Küken läuft hinter der Henne her.']],
+  ['🎂', ['Jonas lädt seine Freunde ein.', 'Die Gäste kommen und bringen Geschenke.', 'Alle singen ein Lied und essen Kuchen.', 'Am Abend gehen die Gäste nach Hause.']],
+  ['🍎', ['Im Frühling blüht der Apfelbaum.', 'Aus den Blüten wachsen kleine Äpfel.', 'Im Sommer werden die Äpfel größer.', 'Im Herbst pflücken wir die reifen Äpfel.']],
+  ['🛒', ['Mama schreibt einen Einkaufszettel.', 'Im Laden legt sie alles in den Wagen.', 'An der Kasse bezahlt sie.', 'Zu Hause räumt sie alles in den Schrank.']],
+  ['🦋', ['Ein Schmetterling legt ein Ei auf ein Blatt.', 'Aus dem Ei schlüpft eine Raupe.', 'Die Raupe frisst viel und verpuppt sich.', 'Aus der Puppe schlüpft ein neuer Schmetterling.']],
+];
+const LETTERS = ['A', 'B', 'C', 'D'];
+function ordnenTask(r: Rng, s: Stage): Gen {
+  const [e, steps] = pick(r, ABLAUF);
+  const story = s === 1 ? steps.slice(0, 3) : steps;
+  const sol = story.map((x, i) => `${i + 1}. ${x}`);
+  // Stufe 3: die ganze Reihenfolge der Buchstaben finden
+  if (s === 3 || (s === 2 && chance(r, 0.4))) {
+    const mixed = shuffle(r, story.map((_, i) => i));
+    // nicht schon richtig sortiert zeigen
+    if (mixed.every((v, i) => v === i)) mixed.reverse();
+    const lines = mixed.map((idx, k) => `${LETTERS[k]}: ${story[idx]}`);
+    const ok = story.map((_, i) => LETTERS[mixed.indexOf(i)]).join(' – ');
+    const wrong = new Set<string>();
+    for (let t = 0; t < 30 && wrong.size < 3; t++) {
+      const p = shuffle(r, LETTERS.slice(0, story.length)).join(' – ');
+      if (p !== ok) wrong.add(p);
+    }
+    return { key: `r-${steps[0]}-${mixed.join('')}`, prompt: `In welcher Reihenfolge passiert es?\n${lines.join('\n')}`, speak: `In welcher Reihenfolge passiert es? ${lines.join(' ')}`, visual: { kind: 'emoji', chars: e }, answer: fixedChoice(shuffle(r, [ok, ...wrong]), ok), tags: ['reihenfolge'], solution: sol };
+  }
+  // was passiert zuerst / was passiert danach?
+  if (s === 1 || chance(r, 0.4)) {
+    return { key: `z-${steps[0]}`, prompt: 'Was passiert zuerst?', visual: { kind: 'emoji', chars: e }, answer: { ...choice(r, story[0], story.slice(1)), speakOptions: 'de' }, tags: ['zuerst'], solution: sol };
+  }
+  const i = ri(r, 0, story.length - 2);
+  return { key: `n-${story[i]}`, prompt: `Was passiert danach?\n„${story[i]}“`, visual: { kind: 'emoji', chars: e }, answer: { ...choice(r, story[i + 1], story.filter((_, k) => k !== i && k !== i + 1)), speakOptions: 'de' }, tags: ['danach'], solution: sol };
+}
+
+export const DEUTSCH_EXTRA4: Skill[] = [
+  D(2, 'd2-reihenfolge', 'Geschichten ordnen', '🔢', { text: ['Eine Geschichte erzählt Schritt für Schritt, was passiert.', 'Überlege: Was muss zuerst passieren, damit das Nächste klappt? Erst die Zahnpasta auf die Bürste, dann putzen!', 'Wörter wie zuerst, dann, danach und zum Schluss helfen dir.'], visual: { kind: 'row', items: ['1️⃣', '2️⃣', '3️⃣', '4️⃣'] }, videoQuery: 'Bildergeschichte Reihenfolge Klasse 2 Deutsch' }, ordnenTask, { tagLabels: { zuerst: 'Was passiert zuerst?', danach: 'Was passiert danach?', reihenfolge: 'ganze Reihenfolge' }, testSeconds: 40 }),
 ];

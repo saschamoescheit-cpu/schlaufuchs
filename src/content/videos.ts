@@ -291,6 +291,7 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'tEBKFoD9LeI', title: 'schriftliches Addieren | Mathematik - einfach erklärt', channel: 'Lehrerschmidt', len: '5:46' },
     { id: 'wweXKfoprRg', title: 'Schriftliches Subtrahieren | Klasse 4', channel: 'Lehrerschmidt', len: '2:02' },
   ],
+  'd2-reihenfolge': [{ id: 's-jTc2hfCKM', title: 'Bildergeschichte schreiben einfach erklärt', channel: 'lernfoerderung', len: '3:38' }],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },
