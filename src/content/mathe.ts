@@ -126,7 +126,7 @@ const zerlegen = M(1, 'm1-zerlegen', 'Zahlen zerlegen', '🏠', {
     speak: `${total} ist gleich ${a} plus wie viel?`,
     answer: { type: 'number', value: b },
     tags: total === 10 ? ['zehnerfreunde'] : ['zerlegen'],
-    solution: [`Du hast schon ${a}. Bis ${total} fehlen noch ${b}.`, `${a} + ${b} = ${total}`],
+    solution: [b === 0 ? `Du hast schon alle ${total} – es fehlt nichts, also 0.` : `Du hast schon ${a}. Bis ${total} fehlen noch ${b}.`, `${a} + ${b} = ${total}`],
     solutionVisual: { kind: 'dots', n: a, m: b },
   };
 }, { tagLabels: { zehnerfreunde: 'Zehnerfreunde', zerlegen: 'Zahlen zerlegen' }, testSeconds: 20 });
@@ -146,7 +146,7 @@ const plus10 = M(1, 'm1-plus10', 'Plus bis 10', '➕', {
     answer: { type: 'number', value: a + b },
     tags: ['plus'],
     traps: [{ answer: String(a - b), tag: 'rechenzeichen', hint: 'Achte auf das Zeichen: + heißt dazu, nicht weg.' }].filter(() => a - b >= 0 && a - b !== a + b),
-    solution: [`Du hast ${a}. Es ${b === 1 ? 'kommt' : 'kommen'} ${b} dazu.`, `${a} + ${b} = ${a + b}`],
+    solution: [b === 0 ? `Du hast ${a}. Es kommt nichts dazu.` : `Du hast ${a}. Es ${b === 1 ? 'kommt' : 'kommen'} ${b} dazu.`, `${a} + ${b} = ${a + b}`],
     solutionVisual: { kind: 'tenframe', a, b },
   };
 }, { testSeconds: 15 });
@@ -354,7 +354,9 @@ function plusMinus100(r: Rng, minus: boolean, s: Stage): Gen {
           ? a % 10 === 0
             ? [`Erst einen ganzen Zehner weg: ${a} − 10 = ${a - 10}`, `Das war ${10 - b} zu viel – also ${10 - b} wieder dazu: ${a - 10} + ${10 - b} = ${res}`]
             : [`Erst bis zum Zehner: ${a} − ${a % 10} = ${a - (a % 10)}`, `Dann den Rest: ${a - (a % 10)} − ${b - (a % 10)} = ${res}`]
-          : [`Erst bis zum nächsten Zehner: ${a} + ${10 - (a % 10)} = ${a + 10 - (a % 10)}`, `Dann den Rest: ${a + 10 - (a % 10)} + ${b - (10 - (a % 10))} = ${res}`]
+          : b === 10 - (a % 10)
+            ? [`Genau bis zum nächsten Zehner: ${a} + ${b} = ${res}`]
+            : [`Erst bis zum nächsten Zehner: ${a} + ${10 - (a % 10)} = ${a + 10 - (a % 10)}`, `Dann den Rest: ${a + 10 - (a % 10)} + ${b - (10 - (a % 10))} = ${res}`]
         : [`Nur die Einer ändern sich: ${a % 10} ${sg} ${b} = ${minus ? (a % 10) - b : (a % 10) + b}`, `${a} ${sg} ${b} = ${res}`]
       : be === 0
         ? [`Nur die Zehner ändern sich: ${a - (a % 10)} ${sg} ${b} = ${minus ? a - (a % 10) - b : a - (a % 10) + b}`, `Die Einer bleiben: ${res}`]
@@ -799,7 +801,7 @@ const uhr3 = M(3, 'm3-uhrzeit', 'Uhrzeit und Zeitspannen', '⏱️', {
   const end = sh * 60 + sm + dur;
   const eh = Math.floor(end / 60), em = end % 60;
   const toFull = 60 - sm;
-  return { key: `z${sh}:${sm}+${dur}`, prompt: `Die Probe beginnt um ${sh}:${pad(sm)} Uhr und endet um ${eh}:${pad(em)} Uhr.\nWie viele Minuten dauert sie?`, answer: { type: 'number', value: dur, unit: 'min' }, tags: ['zeitspanne'], traps: [{ answer: String(dur + 40), tag: 'hundert-statt-sechzig', hint: 'Eine Stunde hat 60 Minuten, nicht 100! Rechne bis zur vollen Stunde und dann weiter.' }], solution: eh > sh && sm > 0 ? [`Von ${sh}:${pad(sm)} bis ${sh + 1}:00 sind es ${toFull} Minuten.`, `Von ${sh + 1}:00 bis ${eh}:${pad(em)} sind es ${end - (sh + 1) * 60} Minuten.`, `Zusammen: ${toFull} + ${end - (sh + 1) * 60} = ${dur} Minuten`] : [`Von ${sh}:${pad(sm)} bis ${eh}:${pad(em)} sind es ${dur} Minuten.`] };
+  return { key: `z${sh}:${sm}+${dur}`, prompt: `Die Probe beginnt um ${sh}:${pad(sm)} Uhr und endet um ${eh}:${pad(em)} Uhr.\nWie viele Minuten dauert sie?`, answer: { type: 'number', value: dur, unit: 'min' }, tags: ['zeitspanne'], traps: [{ answer: String(dur + 40), tag: 'hundert-statt-sechzig', hint: 'Eine Stunde hat 60 Minuten, nicht 100! Rechne bis zur vollen Stunde und dann weiter.' }], solution: eh > sh && sm > 0 && end > (sh + 1) * 60 ? [`Von ${sh}:${pad(sm)} bis ${sh + 1}:00 sind es ${toFull} Minuten.`, `Von ${sh + 1}:00 bis ${eh}:${pad(em)} sind es ${end - (sh + 1) * 60} Minuten.`, `Zusammen: ${toFull} + ${end - (sh + 1) * 60} = ${dur} Minuten`] : [`Von ${sh}:${pad(sm)} bis ${eh}:${pad(em)} sind es ${dur} Minuten.`] };
 }, { tagLabels: { ablesen: 'Uhr ablesen', zeitspanne: 'Zeitspannen', 'zeiger-vertauscht': 'Zeiger vertauscht', 'hundert-statt-sechzig': 'mit 100 statt 60 Minuten gerechnet' }, testSeconds: 40 });
 
 const WEIGHT_OBJ = [
