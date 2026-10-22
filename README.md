@@ -6,7 +6,7 @@ Interaktive Lern-App für Grundschüler: **Mathe, Deutsch und Englisch, Klassen 
 
 ## Was die App kann
 - Kinderprofile (Name, Tier, Alter, Klasse, Bundesland) – mehrere Kinder pro Gerät
-- 178 Themen mit Zufallsaufgaben in drei Stufen, Lösungsweg, Erklärung mit Bild, Beispiel und geprüften YouTube-Erklärvideos, Vorlesen
+- rund 180 Themen mit Zufallsaufgaben in drei Stufen, Lösungsweg, Erklärung mit Bild, Beispiel und geprüften YouTube-Erklärvideos, Vorlesen
 - Lernstand je Thema, Schwächen und typische Fehlermuster
 - **Fehler-Kiste:** falsch gelöste Aufgaben kommen wieder, bis sie zweimal hintereinander richtig sind
 - **Tests** mit Zeitlimit und Note (Notenschlüssel einstellbar), als Arbeitsblatt druckbar; Klassenarbeiten eintragen mit Wiederholungsplan
