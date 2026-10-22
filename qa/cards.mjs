@@ -53,7 +53,7 @@ await click('Fertig');
 await click('Vokabeln lernen');
 await sheet().getByRole('radio', { name: /Diktat/ }).click();
 const fields = await sheet().locator('label.list-row').allInnerTexts();
-check(!fields.some((t) => /Numbers|Shapes/.test(t)), 'Diktat: nur Wortfelder mit Wortliste');
+check(!fields.some((t) => /Shapes/.test(t)) && fields.some((t) => /Numbers 1/.test(t)), 'Diktat: nur Wortfelder mit Wortliste (auch Zahlen 1–20)');
 await sheet().getByRole('button', { name: /Los geht/ }).click();
 await p.waitForTimeout(400);
 await shot('diktat');

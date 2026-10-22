@@ -131,6 +131,9 @@ const SUBJECTS: Word[] = [
 
 // ---------- 1. Lernjahr ----------
 const colours = vocabSkill(1, 'e1-colours', 'Colours – Farben', '🎨', COLOURS, ['red = rot, blue = blau, green = grün, yellow = gelb.', 'Achtung: purple = lila, pink = rosa, grey = grau.', 'Im Englischen schreibt man Farben klein.'], 'colours song for kids English');
+// Zahlwörter 1–20 auch für Vokabelkarten und Buchstabier-Diktat
+const NUM_DE = ['null', 'eins', 'zwei', 'drei', 'vier', 'fünf', 'sechs', 'sieben', 'acht', 'neun', 'zehn', 'elf', 'zwölf', 'dreizehn', 'vierzehn', 'fünfzehn', 'sechzehn', 'siebzehn', 'achtzehn', 'neunzehn', 'zwanzig'];
+registerWords('e1-numbers', Array.from({ length: 20 }, (_, i) => ({ en: NUM_EN[i + 1], de: NUM_DE[i + 1], txt: String(i + 1) })));
 const numbers20 = E(1, 'e1-numbers', 'Numbers 1–20 – Zahlen', '🔢', { text: ['one, two, three, four, five, six, seven, eight, nine, ten', 'eleven, twelve – dann mit -teen: thirteen, fourteen, fifteen … nineteen.', 'twenty = 20.', 'Tipp: Zähle laut auf Englisch, z. B. beim Treppensteigen!'], visual: { kind: 'text', text: '1 one · 2 two · 3 three' }, videoQuery: 'numbers 1 to 20 song for kids' }, (r) => {
   const n = ri(r, 1, 20);
   const say = { text: numEn(n), lang: 'en' as const };
