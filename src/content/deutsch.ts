@@ -813,6 +813,12 @@ const KOMMA: { ok: string; wrong: string[]; tag: string; why: string }[] = [
   { ok: 'Ich mag Hunde, aber ich habe Angst vor Pferden.', wrong: ['Ich mag Hunde aber ich habe Angst vor Pferden.', 'Ich mag Hunde aber, ich habe Angst vor Pferden.'], tag: 'nebensatz', why: 'Vor „aber“ steht ein Komma.' },
   { ok: 'Am Strand bauen wir Burgen, sammeln Muscheln und baden im Meer.', wrong: ['Am Strand bauen wir Burgen sammeln Muscheln und baden im Meer.', 'Am Strand bauen wir Burgen, sammeln Muscheln, und baden im Meer.'], tag: 'aufzählung', why: 'Auch Tätigkeiten kann man aufzählen: Komma dazwischen, aber nicht vor „und“.' },
   { ok: 'Nachdem wir gegessen hatten, spielten wir Karten.', wrong: ['Nachdem wir gegessen hatten spielten wir Karten.', 'Nachdem, wir gegessen hatten spielten wir Karten.'], tag: 'nebensatz', why: 'Der Satzteil mit „nachdem“ wird mit einem Komma abgetrennt.' },
+  { ok: 'Im Zoo sehen wir Löwen, Affen, Giraffen und Zebras.', wrong: ['Im Zoo sehen wir Löwen Affen Giraffen und Zebras.', 'Im Zoo sehen wir Löwen, Affen, Giraffen, und Zebras.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
+  { ok: 'Mama fragt, ob ich Hunger habe.', wrong: ['Mama fragt ob ich Hunger habe.', 'Mama fragt ob, ich Hunger habe.'], tag: 'nebensatz', why: 'Vor „ob“ steht ein Komma.' },
+  { ok: 'Wenn die Sonne scheint, gehen wir ins Freibad.', wrong: ['Wenn die Sonne scheint gehen wir ins Freibad.', 'Wenn, die Sonne scheint gehen wir ins Freibad.'], tag: 'nebensatz', why: 'Der Satzteil mit „wenn“ wird mit einem Komma abgetrennt.' },
+  { ok: 'Lena weiß, dass Pinguine nicht fliegen können.', wrong: ['Lena weiß dass Pinguine nicht fliegen können.', 'Lena weiß dass, Pinguine nicht fliegen können.'], tag: 'nebensatz', why: 'Vor „dass“ steht immer ein Komma.' },
+  { ok: 'Ich bin hungrig, aber das Essen ist noch nicht fertig.', wrong: ['Ich bin hungrig aber das Essen ist noch nicht fertig.', 'Ich bin hungrig aber, das Essen ist noch nicht fertig.'], tag: 'nebensatz', why: 'Vor „aber“ steht ein Komma.' },
+  { ok: 'Für den Ausflug packen wir Brote, Äpfel, Wasser und eine Decke ein.', wrong: ['Für den Ausflug packen wir Brote Äpfel Wasser und eine Decke ein.', 'Für den Ausflug packen wir Brote, Äpfel, Wasser, und eine Decke ein.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
 ];
 const komma = D(4, 'd4-komma', 'Kommas setzen', '✏️', {
   text: ['Aufzählungen: Zwischen die Wörter kommt ein Komma – aber nicht vor „und“ oder „oder“.', 'Vor Bindewörtern wie weil, dass, wenn, denn, aber steht ein Komma.', 'Beispiel: „Ich bleibe zu Hause, weil ich krank bin.“'],
@@ -833,6 +839,10 @@ const SG4: { s: string; mark: string; was: 'Subjekt' | 'Prädikat' | 'Dativobjek
   { s: 'Das Geschenk gefällt **dem Mädchen**.', mark: 'dem Mädchen', was: 'Dativobjekt' }, { s: '**Das Geschenk** gefällt dem Mädchen.', mark: 'Das Geschenk', was: 'Subjekt' }, { s: 'Das Geschenk **gefällt** dem Mädchen.', mark: 'gefällt', was: 'Prädikat' },
   { s: 'Am Nachmittag zeigt Opa **den Enkeln** seinen Garten.', mark: 'den Enkeln', was: 'Dativobjekt' }, { s: 'Am Nachmittag zeigt Opa den Enkeln **seinen Garten**.', mark: 'seinen Garten', was: 'Akkusativobjekt' }, { s: 'Am Nachmittag **zeigt** Opa den Enkeln seinen Garten.', mark: 'zeigt', was: 'Prädikat' },
   { s: 'Der Junge **wirft** den Ball über den Zaun.', mark: 'wirft', was: 'Prädikat' }, { s: 'Der Junge wirft **den Ball** über den Zaun.', mark: 'den Ball', was: 'Akkusativobjekt' },
+  { s: '**Der Hund** jagt die Katze.', mark: 'Der Hund', was: 'Subjekt' }, { s: 'Der Hund **jagt** die Katze.', mark: 'jagt', was: 'Prädikat' }, { s: 'Der Hund jagt **die Katze**.', mark: 'die Katze', was: 'Akkusativobjekt' },
+  { s: 'Die Lehrerin erklärt **den Kindern** die Aufgabe.', mark: 'den Kindern', was: 'Dativobjekt' }, { s: 'Die Lehrerin erklärt den Kindern **die Aufgabe**.', mark: 'die Aufgabe', was: 'Akkusativobjekt' }, { s: 'Die Lehrerin **erklärt** den Kindern die Aufgabe.', mark: 'erklärt', was: 'Prädikat' },
+  { s: 'Das Fahrrad gehört **meinem Bruder**.', mark: 'meinem Bruder', was: 'Dativobjekt' }, { s: '**Das Fahrrad** gehört meinem Bruder.', mark: 'Das Fahrrad', was: 'Subjekt' },
+  { s: 'Am Abend **liest** Papa ein Buch.', mark: 'liest', was: 'Prädikat' }, { s: 'Am Abend liest Papa **ein Buch**.', mark: 'ein Buch', was: 'Akkusativobjekt' },
 ];
 /** Satzanfang mitten im Satz: Begleiter und Pronomen klein ("Meine Schwester" → "meine Schwester"), Nomen bleiben groß */
 function midSentence(w: string): string {
