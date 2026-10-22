@@ -17,6 +17,9 @@ const AGAIN_MAX = 2;
 export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRestart }: { profile: Profile; progress: Progress; skillIds: string[]; n: number; dir: CardDir; onExit: () => void; onRestart: () => void }) {
   const all = useMemo(() => cardsOf(skillIds), [skillIds]);
   // Stapel einmal beim Start festlegen; ist nichts fällig, die Karten mit dem nächsten Termin („Trotzdem üben“)
+  // Extra-Runde („Trotzdem üben“, nichts fällig): zählt für den Karteikasten, gibt aber keine Sterne – sonst ließen sich
+  // mit „Gewusst“ beliebig viele Sterne sammeln
+  const [extra] = useState(() => pickCards(all, cardStates(progress.log), n).cards.length === 0);
   const [queue, setQueue] = useState<CardWord[]>(() => {
     const st = cardStates(progress.log);
     const { cards } = pickCards(all, st, n);
@@ -52,7 +55,7 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const rate = (ok: boolean) => {
     if (!card || !flipped) return;
     stopSpeaking();
-    updateProgress(profile.id, (p) => recordCard(p, card.skillId, card.en, ok));
+    updateProgress(profile.id, (p) => recordCard(p, card.skillId, card.en, ok, Date.now(), !extra));
     if (ok) {
       setKnown((k) => k + 1);
       if (profile.sound) sounds.right();

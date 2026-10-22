@@ -17,7 +17,7 @@ const plan = await sheet().innerText();
 check(/Diese Runde: 0 zum Wiederholen, 10 neue Karten/.test(plan), 'Plan: 10 neue Karten');
 await shot('karten-auswahl', true);
 await sheet().getByRole('button', { name: /Los geht/ }).click();
-await p.waitForTimeout(300);
+await p.locator('.vcard').waitFor({ timeout: 8000 }).catch(() => {});
 check(await p.locator('.vcard').isVisible(), 'Karte angezeigt');
 await shot('karte-vorne');
 // 10 Karten: 8 gewusst, 2 nicht (die kommen in derselben Runde wieder)

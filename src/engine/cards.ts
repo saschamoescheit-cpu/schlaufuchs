@@ -76,11 +76,11 @@ export function nextDue(all: CardRef[], states: Map<string, CardState>, now = Da
   return best;
 }
 
-/** Eine Karte selbst bewertet (gewusst / nicht gewusst) – kommt in den Verlauf wie jede Antwort */
-export function recordCard(p: Progress, skillId: string, en: string, ok: boolean, now = Date.now()) {
+/** Eine Karte selbst bewertet (gewusst / nicht gewusst) – kommt in den Verlauf wie jede Antwort. Sterne nur für fällige/neue Karten. */
+export function recordCard(p: Progress, skillId: string, en: string, ok: boolean, now = Date.now(), star = true) {
   p.log.push({ t: now, s: skillId, ok: ok ? 1 : 0, m: 'karten', w: en });
   if (p.log.length > LOG_MAX) p.log.splice(0, p.log.length - LOG_MAX);
   const dk = dayKey(now);
   p.days[dk] = (p.days[dk] ?? 0) + 1;
-  if (ok) p.stars++;
+  if (ok && star) p.stars++;
 }
