@@ -130,6 +130,9 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
           {achieved.map((id) => (
             <div key={id} className="card tint" style={{ background: 'var(--ok-soft)', textAlign: 'left' }}>
               🎯 <b>Lernziel geschafft:</b> {skillById(id)?.icon} {skillById(id)?.title} sitzt jetzt sicher!
+              <div className="small muted" style={{ marginTop: 4 }}>
+                🏅 Es steht jetzt auch auf deiner Urkunde (Lernstand → Fächer).
+              </div>
             </div>
           ))}
           {onPracticePattern && topSkill && topTag && topLabel && (
