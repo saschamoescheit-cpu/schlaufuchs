@@ -50,6 +50,7 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
 
   return (
     <div className="stack">
+      <h1 className="sr-only">Schlaufuchs – Lernen mit {profile.name}</h1>
       <div className="topbar">
         <button className="row" onClick={onProfile} style={{ border: 0, background: 'none', cursor: 'pointer', padding: 0, gap: 8 }} aria-label="Profil und Einstellungen">
           <span style={{ fontSize: '2.2rem', lineHeight: 1 }}>{profile.avatar}</span>
