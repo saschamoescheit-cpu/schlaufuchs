@@ -315,7 +315,7 @@ const satzzeichen = D(2, 'd2-satzzeichen', 'Satzzeichen . ? !', '❓', {
 const DOPPEL: Pair[] = [['Sonne', 'Sone', '☀️'], ['Kamm', 'Kam', '💇'], ['Ball', 'Bal', '⚽'], ['Puppe', 'Pupe', '🪆'], ['Tasse', 'Tase', '☕'], ['Butter', 'Buter', '🧈'], ['Wasser', 'Waser', '💧'], ['Teller', 'Teler', '🍽️'], ['Schiff', 'Schif', '🚢'], ['Himmel', 'Himel', '🌌'], ['Brille', 'Brile', '👓'], ['Koffer', 'Kofer', '🧳'], ['Tanne', 'Tane', '🌲'], ['Hammer', 'Hamer', '🔨'], ['Suppe', 'Supe', '🍲'], ['Mutter', 'Muter', '👩'], ['Bett', 'Bet', '🛏️'], ['Ritter', 'Riter', '🛡️'], ['Wanne', 'Wane', '🛁'], ['Pfeffer', 'Pfefer', '🌶️'],
   ['Hose', 'Hosse', '👖'], ['Nase', 'Nasse', '👃'], ['Rose', 'Rosse', '🌹'], ['Hut', 'Hutt', '🎩'], ['Tomate', 'Tommate', '🍅']];
 const doppel = D(2, 'd2-doppelkonsonant', 'Doppelte Mitlaute', '👯‍♀️', {
-  text: ['Nach einem kurzen, betonten Selbstlaut folgt oft ein doppelter Mitlaut: Sonne, Ball, Kamm.', 'Sprich das Wort und achte auf den Selbstlaut: Ist er kurz (So-nne) oder lang (Ho-se)?', 'Kurz → doppelt: Puppe, Tasse. Lang → einfach: Hose, Nase.', 'Tipp: Klatsche die Silben – bei Son-ne hörst du das n am Ende der ersten und am Anfang der zweiten Silbe.'],
+  text: ['Nach einem kurzen, betonten Selbstlaut folgt oft ein doppelter Mitlaut: Sonne, Ball, Kamm.', 'Sprich das Wort und achte auf den Selbstlaut: Ist er kurz (Sonne) oder lang (Hose)?', 'Kurz → doppelt: Puppe, Tasse. Lang → einfach: Hose, Nase.', 'Tipp: Klatsche die Silben – bei Son-ne hörst du das n am Ende der ersten und am Anfang der zweiten Silbe.'],
   visual: { kind: 'syllables', parts: ['Son', 'ne'], emoji: '☀️' },
   videoQuery: 'doppelte Mitlaute Doppelkonsonanten kurzer Vokal Klasse 2',
 }, (r, s) => spellTask(r, s, DOPPEL, (p) => (p[0].length > p[1].length ? 'kurzer-vokal' : 'langer-vokal'), (p) => (p[0].length > p[1].length ? ['Der Selbstlaut vorher ist kurz – deshalb kommt ein doppelter Mitlaut.'] : ['Der Selbstlaut ist lang – deshalb nur ein Mitlaut.'])), { tagLabels: { 'kurzer-vokal': 'Doppelung nach kurzem Vokal', 'langer-vokal': 'keine Doppelung nach langem Vokal' }, testSeconds: 12 });
@@ -471,7 +471,7 @@ const AUSLAUT: [string, string, string, string, string][] = [
   ['Schrank', 'k', 'g', 'die Schränke', '🗄️'], ['Park', 'k', 'g', 'die Parks', '🏞️'], ['Korb', 'b', 'p', 'die Körbe', '🧺'], ['Dieb', 'b', 'p', 'die Diebe', '🦹'], ['Kalb', 'b', 'p', 'die Kälber', '🐄'], ['gelb', 'b', 'p', 'das gelbe Auto', '💛'], ['lieb', 'b', 'p', 'die liebe Oma', '💗'],
 ];
 const auslaut = D(3, 'd3-auslaut', 'Wörter verlängern: d/t, g/k, b/p', '🔍', {
-  text: ['Am Wortende klingen d und t gleich – ebenso g und k, b und p.', 'Trick: Verlängere das Wort! Bilde die Mehrzahl oder setze ein Wort davor.', 'Hund → die Hunde: Jetzt hörst du das d deutlich.', 'Zug → die Züge: Jetzt hörst du das g.'],
+  text: ['Am Wortende klingen d und t gleich – ebenso g und k, b und p.', 'Trick: Verlängere das Wort! Bilde die Mehrzahl (Hund → Hunde), steigere das Adjektiv (wild → wilder) oder nimm die Grundform des Verbs (er gibt → geben).', 'Hund → die Hunde: Jetzt hörst du das d deutlich.', 'Zug → die Züge: Jetzt hörst du das g.'],
   visual: { kind: 'text', text: 'Hund → Hun-de' },
   videoQuery: 'Wörter verlängern Auslautverhärtung d t g k b p Klasse 3',
 }, (r) => {
