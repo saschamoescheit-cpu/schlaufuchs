@@ -51,10 +51,18 @@ function TenFrames({ n, m = 0, crossOut = 0 }: { n: number; m?: number; crossOut
 
 function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number; to: number; start: number; jumps: number[]; step?: number; minor?: number; ask?: boolean }) {
   const W = 360;
-  const pad = 18;
   const span = Math.max(1, to - from);
-  const x = (v: number) => pad + ((v - from) / span) * (W - 2 * pad);
   const labelStep = step ?? (span <= 20 ? 1 : span <= 60 ? 5 : span <= 200 ? 10 : 100);
+  // große Zahlen mit schmalem Leerzeichen gliedern (450 000); Rand so breit, dass die äußeren Beschriftungen ganz sichtbar sind
+  const lab = (v: number) => (Math.abs(v) >= 10000 ? String(v).replace(/\B(?=(\d{3})+(?!\d))/g, ' ') : String(v));
+  const fs0 = span > 20 && labelStep < 10 ? 10 : 13;
+  const labW = Math.max(lab(from).length, lab(to).length) * fs0 * 0.62;
+  const pad = Math.max(18, labW / 2 + 3);
+  const x = (v: number) => pad + ((v - from) / span) * (W - 2 * pad);
+  // zu viele Beschriftungen? Dann nur jede 2. (bzw. 5.) – Anfang und Ende immer
+  const nLab = Math.round(span / labelStep);
+  const gap = (W - 2 * pad) / Math.max(1, nLab);
+  const every = gap >= labW + 4 ? 1 : gap * 2 >= labW + 4 ? 2 : 5;
   const tickStep = minor ?? (span <= 60 ? 1 : span <= 200 ? labelStep / 2 || 1 : labelStep / 10);
   const ticks: number[] = [];
   for (let v = Math.ceil(from / tickStep) * tickStep; v <= to; v += tickStep) ticks.push(Math.round(v * 100) / 100);
@@ -65,7 +73,7 @@ function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number
     return { a, b: cur, j };
   });
   const y = 78;
-  const fs = span > 20 && labelStep < 10 ? 10 : 13;
+  const fs = fs0;
   return (
     <Svg w={W} h={104} label="Zahlenstrahl" max={420}>
       <line x1={pad - 8} y1={y} x2={W - pad + 8} y2={y} stroke={C.ink} strokeWidth={2} />
@@ -75,9 +83,9 @@ function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number
         return (
           <g key={v}>
             <line x1={x(v)} y1={y - (major ? 8 : 4)} x2={x(v)} y2={y + (major ? 8 : 4)} stroke={C.ink} strokeWidth={major ? 2 : 1} />
-            {major && (
+            {major && (Math.round((v - from) / labelStep) % every === 0 || v === to) && (
               <text x={x(v)} y={y + 22} fontSize={fs} textAnchor="middle" fill={C.ink} fontFamily="Fredoka, sans-serif">
-                {v}
+                {lab(v)}
               </text>
             )}
           </g>

@@ -1,6 +1,6 @@
 // Weitere Themen (Nachtlauf 21./22.10.2026, Teil 3) nach Abgleich mit dem NRW-Lehrplan:
 // Lagebeziehungen (Kl. 1), Zahlenstrahl bis 100 (Kl. 2) und bis 1000 (Kl. 3), Im Wörterbuch nachschlagen (Kl. 3).
-import { chance, choice, fixedChoice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
+import { chance, choice, fixedChoice, fmt, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { NAMES, columnAdd, columnSub, skill, type Gen } from './helpers';
 import { VT, wordTask, type W } from './extra';
@@ -77,6 +77,8 @@ function lageTask(r: Rng, s: Stage): Gen {
 // ---------- Zahlenstrahl ----------
 
 /** ein Punkt am Zahlenstrahl: Zahl ablesen */
+/** große Zahlen gegliedert schreiben (450 000) */
+const g = (v: number) => (v >= 10000 ? fmt(v) : String(v));
 function strahlTask(from: number, to: number, step: number, minor: number, n: number, tag = 'ablesen'): Gen {
   const lab = Math.floor(n / step) * step;
   const k = (n - lab) / minor;
@@ -88,11 +90,11 @@ function strahlTask(from: number, to: number, step: number, minor: number, n: nu
     answer: { type: 'number', value: n },
     tags: [tag],
     traps: [
-      { answer: String(n + minor), tag: 'verzaehlt', hint: `Zähle die Striche noch einmal genau – jeder kleine Strich ist ${minor} weiter.` },
-      { answer: String(n - minor), tag: 'verzaehlt', hint: `Zähle die Striche noch einmal genau – jeder kleine Strich ist ${minor} weiter.` },
-      ...(big ? [{ answer: String(lab + k), tag: 'strich-wert', hint: `Ein kleiner Strich ist hier nicht 1, sondern ${minor}.` }] : []),
+      { answer: String(n + minor), tag: 'verzaehlt', hint: `Zähle die Striche noch einmal genau – jeder kleine Strich ist ${g(minor)} weiter.` },
+      { answer: String(n - minor), tag: 'verzaehlt', hint: `Zähle die Striche noch einmal genau – jeder kleine Strich ist ${g(minor)} weiter.` },
+      ...(big ? [{ answer: String(lab + k), tag: 'strich-wert', hint: `Ein kleiner Strich ist hier nicht 1, sondern ${g(minor)}.` }] : []),
     ],
-    solution: [`Jeder kleine Strich ist ${minor} weiter.`, `Von ${lab} aus ${k === 1 ? 'ist es 1 Strich' : `sind es ${k} Striche`}: ${lab} + ${k * minor} = ${n}`],
+    solution: [`Jeder kleine Strich ist ${g(minor)} weiter.`, `Von ${g(lab)} aus ${k === 1 ? 'ist es 1 Strich' : `sind es ${k} Striche`}: ${g(lab)} + ${g(k * minor)} = ${g(n)}`],
     solutionVisual: { kind: 'numberline', from, to, start: lab, jumps: [n - lab], step, minor },
   };
 }
@@ -106,11 +108,11 @@ function mitteTask(r: Rng, unit: number, maxUnits: number): Gen {
   const m = a + half;
   return {
     key: `mitte-${a}-${b}`,
-    prompt: `Welche Zahl liegt am Zahlenstrahl genau in der Mitte zwischen ${a} und ${b}?`,
+    prompt: `Welche Zahl liegt am Zahlenstrahl genau in der Mitte zwischen ${g(a)} und ${g(b)}?`,
     answer: { type: 'number', value: m },
     tags: ['mitte'],
-    traps: [{ answer: String(b - a), tag: 'abstand-statt-mitte', hint: `${b - a} ist der Abstand. Die Mitte ist die Hälfte davon weiter: ${a} + ${half}.` }],
-    solution: [`Von ${a} bis ${b} sind es ${b - a}.`, `Die Hälfte davon ist ${half}.`, `${a} + ${half} = ${m}`],
+    traps: [{ answer: String(b - a), tag: 'abstand-statt-mitte', hint: `${g(b - a)} ist der Abstand. Die Mitte ist die Hälfte davon weiter: ${g(a)} + ${g(half)}.` }],
+    solution: [`Von ${g(a)} bis ${g(b)} sind es ${g(b - a)}.`, `Die Hälfte davon ist ${g(half)}.`, `${g(a)} + ${g(half)} = ${g(m)}`],
     solutionVisual: { kind: 'numberline', from: a, to: b, start: a, jumps: [half, half], step: half },
   };
 }
@@ -1002,7 +1004,25 @@ function igichTask(r: Rng, s: Stage): Gen {
   };
 }
 
+function strahlMio(r: Rng, s: Stage): Gen {
+  if (s > 1 && chance(r, 0.25)) return mitteTask(r, 100000, 10);
+  if (s === 1) {
+    const h = ri(r, 0, 9) * 100000;
+    let k = ri(r, 1, 9);
+    if (k === 5) k = 4;
+    return strahlTask(h, h + 100000, 50000, 10000, h + k * 10000);
+  }
+  if (s === 2) {
+    const t = ri(r, 0, 98) * 10000;
+    let k = ri(r, 1, 19);
+    if (k === 10) k = 11;
+    return strahlTask(t, t + 20000, 10000, 1000, t + k * 1000);
+  }
+  return strahlTask(0, 1000000, 100000, 50000, ri(r, 0, 9) * 100000 + 50000);
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(4, 'm4-zahlenstrahl', 'Zahlenstrahl bis 1 Million', '📏', { text: ['Schau zuerst, wie weit ein großer Strich vom nächsten entfernt ist – zum Beispiel 100 000.', 'Dann die kleinen Striche: Wie viele sind zwischen zwei großen? 10 kleine Striche zwischen 0 und 100 000 heißt: jeder ist 10 000.', 'Zähle vom nächsten beschrifteten Strich aus weiter.'], visual: { kind: 'numberline', from: 400000, to: 500000, start: 430000, jumps: [], step: 50000, minor: 10000, ask: true }, videoQuery: 'Zahlenstrahl bis 1 Million Klasse 4' }, strahlMio, { tagLabels: { ablesen: 'Zahlen am Zahlenstrahl ablesen', mitte: 'die Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Wert eines kleinen Strichs falsch', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 30 }),
   M(3, 'm3-geld', 'Geld mit Komma', '💰', { text: ['3,45 € heißt: 3 Euro und 45 Cent.', 'Nach dem Komma stehen immer zwei Stellen für die Cent: 5 Cent schreibt man 0,05 €, 50 Cent 0,50 €.', '100 Cent sind 1 Euro – also sind 345 ct = 3,45 €.'], visual: { kind: 'money', items: [200, 100, 20, 20, 5] }, videoQuery: 'Geld Kommaschreibweise Euro Cent Klasse 3' }, geld3Task, { tagLabels: { zaehlen: 'Geld zählen', umrechnen: 'Euro und Cent umrechnen', vergleichen: 'Preise vergleichen', 'komma-null': 'Null nach dem Komma vergessen', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 }),
   M(1, 'm1-muster', 'Muster fortsetzen', '🔁', { text: ['Ein Muster wiederholt sich immer wieder auf die gleiche Weise.', 'Suche den Teil, der sich wiederholt: 🔺 🟦 | 🔺 🟦 | 🔺 🟦', 'Dann weißt du, was als Nächstes kommt.'], visual: { kind: 'row', items: ['🔺', '🟦', '🔺', '🟦', '🔺', '❓'] }, videoQuery: 'Muster fortsetzen Klasse 1 Mathematik' }, musterTask, { tagLabels: { 'muster-2': 'einfache Muster', 'muster-lang': 'längere Muster' }, testSeconds: 20 }),
   M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),

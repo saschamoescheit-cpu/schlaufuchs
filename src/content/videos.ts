@@ -203,6 +203,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'UKhJNBANtW0', title: 'Rechtschreibstrategie „Verlängern“ – kindgerecht erklärt', channel: 'Lehrertipps', len: '5:05' },
     { id: 'dG9xG3s8Ikg', title: 'Rechtschreibung: Wörter verlängern', channel: 'endlich kapiert', len: '5:41' },
   ],
+  'm4-zahlenstrahl': [
+    { id: 'FqTGYIE1npQ', title: 'Klasse 4: Zahlenstrahl – Zahlenraum bis zur Million', channel: 'Unterricht mit Lehrer Wirth', len: '11:19' },
+    { id: 'OONKVzRES7g', title: 'Zahlenstrahl – 4. Klasse', channel: 'Mittelstufe Lernvideos', len: '13:08' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
