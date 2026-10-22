@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
 import { buildMix, buildPattern, buildPractice, buildReview } from './engine/session';
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
@@ -10,14 +10,19 @@ import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
 import { TestResultView, TestRun, TestSetup, type TestSpec } from './screens/Tests';
 import { ProfileEdit, Settings, Welcome } from './screens/Profile';
-import { ParentChild, ParentHome, PinGate } from './screens/Parent';
-import { PrintView } from './screens/Print';
 import { Blitz } from './screens/Blitz';
-import { VocabCards } from './screens/VocabCards';
 import type { CardDir, VocabStart } from './screens/Vocab';
 import { buildDictation } from './content/words';
 import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
+
+// Selten gebrauchte Bildschirme erst bei Bedarf laden (kleineres Startpaket; offline vom Service Worker vorgehalten)
+const ParentHome = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentHome })));
+const ParentChild = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentChild })));
+const PinGate = lazy(() => import('./screens/Parent').then((m) => ({ default: m.PinGate })));
+const PrintView = lazy(() => import('./screens/Print').then((m) => ({ default: m.PrintView })));
+const VocabCards = lazy(() => import('./screens/VocabCards').then((m) => ({ default: m.VocabCards })));
+const Loading = () => <div className="app full" aria-busy="true" />;
 
 type Tab = 'home' | 'review' | 'tests' | 'stats';
 type Route =
@@ -90,9 +95,11 @@ export default function App() {
 
   const [, setTick] = useState(0);
   const parentView = (r: Route, onBack: () => void, openChild: (id: string) => void) => {
-    if (!isUnlocked()) return <PinGate onOk={() => setTick((t) => t + 1)} onCancel={onBack} />;
-    if (r.r === 'parent-child') return <ParentChild data={data} id={r.id} onBack={onBack} />;
-    return <ParentHome data={data} onChild={openChild} onBack={onBack} />;
+    return (
+      <Suspense fallback={<Loading />}>
+        {!isUnlocked() ? <PinGate onOk={() => setTick((t) => t + 1)} onCancel={onBack} /> : r.r === 'parent-child' ? <ParentChild data={data} id={r.id} onBack={onBack} /> : <ParentHome data={data} onChild={openChild} onBack={onBack} />}
+      </Suspense>
+    );
   };
 
   // Profil gewechselt oder gelöscht → zurück zum Start
@@ -168,9 +175,17 @@ export default function App() {
     case 'blitz':
       return <Blitz key={route.n} profile={profile} progress={progress} skill={route.skill} onExit={back} />;
     case 'cards':
-      return <VocabCards key={route.n} profile={profile} progress={progress} skillIds={route.skillIds} n={route.size} dir={route.dir} onExit={back} onRestart={() => replace({ ...route, n: route.n + 1 })} />;
+      return (
+        <Suspense fallback={<Loading />}>
+          <VocabCards key={route.n} profile={profile} progress={progress} skillIds={route.skillIds} n={route.size} dir={route.dir} onExit={back} onRestart={() => replace({ ...route, n: route.n + 1 })} />
+        </Suspense>
+      );
     case 'print':
-      return <PrintView profile={profile} spec={route.spec} onBack={back} />;
+      return (
+        <Suspense fallback={<Loading />}>
+          <PrintView profile={profile} spec={route.spec} onBack={back} />
+        </Suspense>
+      );
     case 'test':
       return <TestRun profile={profile} spec={route.spec} onCancel={back} onDone={(id) => replace({ r: 'result', id })} />;
     case 'result': {

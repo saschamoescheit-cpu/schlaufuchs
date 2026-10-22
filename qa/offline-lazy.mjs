@@ -1,0 +1,43 @@
+// node qa/offline-lazy.mjs [url] – nachgeladene Teile (Erklärvideos, Karteikarten, Eltern-Bereich) funktionieren auch offline.
+// Mit Edge (wie qa/offline.mjs), weil WebKit unter Playwright offline nicht über den Service Worker lädt.
+import { chromium, devices } from 'playwright';
+const url = process.argv[2] ?? 'http://localhost:5193/';
+const b = await chromium.launch({ channel: 'msedge' });
+const ctx = await b.newContext({ ...devices['iPhone 13'], locale: 'de-DE', serviceWorkers: 'allow' });
+const p = await ctx.newPage();
+const errs = [];
+p.on('pageerror', (e) => errs.push(e.message));
+let fails = 0;
+const ok = (c, w) => { console.log(`${c ? '✓' : '✗'} ${w}`); if (!c) fails++; };
+await p.goto(url);
+await p.evaluate(() => {
+  const id = 'k1';
+  localStorage.setItem('schlaufuchs:v1', JSON.stringify({ schema: 1, profiles: [{ id, name: 'Mia', avatar: '🦊', age: 9, grade: 4, state: 'NW', englishFrom: 3, gradesFrom: 3, gradeKey: [95, 80, 65, 50, 25], autoRead: false, sound: false, pace: 'schule', created: 1, gradeYear: 9999 }], progress: { [id]: { skills: {}, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} } }, activeId: id, parent: { pin: null } }));
+});
+await p.reload();
+await p.waitForFunction(() => navigator.serviceWorker?.controller != null, null, { timeout: 30000 }).catch(() => {});
+await p.waitForTimeout(1500);
+await ctx.setOffline(true);
+await p.reload();
+await p.waitForTimeout(1000);
+await p.getByRole('button', { name: /Englisch/ }).first().click();
+await p.getByRole('button', { name: 'Erklärung zu Jobs – Berufe', exact: true }).click();
+await p.waitForTimeout(800);
+ok((await p.locator('.video-card').count()) > 0, 'Erklärvideos (Liste) offline geladen');
+await p.goto(url).catch(() => {});
+await p.waitForTimeout(800);
+await p.getByRole('button', { name: /Englisch/ }).first().click();
+await p.getByRole('button', { name: /Vokabeln lernen/ }).click();
+await p.locator('.sheet').getByRole('radio', { name: /Karteikarten/ }).click();
+await p.locator('.sheet').getByRole('button', { name: /Los geht/ }).click();
+await p.waitForTimeout(800);
+ok(await p.locator('.vcard').isVisible().catch(() => false), 'Karteikarten offline geöffnet');
+await p.goto(url).catch(() => {});
+await p.waitForTimeout(800);
+await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
+await p.getByRole('button', { name: /Eltern-Bereich/ }).click();
+await p.waitForTimeout(800);
+ok(/PIN/.test(await p.locator('body').innerText()), 'Eltern-Bereich offline geöffnet');
+console.log(errs.length ? 'FEHLER:\n' + errs.join('\n') : 'keine Seitenfehler');
+await b.close();
+process.exit(fails + errs.length);

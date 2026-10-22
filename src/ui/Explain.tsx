@@ -1,7 +1,11 @@
 // Erklärung eines Themas: Text, Bild, Vorlesen und passende YouTube-Videos.
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { Skill } from '../engine/types';
-import { VIDEOS, type VideoRef } from '../content/videos';
+import type { VideoRef } from '../content/videos';
+
+// Die Videoliste wird erst beim ersten Öffnen einer Erklärung geladen (kleineres Startpaket)
+let videoCache: Record<string, VideoRef[]> | null = null;
+const loadVideos = () => import('../content/videos').then((m) => (videoCache = m.VIDEOS));
 import { Rich, Sheet, Speak } from './common';
 import { correctText } from '../engine/check';
 import { Visual } from './Visual';
@@ -56,7 +60,11 @@ export function VideoPlayer({ v, onClose }: { v: VideoRef; onClose: () => void }
 
 export function Videos({ skill }: { skill: Skill }) {
   const [playing, setPlaying] = useState<VideoRef | null>(null);
-  const vids = VIDEOS[skill.id] ?? [];
+  const [all, setAll] = useState(videoCache);
+  useEffect(() => {
+    if (!all) void loadVideos().then(setAll).catch(() => setAll({}));
+  }, [all]);
+  const vids = all?.[skill.id] ?? [];
   return (
     <div className="stack" style={{ gap: 10 }}>
       <h3>🎬 Erklärvideo{vids.length > 1 ? 's' : ''}</h3>
