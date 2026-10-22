@@ -181,3 +181,23 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
     </Sheet>
   );
 }
+
+/** Eltern-Bereich: Karteikasten des Kindes (nur Wortfelder, in denen schon Vokabeln geübt wurden) */
+export function VocabBoxCard({ progress }: { progress: Progress }) {
+  const states = useMemo(() => cardStates(progress.log), [progress.log]);
+  const ids = [...new Set([...states.keys()].map((k) => k.split('|')[0]))];
+  if (!ids.length) return null;
+  const cards = cardsOf(ids);
+  const counts = boxCounts(cards, states);
+  const due = pickCards(cards, states, 999).due.length;
+  const sure = counts[4] + counts[5];
+  return (
+    <div className="card" style={{ display: 'grid', gap: 10 }}>
+      <h3 style={{ margin: 0 }}>🗂️ Englisch-Vokabeln (Karteikasten)</h3>
+      <CardBoxes counts={counts} />
+      <div className="small muted">
+        {sure} von {cards.length} Wörtern sitzen (Fach 4 und 5) · {due ? `${due} heute zum Wiederholen dran` : 'heute nichts fällig'} · {ids.length} {ids.length === 1 ? 'Wortfeld' : 'Wortfelder'}
+      </div>
+    </div>
+  );
+}

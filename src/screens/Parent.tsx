@@ -15,6 +15,7 @@ import { GradeKeyEditor, TestHistory } from './Tests';
 import { SubjectStats } from './Stats';
 import { countdownText, daysUntil, fmtDay, nextPlanned, readiness } from './Planner';
 import { ProgressReport } from './Report';
+import { VocabBoxCard } from './Vocab';
 
 const DAY = 86400000;
 const fmtDate = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -386,6 +387,8 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
               🖨️ Lernstand drucken
             </button>
             {msg && <p className="small center">{msg}</p>}
+
+            <VocabBoxCard progress={pr} />
 
             <h2 className="section-title">Wo es hakt</h2>
             {weak.length === 0 ? (
