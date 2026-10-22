@@ -187,6 +187,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'e1-shapes': [
     { id: 'Tq88qy2ycYM', title: 'Shapes Song for Kids – Circle, Square, Triangle & Rectangle', channel: "Mom's little lessons", len: '1:57' },
   ],
+  'm1-muster': [
+    { id: 'f_vnfIk48Gc', title: 'Lernvideo: Muster erkennen (ab Klasse 1)', channel: 'Schule Online', len: '6:28' },
+    { id: 'tKOyyai3GzA', title: 'Einführung Thema „Muster“ – 1. Klasse Mathe', channel: 'LASO GS Sprachheilpädagogik', len: '12:56' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },

@@ -79,7 +79,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
     { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen|ziffern/ },
     { name: 'Rechnen', re: /plus|minus|ergaenzen|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|ueberschlag/ },
     { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|rechengeschichten|fahrplan|massstab/ },
-    { name: 'Geometrie und Daten', re: /formen|lage|parallel|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
+    { name: 'Geometrie und Daten', re: /formen|lage|parallel|muster|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
   ],
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben|nachspuren|lautposition/ },

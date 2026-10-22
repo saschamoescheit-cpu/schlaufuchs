@@ -21,6 +21,7 @@ export type Visual =
   | { kind: 'array'; rows: number; cols: number; split?: number }
   | { kind: 'shape'; shape: string; rot?: number; fill?: string } // rot: gedreht (Grad)
   | { kind: 'lines'; a: [number, number, number, number]; b: [number, number, number, number]; right?: boolean } // zwei Strecken (200×160), right: rechten Winkel markieren
+  | { kind: 'row'; items: string[] } // Bilder in einer Reihe (Muster), passt sich der Breite an
   | { kind: 'scatter'; emoji: string; pts: [number, number][] } // ungeordnete Menge zum Zählen (240×150)
   | { kind: 'shapemix'; items: { s: string; rot: number; c: number; big: boolean }[] } // bunte Formen zum Zählen
   | { kind: 'rect'; w: number; h: number; show?: 'umfang' | 'flaeche' }

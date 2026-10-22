@@ -918,7 +918,33 @@ function alphabetTask(r: Rng, s: Stage): Gen {
   return { key: `l-${L}`, prompt: 'Hör gut zu! Welchen Buchstaben hörst du?', listen: { text: `The letter ${L}.`, lang: 'en', slow: true }, answer: { ...choice(r, L, s === 1 ? x.mix.slice(0, 2) : x.mix), big: true }, tags: ['buchstaben'], solution: [`Auf Englisch heißt ${L} „${x.say}“.`, L === 'E' ? 'Achtung: Das englische E klingt wie ein deutsches „i“!' : L === 'I' ? 'Achtung: Das englische I klingt wie „ai“!' : L === 'G' || L === 'J' ? 'G („dschii“) und J („dschäi“) klingen ähnlich – genau hinhören!' : `Sprich nach: ${x.say}.`], pronounce: { text: `The letter ${L}.`, lang: 'en' } };
 }
 
+// ---------- Muster fortsetzen (Kl. 1) ----------
+
+const MUSTER_ITEMS = ['🔺', '🟦', '🟡', '⭐', '❤️', '🍎', '🐟', '🌼'];
+const MUSTER_UNITS: { u: number[]; st: Stage }[] = [
+  { u: [0, 1], st: 1 }, { u: [0, 0, 1], st: 1 }, { u: [0, 1, 1], st: 2 }, { u: [0, 1, 2], st: 2 }, { u: [0, 0, 1, 1], st: 3 }, { u: [0, 1, 2, 1], st: 3 }, { u: [0, 1, 1, 2], st: 3 },
+];
+function musterTask(r: Rng, s: Stage): Gen {
+  const unit = pick(r, MUSTER_UNITS.filter((x) => x.st <= s)).u;
+  const k = Math.max(...unit) + 1;
+  const items = pickN(r, MUSTER_ITEMS, k);
+  const len = unit.length * 2 + ri(r, 1, unit.length);
+  const seq = Array.from({ length: len }, (_, i) => items[unit[i % unit.length]]);
+  const next = items[unit[len % unit.length]];
+  const wrong = items.filter((x) => x !== next).concat(pickN(r, MUSTER_ITEMS.filter((x) => !items.includes(x)), 3)).slice(0, 3);
+  const block = unit.map((i) => items[i]).join(' ');
+  return {
+    key: `${unit.join('')}-${items.join('')}-${len}`,
+    prompt: 'Wie geht das Muster weiter?',
+    visual: { kind: 'row', items: [...seq, '❓'] },
+    answer: { ...choice(r, next, wrong), big: true },
+    tags: [unit.length === 2 ? 'muster-2' : 'muster-lang'],
+    solution: [`Das Muster wiederholt sich immer wieder: ${block}`, `Als Nächstes kommt: ${next}`],
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(1, 'm1-muster', 'Muster fortsetzen', '🔁', { text: ['Ein Muster wiederholt sich immer wieder auf die gleiche Weise.', 'Suche den Teil, der sich wiederholt: 🔺 🟦 | 🔺 🟦 | 🔺 🟦', 'Dann weißt du, was als Nächstes kommt.'], visual: { kind: 'row', items: ['🔺', '🟦', '🔺', '🟦', '🔺', '❓'] }, videoQuery: 'Muster fortsetzen Klasse 1 Mathematik' }, musterTask, { tagLabels: { 'muster-2': 'einfache Muster', 'muster-lang': 'längere Muster' }, testSeconds: 20 }),
   M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),
   M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),
   M(1, 'm1-ziffern', 'Ziffern schreiben', '✏️', { text: ['Jede Ziffer hat ihre feste Form – und eine Richtung, in die man sie schreibt.', 'Fang am grünen Punkt an und fahre die graue Ziffer mit dem Finger nach.', 'Tippe auf ▶, dann zeigt dir der Fuchs, wie es geht.'], visual: { kind: 'word', word: '1 2 3' }, videoQuery: 'Ziffern schreiben lernen Kinder Schreibrichtung' }, zifferTask, { tagLabels: { ziffern: 'Ziffern schreiben' }, testSeconds: 40 }),

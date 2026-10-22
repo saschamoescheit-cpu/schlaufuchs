@@ -439,6 +439,20 @@ function Lines({ a, b, right }: { a: [number, number, number, number]; b: [numbe
   );
 }
 
+/** Bilder in einer Zeile (z. B. Muster) – schrumpft statt umzubrechen */
+function Row({ items }: { items: string[] }) {
+  const w = 40;
+  return (
+    <Svg w={items.length * w} h={44} label={items.join(' ')} max={items.length * 52}>
+      {items.map((e, i) => (
+        <text key={i} x={i * w + w / 2} y={24} fontSize={30} textAnchor="middle" dominantBaseline="central">
+          {e}
+        </text>
+      ))}
+    </Svg>
+  );
+}
+
 /** ungeordnete Menge (Streubild) zum Zählen */
 function Scatter({ emoji, pts }: { emoji: string; pts: [number, number][] }) {
   return (
@@ -756,6 +770,8 @@ export function Visual({ v }: { v: V }) {
       return <Shape shape={v.shape} rot={v.rot} fill={v.fill} />;
     case 'lines':
       return <Lines a={v.a} b={v.b} right={v.right} />;
+    case 'row':
+      return <Row items={v.items} />;
     case 'scatter':
       return <Scatter emoji={v.emoji} pts={v.pts} />;
     case 'shapemix':
