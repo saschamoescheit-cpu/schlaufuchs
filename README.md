@@ -1,24 +1,29 @@
 # Schlaufuchs 🦊
 
-Interaktive Lern-App für Grundschüler: **Mathe, Deutsch und Englisch, Klassen 1–4** (Lehrplan NRW als Standard, alle Bundesländer wählbar).
+Interaktive Lern-App für Grundschüler: **Mathe, Deutsch und Englisch, Klassen 1–4** (Lehrplan NRW als Standard, alle Bundesländer wählbar). Kostenlos, ohne Werbung.
 
-**Live:** https://saschamoescheit-cpu.github.io/schlaufuchs/
+**Live:** https://saschamoescheit-cpu.github.io/schlaufuchs/ · **Homepage (Vorschau):** https://saschamoescheit-cpu.github.io/schlaufuchs/home/
 
 ## Was die App kann
-- Kinderprofile (Name, Tier, Alter, Klasse, Bundesland) – mehrere Kinder pro Gerät, alles nur lokal gespeichert
-- 97 Themen mit unendlich vielen Zufallsaufgaben, Lösungsweg, Bild, Vorlesen (Sprachausgabe) und geprüften YouTube-Erklärvideos
-- Lernstand je Thema (Neu → Angefangen → Geübt → Sicher), Schwächen und typische Fehlermuster
-- **Fehler-Kiste:** falsch gelöste Aufgaben kommen wieder – in der Runde und später –, bis sie zweimal hintereinander richtig sind
-- **Lernzielkontrollen** mit Zeitlimit (Entspannt / Wie in der Schule / Turbo) und Note ab Klasse 3 (Notenschlüssel einstellbar)
-- Sicherung als Datei (Export/Import), Web-App zum Installieren („Zum Home-Bildschirm“)
+- Kinderprofile (Name, Tier, Alter, Klasse, Bundesland) – mehrere Kinder pro Gerät
+- 178 Themen mit Zufallsaufgaben in drei Stufen, Lösungsweg, Erklärung mit Bild, Beispiel und geprüften YouTube-Erklärvideos, Vorlesen
+- Lernstand je Thema, Schwächen und typische Fehlermuster
+- **Fehler-Kiste:** falsch gelöste Aufgaben kommen wieder, bis sie zweimal hintereinander richtig sind
+- **Tests** mit Zeitlimit und Note (Notenschlüssel einstellbar), als Arbeitsblatt druckbar; Klassenarbeiten eintragen mit Wiederholungsplan
+- **Englisch-Vokabeltrainer:** Wortfelder wählen, gemischt üben, **Vokabelkarten** (Karteikasten mit 5 Fächern, Wiederholung nach 1/3/7/14/30 Tagen), **Buchstabier-Diktat**, Vokabeltest
+- **Eltern-Bereich** mit PIN: Lernzeit, Lernziele, Tests, Karteikasten, Wochenbericht, Lernstand drucken
+- **Konto (optional):** Abgleich zwischen Geräten über Supabase (EU); ohne Konto bleibt alles auf dem Gerät (localStorage + Kopie in IndexedDB)
+- **Vorlesen:** Cloud-Stimme (Supabase-Funktion `tts` → Google Text-to-Speech, auch im Stummmodus von iPhone/iPad), sonst Gerätestimme
+- Web-App zum Installieren („Zum Home-Bildschirm“), funktioniert offline
 
 ## Entwickeln
 ```
 npm install
 npm run dev        # http://localhost:5173
-npm test           # Inhalte + Lernlogik
+npm test           # Inhalte, Lernlogik, Abgleich
 npm run build
-npx vite-node scripts/sample.ts m3   # Beispielaufgaben eines Themas ansehen
-node qa/tour.mjs http://localhost:5173/ qa/shots   # Klick-Durchlauf mit Bildschirmfotos (cd qa && npm i)
+npx vite-node scripts/sample3.ts m3 2 3   # Beispielaufgaben (Präfix, Stufe, Anzahl)
+npx vite-node scripts/scan.ts             # generierte Texte nach typischen Fehlern durchsuchen
+node qa/tour.mjs http://localhost:5173/   # Klick-Durchlauf mit Bildschirmfotos (cd qa && npm i)
 ```
-Push auf `main` baut und veröffentlicht automatisch (GitHub Pages).
+Push auf `main` baut und veröffentlicht automatisch (GitHub Pages). Domain-Umzug: siehe `docs/domain-umzug.md`.
