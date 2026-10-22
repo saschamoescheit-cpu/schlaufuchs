@@ -451,7 +451,7 @@ const VERB_TAB: [string, string, string, string, 'hat' | 'ist', string, string[]
 ];
 const REGULAR = new Set(['spielen', 'malen', 'bauen', 'tanzen', 'lachen', 'kochen']);
 const zeit3 = D(3, 'd3-zeitformen', 'Gegenwart und Vergangenheit', '⏳', {
-  text: ['Gegenwart (Präsens): Das passiert jetzt. „Lena spielt Fußball.“', 'Vergangenheit (Präteritum): Das ist schon passiert – so schreibt man in Geschichten. „Lena spielte Fußball.“', 'Viele Verben bekommen nur ein -te: spielen → spielte.', 'Starke Verben verändern sich: gehen → ging, singen → sang. Diese musst du üben!'],
+  text: ['Gegenwart (Präsens): Das passiert jetzt. „Lena spielt Fußball.“', 'Vergangenheit (Präteritum): Das ist schon passiert – so schreibt man in Geschichten. „Lena spielte Fußball.“', 'Viele Verben bekommen nur ein -te: spielen → spielte.', 'Starke Verben verändern sich: gehen → ging, singen → sang. Diese musst du üben!', 'Umgekehrt geht es auch: Aus „Lena spielte“ wird in der Gegenwart „Lena spielt“.'],
   visual: { kind: 'text', text: 'spielt → spielte · geht → ging' },
   videoQuery: 'Präteritum Vergangenheit Verben Klasse 3',
 }, (r, st) => {

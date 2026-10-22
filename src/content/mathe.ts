@@ -16,6 +16,7 @@ const zaehlen = M(1, 'm1-zaehlen', 'Mengen zählen bis 20', '🔢', {
     'Zähle nicht jeden Punkt einzeln – das dauert lange und man verzählt sich leicht.',
     'Im Zehnerfeld hat eine Reihe 5 Punkte, ein volles Feld hat 10 Punkte.',
     'Siehst du ein volles Feld und noch 3 Punkte? Dann sind es 10 + 3 = 13.',
+    'Liegen die Dinge durcheinander, tippe jedes beim Zählen einmal an oder bilde Fünfer-Gruppen.',
   ],
   visual: { kind: 'dots', n: 13 },
   videoQuery: 'Zehnerfeld Mengen erfassen Klasse 1',
@@ -46,6 +47,7 @@ const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', 
     '< heißt „kleiner als“, > heißt „größer als“, = heißt „gleich“.',
     'Stell dir ein Krokodil vor: Es hat immer Hunger und reißt sein Maul zur größeren Zahl auf.',
     'Beispiel: 3 < 8 – das Maul ist offen zur 8.',
+    'Steht eine Plusaufgabe da (3 + 7 ☐ 8)? Rechne zuerst: 3 + 7 = 10, dann vergleiche 10 und 8.',
   ],
   visual: { kind: 'compare', a: 3, b: 8 },
   videoQuery: 'größer kleiner gleich Zeichen Krokodil Klasse 1',
@@ -267,7 +269,7 @@ const FORM_OBJ = [
   { name: 'ein Buch', e: '📕', s: 'Rechteck', why: 'Ein Buch hat zwei lange und zwei kurze Seiten.' },
 ];
 const formen = M(1, 'm1-formen', 'Formen erkennen', '🔺', {
-  text: ['Kreis: ganz rund, keine Ecken.', 'Dreieck: 3 Ecken, 3 Seiten.', 'Quadrat: 4 Ecken, alle Seiten gleich lang.', 'Rechteck: 4 Ecken, zwei lange und zwei kurze Seiten.'],
+  text: ['Kreis: ganz rund, keine Ecken.', 'Dreieck: 3 Ecken, 3 Seiten.', 'Quadrat: 4 Ecken, alle Seiten gleich lang.', 'Rechteck: 4 Ecken, zwei lange und zwei kurze Seiten.', 'Auch gedreht oder klein bleibt eine Form dieselbe: Ein Quadrat auf der Spitze ist immer noch ein Quadrat.'],
   visual: { kind: 'shape', shape: 'Dreieck' },
   videoQuery: 'geometrische Formen Kreis Dreieck Quadrat Rechteck Grundschule',
 }, (r, st) => {
