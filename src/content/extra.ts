@@ -358,7 +358,9 @@ export const DEUTSCH_EXTRA: Skill[] = [
 
 // ---------- Englisch ----------
 export type W = { en: string; de: string; e: string };
-const TOYS: W[] = [{ en: 'ball', de: 'Ball', e: '⚽' }, { en: 'teddy', de: 'Teddy', e: '🧸' }, { en: 'kite', de: 'Drachen', e: '🪁' }, { en: 'train', de: 'Zug', e: '🚂' }, { en: 'robot', de: 'Roboter', e: '🤖' }, { en: 'puzzle', de: 'Puzzle', e: '🧩' }, { en: 'doll', de: 'Puppe', e: '🪆' }, { en: 'yo-yo', de: 'Jo-Jo', e: '🪀' }, { en: 'dice', de: 'Würfel', e: '🎲' }, { en: 'balloon', de: 'Luftballon', e: '🎈' }];
+const TOYS: W[] = [{ en: 'ball', de: 'Ball', e: '⚽' }, { en: 'teddy', de: 'Teddy', e: '🧸' }, { en: 'kite', de: 'Drachen', e: '🪁' }, { en: 'train', de: 'Zug', e: '🚂' }, { en: 'robot', de: 'Roboter', e: '🤖' }, { en: 'puzzle', de: 'Puzzle', e: '🧩' }, { en: 'doll', de: 'Puppe', e: '🪆' }, { en: 'yo-yo', de: 'Jo-Jo', e: '🪀' }, { en: 'dice', de: 'Würfel', e: '🎲' }, { en: 'balloon', de: 'Luftballon', e: '🎈' },
+  // Nachtlauf 22.10.2026: mehr Spielsachen
+  { en: 'skateboard', de: 'Skateboard', e: '🛹' }, { en: 'drum', de: 'Trommel', e: '🥁' }, { en: 'dinosaur', de: 'Dinosaurier', e: '🦖' }, { en: 'trumpet', de: 'Trompete', e: '🎺' }, { en: 'computer game', de: 'Computerspiel', e: '🎮' }];
 const HOBBIES: W[] = [{ en: 'play the guitar', de: 'Gitarre spielen', e: '🎸' }, { en: 'play the piano', de: 'Klavier spielen', e: '🎹' }, { en: 'play tennis', de: 'Tennis spielen', e: '🎾' }, { en: 'play basketball', de: 'Basketball spielen', e: '🏀' }, { en: 'ride a horse', de: 'reiten', e: '🏇' }, { en: 'go skiing', de: 'Ski fahren', e: '⛷️' }, { en: 'draw pictures', de: 'Bilder malen', e: '🖍️' }, { en: 'go fishing', de: 'angeln', e: '🎣' }, { en: 'play computer games', de: 'Computerspiele spielen', e: '🎮' }, { en: 'take photos', de: 'fotografieren', e: '📷' }];
 registerWords('e1-toys', TOYS);
 registerWords('e2-hobbies', HOBBIES);
