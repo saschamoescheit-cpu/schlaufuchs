@@ -1,6 +1,6 @@
 // Startseite und Fächer.
 import { useMemo, useState } from 'react';
-import { dayKey, dueReviews, level, openReviews, streakDays, weaknesses, type Progress } from '../engine/learning';
+import { dayKey, dueReviews, level, minutesByDay, openReviews, streakDays, weaknesses, type Progress } from '../engine/learning';
 import type { Grade, Skill, Subject } from '../engine/types';
 import { byArea, currentLevel, currentSkills, englishYear, levelsFor, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { saveProfile, schoolYear, type Profile } from '../data/store';
@@ -74,6 +74,11 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
       <NewSchoolYear profile={profile} />
       {planned && <PlannedCard t={planned} progress={progress} onPractice={onMix} onStart={onStartTest} />}
       <DailyGoal profile={profile} progress={progress} />
+      {(minutesByDay(progress)[dayKey(now)] ?? 0) >= 40 && (
+        <div className="card tint" style={{ background: 'var(--ok-soft)' }}>
+          🧃 Du hast heute schon {minutesByDay(progress)[dayKey(now)]} Minuten geübt – stark! Zeit für eine Pause? Wer sich zwischendurch bewegt, behält das Gelernte besser.
+        </div>
+      )}
       <BadgeWatcher profile={profile} progress={progress} />
 
       {due > 0 && (
