@@ -60,13 +60,32 @@ export interface AppData {
 const KEY = 'schlaufuchs:v1';
 const empty = (): AppData => ({ schema: 1, profiles: [], progress: {}, activeId: null, parent: { pin: null } });
 
+/** fehlende oder kaputte Felder auffüllen (nichts wird entfernt) – sonst stürzen Bildschirme ab */
+function repair(d: AppData): AppData {
+  const obj = (x: unknown) => (x && typeof x === 'object' && !Array.isArray(x) ? x : {});
+  const arr = (x: unknown) => (Array.isArray(x) ? x : []);
+  const num = (x: unknown) => (typeof x === 'number' && Number.isFinite(x) ? x : 0);
+  const progress: AppData['progress'] = {};
+  for (const [id, p] of Object.entries(obj(d.progress) as Record<string, Partial<Progress> | null>)) {
+    const q = (p ?? {}) as Partial<Progress>;
+    progress[id] = { ...emptyProgress(), ...q, skills: obj(q.skills) as Progress['skills'], review: arr(q.review), log: arr(q.log), tests: arr(q.tests), days: obj(q.days) as Progress['days'], stars: num(q.stars), solved: num(q.solved) };
+  }
+  return { ...empty(), ...d, profiles: arr(d.profiles), progress };
+}
+
 function load(): AppData {
+  let raw: string | null = null;
   try {
-    const raw = localStorage.getItem(KEY);
+    raw = localStorage.getItem(KEY);
     if (!raw) return empty();
-    const d = JSON.parse(raw) as AppData;
-    return { ...empty(), ...d };
+    return repair(JSON.parse(raw) as AppData);
   } catch {
+    // nicht lesbar: Rohdaten aufheben, bevor irgendetwas überschrieben wird (nie Nutzerdaten verlieren)
+    try {
+      if (raw) localStorage.setItem(`${KEY}:unlesbar:${Date.now()}`, raw);
+    } catch {
+      /* Speicher voll – dann bleibt nur der Hinweis */
+    }
     return empty();
   }
 }
