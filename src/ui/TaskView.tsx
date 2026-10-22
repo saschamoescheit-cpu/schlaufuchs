@@ -54,6 +54,11 @@ export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, su
       {task.listen && (
         <div className="listen-wrap">
           <Speak big text={task.listen.text} lang={task.listen.lang} slow={task.listen.slow} label="Anhören" />
+          {task.listen.lang === 'en' && !task.listen.slow && (
+            <button type="button" className="btn ghost small slow-btn" onClick={() => speak(task.listen!.text, 'en', undefined, true)}>
+              🐢 Langsam
+            </button>
+          )}
           {!canSpeak() && (
             <details className="no-voice small">
               <summary>Dieses Gerät kann nicht vorlesen – für Erwachsene: zum Vorlesen anzeigen</summary>

@@ -2447,3 +2447,7 @@ html[data-school-font] .prompt.long {
   font-size: 0.85rem;
   font-weight: 700;
 }
+.slow-btn {
+  margin-top: 6px;
+  min-height: 40px;
+}
