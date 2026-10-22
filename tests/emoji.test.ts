@@ -12,7 +12,7 @@ const isNew = (c: number) => NEW_RANGES.some(([a, b]) => c >= a && c <= b);
 describe('Emojis', () => {
   const dirs = ['src/content', 'src/ui', 'src/screens'];
   for (const d of dirs)
-    for (const f of readdirSync(d).filter((x) => /\.tsx?$/.test(x) && !x.endsWith('.test.ts'))) {
+    for (const f of readdirSync(d).filter((x: string) => /\.tsx?$/.test(x) && !x.endsWith('.test.ts'))) {
       it(`${d}/${f}: keine Emojis aus Unicode 14/15`, () => {
         const found = [...readFileSync(join(d, f), 'utf8')].filter((ch) => isNew(ch.codePointAt(0)!));
         expect(found, found.join(' ')).toEqual([]);
