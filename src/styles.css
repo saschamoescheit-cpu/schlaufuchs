@@ -938,7 +938,7 @@ a {
   flex-direction: column;
   align-items: flex-end;
   font-family: 'Fredoka', ui-monospace, monospace;
-  font-size: 1.9rem;
+  font-size: min(1.9rem, calc((100vw - 120px) / (var(--n, 6) * 1.2)));
   font-weight: 500;
   line-height: 1.25;
   margin: 0 auto;
@@ -2177,4 +2177,11 @@ details.more .inner {
   gap: 8px;
   background: #f6f9ff;
   box-shadow: inset 0 0 0 2px #dbe6fb;
+}
+
+/* lange Wörter in Videotiteln („Rechtschreibstrategie“) umbrechen statt das Blatt zu verbreitern */
+.video-card .grow {
+  min-width: 0;
+  overflow-wrap: break-word;
+  hyphens: auto;
 }

@@ -295,7 +295,8 @@ function Column({ op, rows, result, carries, steps }: { op: string; rows: number
   const width = Math.max(...allLines.map((s) => s.length)) + 1;
   const cells = (s: string, pad = width) => s.padStart(pad, ' ').split('');
   return (
-    <div className="vis-column mono" aria-label="schriftliche Rechnung">
+    // --n: Kästchen pro Zeile – die Schrift schrumpft auf schmalen Bildschirmen mit, damit nichts übersteht
+    <div className="vis-column mono" aria-label="schriftliche Rechnung" style={{ ['--n' as string]: op === '·' ? width + 2 : width + 1 }}>
       {op === '·' ? (
         <div className="col-row">
           {cells(`${rows[0]}·${rows[1]}`, width + 2).map((ch, i) => <span key={i}>{ch === ' ' ? '' : ch}</span>)}

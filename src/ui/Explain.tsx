@@ -1,6 +1,6 @@
 // Erklärung eines Themas: Text, Bild, Vorlesen und passende YouTube-Videos.
 import { useState } from 'react';
-import type { Skill, Stage } from '../engine/types';
+import type { Skill } from '../engine/types';
 import { VIDEOS, type VideoRef } from '../content/videos';
 import { Rich, Sheet, Speak } from './common';
 import { correctText } from '../engine/check';
@@ -96,15 +96,9 @@ export function ExplainBody({ skill }: { skill: Skill }) {
 
 /** Vorgerechnetes Beispiel: eine echte (leichte) Aufgabe des Themas – erst selbst überlegen, dann Lösungsweg aufklappen */
 function Example({ skill }: { skill: Skill }) {
-  // Hör-Aufgaben taugen nicht als Beispiel – ein paar Versuche, eine lesbare Aufgabe zu finden
-  const make = () => {
-    let t = skill.generate(Math.random, 1);
-    for (let i = 0; i < 12 && t.listen; i++) t = skill.generate(Math.random, (1 + (i % 3)) as Stage);
-    return t;
-  };
+  const make = () => skill.generate(Math.random, 1);
   const [task, setTask] = useState(make);
   const [open, setOpen] = useState(false);
-  if (task.listen) return null; // nur Hör-Aufgaben (Diktat)
   return (
     <div className="card example">
       <div className="row">
@@ -122,6 +116,11 @@ function Example({ skill }: { skill: Skill }) {
       <div className="prompt" style={{ fontSize: '1.15rem' }}>
         <Rich text={task.prompt} />
       </div>
+      {task.listen && (
+        <div className="listen-wrap">
+          <Speak big text={task.listen.text} lang={task.listen.lang} slow={task.listen.slow} label="Anhören" />
+        </div>
+      )}
       {task.visual && (
         <div className="visual-box">
           <Visual v={task.visual} />
