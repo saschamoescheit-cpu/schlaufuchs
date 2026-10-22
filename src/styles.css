@@ -2099,3 +2099,49 @@ details.more .inner {
   font-size: 1.2rem;
   color: var(--ink, #2b2340);
 }
+
+/* Wochenleiste im Tagesziel */
+.week-dots {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 10px;
+  gap: 4px;
+}
+.week-dots .wd {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  font-size: 0.72rem;
+  color: var(--muted);
+  flex: 1;
+}
+.week-dots .wd i {
+  font-style: normal;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--line);
+  color: #fff;
+  font-size: 0.95rem;
+}
+.week-dots .wd.some i {
+  background: var(--fox);
+}
+.week-dots .wd.goal i {
+  background: var(--ok);
+}
+.week-dots .wd.future i {
+  background: transparent;
+  border: 2px dashed var(--line);
+}
+.week-dots .wd.today i {
+  box-shadow: 0 0 0 3px var(--fox-soft), 0 0 0 5px var(--fox);
+}
+.week-dots .wd.today {
+  color: var(--ink, #2b2340);
+  font-weight: 700;
+}

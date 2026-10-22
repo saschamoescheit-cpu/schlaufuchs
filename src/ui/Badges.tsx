@@ -1,7 +1,7 @@
 // Abzeichen-Übersicht, Feier bei neuen Abzeichen, Tagesziel.
 import { useEffect, useState } from 'react';
 import { BADGES, earnedKeys, TIER_COLORS, TIER_NAMES, tierOf } from '../engine/badges';
-import { dayKey, type Progress } from '../engine/learning';
+import { addDays, dayKey, type Progress } from '../engine/learning';
 import type { Profile } from '../data/store';
 import { Confetti, Fox, Sheet } from './common';
 
@@ -130,6 +130,30 @@ export function DailyGoal({ profile, progress }: { profile: Profile; progress: P
       <div className="bar on-light" style={{ marginTop: 8 }}>
         <i style={{ width: `${Math.min(1, today / goal) * 100}%`, background: done ? 'var(--ok)' : 'var(--fox)' }} />
       </div>
+      <WeekDots progress={progress} goal={goal} />
+    </div>
+  );
+}
+
+/** Diese Woche (Mo–So): geübt • · Ziel geschafft ★ · heute umrandet */
+function WeekDots({ progress, goal }: { progress: Progress; goal: number }) {
+  const now = Date.now();
+  const wd = (new Date(now).getDay() + 6) % 7; // Montag = 0
+  const todayKey = dayKey(now);
+  const names = ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'];
+  return (
+    <div className="week-dots" aria-label="Diese Woche">
+      {names.map((n, i) => {
+        const k = dayKey(addDays(now, i - wd));
+        const c = progress.days[k] ?? 0;
+        const state = c >= goal ? 'goal' : c > 0 ? 'some' : i > wd ? 'future' : 'none';
+        return (
+          <span key={n} className={`wd ${state} ${k === todayKey ? 'today' : ''}`} title={c ? `${c} Aufgaben` : 'nicht geübt'}>
+            <i>{state === 'goal' ? '★' : state === 'some' ? '•' : ''}</i>
+            {n}
+          </span>
+        );
+      })}
     </div>
   );
 }
