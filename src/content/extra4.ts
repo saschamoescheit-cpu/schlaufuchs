@@ -254,6 +254,15 @@ const UK: { q: string; a: string; w: string[]; e: string; info: string }[] = [
   { q: 'Welcher Tag wird am 5. November in Großbritannien mit Feuerwerk gefeiert?', a: 'Bonfire Night', w: ['Halloween', 'Christmas', 'Easter'], e: '🎆', info: 'Bonfire Night (Guy Fawkes Night): Feuerwerk und große Lagerfeuer am 5. November.' },
   { q: 'Welche Länder gehören zu Großbritannien (Great Britain)?', a: 'England, Schottland und Wales', w: ['England und Irland', 'England, Frankreich und Spanien', 'nur England'], e: '🗺️', info: 'Zur Insel Großbritannien gehören England, Schottland (Scotland) und Wales.' },
   { q: 'Wie sagen Kinder in Großbritannien zu ihrer Mutter?', a: 'Mum', w: ['Mom', 'Mama', 'Mother Mary'], e: '👩', info: 'In Großbritannien sagt man Mum, in Amerika Mom.' },
+  // Nachtlauf 22.10.2026: mehr Fragen
+  { q: 'Wie heißt das große Riesenrad in London?', a: 'London Eye', w: ['Big Ben', 'Tower Bridge', 'Wembley'], e: '🎡', info: 'Vom London Eye sieht man über die ganze Stadt.' },
+  { q: 'Wie heißt die berühmte Brücke in London, die man in der Mitte öffnen kann?', a: 'Tower Bridge', w: ['Golden Gate', 'London Eye', 'Big Ben'], e: '🌉', info: 'Die Tower Bridge klappt auf, damit große Schiffe durchfahren können.' },
+  { q: 'Wie heißt die Hauptstadt von Schottland?', a: 'Edinburgh', w: ['Glasgow', 'Cardiff', 'Belfast'], e: '🏰', info: 'Edinburgh mit seiner großen Burg ist die Hauptstadt von Schottland (Scotland).' },
+  { q: 'Welches Spiel mit Schläger und Ball ist in England sehr beliebt – aber kein Tennis?', a: 'Cricket', w: ['Eishockey', 'Basketball', 'Volleyball'], e: '🏏', info: 'Cricket wird mit einem flachen Schläger und einem harten Ball gespielt.' },
+  { q: 'Wie heißt die U-Bahn in London?', a: 'the Tube', w: ['the Metro', 'the Subway', 'the Tram'], e: '🚇', info: 'Die Londoner U-Bahn heißt „the Tube“ – sie ist die älteste der Welt.' },
+  { q: 'Wie heißen Kekse in Großbritannien?', a: 'biscuits', w: ['cookies', 'cakes', 'crisps'], e: '🍪', info: 'In Großbritannien sagt man biscuits, in Amerika cookies.' },
+  { q: 'Was gehört zu einem typischen englischen Frühstück?', a: 'Spiegelei, Bohnen und Würstchen', w: ['Döner und Pommes', 'Spaghetti mit Tomatensoße', 'Sushi und Reis'], e: '🍳', info: 'Zum „Full English Breakfast“ gehören Ei, gebackene Bohnen, Würstchen und Toast.' },
+  { q: 'Welche Farbe haben die alten Telefonzellen in London?', a: 'rot', w: ['blau', 'grün', 'gelb'], e: '☎️', info: 'Die roten Telefonzellen sind – wie die Busse – ein Wahrzeichen von London.' },
 ];
 function ukTask(r: Rng, s: Stage): Gen {
   const x = pick(r, UK);
