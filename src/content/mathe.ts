@@ -402,6 +402,19 @@ const einmaleins = M(2, 'm2-einmaleins', 'Einmaleins', '✖️', {
 }, (r, s) => {
   const a = ri(r, 1, 10);
   const b = pick(r, ROWS[s]);
+  // weitere Formate ab Stufe 2: Punktefeld deuten, Tauschaufgabe, Platzhalter
+  if (s > 1 && chance(r, 0.35)) {
+    const x = ri(r, 2, 9), y = ri(r, 2, 9);
+    const f = s === 3 ? ri(r, 0, 2) : ri(r, 0, 1);
+    if (f === 0 && x * y <= 50) {
+      const ok = `${x} · ${y}`;
+      return { key: `f${x}x${y}`, prompt: 'Welche Malaufgabe passt zum Punktefeld?', visual: { kind: 'array', rows: x, cols: y }, answer: choice(r, ok, [`${x} + ${y}`, `${x + 1} · ${y}`, `${x} · ${y + 1}`]), tags: ['punktefeld'], solution: [`${x} Reihen mit je ${y} Punkten`, `${ok} = ${x * y}`] };
+    }
+    if (f === 1 || x * y > 50) {
+      return { key: `t${x}x${y}`, prompt: `${x} · ${y} = ${y} · ☐`, answer: { type: 'number', value: x }, tags: ['tauschaufgabe'], solution: ['Tauschaufgabe: Beim Malnehmen darf man die Zahlen tauschen.', `${x} · ${y} = ${y} · ${x} = ${x * y}`], solutionVisual: { kind: 'array', rows: x, cols: y } };
+    }
+    return { key: `p${x}x${y}`, prompt: `☐ · ${y} = ${x * y}`, answer: { type: 'number', value: x }, tags: ['platzhalter'], traps: [{ answer: String(x * y - y), tag: 'minus-statt-geteilt', hint: `Gesucht ist, wie oft die ${y} in die ${x * y} passt: ${x * y} : ${y}.` }], solution: [`Wie oft passt die ${y} in die ${x * y}?`, `${x * y} : ${y} = ${x}`, `Probe: ${x} · ${y} = ${x * y}`] };
+  }
   const traps = [a * b + b, a * b - b].filter((x) => x > 0).map((x) => ({ answer: String(x), tag: 'nachbaraufgabe', hint: `Knapp daneben – das ist ${x > a * b ? a + 1 : a - 1} · ${b}. Du warst eine Reihe zu weit.` }));
   return {
     key: `${a}x${b}`,
@@ -413,7 +426,7 @@ const einmaleins = M(2, 'm2-einmaleins', 'Einmaleins', '✖️', {
     solution: malSteps(a, b),
     solutionVisual: { kind: 'array', rows: a, cols: b, split: a > 5 ? 5 : undefined },
   };
-}, { tagLabels: Object.fromEntries([2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => [`reihe-${n}`, `Einmaleins mit ${n}`])), testSeconds: 15 });
+}, { tagLabels: { ...Object.fromEntries([2, 3, 4, 5, 6, 7, 8, 9, 10].map((n) => [`reihe-${n}`, `Einmaleins mit ${n}`])), punktefeld: 'Malaufgaben im Punktefeld', tauschaufgabe: 'Tauschaufgaben', platzhalter: 'Platzhalter-Aufgaben' }, testSeconds: 15 });
 
 const geteilt = M(2, 'm2-geteilt', 'Geteilt durch', '➗', {
   text: ['Teilen heißt: gerecht verteilen.', '12 : 3 – 12 Bonbons an 3 Kinder. Jedes Kind bekommt 4.', 'Denk an die Malaufgabe: Wie oft passt die 3 in die 12? 4 · 3 = 12, also 12 : 3 = 4.'],
