@@ -18,7 +18,7 @@ export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () =>
   // von der Homepage (…/#anmelden) direkt zur Anmeldung
   const [login, setLoginOpen] = useState(() => typeof location !== 'undefined' && location.hash === '#anmelden');
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <div className="stack center" style={{ paddingTop: 48 }}>
         <Wordmark size={1.3} />
         <p className="muted" style={{ fontSize: '1.1rem' }}>
@@ -308,7 +308,7 @@ export function ProfileEdit({ profile, onDone, onCancel, limited }: { profile?: 
   const isNew = !profile;
   const st = stateInfo(p.state);
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar title={isNew ? 'Neues Kind' : 'Profil'} onBack={onCancel} />
       <div className="stack">
         <div className="field">
@@ -458,7 +458,7 @@ export function ProfileEdit({ profile, onDone, onCancel, limited }: { profile?: 
 export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { data: AppData; profile: Profile; onEdit: () => void; onNew: () => void; onParent: () => void; onBack: () => void }) {
   const [del, setDel] = useState(false);
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar title="Einstellungen" onBack={onBack} />
       <div className="stack">
         <div className="card row">

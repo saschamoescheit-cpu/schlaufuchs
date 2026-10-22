@@ -64,7 +64,7 @@ export function PinGate({ onOk, onCancel }: { onOk: () => void; onCancel: () => 
   };
 
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar title="👨‍👩‍👧 Eltern-Bereich" onBack={onCancel} />
       <div className="stack center" style={{ paddingTop: 12 }}>
         {mode === 'forgot' ? (
@@ -148,7 +148,7 @@ export function ParentHome({ data, onChild, onBack }: { data: AppData; onChild: 
   const [changePin, setChangePin] = useState(false);
   if (changePin) return <PinSetter onDone={() => setChangePin(false)} />;
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar
         title="👨‍👩‍👧 Eltern-Bereich"
         onBack={() => {
@@ -250,7 +250,7 @@ function PinSetter({ onDone }: { onDone: () => void }) {
     }, 150);
   };
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar title="Neue PIN" onBack={onDone} />
       <div className="stack center">
         <h2>{step === 'new' ? 'Neue PIN eingeben' : 'PIN wiederholen'}</h2>
@@ -348,7 +348,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
     }
   };
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <TopBar title={`${p.avatar} ${p.name}`} onBack={onBack} />
       <div className="seg-light" role="tablist">
         {(

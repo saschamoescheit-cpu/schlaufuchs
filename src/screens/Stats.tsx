@@ -202,7 +202,7 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
           </div>
 
           <div className="card">
-            <h3>Die letzten 14 Tage</h3>
+            <h2 className="h3">Die letzten 14 Tage</h2>
             <div className="mini-bars" style={{ marginTop: 10 }} aria-label="Aufgaben pro Tag">
               {days.map((d, i) => (
                 <i key={i} title={`${d.d.toLocaleDateString('de-DE')}: ${d.n} Aufgaben`} style={{ height: `${(d.n / maxDay) * 100}%`, background: d.n ? 'var(--fox)' : 'var(--line)' }} />
@@ -216,7 +216,7 @@ export function StatsScreen({ profile, progress, onPractice, onOpenTest }: { pro
 
           {tests.length > 0 && (
             <div className="card">
-              <h3>Lernzielkontrollen</h3>
+              <h2 className="h3">Lernzielkontrollen</h2>
               <div className="mini-bars" style={{ marginTop: 10, height: 90 }}>
                 {tests.map((t) => (
                   <i
