@@ -25,6 +25,8 @@ const G2: Item[] = [
   ['Zahn', '🦷', 'Der Zahn wackelt.'], ['Kuh', '🐮', 'Die Kuh gibt Milch.'], ['Hund', '🐶', 'Der Hund bellt.'], ['Brot', '🍞', 'Das Brot ist frisch.'], ['Baum', '🌳', 'Der Baum ist hoch.'],
   ['Apfel', '🍎', 'Der Apfel ist rot.'], ['Pferd', '🐴', 'Das Pferd galoppiert.'], ['Stern', '⭐', 'Der Stern leuchtet.'], ['spielen', '🧸', 'Wir spielen im Garten.'], ['lachen', '😄', 'Alle lachen laut.'],
   ['schwimmen', '🏊', 'Ich kann schwimmen.'], ['schnell', '🏃', 'Das Auto ist schnell.'], ['Fisch', '🐟', 'Der Fisch schwimmt.'], ['Teller', '🍽️', 'Der Teller ist leer.'], ['Mutter', '👩', 'Meine Mutter lacht.'],
+  ['Schaf', '🐑', 'Das Schaf ist weiß.'], ['Wolke', '☁️', 'Die Wolke ist grau.'], ['Mund', '👄', 'Der Mund lacht.'], ['Blume', '🌷', 'Die Blume duftet.'], ['Kiste', '📦', 'Die Kiste ist schwer.'],
+  ['Löffel', '🥄', 'Der Löffel ist aus Holz.'], ['Blatt', '🍃', 'Das Blatt ist grün.'], ['Kerze', '🕯️', 'Die Kerze brennt.'], ['singen', '🎤', 'Wir singen ein Lied.'], ['Tiger', '🐯', 'Der Tiger brüllt.'],
 ];
 const G3: Item[] = [
   ['Fahrrad', '🚲', 'Ich fahre mit dem Fahrrad.'], ['Fenster', '🪟', 'Das Fenster ist offen.'], ['Wiese', '🌾', 'Auf der Wiese blühen Blumen.'], ['Brücke', '🌉', 'Die Brücke ist lang.'], ['Mütze', '🧢', 'Die Mütze ist warm.'],
@@ -33,6 +35,8 @@ const G3: Item[] = [
   ['Ferien', '🏖️', 'In den Ferien fahren wir weg.'], ['Vater', '👨', 'Mein Vater liest Zeitung.'], ['fahren', '🚗', 'Wir fahren in die Stadt.'], ['wohnen', '🏠', 'Wir wohnen in einem Haus.'], ['fühlen', '🤲', 'Ich kann den Stoff fühlen.'],
   ['Zwerg', '🧙', 'Der Zwerg ist klein.'], ['Korb', '🧺', 'Der Korb ist voll.'], ['Kälte', '🥶', 'Im Winter ist große Kälte.'], ['Freund', '🤝', 'Mein Freund heißt Ben.'], ['Feuer', '🔥', 'Das Feuer ist heiß.'],
   ['Stiefel', '🥾', 'Die Stiefel sind nass.'], ['Glocke', '🔔', 'Die Glocke läutet.'], ['Platz', '🏟️', 'Der Platz ist frei.'], ['viel', '💯', 'Ich habe viel Zeit.'], ['Spinne', '🕷️', 'Die Spinne baut ein Netz.'],
+  ['Zwiebel', '🧅', 'Die Zwiebel ist scharf.'], ['Käfer', '🐞', 'Der Käfer krabbelt.'], ['Fuchs', '🦊', 'Der Fuchs ist schlau.'], ['Mäuse', '🐭', 'Die Mäuse sind klein.'], ['Zug', '🚆', 'Der Zug ist pünktlich.'],
+  ['Pilz', '🍄', 'Der Pilz ist giftig.'], ['Schiff', '🚢', 'Das Schiff fährt aufs Meer.'], ['Pflaster', '🩹', 'Ich brauche ein Pflaster.'], ['Hütte', '🛖', 'Die Hütte ist aus Holz.'], ['Fahne', '🚩', 'Die Fahne weht im Wind.'],
 ];
 const G4: string[] = [
   'Im Sommer fahren wir ans Meer.', 'Der Hund läuft über die Straße.', 'Ich weiß, dass du kommst.', 'Das Fahrrad steht im Keller.', 'Am Fluss wachsen hohe Bäume.',
@@ -43,6 +47,8 @@ const G4: string[] = [
   'Wenn es regnet, ziehe ich meine Gummistiefel an.', 'Lena hat Hunger, deshalb isst sie ein Brot.', 'Am Wochenende besuchen wir unsere Großeltern auf dem Land.',
   'Im Herbst sammeln die Eichhörnchen Nüsse für den Winter.', 'Ich freue mich, dass heute die Sonne scheint.', 'Unsere Lehrerin liest uns jeden Morgen eine Geschichte vor.',
   'Der Fußball fliegt über den Zaun in den Garten.', 'Weil der Bus zu spät kommt, warten wir an der Haltestelle.',
+  'Der Igel sucht im Laub nach Futter.', 'Meine Katze schläft am liebsten auf dem Sofa.', 'Im Frühling bauen die Vögel ihre Nester.', 'Wir packen Brote, Äpfel und Wasser in den Rucksack.',
+  'Papa sagt, dass wir morgen in den Zoo fahren.', 'Die Feuerwehr kommt mit lautem Martinshorn.', 'Nach dem Regen sehen wir einen bunten Regenbogen.', 'Mein Bruder spielt jeden Dienstag Handball.',
 ];
 
 /** Rechtschreib-Merkmale eines Textes (für die Fehlerstatistik: wie oft kam ein Muster vor, wie oft war es falsch) */
