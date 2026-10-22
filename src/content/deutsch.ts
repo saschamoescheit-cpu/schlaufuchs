@@ -303,6 +303,32 @@ const SAETZE_ZEICHEN: [string, '.' | '?' | '!'][] = [
   ['Was machst du heute', '?'], ['Kannst du mir helfen', '?'], ['Wie spät ist es', '?'], ['Am Montag haben wir Sport', '.'], ['Lena malt ein Bild', '.'], ['Im Herbst fallen die Blätter', '.'],
   ['Mach bitte sofort die Tür zu', '!'], ['Halt, stopp', '!'], ['Juhu, wir haben gewonnen', '!'],
 ];
+const SATZART: Record<'.' | '?' | '!', string> = { '.': 'Aussagesatz', '?': 'Fragesatz', '!': 'Ausrufe- oder Aufforderungssatz' };
+const FRAGE_UM: [string, string, string[]][] = [
+  ['Du hast einen Hund.', 'Hast du einen Hund?', ['Du hast einen Hund?', 'Hast du einen Hund.', 'Einen Hund hast du!']],
+  ['Lena malt ein Bild.', 'Malt Lena ein Bild?', ['Lena malt ein Bild?', 'Malt Lena ein Bild.', 'Ein Bild malt Lena!']],
+  ['Der Bus kommt um acht Uhr.', 'Kommt der Bus um acht Uhr?', ['Der Bus kommt um acht Uhr?', 'Kommt der Bus um acht Uhr.', 'Um acht Uhr kommt der Bus!']],
+  ['Ihr spielt Fußball.', 'Spielt ihr Fußball?', ['Ihr spielt Fußball?', 'Spielt ihr Fußball.', 'Fußball spielt ihr!']],
+  ['Tim kann schwimmen.', 'Kann Tim schwimmen?', ['Tim kann schwimmen?', 'Kann Tim schwimmen.', 'Schwimmen kann Tim!']],
+  ['Es regnet heute.', 'Regnet es heute?', ['Es regnet heute?', 'Regnet es heute.', 'Heute regnet es!']],
+];
+const satzarten = D(3, 'd3-satzarten', 'Satzarten', '💬', {
+  text: ['Aussagesatz: Ich erzähle etwas. Am Ende steht ein Punkt. „Lena malt ein Bild.“', 'Fragesatz: Ich frage etwas. Das Verb oder ein W-Wort steht vorne, am Ende ein Fragezeichen. „Malt Lena ein Bild?“', 'Ausrufe- oder Aufforderungssatz: Ich rufe oder fordere auf. Am Ende ein Ausrufezeichen. „Komm her!“'],
+  visual: { kind: 'text', text: 'Lena malt ein Bild.\nMalt Lena ein Bild?\nMal ein Bild!' },
+  videoQuery: 'Satzarten Aussagesatz Fragesatz Aufforderungssatz Grundschule',
+}, (r, st) => {
+  // Aussagesatz in Fragesatz umwandeln (ab Stufe 2)
+  if (st > 1 && chance(r, 0.4)) {
+    const [a, q, wrong] = pick(r, FRAGE_UM);
+    return { key: `u-${a}`, prompt: `Mach aus dem Aussagesatz einen Fragesatz:\n${a}`, answer: choice(r, q, wrong), tags: ['umformen'], traps: [{ answer: wrong[0], tag: 'nur-fragezeichen', hint: 'Nur ein Fragezeichen reicht nicht: Beim Fragesatz rückt das Verb nach vorne.' }], solution: [`${a} → ${q}`, 'Beim Fragesatz steht das Verb vorne und am Ende ein Fragezeichen.'] };
+  }
+  const [s, z] = pick(r, SAETZE_ZEICHEN);
+  // ab Stufe 2 ohne Satzzeichen: am Satzbau erkennen (Verb vorne, W-Wort, Aufforderung)
+  const hide = st > 1;
+  const why = z === '?' ? 'Das Verb oder ein W-Wort steht vorne – so fragt man.' : z === '!' ? 'Hier wird gerufen oder jemand wird aufgefordert.' : 'Hier wird etwas erzählt – das Verb steht an zweiter Stelle.';
+  return { key: `${s}-${hide}`, prompt: hide ? `Welche Satzart ist das? (Das Satzzeichen fehlt.)\n„${s} …“` : `Welche Satzart ist das?\n„${s}${z}“`, answer: fixedChoice(Object.values(SATZART), SATZART[z]), tags: [z === '.' ? 'aussage' : z === '?' ? 'frage' : 'ausruf'], solution: [hide ? why : `Am Ende steht „${z}“.`, `„${s}${z}“ ist ein ${SATZART[z]}.`] };
+}, { tagLabels: { aussage: 'Aussagesätze', frage: 'Fragesätze', ausruf: 'Ausrufe- und Aufforderungssätze', umformen: 'Fragesätze bilden', 'nur-fragezeichen': 'nur Fragezeichen statt Verb nach vorne' }, testSeconds: 20 });
+
 const satzzeichen = D(2, 'd2-satzzeichen', 'Satzzeichen . ? !', '❓', {
   text: ['Am Ende eines Satzes steht ein Satzzeichen.', 'Punkt (.): Ich erzähle etwas. „Ich spiele Fußball.“', 'Fragezeichen (?): Ich frage etwas. „Wie heißt du?“ Fragesätze beginnen oft mit W-Wörtern oder dem Verb.', 'Ausrufezeichen (!): Ich rufe, warne oder fordere auf. „Pass auf!“'],
   visual: { kind: 'text', text: '.   ?   !' },
@@ -822,6 +848,6 @@ const lesen4 = D(4, 'd4-lesen', 'Lesen und verstehen', '📖', {
 export const DEUTSCH: Skill[] = [
   anlaut, silben, reime, buchstaben, lesen1, luecke,
   abc, nomen, artikel, mehrzahl, verben, adjektive2, satzzeichen, doppel, cktz, ie, grossschreibung,
-  wortarten, zeit3, zusammen, wortfamilie, auslaut, aeEu, dehnung, steigerung, satzglieder3, lesen3,
+  wortarten, satzarten, zeit3, zusammen, wortfamilie, auslaut, aeEu, dehnung, steigerung, satzglieder3, lesen3,
   faelle, zeit4, dasDass, ssz, rede, komma, satzglieder4, wortfeld, lesen4,
 ];

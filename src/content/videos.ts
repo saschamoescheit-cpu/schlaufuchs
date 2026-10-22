@@ -195,6 +195,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '1sqyS6tH2go', title: 'Geldbeträge umwandeln – schnell erklärt, Klasse 3', channel: 'Frau Weber digital', len: '7:05' },
     { id: 'dDtKWbXVO0M', title: 'Geldwerte mit der Kommaschreibweise – Erklärung & Beispiele', channel: 'sofatutor', len: '6:27' },
   ],
+  'd3-satzarten': [
+    { id: 'evPSF5a4GTU', title: 'Satzarten Grundschule – Satzarten bestimmen', channel: 'EinfachSchule', len: '2:41' },
+    { id: 'fd6nhn93to0', title: 'Lumi erklärt: Sätze und Satzzeichen', channel: 'Zoppelhasenklasse', len: '2:48' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
