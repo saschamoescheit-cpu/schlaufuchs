@@ -55,14 +55,17 @@ export function CardBoxes({ counts }: { counts: number[] }) {
 
 export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; progress: Progress; onClose: () => void; onStart: (s: VocabStart) => void }) {
   const groups = vocabUpTo(lv);
-  const [kind, setKind] = useState<VocabKind>('mix');
+  const states = useMemo(() => cardStates(progress.log), [progress.log]);
+  // fällige Karten: gleich mit den Karteikarten starten und ihre Wortfelder mit auswählen
+  const [dueIds] = useState(() => new Set(pickCards(cardsOf(groups.flatMap((g) => g.skills.map((s) => s.id))), states, 999).due.map((c) => c.skillId)));
+  const [kind, setKind] = useState<VocabKind>(dueIds.size ? 'karten' : 'mix');
   const [dir, setDir] = useState<CardDir>('en-de');
   // Karten und Diktat brauchen eine Wortliste (Zahlen, Formen usw. üben nur „gemischt“)
   const usable = (s: Skill) => kind === 'mix' || (WORDS[s.id] ?? []).some((w) => kind === 'karten' || dictatable(w));
   const shown = groups.map((g) => ({ ...g, skills: g.skills.filter(usable) })).filter((g) => g.skills.length);
   const all = shown.flatMap((g) => g.skills);
   // vorausgewählt: die Wortfelder des aktuellen Lernjahrs
-  const [sel, setSel] = useState<Set<string>>(() => new Set((groups[groups.length - 1]?.skills ?? []).map((s) => s.id)));
+  const [sel, setSel] = useState<Set<string>>(() => new Set([...(groups[groups.length - 1]?.skills ?? []).map((s) => s.id), ...dueIds]));
   const [n, setN] = useState(10);
   const chosen = all.filter((s) => sel.has(s.id));
   const toggle = (id: string) =>
@@ -72,7 +75,6 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
       else x.add(id);
       return x;
     });
-  const states = useMemo(() => cardStates(progress.log), [progress.log]);
   const cards = kind === 'karten' ? cardsOf(chosen.map((s) => s.id)) : [];
   const plan = kind === 'karten' ? pickCards(cards, states, n) : null;
   const next = plan && !plan.cards.length ? nextDue(cards, states) : null;

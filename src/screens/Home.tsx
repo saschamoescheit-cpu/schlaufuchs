@@ -11,7 +11,9 @@ import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
 import type { TestSpec } from './Tests';
 import { blitzable, BlitzPicker } from './Blitz';
-import { VocabPicker, type VocabStart } from './Vocab';
+import { vocabUpTo, VocabPicker, type VocabStart } from './Vocab';
+import { cardsOf } from '../content/words';
+import { cardStates, pickCards } from '../engine/cards';
 import { unseenOutfits, Wardrobe, wearing } from '../ui/Outfits';
 
 function greeting(name: string) {
@@ -181,6 +183,8 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
   const [explain, setExplain] = useState<Skill | null>(null);
   const [blitz, setBlitz] = useState(false);
   const [vocab, setVocab] = useState(false);
+  // Vokabelkarten, die heute wieder dran sind (nur Karten, die schon geübt wurden)
+  const cardsDue = useMemo(() => (subject === 'englisch' ? pickCards(cardsOf(vocabUpTo(lv).flatMap((g) => g.skills.map((s) => s.id))), cardStates(progress.log), 999).due.length : 0), [subject, lv, progress.log]);
   const skills = skillsOf(subject, lv);
   const canBlitz = useMemo(() => skills.some(blitzable), [skills]);
   const levels = levelsFor(subject);
@@ -208,6 +212,7 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
       {subject === 'englisch' && onVocab && (
         <button className="btn block ghost" onClick={() => setVocab(true)}>
           📚 Vokabeln lernen
+          {cardsDue > 0 && <span className="pill-due">{cardsDue} {cardsDue === 1 ? 'Karte' : 'Karten'} fällig</span>}
         </button>
       )}
       {vocab && onVocab && (
