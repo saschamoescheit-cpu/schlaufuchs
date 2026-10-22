@@ -244,6 +244,8 @@ const NOMEN: { w: string; a: 'der' | 'die' | 'das'; e: string; pl: string }[] = 
   { w: 'Mond', a: 'der', e: '🌙', pl: 'Monde' }, { w: 'Gurke', a: 'die', e: '🥒', pl: 'Gurken' }, { w: 'Schwein', a: 'das', e: '🐷', pl: 'Schweine' },
 ];
 const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen'];
+// Verben in der er-Form: als Ablenker bei „Nomen erkennen“ eindeutig keine Nomen (ESSEN oder RENNEN könnten es sein: das Essen)
+const VERBEN_ER = ['läuft', 'spielt', 'liest', 'schreibt', 'singt', 'malt', 'springt', 'isst', 'trinkt', 'lacht', 'schwimmt', 'tanzt', 'ruft', 'baut', 'schläft', 'kocht', 'klettert', 'wirft', 'fliegt', 'hilft', 'rennt', 'weint', 'sägt', 'bastelt', 'putzt', 'turnt'];
 const ADJ = ['groß', 'klein', 'schnell', 'langsam', 'laut', 'leise', 'bunt', 'lustig', 'müde', 'warm', 'kalt', 'süß', 'nass', 'weich', 'hell', 'dunkel'];
 
 const nomen = D(2, 'd2-nomen', 'Nomen erkennen', '🏷️', {
@@ -252,7 +254,7 @@ const nomen = D(2, 'd2-nomen', 'Nomen erkennen', '🏷️', {
   videoQuery: 'Nomen Namenwörter erkennen Klasse 2',
 }, (r) => {
   const n = pick(r, NOMEN);
-  const opts = [n.w, ...pickN(r, VERBEN, 2), pick(r, ADJ)].map((x) => x.toUpperCase());
+  const opts = [n.w, ...pickN(r, VERBEN_ER, 2), pick(r, ADJ.filter((a) => a !== 'dunkel' && a !== 'laut'))].map((x) => x.toUpperCase());
   return { key: n.w, prompt: 'Welches Wort ist ein Nomen?', answer: choice(r, n.w.toUpperCase(), opts.slice(1)), tags: ['nomen'], solution: [`${n.w} ist ein Nomen: ${n.a} ${n.w}.`, 'Die anderen Wörter sind Verben (Tunwörter) oder Adjektive (Wiewörter) – davor passt kein der, die, das.', `Man schreibt es groß: ${n.w}`] };
 }, { testSeconds: 15 });
 
