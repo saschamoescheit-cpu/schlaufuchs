@@ -2519,3 +2519,8 @@ html[data-school-font] .prompt.long {
   hyphens: auto;
   -webkit-hyphens: auto;
 }
+/* Tastatur: deutlich sichtbarer Fokus (nur bei Tastaturbedienung, nicht beim Tippen) */
+:where(button, a, summary, [role='button'], [role='tab'], [role='radio'], input[type='checkbox']):focus-visible {
+  outline: 3px solid var(--ink);
+  outline-offset: 3px;
+}
