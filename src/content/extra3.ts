@@ -786,6 +786,8 @@ const SH_EN: { s: string; en: string; de: string; art: 'ein' | 'eine'; m?: boole
   { s: 'Dreieck', en: 'triangle', de: 'Dreieck', art: 'ein' },
   { s: 'Rechteck', en: 'rectangle', de: 'Rechteck', art: 'ein' },
 ];
+// Formen auch als Vokabelkarten und im Diktat (dazu star und heart)
+registerWords('e1-shapes', [{ en: 'circle', de: 'Kreis', e: '🔵' }, { en: 'square', de: 'Quadrat', e: '🟦' }, { en: 'triangle', de: 'Dreieck', e: '🔺' }, { en: 'rectangle', de: 'Rechteck', txt: '▭' }, { en: 'star', de: 'Stern', e: '⭐' }, { en: 'heart', de: 'Herz', e: '❤️' }]);
 // Farbe: Englisch, deutscher Wortstamm (Endung je nach Form: ein roter Kreis, ein rotes Quadrat; lila bleibt), Füllfarbe, Emoji-Kreis, Emoji-Quadrat
 const COL_EN: { en: string; de: string; hex: string; c: string; q: string }[] = [
   { en: 'red', de: 'rot', hex: '#F06A6A', c: '🔴', q: '🟥' },
