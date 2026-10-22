@@ -396,7 +396,7 @@ function malSteps(a: number, b: number): string[] {
 const ROWS: Record<Stage, number[]> = { 1: [2, 5, 10], 2: [2, 3, 4, 5, 10], 3: [3, 4, 6, 7, 8, 9] };
 
 const einmaleins = M(2, 'm2-einmaleins', 'Einmaleins', '✖️', {
-  text: ['Malnehmen ist schnelles Plusrechnen: 3 · 4 heißt 4 + 4 + 4 = 12.', 'Die Kernaufgaben 1 ·, 2 ·, 5 · und 10 · solltest du auswendig können.', 'Aus ihnen kannst du alle anderen ableiten: 7 · 6 = 5 · 6 + 2 · 6 = 30 + 12 = 42.'],
+  text: ['Malnehmen ist schnelles Plusrechnen: 3 · 4 heißt 4 + 4 + 4 = 12.', 'Die Kernaufgaben 1 ·, 2 ·, 5 · und 10 · solltest du auswendig können.', 'Aus ihnen kannst du alle anderen ableiten: 7 · 6 = 5 · 6 + 2 · 6 = 30 + 12 = 42.', 'Tauschaufgabe: 3 · 7 ist dasselbe wie 7 · 3 – such dir die leichtere aus.'],
   visual: { kind: 'array', rows: 7, cols: 6, split: 5 },
   videoQuery: 'Einmaleins Kernaufgaben ableiten Klasse 2',
 }, (r, s) => {
@@ -472,7 +472,7 @@ function timePhrase(h: number, m: number) {
 const pad = (n: number) => String(n).padStart(2, '0');
 
 const uhr2 = M(2, 'm2-uhr', 'Uhrzeit: volle, halbe, Viertel', '🕒', {
-  text: ['Der kleine Zeiger zeigt die Stunden, der große Zeiger die Minuten.', 'Großer Zeiger oben auf der 12: volle Stunde („drei Uhr“).', 'Großer Zeiger unten auf der 6: halbe Stunde. „Halb vier“ heißt: Es ist eine halbe Stunde bis vier Uhr – also 3:30 Uhr!', 'Auf der 3: „Viertel nach“, auf der 9: „Viertel vor“.'],
+  text: ['Der kleine Zeiger zeigt die Stunden, der große Zeiger die Minuten.', 'Großer Zeiger oben auf der 12: volle Stunde („drei Uhr“).', 'Großer Zeiger unten auf der 6: halbe Stunde. „Halb vier“ heißt: Es ist eine halbe Stunde bis vier Uhr – also 3:30 Uhr!', 'Auf der 3: „Viertel nach“, auf der 9: „Viertel vor“.', 'Zeitspannen: Eine Viertelstunde sind 15 Minuten, eine halbe Stunde 30, eine Stunde 60.'],
   visual: { kind: 'clock', h: 3, m: 30 },
   videoQuery: 'Uhrzeit lernen halb Viertel nach Viertel vor Grundschule',
 }, (r, st) => {
@@ -679,7 +679,7 @@ const runden3 = M(3, 'm3-runden', 'Runden', '🎯', {
 }, (r, s) => roundTask(ri(r, 101, 989), s === 1 ? 1 : s === 2 ? pick(r, [1, 2]) : 2), { tagLabels: { 'falsche-richtung': 'in die falsche Richtung gerundet', fünf: 'Runden bei der 5' }, testSeconds: 20 });
 
 const kopf1000 = M(3, 'm3-kopfrechnen', 'Plus und Minus bis 1000', '🧠', {
-  text: ['Nutze, was du kannst: 340 + 250 ist wie 34 + 25, nur mit Zehnern: 590.', 'Rechne in Schritten: 456 + 230 = 456 + 200 + 30 = 686.', 'Bei Minus ebenso: 700 − 260 = 700 − 200 − 60 = 440.'],
+  text: ['Nutze, was du kannst: 340 + 250 ist wie 34 + 25, nur mit Zehnern: 590.', 'Rechne in Schritten: 456 + 230 = 456 + 200 + 30 = 686.', 'Bei Minus ebenso: 700 − 260 = 700 − 200 − 60 = 440.', 'Platzhalter: Bei 340 + ☐ = 900 hilft die Umkehraufgabe: 900 − 340 = 560.'],
   videoQuery: 'Kopfrechnen bis 1000 Addition Subtraktion Klasse 3',
 }, (r, st) => {
   // Platzhalter (ab Stufe 2): mit der Umkehraufgabe lösen
@@ -972,7 +972,7 @@ const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: stri
   { q: (r) => { const k = ri(r, 1, 9), h = ri(r, 1, 9); return { p: `${k},${h} kg = ☐ g`, v: k * 1000 + h * 100, unit: 'g', tag: 'komma', sol: ['1 kg = 1000 g', `${k},${h} kg = ${k} kg ${h * 100} g`, `${k * 1000} g + ${h * 100} g = ${k * 1000 + h * 100} g`], trap: k * 1000 + h }; } },
 ];
 const groessen4 = M(4, 'm4-groessen', 'Größen umrechnen', '🔄', {
-  text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 t = 1000 kg · 1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!'],
+  text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 t = 1000 kg · 1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!', 'Kommaschreibweise: 8,30 m sind 8 m und 30 cm, also 830 cm. 3,5 km sind 3500 m.'],
   videoQuery: 'Größen umrechnen Klasse 4 Längen Gewichte Zeit Hohlmaße',
 }, (r, s) => {
   const g = GROESSEN[pick(r, s === 1 ? [0, 1, 3, 4, 8, 9] : s === 3 ? [2, 5, 6, 7, 10, 11, 12, 13] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])].q(r);
