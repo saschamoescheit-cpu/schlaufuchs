@@ -163,6 +163,10 @@ const LESEN: [string, string][][] = [
   [['Tasse', '☕'], ['Tasche', '👜'], ['Tanne', '🌲'], ['Taube', '🕊️']],
   [['Bus', '🚌'], ['Buch', '📖'], ['Ball', '⚽'], ['Bett', '🛏️']],
   [['Sonne', '☀️'], ['Socke', '🧦'], ['Säge', '🪚'], ['Sofa', '🛋️']],
+  // Nachtlauf 22.10.2026: mehr Wortgruppen
+  [['Fisch', '🐟'], ['Frosch', '🐸'], ['Fuß', '🦶'], ['Feder', '🪶']],
+  [['Löwe', '🦁'], ['Lampe', '💡'], ['Leiter', '🪜'], ['Lupe', '🔍']],
+  [['Baum', '🌳'], ['Bein', '🦵'], ['Birne', '🍐'], ['Blume', '🌷']],
 ];
 const lesen1 = D(1, 'd1-lesen', 'Wörter lesen', '👀', {
   text: ['Lies das Wort Buchstabe für Buchstabe und verbinde die Laute: H – a – s – e → Hase.', 'Schau genau hin: Haus, Hase und Hose sehen ähnlich aus!', 'Lies das Wort zum Schluss noch einmal ganz.'],
@@ -873,6 +877,25 @@ function story4(r: Rng): Gen {
       { q: 'Wo finden die Kinder den Schatz?', a: 'im Sandkasten', w: ['im Gartenhaus', 'unter dem Apfelbaum', 'im Keller'] },
       { q: 'Wie hat Jonas der Geburtstag gefallen?', a: 'sehr gut', w: ['gar nicht', 'langweilig', 'Das steht nicht im Text.'] },
       { q: 'Wie viele Freunde lädt Jonas ein?', a: 'sechs', w: ['zehn', 'vier', 'acht'] },
+    ] },
+    // Nachtlauf 22.10.2026: mehr Texte
+    { t: 'Die Klasse 4c fährt für drei Tage auf einen Bauernhof. Jeden Morgen um sechs Uhr helfen die Kinder im Stall. Lina füttert die Kälber, Emre sammelt die Eier ein. Am zweiten Tag wird ein kleines Ferkel geboren. Die Kinder dürfen ihm einen Namen geben und nennen es Rosi. Bei der Abfahrt sind alle ein bisschen traurig.', qs: [
+      { q: 'Wie lange bleibt die Klasse auf dem Bauernhof?', a: 'drei Tage', w: ['zwei Tage', 'eine Woche', 'vier Tage'] },
+      { q: 'Was macht Emre?', a: 'Er sammelt die Eier ein.', w: ['Er füttert die Kälber.', 'Er melkt die Kühe.', 'Er fegt den Hof.'] },
+      { q: 'Wie heißt das Ferkel?', a: 'Rosi', w: ['Lina', 'Susi', 'Emma'] },
+      { q: 'Warum sind die Kinder bei der Abfahrt traurig?', a: 'Es hat ihnen auf dem Bauernhof gefallen.', w: ['Sie haben Hunger.', 'Das Ferkel ist krank.', 'Es regnet.'] },
+    ] },
+    { t: 'Als Mia nach der Schule nach Hause kommt, findet sie ihren Haustürschlüssel nicht. Sie sucht in ihrer Jackentasche und in ihrem Ranzen. Dann fällt ihr ein, dass sie beim Sportunterricht ihre Jacke ausgezogen hat. Sie läuft zurück zur Turnhalle. Der Hausmeister hat den Schlüssel schon gefunden und gibt ihn ihr zurück. Mia bedankt sich und bringt ihm am nächsten Tag ein selbst gemaltes Bild.', qs: [
+      { q: 'Wo sucht Mia zuerst?', a: 'in ihrer Jackentasche', w: ['unter der Fußmatte', 'im Briefkasten', 'in der Küche'] },
+      { q: 'Wer hat den Schlüssel gefunden?', a: 'der Hausmeister', w: ['die Lehrerin', 'ihr Freund', 'ihre Mutter'] },
+      { q: 'Warum läuft Mia zurück zur Turnhalle?', a: 'Sie hat dort ihre Jacke ausgezogen.', w: ['Sie hat gleich wieder Sport.', 'Sie will dort spielen.', 'Ihre Mutter wartet dort.'] },
+      { q: 'Was bringt Mia dem Hausmeister?', a: 'ein selbst gemaltes Bild', w: ['Schokolade', 'eine Blume', 'einen Brief'] },
+    ] },
+    { t: 'Fledermäuse sind die einzigen Säugetiere, die richtig fliegen können. Am Tag schlafen sie kopfüber hängend in Höhlen oder auf Dachböden. In der Nacht jagen sie Insekten. Dabei stoßen sie hohe Rufe aus, die wir Menschen nicht hören können. Das Echo zeigt ihnen, wo ein Hindernis oder eine Mücke ist. Im Winter halten Fledermäuse Winterschlaf.', qs: [
+      { q: 'Wann jagen Fledermäuse?', a: 'in der Nacht', w: ['am Morgen', 'am Mittag', 'nur im Winter'] },
+      { q: 'Wie schlafen Fledermäuse?', a: 'kopfüber hängend', w: ['in einem Nest', 'auf dem Rücken', 'im Wasser'] },
+      { q: 'Warum finden Fledermäuse im Dunkeln ihren Weg?', a: 'Das Echo ihrer Rufe zeigt ihnen den Weg.', w: ['Sie haben eine Taschenlampe.', 'Sie fliegen nur, wenn der Mond scheint.', 'Sie kennen jeden Baum auswendig.'] },
+      { q: 'Was machen Fledermäuse im Winter?', a: 'Sie halten Winterschlaf.', w: ['Sie fliegen in den Süden.', 'Sie jagen Mücken.', 'Sie bauen Nester.'] },
     ] },
   ];
   const s = pick(r, stories);
