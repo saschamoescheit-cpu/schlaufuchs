@@ -199,6 +199,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'evPSF5a4GTU', title: 'Satzarten Grundschule – Satzarten bestimmen', channel: 'EinfachSchule', len: '2:41' },
     { id: 'fd6nhn93to0', title: 'Lumi erklärt: Sätze und Satzzeichen', channel: 'Zoppelhasenklasse', len: '2:48' },
   ],
+  'd3-ig-ich': [
+    { id: 'UKhJNBANtW0', title: 'Rechtschreibstrategie „Verlängern“ – kindgerecht erklärt', channel: 'Lehrertipps', len: '5:05' },
+    { id: 'dG9xG3s8Ikg', title: 'Rechtschreibung: Wörter verlängern', channel: 'endlich kapiert', len: '5:41' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },

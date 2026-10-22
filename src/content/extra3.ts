@@ -975,6 +975,33 @@ function geld3Task(r: Rng, s: Stage): Gen {
   return { key: `t-${e}`, prompt: `Was ist teurer?`, answer: fixedChoice(pair, eur(a)), tags: ['vergleichen'], solution: [`${eur(a)} = ${e} € und 50 ct`, `${eur(b)} = ${e} € und 5 ct`, `Also ist ${eur(a)} teurer.`] };
 }
 
+// ---------- -ig oder -ich? (Kl. 3) ----------
+
+// [Wort, Endung, Verlängerung bzw. Merkhilfe, Bild]
+const IGICH: [string, 'ig' | 'ich', string, string][] = [
+  ['König', 'ig', 'die Könige', '👑'], ['Honig', 'ig', 'Merke: Honig schreibt man mit g', '🍯'], ['Käfig', 'ig', 'die Käfige', '🦜'], ['Essig', 'ig', 'Merke: Essig schreibt man mit g', '🫙'],
+  ['lustig', 'ig', 'ein lustiger Clown', '🤡'], ['mutig', 'ig', 'ein mutiger Ritter', '🦸'], ['eilig', 'ig', 'ein eiliger Bote', '🏃'], ['ruhig', 'ig', 'ein ruhiger Abend', '😌'], ['fertig', 'ig', 'eine fertige Burg', '✅'],
+  ['Teppich', 'ich', 'die Teppiche', '🧶'], ['Rettich', 'ich', 'die Rettiche', '🥕'], ['Kranich', 'ich', 'die Kraniche', '🦢'], ['Pfirsich', 'ich', 'die Pfirsiche', '🍑'],
+  ['freundlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😊'], ['fröhlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😄'], ['glücklich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🍀'], ['ehrlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🤝'],
+];
+function igichTask(r: Rng, s: Stage): Gen {
+  const [w, end, hilfe, e] = pick(r, IGICH);
+  const stem = w.slice(0, w.length - end.length);
+  const why = hilfe.startsWith('Merke') ? hilfe : `Verlängere das Wort: ${hilfe} – jetzt hörst du ${end === 'ig' ? 'das g' : 'das ch'}.`;
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${w}`, prompt: 'Hör gut zu und schreibe das Wort.', speak: w, listen: { text: w, lang: 'de' }, visual: { kind: 'emoji', chars: e }, answer: { type: 'text', value: w, dictation: true, caseSensitive: true }, tags: [end], traps: [{ answer: stem + (end === 'ig' ? 'ich' : 'ig'), tag: 'ig-ich-verwechselt', hint: why }], solution: [`So schreibt man es: ${w}`, why] };
+  }
+  return {
+    key: `c-${w}`,
+    prompt: `-ig oder -ich?\n${stem}☐`,
+    speak: `ig oder ich? ${w}`,
+    visual: { kind: 'emoji', chars: e },
+    answer: { ...fixedChoice(['ig', 'ich'], end), big: true },
+    tags: [end],
+    solution: [`Richtig: ${w}`, why],
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
   M(3, 'm3-geld', 'Geld mit Komma', '💰', { text: ['3,45 € heißt: 3 Euro und 45 Cent.', 'Nach dem Komma stehen immer zwei Stellen für die Cent: 5 Cent schreibt man 0,05 €, 50 Cent 0,50 €.', '100 Cent sind 1 Euro – also sind 345 ct = 3,45 €.'], visual: { kind: 'money', items: [200, 100, 20, 20, 5] }, videoQuery: 'Geld Kommaschreibweise Euro Cent Klasse 3' }, geld3Task, { tagLabels: { zaehlen: 'Geld zählen', umrechnen: 'Euro und Cent umrechnen', vergleichen: 'Preise vergleichen', 'komma-null': 'Null nach dem Komma vergessen', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 }),
   M(1, 'm1-muster', 'Muster fortsetzen', '🔁', { text: ['Ein Muster wiederholt sich immer wieder auf die gleiche Weise.', 'Suche den Teil, der sich wiederholt: 🔺 🟦 | 🔺 🟦 | 🔺 🟦', 'Dann weißt du, was als Nächstes kommt.'], visual: { kind: 'row', items: ['🔺', '🟦', '🔺', '🟦', '🔺', '❓'] }, videoQuery: 'Muster fortsetzen Klasse 1 Mathematik' }, musterTask, { tagLabels: { 'muster-2': 'einfache Muster', 'muster-lang': 'längere Muster' }, testSeconds: 20 }),
@@ -1346,6 +1373,7 @@ function spurTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(3, 'd3-ig-ich', '-ig oder -ich?', '👑', { text: ['Am Wortende klingen -ig und -ich fast gleich: König, Teppich.', 'Verlängere das Wort: die Könige (g!), die Teppiche (ch!). Bei Adjektiven: ein lustiger Clown.', 'Merke: Die Endung -lich schreibt man immer mit ch: freundlich, fröhlich.'], visual: { kind: 'word', word: 'König → Könige', mark: [[3, 5], [12, 13]] }, videoQuery: 'ig oder ich Rechtschreibung verlängern Grundschule' }, igichTask, { tagLabels: { ig: 'Wörter mit -ig', ich: 'Wörter mit -ich / -lich', 'ig-ich-verwechselt': 'ig und ich verwechselt' }, testSeconds: 15 }),
   D(1, 'd1-lautposition', 'Wo hörst du den Laut?', '👂', { text: ['Sprich das Wort ganz langsam und dehne es: Mmmaus.', 'Hörst du den Laut gleich zuerst? Dann ist er am Anfang. Ganz zum Schluss? Dann am Ende.', 'Dazwischen ist die Mitte: La-mm-pe.'], visual: { kind: 'word', word: 'Maus · Lampe · Baum', mark: [[0, 1], [9, 10], [18, 19]] }, videoQuery: 'Anlaut Inlaut Auslaut hören Klasse 1' }, lautposTask, { tagLabels: { anfang: 'Laut am Anfang', mitte: 'Laut in der Mitte', ende: 'Laut am Ende' }, testSeconds: 20 }),
   D(4, 'd4-wortarten', 'Wortarten: auch Pronomen und Präpositionen', '🏷️', { text: ['Nomen (Hund), Verben (schläft) und Adjektive (klein) kennst du schon.', 'Artikel begleiten Nomen: der, die, ein. Pronomen stehen für ein Nomen: er, sie, wir.', 'Präpositionen zeigen, wo oder wann etwas ist: unter, auf, nach.'], visual: { kind: 'text', text: 'Der kleine Hund schläft unter dem Tisch.\nArtikel · Adjektiv · Nomen · Verb · Präposition · Artikel · Nomen' }, videoQuery: 'Wortarten Pronomen Präposition Grundschule Klasse 4' }, wortart4Task, { tagLabels: { 'wa-n': 'Nomen', 'wa-v': 'Verben', 'wa-a': 'Adjektive', 'wa-art': 'Artikel', 'wa-p': 'Pronomen', 'wa-pr': 'Präpositionen' }, testSeconds: 20 }),
   D(2, 'd2-sp-st', 'Sp und St am Wortanfang', '🕷️', { text: ['Am Wortanfang hört man oft „schp“ oder „scht“: Spinne, Stern.', 'Geschrieben wird aber nur Sp oder St – ohne ch!', 'Sprich langsam und denk dran: Hört man schp → schreib Sp. Hört man scht → schreib St.'], visual: { kind: 'word', word: 'Spinne · Stern', mark: [[0, 2], [9, 11]] }, videoQuery: 'Wörter mit Sp und St Grundschule Klasse 2' }, spstTask, { tagLabels: { sp: 'Wörter mit Sp', st: 'Wörter mit St', 'sch-geschrieben': 'sch geschrieben statt S' }, testSeconds: 15 }),
