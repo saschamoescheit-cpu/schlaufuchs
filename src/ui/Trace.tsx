@@ -201,7 +201,8 @@ function startPoint(letter: string): Pt {
   return [S / 2, 60];
 }
 
-export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onDone: (v: string) => void; reveal?: boolean; ok?: boolean }) {
+/** test: Lernzielkontrolle – keine Vorführung, nur „gespeichert“ statt richtig/falsch */
+export function TraceInput({ letter, onDone, reveal, ok, test, saved }: { letter: string; onDone: (v: string) => void; reveal?: boolean; ok?: boolean; test?: boolean; saved?: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
   const [strokes, setStrokes] = useState<Pt[][]>([]);
   const drawing = useRef<Pt[] | null>(null);
@@ -337,7 +338,7 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
         onPointerUp={() => (drawing.current = null)}
         onPointerCancel={() => (drawing.current = null)}
       />
-      {demo && !reveal && (
+      {demo && !reveal && !test && (
         <button className="trace-play" aria-label={`Zeig mir, wie man ${letter} schreibt`} onClick={() => {
           setDemoT(0);
           setDemoRun((n) => n + 1);
@@ -362,6 +363,7 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
           </button>
         </div>
       )}
+      {saved && !reveal && <div className="small muted">✓ Gespeichert – du kannst es noch verbessern.</div>}
     </div>
   );
 }
