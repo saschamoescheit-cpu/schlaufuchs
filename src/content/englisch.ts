@@ -15,14 +15,15 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2, stage: Stage = 2): Gen {
   const w = pick(r, words);
   const others = words.filter((x) => x !== w);
   // Stufe 1: nur wiedererkennen (Bild, Hören), Stufe 3: viel selbst schreiben
-  const spell = stage === 1 ? 0 : w.en.length <= 8 && !w.en.includes(' ') ? (stage === 3 ? 0.45 : year === 1 ? 0.12 : 0.25) : 0;
+  // gleich geschriebene Wörter (Hotel – hotel, Zebra – zebra) lohnen das Schreiben nicht
+  const same = w.en.toLowerCase() === w.de.toLowerCase();
+  const spell = stage === 1 || same ? 0 : w.en.length <= 8 && !w.en.includes(' ') ? (stage === 3 ? 0.45 : year === 1 ? 0.12 : 0.25) : 0;
   const roll = r();
   const say = { text: w.en, lang: 'en' as const };
   const sol = [`${w.de} heißt auf Englisch: ${w.en}`];
   if (roll < spell) {
     return { key: `s-${w.en}`, prompt: `Schreibe auf Englisch:\n${w.de}`, visual: visualOf(w), answer: { type: 'text', value: w.en, lang: 'en' }, tags: ['schreiben'], solution: [...sol, `Buchstabiert: ${w.en.toUpperCase().split('').join(' – ')}`], pronounce: say };
   }
-  const same = w.en.toLowerCase() === w.de.toLowerCase();
   let mode: 'bild' | 'hören' | 'de-en' | 'en-de' = pick(r, same || stage === 1 ? (['bild', 'hören'] as const) : stage === 3 ? (['hören', 'de-en', 'de-en', 'en-de'] as const) : (['bild', 'hören', 'de-en', 'en-de'] as const));
   if (mode === 'hören' && !w.e && !w.hex) mode = same ? 'bild' : 'en-de';
   if (mode === 'bild') return { key: `b-${w.en}`, prompt: 'Wie heißt das auf Englisch?', visual: visualOf(w), answer: { ...choice(r, w.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['bild-wort'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
@@ -89,6 +90,39 @@ const ACTIONS: Word[] = [
 ];
 const HOME: Word[] = [{ en: 'kitchen', de: 'Küche', e: '🍳' }, { en: 'bathroom', de: 'Badezimmer', e: '🛁' }, { en: 'bedroom', de: 'Schlafzimmer', e: '🛏️' }, { en: 'living room', de: 'Wohnzimmer', e: '🛋️' }, { en: 'garden', de: 'Garten', e: '🏡' }, { en: 'house', de: 'Haus', e: '🏠' }, { en: 'door', de: 'Tür', e: '🚪' }, { en: 'window', de: 'Fenster', e: '🪟' }, { en: 'chair', de: 'Stuhl', e: '🪑' }, { en: 'lamp', de: 'Lampe', e: '💡' }];
 
+// Weitere Wortfelder nach den NRW-Themen (Nachtlauf 22.10.2026): Natur, Verkehr, Obst und Gemüse, Stadt, Berufe, Tiere
+const FRUIT: Word[] = [
+  { en: 'pear', de: 'Birne', e: '🍐' }, { en: 'grapes', de: 'Weintrauben', e: '🍇' }, { en: 'cherries', de: 'Kirschen', e: '🍒' }, { en: 'lemon', de: 'Zitrone', e: '🍋' }, { en: 'pineapple', de: 'Ananas', e: '🍍' },
+  { en: 'watermelon', de: 'Wassermelone', e: '🍉' }, { en: 'peach', de: 'Pfirsich', e: '🍑' }, { en: 'kiwi', de: 'Kiwi', e: '🥝' }, { en: 'potato', de: 'Kartoffel', e: '🥔' }, { en: 'cucumber', de: 'Gurke', e: '🥒' },
+  { en: 'corn', de: 'Mais', e: '🌽' }, { en: 'onion', de: 'Zwiebel', e: '🧅' }, { en: 'broccoli', de: 'Brokkoli', e: '🥦' }, { en: 'mushroom', de: 'Pilz', e: '🍄' }, { en: 'pepper', de: 'Paprika', e: '🫑' },
+];
+const TRANSPORT: Word[] = [
+  { en: 'car', de: 'Auto', e: '🚗' }, { en: 'bus', de: 'Bus', e: '🚌' }, { en: 'train', de: 'Zug', e: '🚆' }, { en: 'plane', de: 'Flugzeug', e: '✈️' }, { en: 'ship', de: 'Schiff', e: '🚢' },
+  { en: 'bike', de: 'Fahrrad', e: '🚲' }, { en: 'boat', de: 'Boot', e: '⛵' }, { en: 'taxi', de: 'Taxi', e: '🚕' }, { en: 'tractor', de: 'Traktor', e: '🚜' }, { en: 'helicopter', de: 'Hubschrauber', e: '🚁' },
+  { en: 'lorry', de: 'Lastwagen', e: '🚚' }, { en: 'motorbike', de: 'Motorrad', e: '🏍️' }, { en: 'scooter', de: 'Roller', e: '🛴' }, { en: 'rocket', de: 'Rakete', e: '🚀' },
+];
+const NATURE: Word[] = [
+  { en: 'tree', de: 'Baum', e: '🌳' }, { en: 'flower', de: 'Blume', e: '🌼' }, { en: 'sun', de: 'Sonne', e: '☀️' }, { en: 'moon', de: 'Mond', e: '🌙' }, { en: 'star', de: 'Stern', e: '⭐' },
+  { en: 'mountain', de: 'Berg', e: '⛰️' }, { en: 'sea', de: 'Meer', e: '🌊' }, { en: 'rainbow', de: 'Regenbogen', e: '🌈' }, { en: 'leaf', de: 'Blatt', e: '🍃' }, { en: 'forest', de: 'Wald', e: '🌲' },
+  { en: 'beach', de: 'Strand', e: '🏖️' }, { en: 'cloud', de: 'Wolke', e: '☁️' }, { en: 'stone', de: 'Stein', e: '🪨' }, { en: 'fire', de: 'Feuer', e: '🔥' },
+];
+const TOWN: Word[] = [
+  { en: 'hospital', de: 'Krankenhaus', e: '🏥' }, { en: 'shop', de: 'Geschäft / Laden', e: '🏪' }, { en: 'bank', de: 'Bank', e: '🏦' }, { en: 'church', de: 'Kirche', e: '⛪' }, { en: 'post office', de: 'Post', e: '🏤' },
+  { en: 'station', de: 'Bahnhof', e: '🚉' }, { en: 'hotel', de: 'Hotel', e: '🏨' }, { en: 'castle', de: 'Burg / Schloss', e: '🏰' }, { en: 'museum', de: 'Museum', e: '🏛️' }, { en: 'park', de: 'Park', e: '🌳' },
+  { en: 'cinema', de: 'Kino', e: '🎬' }, { en: 'swimming pool', de: 'Schwimmbad', e: '🏊' }, { en: 'bridge', de: 'Brücke', e: '🌉' }, { en: 'street', de: 'Straße', e: '🛣️' }, { en: 'fire station', de: 'Feuerwache', e: '🚒' },
+];
+const JOBS: Word[] = [
+  { en: 'doctor', de: 'Arzt / Ärztin', e: '🧑‍⚕️' }, { en: 'police officer', de: 'Polizist / Polizistin', e: '👮' }, { en: 'firefighter', de: 'Feuerwehrmann / Feuerwehrfrau', e: '🧑‍🚒' }, { en: 'cook', de: 'Koch / Köchin', e: '🧑‍🍳' },
+  { en: 'farmer', de: 'Bauer / Bäuerin', e: '🧑‍🌾' }, { en: 'pilot', de: 'Pilot / Pilotin', e: '🧑‍✈️' }, { en: 'astronaut', de: 'Astronaut / Astronautin', e: '🧑‍🚀' }, { en: 'artist', de: 'Künstler / Künstlerin', e: '🧑‍🎨' },
+  { en: 'mechanic', de: 'Mechaniker / Mechanikerin', e: '🧑‍🔧' }, { en: 'scientist', de: 'Forscher / Forscherin', e: '🧑‍🔬' }, { en: 'singer', de: 'Sänger / Sängerin', e: '🧑‍🎤' }, { en: 'teacher', de: 'Lehrer / Lehrerin', e: '🧑‍🏫' },
+];
+const WILD: Word[] = [
+  { en: 'shark', de: 'Hai', e: '🦈' }, { en: 'whale', de: 'Wal', e: '🐳' }, { en: 'dolphin', de: 'Delfin', e: '🐬' }, { en: 'octopus', de: 'Krake', e: '🐙' }, { en: 'crab', de: 'Krebs', e: '🦀' },
+  { en: 'turtle', de: 'Schildkröte', e: '🐢' }, { en: 'penguin', de: 'Pinguin', e: '🐧' }, { en: 'bear', de: 'Bär', e: '🐻' }, { en: 'fox', de: 'Fuchs', e: '🦊' }, { en: 'owl', de: 'Eule', e: '🦉' },
+  { en: 'bee', de: 'Biene', e: '🐝' }, { en: 'butterfly', de: 'Schmetterling', e: '🦋' }, { en: 'spider', de: 'Spinne', e: '🕷️' }, { en: 'giraffe', de: 'Giraffe', e: '🦒' }, { en: 'zebra', de: 'Zebra', e: '🦓' },
+  { en: 'hedgehog', de: 'Igel', e: '🦔' }, { en: 'squirrel', de: 'Eichhörnchen', e: '🐿️' },
+];
+
 // ---------- 1. Lernjahr ----------
 const colours = vocabSkill(1, 'e1-colours', 'Colours – Farben', '🎨', COLOURS, ['red = rot, blue = blau, green = grün, yellow = gelb.', 'Achtung: purple = lila, pink = rosa, grey = grau.', 'Im Englischen schreibt man Farben klein.'], 'colours song for kids English');
 const numbers20 = E(1, 'e1-numbers', 'Numbers 1–20 – Zahlen', '🔢', { text: ['one, two, three, four, five, six, seven, eight, nine, ten', 'eleven, twelve – dann mit -teen: thirteen, fourteen, fifteen … nineteen.', 'twenty = 20.', 'Tipp: Zähle laut auf Englisch, z. B. beim Treppensteigen!'], visual: { kind: 'text', text: '1 one · 2 two · 3 three' }, videoQuery: 'numbers 1 to 20 song for kids' }, (r) => {
@@ -108,6 +142,9 @@ const school = vocabSkill(1, 'e1-school', 'School things – Schulsachen', '🎒
 const food = vocabSkill(1, 'e1-food', 'Food – Essen', '🍎', FOOD, ['apple, banana, bread, milk, cheese …', 'So sagst du, was du magst: I like apples. I don\'t like cheese.'], 'food vocabulary English for kids');
 const clothes = vocabSkill(1, 'e1-clothes', 'Clothes – Kleidung', '👕', CLOTHES, ['T-shirt, trousers (Hose), dress (Kleid), shoes, socks.', 'trousers, shoes, socks und gloves benutzt man meistens in der Mehrzahl.'], 'clothes vocabulary English for kids');
 const days = vocabSkill(1, 'e1-days', 'Days of the week – Wochentage', '📅', DAYS, ['Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.', 'Wochentage schreibt man im Englischen immer groß!', 'Wednesday spricht man „Wens-day“.'], 'days of the week song');
+const fruit = vocabSkill(1, 'e1-fruit', 'Fruit and vegetables – Obst und Gemüse', '🍇', FRUIT, ['pear = Birne, grapes = Weintrauben, cherries = Kirschen, lemon = Zitrone.', 'potato = Kartoffel, cucumber = Gurke, onion = Zwiebel, mushroom = Pilz.', 'Achtung: pepper ist hier die Paprika (nicht der Pfeffer).', "I like grapes. I don't like onions."], 'fruits and vegetables vocabulary English for kids');
+const transport = vocabSkill(1, 'e1-transport', 'Transport – Fahrzeuge', '🚌', TRANSPORT, ['car = Auto, bus = Bus, train = Zug, plane = Flugzeug, bike = Fahrrad.', 'In Großbritannien heißt der Lastwagen lorry, in Amerika truck.', 'How do you get to school? – By bus. / By bike. / On foot (zu Fuß).'], 'transport vocabulary English for kids');
+const nature = vocabSkill(1, 'e1-nature', 'Nature – Natur', '🌳', NATURE, ['tree = Baum, flower = Blume, sun = Sonne, moon = Mond, star = Stern.', 'sea = Meer, beach = Strand, mountain = Berg, forest = Wald.', 'Look! A rainbow! = Schau! Ein Regenbogen!'], 'nature vocabulary English for kids');
 
 const PHRASES: { en: string; de: string; sit: string }[] = [
   { en: 'Hello!', de: 'Hallo!', sit: 'Du triffst einen Freund.' }, { en: 'Goodbye!', de: 'Tschüss! / Auf Wiedersehen!', sit: 'Du gehst nach Hause.' },
@@ -142,6 +179,9 @@ const weather = vocabSkill(2, 'e2-weather', 'Weather – Wetter', '🌦️', WEA
 const feelings = vocabSkill(2, 'e2-feelings', 'Feelings – Gefühle', '😊', FEELINGS, ['How are you? – I\'m happy. / I\'m sad. / I\'m tired.', 'happy = fröhlich, sad = traurig, angry = wütend, scared = ängstlich.'], 'feelings and emotions English for kids');
 const actions = vocabSkill(2, 'e2-actions', 'Actions – Was ich tue', '🏃', ACTIONS, ['run, swim, dance, sing, read, write …', 'I can swim. = Ich kann schwimmen. I can\'t sing. = Ich kann nicht singen.'], 'action verbs English for kids');
 const home = vocabSkill(2, 'e2-home', 'My home – Zuhause', '🏠', HOME, ['kitchen = Küche, bathroom = Bad, bedroom = Schlafzimmer, living room = Wohnzimmer.', "Where's mum? – She's in the kitchen."], 'rooms in the house English for kids');
+const town = vocabSkill(2, 'e2-town', 'In town – In der Stadt', '🏙️', TOWN, ['hospital = Krankenhaus, station = Bahnhof, church = Kirche, cinema = Kino.', "Where's the station? – It's next to the park.", 'swimming pool = Schwimmbad, post office = Post, fire station = Feuerwache.'], 'places in town vocabulary English for kids');
+const jobs = vocabSkill(2, 'e2-jobs', 'Jobs – Berufe', '🧑‍🚒', JOBS, ['doctor = Arzt / Ärztin, farmer = Bauer / Bäuerin, pilot = Pilot / Pilotin.', 'Im Englischen ist das Wort meist für Frauen und Männer gleich: She is a doctor. He is a doctor.', 'What do you want to be? – I want to be a firefighter.'], 'jobs and occupations vocabulary English for kids');
+const wild = vocabSkill(2, 'e2-wildanimals', 'Wild animals – Wilde Tiere', '🦊', WILD, ['In the sea: shark (Hai), whale (Wal), dolphin (Delfin), octopus (Krake).', 'In the forest: fox (Fuchs), owl (Eule), hedgehog (Igel), squirrel (Eichhörnchen).', 'Mehrzahl: one butterfly – two butterflies, one fox – two foxes.'], 'wild animals vocabulary English for kids');
 
 const clockEn = (h: number, m: number) => (m === 0 ? `${numEn(h)} o'clock` : m === 30 ? `half past ${numEn(h)}` : m === 15 ? `quarter past ${numEn(h)}` : `quarter to ${numEn(h % 12 + 1)}`);
 const time = E(2, 'e2-time', "What's the time?", '🕐', { text: ["Volle Stunde: It's three o'clock.", "Halbe Stunde: It's half past three = 3:30.", 'Achtung: Auf Deutsch sagt man „halb vier“, auf Englisch „half past three“ (halb nach drei)!', "Viertel: quarter past three (3:15), quarter to four (3:45)."], visual: { kind: 'clock', h: 3, m: 30 }, videoQuery: "telling the time o'clock half past for kids" }, (r) => {
@@ -221,4 +261,4 @@ const sentences = E(2, 'e2-sentences', 'Little sentences', '💬', { text: ['I a
   return { key: b.s, prompt: `Was passt?\n${b.s}`, speak: 'Was passt in die Lücke?', answer: { ...choice(r, b.ok, b.opts), speakOptions: 'en' }, tags: [b.tag], solution: [full, b.why], pronounce: { text: full.replace(/[^\x20-\x7E']/g, '').trim(), lang: 'en' } };
 }, { tagLabels: { 'to-be': 'am / is / are', can: "can / can't", like: 'like / likes', 'have-got': 'have got / has got', my: 'my' }, testSeconds: 20 });
 
-export const ENGLISCH: Skill[] = [colours, numbers20, animals, family, body, school, food, clothes, days, phrases, numbers100, months, weather, feelings, actions, home, time, preps, grammar1, sentences];
+export const ENGLISCH: Skill[] = [colours, numbers20, animals, family, body, school, food, clothes, days, fruit, transport, nature, phrases, numbers100, months, weather, feelings, actions, home, town, jobs, wild, time, preps, grammar1, sentences];

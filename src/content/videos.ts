@@ -264,4 +264,23 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'X3_-GKFqtL0', title: 'Wörterbuch richtig benutzen | Erklärung und Übungen', channel: 'lernfoerderung', len: '2:45' },
     { id: 'g3qUzoziye0', title: 'Verben in der Grundform im Wörterbuch finden', channel: 'Grundschule Allendorf', len: '2:05' },
   ],
+  // neue Wortfelder (geprüft per oEmbed am 22.10.2026)
+  'e1-fruit': [
+    { id: '-OZYnOr2m58', title: 'Fruit Chant for ESL Kids | Learn Fruit Vocabulary in English', channel: 'Fun Kids English', len: '2:46' },
+    { id: 'TWpnohR6AoQ', title: 'Vegetables Vocabulary Chant for Children', channel: 'Fun Kids English', len: '3:21' },
+  ],
+  'e1-transport': [
+    { id: '0ynatfJauMk', title: 'Vehicles Vocabulary Chant for Children', channel: 'Fun Kids English', len: '3:21' },
+    { id: 'Ut-HbauKzDw', title: 'Transportation Song | Transportation for kids', channel: 'The Singing Walrus - English Songs For Kids', len: '2:57' },
+  ],
+  'e1-nature': [{ id: 'D3h-1mBjYdY', title: 'Nature Vocabulary Chant for Children', channel: 'Fun Kids English', len: '3:19' }],
+  'e2-town': [
+    { id: 'EfD2k9beP-4', title: 'Town [Kids Vocab] Around My Town – Bank, Hospital & School Words', channel: 'English Singsing', len: '2:40' },
+    { id: 'OkfROvtrDl8', title: 'Where Are You Going? | Places Song', channel: 'English Tree', len: '2:54' },
+  ],
+  'e2-jobs': [
+    { id: 'MxVUfy-eLDY', title: 'Jobs & Occupations Chant for Children', channel: 'Fun Kids English', len: '3:20' },
+    { id: 'ckKQclquAXU', title: 'Jobs Song for Kids | What Do You Do?', channel: 'Fun Kids English', len: '2:52' },
+  ],
+  'e2-wildanimals': [{ id: 'Oxw6FoUNeT4', title: 'Sea Animals [Kids Vocab] Under the Sea – Shark, Whale & Sea Creatures', channel: 'English Singsing', len: '4:09' }],
 };

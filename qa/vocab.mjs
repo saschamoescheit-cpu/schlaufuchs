@@ -17,7 +17,7 @@ await p.waitForTimeout(400);
 await shot('runde');
 const head = await p.locator('body').innerText();
 // die Übung zeigt je Aufgabe das Wortfeld – es muss ein Vokabel-Thema sein
-check(/Colours|Numbers|Animals|Family|My body|School things|Food|Clothes|Days|Toys|Festivals|Shapes|Months|Weather|Feelings|Actions|My home|Hobbies/.test(head), 'Runde besteht aus Vokabel-Wortfeldern');
+check(/Colours|Numbers|Animals|Family|My body|School things|Food|Clothes|Days|Toys|Festivals|Shapes|Months|Weather|Feelings|Actions|My home|Hobbies|Fruit|Transport|Nature|In town|Jobs|Wild animals/.test(head), 'Runde besteht aus Vokabel-Wortfeldern');
 // Fortschritt: Aufgabe 1 von 20?
 const prog = await p.evaluate(() => document.querySelectorAll('.task').length);
 check(prog === 1, 'Aufgabe angezeigt');
