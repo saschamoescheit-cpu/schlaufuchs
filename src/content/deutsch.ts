@@ -599,6 +599,8 @@ const AE_EU: [string, string, string, string, string?][] = [
   ['Hemd', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '👔'], ['Becher', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🥤'],
   ['Kräuter', 'äu', 'eu', 'Kräuter kommt von Kraut.', '🌿'], ['träumen', 'äu', 'eu', 'träumen kommt von Traum.', '😴'],
   ['Beule', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🤕'], ['neun', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '9️⃣'], ['Euro', 'Eu', 'Äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '💶'],
+  ['Länder', 'ä', 'e', 'Länder kommt von Land.', '🗺️'], ['Bänke', 'ä', 'e', 'Bänke kommt von Bank.', '🪑'], ['Schwester', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '👧'], ['Teller', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🍽️'],
+  ['Zäune', 'äu', 'eu', 'Zäune kommt von Zaun.'], ['Bäuche', 'äu', 'eu', 'Bäuche kommt von Bauch.'], ['Kreuz', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '✝️'], ['Zeugnis', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '📄'],
 ];
 const aeEu = D(3, 'd3-ae-aeu', 'ä oder e, äu oder eu', '🌳', {
   text: ['ä und e klingen gleich, äu und eu auch.', 'Trick: Suche ein verwandtes Wort mit a oder au (ableiten).', 'Bäume → Baum: also äu. Hände → Hand: also ä.', 'Findest du kein verwandtes Wort mit a/au, schreibst du e oder eu: Feuer, Fenster.'],
@@ -654,6 +656,9 @@ const SP_SAETZE: { s: string[]; subj: [number, number]; pred: number }[] = [
   { s: ['Im', 'Herbst', 'fallen', 'die', 'Blätter'], subj: [3, 5], pred: 2 }, { s: ['Tim', 'trinkt', 'einen', 'Kakao'], subj: [0, 1], pred: 1 },
   { s: ['Die', 'Lehrerin', 'erklärt', 'die', 'Aufgabe'], subj: [0, 2], pred: 2 }, { s: ['Nach', 'dem', 'Essen', 'spielen', 'die', 'Kinder'], subj: [4, 6], pred: 3 },
   { s: ['Der', 'Wind', 'weht', 'sehr', 'stark'], subj: [0, 2], pred: 2 }, { s: ['Morgen', 'fährt', 'unsere', 'Klasse', 'in', 'den', 'Zoo'], subj: [2, 4], pred: 1 },
+  { s: ['Der', 'Bäcker', 'backt', 'frische', 'Brötchen'], subj: [0, 2], pred: 2 }, { s: ['Im', 'Zoo', 'füttert', 'der', 'Wärter', 'die', 'Affen'], subj: [3, 5], pred: 2 },
+  { s: ['Paul', 'spielt', 'Gitarre'], subj: [0, 1], pred: 1 }, { s: ['Die', 'Katze', 'fängt', 'eine', 'Maus'], subj: [0, 2], pred: 2 },
+  { s: ['Am', 'Wochenende', 'besuchen', 'wir', 'den', 'Zoo'], subj: [3, 4], pred: 2 }, { s: ['Die', 'Vögel', 'singen', 'im', 'Baum'], subj: [0, 2], pred: 2 },
 ];
 const satzglieder3 = D(3, 'd3-satzglieder', 'Subjekt und Prädikat', '🧱', {
   text: ['Das Prädikat (Satzkern) ist das Verb im Satz. Frage: Was tut jemand? Was geschieht?', 'Das Subjekt ist der Satzgegenstand. Frage: Wer oder was tut etwas?', '„Der Hund bellt.“ Wer oder was bellt? → der Hund (Subjekt). Was tut der Hund? → bellt (Prädikat).', 'Das Subjekt steht nicht immer am Anfang: „Am Abend kocht Papa Nudeln.“'],
@@ -709,6 +714,9 @@ const FAELLE: { s: string; mark: string; fall: 'Nominativ' | 'Genitiv' | 'Dativ'
   { s: '**Die Katze** schläft auf dem Sofa.', mark: 'Die Katze', fall: 'Nominativ' }, { s: 'Ich streichle **die Katze**.', mark: 'die Katze', fall: 'Akkusativ' }, { s: 'Ich gebe **der Katze** Milch.', mark: 'der Katze', fall: 'Dativ' },
   { s: 'Das Fell **der Katze** ist weich.', mark: 'der Katze', fall: 'Genitiv' }, { s: 'Das Dach **des Hauses** ist rot.', mark: 'des Hauses', fall: 'Genitiv' }, { s: 'Wir besuchen **unsere Oma**.', mark: 'unsere Oma', fall: 'Akkusativ' },
   { s: 'Ben hilft **seinem Vater** im Garten.', mark: 'seinem Vater', fall: 'Dativ' }, { s: '**Die Kinder** spielen Verstecken.', mark: 'Die Kinder', fall: 'Nominativ' },
+  { s: 'Der Briefträger bringt **dem Nachbarn** ein Paket.', mark: 'dem Nachbarn', fall: 'Dativ' }, { s: 'Der Briefträger bringt dem Nachbarn **ein Paket**.', mark: 'ein Paket', fall: 'Akkusativ' },
+  { s: '**Der Briefträger** bringt dem Nachbarn ein Paket.', mark: 'Der Briefträger', fall: 'Nominativ' }, { s: 'Die Blätter **des Baumes** sind gelb.', mark: 'des Baumes', fall: 'Genitiv' },
+  { s: 'Wir gratulieren **unserer Lehrerin**.', mark: 'unserer Lehrerin', fall: 'Dativ' }, { s: 'Das Spielzeug **des Babys** ist bunt.', mark: 'des Babys', fall: 'Genitiv' },
 ];
 const FRAGE = { Nominativ: 'Wer oder was?', Genitiv: 'Wessen?', Dativ: 'Wem?', Akkusativ: 'Wen oder was?' } as const;
 const faelle = D(4, 'd4-faelle', 'Die vier Fälle', '🗝️', {
