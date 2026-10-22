@@ -12,7 +12,7 @@ if (!(await btn.count())) { bad++; console.log('✗ kein Urkunden-Knopf'); }
 else {
   await btn.click();
   await p.waitForTimeout(400);
-  await shot('urkunde', true);
+  await shot('urkunde');
   await p.emulateMedia({ media: 'print' });
   await shot('urkunde-druck', true);
   const n = await p.locator('.cert-list li').count();

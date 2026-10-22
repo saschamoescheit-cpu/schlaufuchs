@@ -3,6 +3,7 @@ import { ALL_SKILLS, byArea, currentSkills, englishYear, stateInfo, SUBJECTS } f
 import { accuracy, addDays, LEVEL_NAMES, level, openReviews, patterns, periodStats, weaknesses, type Progress } from '../engine/learning';
 import { GRADE_NAMES } from '../engine/grading';
 import type { Profile } from '../data/store';
+import { useEffect } from 'react';
 import { Fox, TopBar } from '../ui/common';
 import type { Subject } from '../engine/types';
 
@@ -17,6 +18,7 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
   const pats = patterns(pr, rel, 8);
   const tests = pr.tests.slice(-10).reverse();
   const subjects = SUBJECTS.filter((s) => s.id !== 'englisch' || englishYear(p) > 0);
+  useEffect(() => window.scrollTo(0, 0), []);
   return (
     <div className="print-page">
       <div className="no-print">
@@ -126,6 +128,8 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
 export function Certificate({ profile: p, progress: pr, subject, onBack }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void }) {
   const info = SUBJECTS.find((s) => s.id === subject)!;
   const sure = ALL_SKILLS.filter((s) => s.subject === subject && level(pr, s.id) === 3);
+  // aus dem Lernstand kommend: oben anfangen (Drucken-Knopf sichtbar)
+  useEffect(() => window.scrollTo(0, 0), []);
   return (
     <div className="print-page">
       <div className="no-print">
