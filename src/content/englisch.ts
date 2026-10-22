@@ -153,16 +153,26 @@ const time = E(2, 'e2-time', "What's the time?", '🕐', { text: ["Volle Stunde:
 }, { tagLabels: { oclock: "o'clock", 'half-past': 'half past', quarter: 'quarter past / to', 'halb-falle': 'half past wie „halb“ verstanden' }, testSeconds: 20 });
 
 const PREPS: { pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of'; de: string }[] = [{ pos: 'in', de: 'in' }, { pos: 'on', de: 'auf' }, { pos: 'under', de: 'unter' }, { pos: 'next to', de: 'neben' }, { pos: 'behind', de: 'hinter' }, { pos: 'in front of', de: 'vor' }];
+const PREP_ANIMALS = [
+  { en: 'cat', de: 'Die Katze', e: '🐱' },
+  { en: 'dog', de: 'Der Hund', e: '🐶' },
+  { en: 'mouse', de: 'Die Maus', e: '🐭' },
+  { en: 'rabbit', de: 'Das Kaninchen', e: '🐰' },
+  { en: 'bird', de: 'Der Vogel', e: '🐦' },
+  { en: 'frog', de: 'Der Frosch', e: '🐸' },
+];
 const preps = E(2, 'e2-prepositions', 'Where is the cat?', '📦', { text: ['in = in, on = auf, under = unter.', 'next to = neben, behind = hinter, in front of = vor.', "Where's the cat? – It's under the box."], visual: { kind: 'prep', pos: 'under' }, videoQuery: 'prepositions in on under song for kids' }, (r, s) => {
   const p = pick(r, PREPS);
-  const say = { text: `The cat is ${p.pos} the box.`, lang: 'en' as const };
+  // Stufe 1 immer die Katze, danach auch andere Tiere
+  const an = s === 1 ? PREP_ANIMALS[0] : pick(r, PREP_ANIMALS);
+  const say = { text: `The ${an.en} is ${p.pos} the box.`, lang: 'en' as const };
   const tag = `prep-${p.pos.replace(/ /g, '-')}`;
-  const sol = [`${p.pos} = ${p.de}`, `The cat is ${p.pos} the box. = Die Katze ist ${p.de} der Kiste.`];
+  const sol = [`${p.pos} = ${p.de}`, `The ${an.en} is ${p.pos} the box. = ${an.de} ist ${p.de} der Kiste.`];
   // Stufe 3: Präposition selbst schreiben
-  if (s === 3 && chance(r, 0.5)) return { key: `w-${p.pos}`, prompt: 'Where is the cat? Write the missing word:\nThe cat is ☐ the box.', visual: { kind: 'prep', pos: p.pos }, answer: { type: 'text', value: p.pos, lang: 'en' }, tags: [tag], solution: sol, pronounce: say };
+  if (s === 3 && chance(r, 0.5)) return { key: `w-${p.pos}-${an.en}`, prompt: `Where is the ${an.en}? Write the missing word:\nThe ${an.en} is ☐ the box.`, visual: { kind: 'prep', pos: p.pos, animal: an.e }, answer: { type: 'text', value: p.pos, lang: 'en' }, tags: [tag], solution: sol, pronounce: say };
   // Deutsch → Englisch (ohne Bild)
-  if (s !== 1 && chance(r, 0.4)) return { key: `de-${p.pos}`, prompt: `Wie sagt man auf Englisch?\n„Die Katze ist ${p.de} der Kiste.“`, answer: { ...choice(r, `The cat is ${p.pos} the box.`, pickN(r, PREPS.filter((x) => x !== p), 3).map((x) => `The cat is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [tag], solution: sol, solutionVisual: { kind: 'prep', pos: p.pos }, pronounce: say };
-  return { key: p.pos, prompt: 'Where is the cat?', visual: { kind: 'prep', pos: p.pos }, answer: { ...choice(r, `The cat is ${p.pos} the box.`, PREPS.filter((x) => x !== p).map((x) => `The cat is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [`prep-${p.pos.replace(/ /g, '-')}`], solution: [`${p.pos} = ${p.de}`, `The cat is ${p.pos} the box. = Die Katze ist ${p.de} der Kiste.`], solutionVisual: { kind: 'prep', pos: p.pos }, pronounce: say };
+  if (s !== 1 && chance(r, 0.4)) return { key: `de-${p.pos}-${an.en}`, prompt: `Wie sagt man auf Englisch?\n„${an.de} ist ${p.de} der Kiste.“`, answer: { ...choice(r, `The ${an.en} is ${p.pos} the box.`, pickN(r, PREPS.filter((x) => x !== p), 3).map((x) => `The ${an.en} is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [tag], solution: sol, solutionVisual: { kind: 'prep', pos: p.pos, animal: an.e }, pronounce: say };
+  return { key: `${p.pos}-${an.en}`, prompt: `Where is the ${an.en}?`, visual: { kind: 'prep', pos: p.pos, animal: an.e }, answer: { ...choice(r, `The ${an.en} is ${p.pos} the box.`, PREPS.filter((x) => x !== p).map((x) => `The ${an.en} is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [tag], solution: sol, solutionVisual: { kind: 'prep', pos: p.pos, animal: an.e }, pronounce: say };
 }, { tagLabels: Object.fromEntries(PREPS.map((p) => [`prep-${p.pos.replace(/ /g, '-')}`, p.pos])), testSeconds: 15 });
 
 const AN = [['apple', '🍎'], ['egg', '🥚'], ['elephant', '🐘'], ['orange', '🍊'], ['ice cream', '🍦'], ['umbrella', '☂️'], ['owl', '🦉']];

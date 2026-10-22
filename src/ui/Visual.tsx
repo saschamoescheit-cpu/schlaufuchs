@@ -537,30 +537,30 @@ function Ruler({ cm }: { cm: number }) {
   );
 }
 
-function Prep({ pos }: { pos: string }) {
+function Prep({ pos, animal = '🐱' }: { pos: string; animal?: string }) {
   const box = { x: 70, y: 60, w: 90, h: 64 };
   const cat: Record<string, [number, number, number]> = {
-    in: [115, 104, 34], on: [115, 54, 40], under: [215, 140, 0], 'next to': [195, 118, 40], behind: [132, 70, 34], 'in front of': [104, 140, 46],
+    in: [115, 80, 34], on: [115, 54, 40], under: [215, 140, 0], 'next to': [195, 118, 40], behind: [132, 70, 34], 'in front of': [104, 140, 46],
   };
   const [cx, cy, size] = cat[pos] ?? [115, 54, 40];
   const under = pos === 'under';
   return (
-    <Svg w={240} h={160} label={`cat ${pos} the box`} max={260}>
+    <Svg w={240} h={160} label={`${animal} ${pos} the box`} max={260}>
       <line x1={10} y1={148} x2={230} y2={148} stroke={C.line} strokeWidth={2} />
-      {pos === 'behind' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">🐱</text>}
+      {pos === 'behind' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">{animal}</text>}
       {under ? (
         <>
           <rect x={box.x} y={box.y - 30} width={box.w} height={box.h} rx={4} fill="#C99A63" stroke={C.ink} strokeWidth={2.5} />
           <line x1={box.x + 6} y1={box.y + box.h - 30} x2={box.x + 6} y2={148} stroke={C.ink} strokeWidth={5} />
           <line x1={box.x + box.w - 6} y1={box.y + box.h - 30} x2={box.x + box.w - 6} y2={148} stroke={C.ink} strokeWidth={5} />
-          <text x={box.x + box.w / 2} y={144} fontSize={34} textAnchor="middle">🐱</text>
+          <text x={box.x + box.w / 2} y={144} fontSize={34} textAnchor="middle">{animal}</text>
         </>
       ) : (
         <>
-          {pos === 'in' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">🐱</text>}
+          {pos === 'in' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">{animal}</text>}
           <path d={`M${box.x} ${box.y + 20} h${box.w} v${box.h} h-${box.w} z`} fill="#C99A63" stroke={C.ink} strokeWidth={2.5} />
           <path d={`M${box.x} ${box.y + 20} l-14 -16 h${box.w} l14 16`} fill="#DDB27E" stroke={C.ink} strokeWidth={2.5} opacity={pos === 'in' ? 0.9 : 1} />
-          {pos !== 'in' && pos !== 'behind' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">🐱</text>}
+          {pos !== 'in' && pos !== 'behind' && <text x={cx} y={cy} fontSize={size} textAnchor="middle">{animal}</text>}
         </>
       )}
     </Svg>
@@ -736,7 +736,7 @@ export function Visual({ v }: { v: V }) {
     case 'ruler':
       return <Ruler cm={v.cm} />;
     case 'prep':
-      return <Prep pos={v.pos} />;
+      return <Prep pos={v.pos} animal={v.animal} />;
     case 'wall':
       return <Wall rows={v.rows} />;
     case 'bars':

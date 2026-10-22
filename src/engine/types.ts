@@ -29,7 +29,7 @@ export type Visual =
   | { kind: 'compare'; a: number; b: number }
   | { kind: 'text'; text: string; title?: string }
   | { kind: 'ruler'; cm: number; emoji?: string }
-  | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of' }
+  | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of'; animal?: string } // animal: Emoji (Standard 🐱)
   /** Zahlenmauer: Reihen von unten nach oben, null = gesuchter Stein */
   | { kind: 'wall'; rows: (number | null)[][] }
   /** Netz aus Quadraten (Würfelnetz): Zellen [Spalte, Zeile] */
