@@ -12,7 +12,9 @@ await ctx.addInitScript(() => {
   };
 });
 const state = () => p.evaluate(async () => {
-  const d = (await import('/src/data/store.ts')).getData();
+  // dieselbe Modul-Instanz wie die App (der Entwicklungsserver hängt nach Änderungen ?t=… an)
+  const url = performance.getEntriesByType('resource').map((e) => e.name).filter((n) => n.includes('/src/data/store.ts')).pop() ?? '/src/data/store.ts';
+  const d = (await import(url)).getData();
   const pr = d.progress[d.activeId] ?? { log: [] };
   return { profiles: d.profiles.length, log: pr.log.length };
 });
@@ -30,10 +32,14 @@ await p.evaluate(() => sessionStorage.setItem('qa-full', '1'));
 await click('Mathe');
 await p.getByRole('button', { name: /Einmaleins/ }).first().click();
 for (let i = 0; i < 3; i++) {
-  await p.keyboard.press('1');
-  await p.keyboard.press('Enter');
+  // Auswahl-Aufgabe (Punktefeld): erste Antwort antippen, sonst eine Zahl tippen
+  if (await p.locator('.choice').count()) await p.locator('.choice').first().click();
+  else {
+    await p.keyboard.press('1');
+    await p.keyboard.press('Enter');
+  }
   await p.waitForTimeout(250);
-  await click('Weiter').catch(() => {});
+  await p.getByRole('button', { name: 'Weiter' }).first().click({ timeout: 2000 }).catch(() => {});
   await p.waitForTimeout(150);
 }
 const before = await state();
