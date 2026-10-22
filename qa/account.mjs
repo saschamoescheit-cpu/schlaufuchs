@@ -39,6 +39,8 @@ function matches(row, q) {
   return true;
 }
 let calls = { signup: 0, token: 0, rpc: 0 };
+let confirmMode = false; // „Confirm email“ an: Anlegen liefert keine Schlüssel, nur eine Mail
+let lastRedirect = null;
 async function server(route) {
   const req = route.request();
   if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
@@ -53,6 +55,8 @@ async function server(route) {
     const user = { id: `u${users.size + 1}`, password: body.password };
     users.set(body.email, user);
     if (name) names.set(name, user.id);
+    lastRedirect = u.searchParams.get('redirect_to');
+    if (confirmMode) return json(200, { id: user.id, email: body.email, confirmation_sent_at: new Date().toISOString() });
     return json(200, session(user, body.email));
   }
   if (u.pathname === '/auth/v1/token') {
@@ -208,6 +212,24 @@ await pc.fill('#acc-name', 'eltern@example.com');
 await pc.fill('#acc-pw', 'neuesPasswort1');
 await pc.getByRole('button', { name: 'Anmelden', exact: true }).click();
 ok(await until(() => pc.getByRole('button', { name: /Mia/ }).isVisible()), 'PC: Anmeldung mit E-Mail + neuem Passwort, Mia ist da');
+
+// „Confirm email“ an: Hinweis auf die Mail, der Link führt zurück in die App
+confirmMode = true;
+const tab = await device('Tablet', 'iPad Mini');
+await tab.getByRole('button', { name: 'Schon auf einem anderen Gerät? Anmelden' }).click();
+await tab.getByRole('tab', { name: 'Konto anlegen' }).click();
+await tab.fill('#acc-name', 'oma.m');
+await tab.fill('#acc-email', 'oma@example.com');
+await tab.fill('#acc-pw', 'geheim789');
+await tab.getByRole('button', { name: 'Konto anlegen', exact: true }).click();
+ok(await until(() => tab.getByRole('status').filter({ hasText: 'E-Mail an oma@example.com' }).isVisible()), 'Bestätigung nötig: Hinweis auf die Mail statt Fehler');
+ok(lastRedirect != null && lastRedirect.endsWith('localhost:5191/'), `Rücksprung-Adresse mitgeschickt (${lastRedirect})`);
+await tab.screenshot({ path: `${out}/5-bestaetigung.png`, fullPage: true });
+// ein abgelaufener Link aus der Mail: Hinweis im Anmeldeformular, Adresse aufgeräumt
+await tab.goto('about:blank'); // der Link aus der Mail öffnet die App frisch
+await tab.goto(url + '#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired');
+ok(await until(() => tab.getByRole('status').filter({ hasText: 'abgelaufen' }).isVisible()), 'abgelaufener Link: Hinweis im Anmeldeformular');
+ok(!(await tab.evaluate(() => location.hash)), 'Adresse aufgeräumt');
 
 ok(errs.length === 0, `keine Fehler auf den Seiten${errs.length ? `: ${errs.join(' · ')}` : ''}`);
 console.log(`Anfragen: ${JSON.stringify(calls)}`);

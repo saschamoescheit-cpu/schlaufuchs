@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
 import { deleteProfile, duplicateProfiles, mergeProfiles, newProfile, saveProfile, schoolYear, setActive, type AppData, type Profile } from '../data/store';
-import { forgetRemoved, PASSWORD_MIN, removedList, restoreRemoved, setLogin, signIn, signInWithPassword, signOut, signUp, syncNow, useSyncStatus } from '../data/sync';
+import { clearNotice, forgetRemoved, PASSWORD_MIN, removedList, restoreRemoved, setLogin, signIn, signInWithPassword, signOut, signUp, syncNow, useSyncStatus } from '../data/sync';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
@@ -55,7 +55,7 @@ export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () =>
             </button>
             {sync.signedIn ? (
               <p className="small muted">{sync.running || !sync.last ? 'Kinder von deinen anderen Geräten werden geladen …' : 'Auf deinen anderen Geräten ist noch kein Kind angelegt.'}</p>
-            ) : !sync.configured ? null : login ? (
+            ) : !sync.configured ? null : login || sync.notice ? (
               <div className="card stack" style={{ gap: 12, width: '100%', textAlign: 'left' }}>
                 <AccountForm />
               </div>
@@ -81,20 +81,28 @@ const typing = { autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false }
 
 /** Anmelden (Benutzername oder E-Mail + Passwort) oder einmal ein Konto anlegen; Google als zweiter Weg. */
 function AccountForm() {
-  const { google } = useSyncStatus();
+  const { google, notice } = useSyncStatus();
   const [mode, setMode] = useState<'login' | 'signup'>('login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setBusy(true);
     setErr(null);
+    setInfo(null);
+    if (notice) clearNotice();
     try {
       if (mode === 'login') await signInWithPassword(name, pw);
-      else await signUp(name, email, pw);
+      else if ((await signUp(name, email, pw)) === 'confirm') {
+        // Supabase verlangt die Bestätigung der Adresse: der Link in der Mail meldet an
+        setInfo(`Fast geschafft: Wir haben eine E-Mail an ${email.trim()} geschickt. Tippe auf den Link darin – danach bist du angemeldet. Keine Mail da? Schau im Spam-Ordner nach.`);
+        setMode('login');
+        setPw('');
+      }
     } catch (x) {
       setErr((x as Error).message);
     } finally {
@@ -128,11 +136,15 @@ function AccountForm() {
         <input id="acc-pw" className="input" type="password" value={pw} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} onChange={(e) => setPw(e.target.value)} />
         {mode === 'signup' && <div className="small muted">Mindestens {PASSWORD_MIN} Zeichen.</div>}
       </div>
-      {err && (
+      {err ? (
         <div className="small" role="alert" style={{ color: 'var(--bad)' }}>
           {err}
         </div>
-      )}
+      ) : (info ?? notice) ? (
+        <div className="small" role="status" style={{ background: 'var(--ok-soft)', borderRadius: 12, padding: '10px 12px' }}>
+          {info ?? notice}
+        </div>
+      ) : null}
       <button className="btn block" type="submit" disabled={busy || !ready}>
         {busy ? 'Einen Moment …' : mode === 'login' ? 'Anmelden' : 'Konto anlegen'}
       </button>

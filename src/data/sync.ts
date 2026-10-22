@@ -387,6 +387,12 @@ export function connectStore(get: () => AppData, commit: (fn: (d: AppData) => vo
 }
 
 const AUTH = 'schlaufuchs:auth.v1';
+/** ein Hinweis fürs Anmeldeformular (z. B. abgelaufener Link aus der Mail) */
+const NOTICE = 'schlaufuchs:auth.notice.v1';
+export function clearNotice(): void {
+  ls.write(NOTICE, null);
+  changed();
+}
 interface Session {
   access_token: string;
   refresh_token: string;
@@ -418,8 +424,16 @@ export function signOut(): void {
   changed();
 }
 
-/** Zurück von Google: die Schlüssel stehen in der Adresse (#access_token=…) – merken, Adresse aufräumen. */
+/** Zurück von Google oder aus der Bestätigungs-Mail: die Schlüssel stehen in der Adresse (#access_token=…) – merken,
+ *  Adresse aufräumen. Ein abgelaufener oder schon benutzter Link (#error=…) wird beim Anmelden erklärt. */
 export async function finishSignIn(): Promise<void> {
+  if (/[#&]error=/.test(location.hash) && !location.hash.includes('access_token=')) {
+    const p = new URLSearchParams(location.hash.slice(1));
+    history.replaceState(null, '', location.pathname + location.search);
+    ls.write(NOTICE, p.get('error_code') === 'otp_expired' ? 'Der Link aus der E-Mail ist abgelaufen oder wurde schon benutzt. Melde dich einfach mit Benutzername und Passwort an.' : 'Die Anmeldung über den Link hat nicht geklappt. Melde dich mit Benutzername und Passwort an.');
+    changed();
+    return;
+  }
   if (!location.hash.includes('access_token=')) return;
   const p = new URLSearchParams(location.hash.slice(1));
   history.replaceState(null, '', location.pathname + location.search);
@@ -461,7 +475,7 @@ async function authProblem(r: Response): Promise<Error> {
   if (code === 'weak_password' || /password/i.test(text) && /least|short|weak/i.test(text)) return say(`Das Passwort ist zu kurz – mindestens ${PASSWORD_MIN} Zeichen.`);
   if (code === 'email_address_invalid' || /email.*invalid/i.test(text)) return say('Diese E-Mail-Adresse funktioniert nicht.');
   if (code === 'over_request_rate_limit' || r.status === 429) return say('Zu viele Versuche – bitte in ein paar Minuten noch einmal.');
-  if (code === 'email_not_confirmed') return say('Die E-Mail ist noch nicht bestätigt (in Supabase „Confirm email“ ausschalten).');
+  if (code === 'email_not_confirmed' || /not confirmed/i.test(text)) return say('Die E-Mail-Adresse ist noch nicht bestätigt – bitte zuerst den Link in der Bestätigungs-Mail antippen.');
   if (code === 'signup_disabled' || code === 'email_provider_disabled') return say('Konten mit E-Mail sind in Supabase noch ausgeschaltet.');
   if (code === '23505' || /duplicate|unique/i.test(text) || /database error saving new user/i.test(text)) return say('Dieser Benutzername ist schon vergeben.');
   if (/too_many_attempts/.test(text)) return say('Zu viele falsche Versuche – bitte in 15 Minuten noch einmal.');
@@ -488,10 +502,11 @@ async function ownName(bearer: string): Promise<string | null> {
 
 /** Antwort von Supabase mit Schlüsseln → angemeldet, dann gleich abgleichen. */
 async function startSession(j: { access_token?: string; refresh_token?: string; expires_in?: number; user?: { email?: string } }): Promise<void> {
-  if (!j.access_token || !j.refresh_token) throw new Error('Das Konto ist angelegt, muss aber erst per E-Mail bestätigt werden (in Supabase „Confirm email“ ausschalten).');
+  if (!j.access_token || !j.refresh_token) throw new Error('Die Anmeldung hat nicht geklappt – bitte noch einmal versuchen.');
   // ein anderes Konto als zuletzt auf diesem Gerät: neu abgleichen (die Kinder hier kommen dazu)
   ls.write(META, null);
   ls.write(BASE, null);
+  ls.write(NOTICE, null);
   saveSession({ access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Math.floor(Date.now() / 1000) + (j.expires_in ?? 3600), email: j.user?.email ?? null, name: await ownName(j.access_token) });
   noteError(null);
   changed();
@@ -511,16 +526,23 @@ export async function signInWithPassword(login: string, password: string): Promi
   await startSession(await r.json());
 }
 
-/** Neues Konto: Benutzername, E-Mail, Passwort – danach ist dieses Gerät angemeldet. */
-export async function signUp(username: string, email: string, password: string): Promise<void> {
+/**
+ * Neues Konto: Benutzername, E-Mail, Passwort. 'done': dieses Gerät ist angemeldet. 'confirm': Supabase hat eine
+ * Bestätigungs-Mail geschickt („Confirm email“ an) – der Link darin führt zurück in die App und meldet dort an.
+ */
+export async function signUp(username: string, email: string, password: string): Promise<'done' | 'confirm'> {
   const name = normName(username);
   if (!USERNAME_RULE.test(name)) throw new Error('Benutzername: 3–20 Zeichen, nur Buchstaben a–z, Ziffern, Punkt, Strich.');
   if (password.length < PASSWORD_MIN) throw new Error(`Das Passwort ist zu kurz – mindestens ${PASSWORD_MIN} Zeichen.`);
   if (!(await rpc<boolean>('schlaufuchs_name_free', { p_username: name }))) throw new Error('Dieser Benutzername ist schon vergeben.');
-  const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ email: email.trim(), password, data: { sf_username: name } }) });
+  // der Link in der Bestätigungs-Mail kommt hierher zurück (Sascha 22.10.2026: er landete auf einer 404-Seite)
+  const back = encodeURIComponent(location.origin + location.pathname);
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/signup?redirect_to=${back}`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ email: email.trim(), password, data: { sf_username: name } }) });
   if (!r.ok) throw await authProblem(r);
   const j = await r.json();
-  await startSession(j.access_token ? j : { ...j, user: j });
+  if (!j.access_token) return 'confirm';
+  await startSession(j);
+  return 'done';
 }
 
 /** Angemeldet (z. B. mit Google): Benutzername und Passwort festlegen oder ändern – für die Anmeldung auf den anderen Geräten. */
@@ -649,13 +671,15 @@ export interface SyncStatus {
   last: string | null;
   error: string | null;
   removed: number;
+  /** Hinweis fürs Anmeldeformular */
+  notice: string | null;
 }
 let running: Promise<SyncResult | null> | null = null;
 let status: SyncStatus = readStatus();
 const watchers = new Set<() => void>();
 function readStatus(): SyncStatus {
   const s = loadSession();
-  return { configured: syncConfigured(), google: GOOGLE_LOGIN, signedIn: !!s, email: s?.email ?? null, name: s?.name ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
+  return { configured: syncConfigured(), google: GOOGLE_LOGIN, signedIn: !!s, email: s?.email ?? null, name: s?.name ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length, notice: ls.read(NOTICE) };
 }
 function changed() {
   status = readStatus();
