@@ -918,6 +918,11 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: 'Die Maus ☐ an einem Stück Käse.', ok: 'knabbert', opts: ['verschlingt', 'schlürft', 'trinkt'], feld: 'essen' },
   { s: 'Heimlich ☐ Mia ein Stück Schokolade aus der Dose.', ok: 'nascht', opts: ['verschlingt', 'schlürft', 'trinkt'], feld: 'essen' },
   { s: 'Laut ☐ Opa seine heiße Suppe vom Löffel.', ok: 'schlürft', opts: ['knabbert', 'nascht', 'beißt'], feld: 'essen' },
+  { s: '„Ich habe keine Lust“, ☐ Paul leise vor sich hin.', ok: 'murmelt', opts: ['brüllt', 'jubelt', 'befiehlt'], feld: 'sagen' },
+  { s: '„Tor!“, ☐ die Fans im Stadion.', ok: 'jubeln', opts: ['flüstern', 'murmeln', 'schweigen'], feld: 'sagen' },
+  { s: 'Am Strand ☐ die Kinder fröhlich durch die Wellen.', ok: 'springen', opts: ['schleichen', 'humpeln', 'kriechen'], feld: 'gehen' },
+  { s: 'Das Baby kann noch nicht laufen. Es ☐ auf allen vieren.', ok: 'krabbelt', opts: ['rennt', 'stolziert', 'hüpft'], feld: 'gehen' },
+  { s: 'Genüsslich ☐ Lea an ihrem Eis.', ok: 'schleckt', opts: ['schlürft', 'verschlingt', 'trinkt'], feld: 'essen' },
 ];
 const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
   text: ['Ein Wortfeld sind Wörter mit ähnlicher Bedeutung: sagen – flüstern – rufen – fragen – antworten.', 'Treffende Wörter machen deine Texte spannender: Statt „Tim sagt leise“ schreibst du „Tim flüstert“.', 'Achte auf Hinweise im Satz: leise, laut, schnell, verletzt …'],
