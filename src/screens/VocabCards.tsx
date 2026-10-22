@@ -130,6 +130,7 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const box = stateOf(cardStates(progress.log), card);
   return (
     <div role="main" className="app full narrow">
+      <h1 className="sr-only">Vokabelkarten</h1>
       <div className="session-top">
         <button className="icon-btn" aria-label="Karten beenden" onClick={onExit}>
           <CloseIcon />

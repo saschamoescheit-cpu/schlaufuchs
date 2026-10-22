@@ -181,6 +181,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
   const a = item.task.answer;
   return (
     <div role="main" className="app full">
+      <h1 className="sr-only">{title}</h1>
       <div className="session-top">
         <button className="icon-btn" aria-label="Übung beenden" onClick={() => (idx === 0 && !result ? onExit() : setAskQuit(true))}>
           <CloseIcon />
