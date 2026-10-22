@@ -398,6 +398,17 @@ const QA: [string, string, string[]][] = [
   ['What colour is your bag?', 'It is blue.', ['It is big.', 'I have got a bag.', 'Yes, it is.']],
   ['How many pencils have you got?', 'I have got five pencils.', ['I am five.', 'My pencil is red.', 'Yes, I have.']],
   ['What day is it today?', "It's Friday.", ["It's sunny.", "It's ten o'clock.", "It's my bag."]],
+  // Nachtlauf 22.10.2026: mehr Fragen
+  ['Where is your school?', 'My school is in Bonn.', ['I am in class 4.', 'Yes, it is.', 'I like school.']],
+  ['Can you play the piano?', 'No, I can’t.', ['No, I don’t.', 'No, I haven’t.', 'I like music.']],
+  ['Have you got a sister?', 'Yes, I have got a sister.', ['Yes, I can.', 'Yes, I am.', 'I am a sister.']],
+  ['Who is your best friend?', 'My best friend is Lena.', ['I am eight.', 'Yes, I do.', 'It is Monday.']],
+  ['Are you hungry?', 'Yes, I am.', ['Yes, I do.', 'Yes, I can.', 'Yes, I have.']],
+  ['Is it cold today?', 'Yes, it is.', ['Yes, I am.', 'Yes, I do.', 'Yes, I can.']],
+  ['How many brothers have you got?', 'I have got two brothers.', ['I am two.', 'My brother is ten.', 'Yes, I have.']],
+  ['What are you doing?', 'I am reading a book.', ['I like books.', 'Yes, I am.', 'It is a book.']],
+  ['Where is the cat?', 'It is under the table.', ['It is black.', 'Yes, it is.', 'I have got a cat.']],
+  ['What time do you get up?', 'I get up at seven o’clock.', ["It's Monday.", 'I am seven.', 'Yes, I do.']],
 ];
 function qaTask(r: Rng, s: Stage): Gen {
   const [q, a, w] = pick(r, QA);

@@ -255,6 +255,17 @@ const BE: { s: string; ok: string; opts: string[]; tag: string; why: string }[] 
   { s: 'He ☐ got a bike. 🚲', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'Nach he, she, it: has got.' },
   { s: 'They have ☐ two rabbits. 🐰', ok: 'got', opts: ['get', 'go'], tag: 'have-got', why: 'They have got … = Sie haben …' },
   { s: 'This is ☐ bag. 🎒', ok: 'my', opts: ['I', 'me'], tag: 'my', why: 'my bag = meine Tasche.' },
+  // Nachtlauf 22.10.2026: mehr Sätze
+  { s: 'My mum ☐ a teacher.', ok: 'is', opts: ['am', 'are'], tag: 'to-be', why: 'My mum = she → „is“.' },
+  { s: 'I ☐ happy today. 😀', ok: 'am', opts: ['is', 'are'], tag: 'to-be', why: 'Nach „I“ steht immer „am“: I am (I\'m).' },
+  { s: 'Tom and Lea ☐ in my class.', ok: 'are', opts: ['is', 'am'], tag: 'to-be', why: 'Tom and Lea = they → „are“.' },
+  { s: 'Cats ☐ climb trees. 🐱', ok: 'can', opts: ["can't", 'is'], tag: 'can', why: 'Cats can climb. = Katzen können klettern.' },
+  { s: 'Elephants ☐ jump. 🐘', ok: "can't", opts: ['can', 'are'], tag: 'can', why: "Elephants can't jump. = Elefanten können nicht springen." },
+  { s: 'She ☐ chocolate. 🍫', ok: 'likes', opts: ['like', 'is'], tag: 'like', why: 'Nach he, she, it bekommt das Verb ein -s: she likes.' },
+  { s: "I don't ☐ spiders. 🕷️", ok: 'like', opts: ['likes', 'am'], tag: 'like', why: "I don't like … = Ich mag … nicht." },
+  { s: 'We have ☐ a big garden. 🏡', ok: 'got', opts: ['get', 'go'], tag: 'have-got', why: 'We have got … = Wir haben …' },
+  { s: 'My dad ☐ got a car. 🚗', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'My dad = he → has got.' },
+  { s: '☐ favourite colour is red.', ok: 'My', opts: ['I', 'Me'], tag: 'my', why: 'My favourite colour … = Meine Lieblingsfarbe …' },
 ];
 const sentences = E(2, 'e2-sentences', 'Little sentences', '💬', { text: ['I am – you are – he/she/it is – we are – they are.', 'I can swim. I can\'t fly.', 'I like apples. He likes apples (mit -s!).', 'I have got a dog. She has got a cat.'], visual: { kind: 'text', text: 'I am · she is · we are' }, videoQuery: 'verb to be am is are for kids' }, (r) => {
   const b = pick(r, BE);
