@@ -126,6 +126,11 @@ function Example({ skill }: { skill: Skill }) {
           <Visual v={task.visual} />
         </div>
       )}
+      {task.answer.type === 'trace' && (
+        <div className="visual-box">
+          <Visual v={{ kind: 'word', word: task.answer.value }} />
+        </div>
+      )}
       {task.answer.type === 'choice' && <div className="small muted">Auswahl: {task.answer.options.join(' · ')}</div>}
       {!open ? (
         <button className="btn ok block small" style={{ marginTop: 8 }} onClick={() => setOpen(true)}>

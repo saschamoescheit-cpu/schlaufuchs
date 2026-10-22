@@ -2254,3 +2254,7 @@ html[data-school-font] .prompt.long {
   border-bottom: 1px solid #c9d7f2;
   margin-top: 4px;
 }
+/* im Beispielkasten ist weniger Platz: Bilder (z. B. Fahrplan) bekommen schmalere Ränder */
+.example .visual-box {
+  padding: 10px 6px;
+}

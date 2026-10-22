@@ -2,7 +2,7 @@
 import { webkit, devices } from 'playwright';
 import { mkdirSync } from 'node:fs';
 
-const url = process.argv[2] ?? 'http://localhost:5190/';
+const url = process.argv[2] ?? 'http://localhost:5192/';
 const out = process.argv[3] ?? 'qa/shots';
 mkdirSync(out, { recursive: true });
 const b = await webkit.launch();
