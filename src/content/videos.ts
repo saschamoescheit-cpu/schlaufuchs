@@ -301,6 +301,7 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'qMqf7Y1IPzc', title: 'Reise nach Großbritannien - eine Zusammenfassung | Erdkunde für Kinder', channel: 'Kinderweltreise', len: '3:49' },
     { id: 'KtqVoo8iqeo', title: 'Ein Reiseführer durch London für Kinder', channel: 'Twinkl Kids TV', len: '3:22' },
   ],
+  'd3-fehlerdetektiv': [{ id: 'GpRRobZLA1E', title: 'So findest du deine Rechtschreibfehler selber - 5 Tipps', channel: 'lernfoerderung', len: '3:24' }],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },

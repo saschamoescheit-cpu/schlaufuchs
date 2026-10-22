@@ -263,3 +263,56 @@ function ukTask(r: Rng, s: Stage): Gen {
 export const ENGLISCH_EXTRA4B: Skill[] = [
   E(2, 'e2-britain', 'Life in Great Britain – Leben in Großbritannien', '💂', { text: ['In Großbritannien spricht man Englisch. Die Hauptstadt ist London.', 'Manches ist anders als bei uns: Man bezahlt mit Pfund, die Autos fahren links und viele Kinder tragen eine Schuluniform.', 'Typisch britisch: Tee mit Milch, Fish and Chips und rote Doppeldeckerbusse.'], visual: { kind: 'row', items: ['🚌', '☕', '💷', '👑'] }, videoQuery: 'Great Britain facts for kids London' }, ukTask, { tagLabels: { landeskunde: 'Leben in Großbritannien' }, testSeconds: 20 }),
 ];
+
+// ---------- Deutsch: Fehlerdetektiv (Kl. 3) – NRW „Texte überarbeiten“: Rechtschreibung kontrollieren ----------
+
+// [richtiger Satz, falsch geschriebenes Wort (so steht es im Satz), richtiges Wort, Strategie]
+const FEHLER: [string, string, string, string][] = [
+  ['Der Hund spielt im Garten.', 'Hunt', 'Hund', 'Verlängern: die Hunde – man hört d.'],
+  ['Wir fahren mit dem Fahrrad.', 'faren', 'fahren', 'Merkwort mit Dehnungs-h.'],
+  ['Die Katze schläft auf dem Sofa.', 'Kaze', 'Katze', 'Nach kurzem Selbstlaut tz.'],
+  ['Im Sommer essen wir Eis.', 'sommer', 'Sommer', 'Nomen schreibt man groß.'],
+  ['Die Biene fliegt zur Blume.', 'Bine', 'Biene', 'Langes i – meistens ie.'],
+  ['Mama backt einen Kuchen.', 'bakt', 'backt', 'Nach kurzem Selbstlaut ck.'],
+  ['Die Bäume sind schon grün.', 'Beume', 'Bäume', 'Ableiten: Baum – also äu.'],
+  ['Am Morgen trinke ich Milch.', 'morgen', 'Morgen', 'Nach „am“ ist Morgen ein Nomen – groß.'],
+  ['Der Ball rollt über die Straße.', 'Strasse', 'Straße', 'Langes a – danach ß.'],
+  ['Wir gehen heute schwimmen.', 'schwimen', 'schwimmen', 'Nach kurzem Selbstlaut doppelter Mitlaut.'],
+  ['Oma schenkt mir ein Buch.', 'schenckt', 'schenkt', 'Nach n nie ck – nur k.'],
+  ['Der Zug kommt gleich.', 'Zuk', 'Zug', 'Verlängern: die Züge – man hört g.'],
+  ['Mein Freund heißt Paul.', 'Freunt', 'Freund', 'Verlängern: die Freunde – man hört d.'],
+  ['Die Kinder lachen laut.', 'lachchen', 'lachen', 'ch wird nicht verdoppelt.'],
+  ['Ich habe einen Brief geschrieben.', 'Brif', 'Brief', 'Langes i – meistens ie.'],
+  ['Der Vogel sitzt auf dem Dach.', 'Fogel', 'Vogel', 'Merkwort mit V.'],
+  ['Wir spielen im Schnee.', 'Schne', 'Schnee', 'Merkwort mit doppeltem e.'],
+  ['Die Uhr zeigt acht Uhr.', 'Ur', 'Uhr', 'Merkwort mit Dehnungs-h.'],
+  ['Papa kauft frisches Brot.', 'Brod', 'Brot', 'Verlängern: die Brote – man hört t.'],
+  ['Das Wasser im See ist kalt.', 'Waser', 'Wasser', 'Nach kurzem Selbstlaut doppelter Mitlaut.'],
+  ['Die Hände sind schmutzig.', 'Hende', 'Hände', 'Ableiten: Hand – also ä.'],
+  ['Der Igel frisst Käfer.', 'Iegel', 'Igel', 'Merkwort: Igel schreibt man nur mit i.'],
+  ['Wir machen eine Pause.', 'pause', 'Pause', 'Nomen schreibt man groß.'],
+  ['Der Fuß tut mir weh.', 'Fuss', 'Fuß', 'Langes u – danach ß.'],
+];
+const words = (s: string) => s.replace(/[.,!?]/g, '').split(' ');
+function fehlerTask(r: Rng, s: Stage): Gen {
+  const [ok, wrong, right, why] = pick(r, FEHLER);
+  // das richtige Wort im Satz durch die falsche Schreibung ersetzen (Satzzeichen bleiben dran)
+  let done = false;
+  const shown = ok
+    .split(' ')
+    .map((t) => {
+      if (done || t.replace(/[.,!?]$/, '') !== right) return t;
+      done = true;
+      return wrong + t.slice(right.length);
+    })
+    .join(' ');
+  if (s === 3 && chance(r, 0.5)) {
+    return { key: `t-${ok}`, prompt: `Im Satz ist ein Wort falsch geschrieben. Schreibe es richtig:\n${shown}`, answer: { type: 'text', value: right, caseSensitive: true }, tags: ['berichtigen'], solution: [`Falsch: ${wrong} – richtig: ${right}`, why, ok] };
+  }
+  const others = shuffle(r, words(shown).filter((w) => w !== wrong && w.length > 2)).slice(0, s === 1 ? 2 : 3);
+  return { key: `f-${ok}`, prompt: `Fehlerdetektiv: Welches Wort ist falsch geschrieben?\n${shown}`, answer: { ...choice(r, wrong, others), big: true }, tags: ['finden'], solution: [`Falsch: ${wrong} – richtig: ${right}`, why, ok] };
+}
+
+export const DEUTSCH_EXTRA4B: Skill[] = [
+  D(3, 'd3-fehlerdetektiv', 'Fehlerdetektiv', '🕵️', { text: ['Lies deinen Text Wort für Wort – langsam, wie ein Detektiv.', 'Prüfe mit den Strategien: Groß oder klein? Verlängern (Hund – Hunde)? Ableiten (Bäume – Baum)? Kurzer Selbstlaut (doppelt, ck, tz)? Merkwort?', 'Hast du ein falsches Wort gefunden, schreibe es richtig darüber.'], visual: { kind: 'word', word: 'Der Hunt bellt.', mark: [[4, 8]] }, videoQuery: 'Rechtschreibung Fehler finden Text überarbeiten Klasse 3' }, fehlerTask, { tagLabels: { finden: 'Fehler finden', berichtigen: 'Fehler berichtigen' }, testSeconds: 30 }),
+];
