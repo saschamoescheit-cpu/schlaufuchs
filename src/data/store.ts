@@ -217,3 +217,17 @@ export function mergeProfiles(keepId: string, dropId: string) {
     if (d.activeId === dropId) d.activeId = keepId;
   });
 }
+
+/** belegter Gerätespeicher (localStorage) von Schlaufuchs in Zeichen – Browser erlauben je Seite etwa 5 Mio. Zeichen */
+export function storageUsage(): { used: number; limit: number } {
+  let used = 0;
+  try {
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k && k.startsWith('schlaufuchs')) used += k.length + (localStorage.getItem(k)?.length ?? 0);
+    }
+  } catch {
+    // Speicher nicht lesbar – dann 0 anzeigen
+  }
+  return { used, limit: 5 * 1024 * 1024 };
+}

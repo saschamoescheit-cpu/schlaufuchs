@@ -7,7 +7,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, saveProfile, schoolYear, usesSchoolFont, type AppData, type Profile } from '../data/store';
+import { deleteProfile, saveProfile, schoolYear, storageUsage, usesSchoolFont, type AppData, type Profile } from '../data/store';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
@@ -588,6 +588,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                 </div>
               </div>
             </div>
+            <StorageInfo />
             <button className="btn ghost block small" style={{ color: 'var(--bad)' }} onClick={() => setDel(true)}>
               {p.name} löschen
             </button>
@@ -608,6 +609,25 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
           onNo={() => setDel(false)}
         />
       )}
+    </div>
+  );
+}
+
+/** Wie voll ist der Gerätespeicher? (Lernstand, Tests und Verlauf liegen im Browser-Speicher) */
+function StorageInfo() {
+  const { used, limit } = storageUsage();
+  const pct = Math.min(100, Math.round((used / limit) * 100));
+  const size = used < 1024 * 1024 ? `${Math.max(1, Math.round(used / 1024))} KB` : `${(used / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
+  return (
+    <div className="card small muted">
+      <div className="row">
+        <span className="grow">Speicher auf diesem Gerät</span>
+        <b>{size} von ca. 5 MB</b>
+      </div>
+      <div className="bar on-light" style={{ marginTop: 6 }}>
+        <i style={{ width: `${Math.max(2, pct)}%`, background: pct > 80 ? 'var(--bad)' : undefined }} />
+      </div>
+      {pct > 80 && <div style={{ marginTop: 6 }}>Der Speicher wird knapp. Mit der Anmeldung (Sync) bleibt der Lernstand zusätzlich auf dem Server gesichert.</div>}
     </div>
   );
 }
