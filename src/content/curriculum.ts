@@ -1,5 +1,5 @@
 // Bundesländer, Fächer und welche Themen ein Kind sieht.
-import type { Grade, Skill, Subject } from '../engine/types';
+import type { Grade, Skill, Subject, Visual } from '../engine/types';
 import { MATHE } from './mathe';
 import { DEUTSCH } from './deutsch';
 import { ENGLISCH } from './englisch';
@@ -48,6 +48,26 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
 export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3];
+// Erklärbilder für Themen, die (noch) keins im Inhalt mitbringen – zu jedem Erklärtext gehört ein Bild
+const EXPLAIN_VISUALS: Record<string, Visual> = {
+  'm2-verdoppeln': { kind: 'array', rows: 2, cols: 8 },
+  'm3-kopfrechnen': { kind: 'numberline', from: 400, to: 700, start: 456, jumps: [200, 30], step: 100, minor: 50 },
+  'm4-kopfrechnen': { kind: 'numberline', from: 40000, to: 80000, start: 45000, jumps: [20000, 3000], step: 10000, minor: 5000 },
+  'm4-runden': { kind: 'numberline', from: 3400, to: 3500, start: 3437, jumps: [], step: 50, minor: 10, ask: false },
+  'm3-division-rest': { kind: 'array', rows: 3, cols: 4 },
+  'm3-laengen': { kind: 'ruler', cm: 7 },
+  'm3-gewichte': { kind: 'table', head: ['Gegenstand', 'wiegt etwa'], rows: [['🍫 Tafel Schokolade', '100 g'], ['🍎 Apfel', '150 g'], ['🥛 1 Liter Milch', '1 kg']] },
+  'm4-groessen': { kind: 'table', head: ['groß', 'klein'], rows: [['1 km', '1000 m'], ['1 m', '100 cm'], ['1 kg', '1000 g'], ['1 €', '100 ct'], ['1 h', '60 min']] },
+  'm2-sachaufgaben': { kind: 'row', items: ['📖', '❓', '🧮', '✍️'] },
+  'm3-sachaufgaben': { kind: 'row', items: ['📖', '❓', '🧮', '✍️'] },
+  'm4-sachaufgaben': { kind: 'row', items: ['📖', '❓', '🧮', '✍️'] },
+  'd2-lesen': { kind: 'emoji', chars: '📖 👀 ❓' },
+  'd3-lesen': { kind: 'emoji', chars: '📖 👀 ❓' },
+  'd3-lesen-lang': { kind: 'emoji', chars: '📚 👀 ❓' },
+  'd4-lesen': { kind: 'emoji', chars: '📖 👀 ❓' },
+  'd4-sachtexte': { kind: 'emoji', chars: '🔬 📖 ❓' },
+};
+for (const s of ALL_SKILLS) if (!s.explain.visual && EXPLAIN_VISUALS[s.id]) s.explain.visual = EXPLAIN_VISUALS[s.id];
 const BY_ID = new Map(ALL_SKILLS.map((s) => [s.id, s]));
 export const skillById = (id: string) => BY_ID.get(id);
 
