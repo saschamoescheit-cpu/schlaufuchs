@@ -5,6 +5,8 @@ import { VIDEOS, type VideoRef } from '../content/videos';
 import { Rich, Sheet, Speak } from './common';
 import { correctText } from '../engine/check';
 import { Visual } from './Visual';
+import { WORDS } from '../content/words';
+import { speak } from './speech';
 
 export function VideoCard({ v, onPlay }: { v: VideoRef; onPlay: () => void }) {
   return (
@@ -89,8 +91,35 @@ export function ExplainBody({ skill }: { skill: Skill }) {
         </div>
       )}
       <Example skill={skill} />
+      <WordList skill={skill} />
       <Videos skill={skill} />
     </div>
+  );
+}
+
+/** Englisch-Wortfelder: alle Wörter zum Ansehen und Anhören (vor dem Üben) */
+function WordList({ skill }: { skill: Skill }) {
+  const words = WORDS[skill.id];
+  if (!words?.length) return null;
+  return (
+    <details className="card word-list">
+      <summary>
+        <h3>📖 Alle Wörter ({words.length})</h3>
+      </summary>
+      <div className="word-grid">
+        {words.map((w) => (
+          <button key={w.en} type="button" className="word-item" onClick={() => speak(w.en, 'en')} aria-label={`${w.en} – ${w.de}. Anhören`}>
+            <span className="word-pic" aria-hidden>
+              {w.hex ? <i style={{ background: w.hex }} /> : (w.e ?? w.txt)}
+            </span>
+            <span className="word-txt">
+              <b lang="en">{w.en}</b>
+              <span className="small muted" lang="de">{w.de}</span>
+            </span>
+          </button>
+        ))}
+      </div>
+    </details>
   );
 }
 
