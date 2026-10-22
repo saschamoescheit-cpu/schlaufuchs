@@ -292,6 +292,11 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'wweXKfoprRg', title: 'Schriftliches Subtrahieren | Klasse 4', channel: 'Lehrerschmidt', len: '2:02' },
   ],
   'd2-reihenfolge': [{ id: 's-jTc2hfCKM', title: 'Bildergeschichte schreiben einfach erklärt', channel: 'lernfoerderung', len: '3:38' }],
+  'm1-tausch': [
+    { id: 'rXbKqvDVckw', title: 'Tauschaufgaben - Klasse 1', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:58' },
+    { id: '5dqiCDYZEI4', title: 'Umkehraufgaben Klasse 1 | Addition und Subtraktion', channel: 'Frau_Willms', len: '3:25' },
+  ],
+  'e2-wordorder': [{ id: 'LBsQ-iYZXPI', title: 'Word Order for Kids | Sentence Structure', channel: 'Kids Academy', len: '3:06' }],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },

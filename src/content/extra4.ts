@@ -153,3 +153,82 @@ function ordnenTask(r: Rng, s: Stage): Gen {
 export const DEUTSCH_EXTRA4: Skill[] = [
   D(2, 'd2-reihenfolge', 'Geschichten ordnen', '🔢', { text: ['Eine Geschichte erzählt Schritt für Schritt, was passiert.', 'Überlege: Was muss zuerst passieren, damit das Nächste klappt? Erst die Zahnpasta auf die Bürste, dann putzen!', 'Wörter wie zuerst, dann, danach und zum Schluss helfen dir.'], visual: { kind: 'row', items: ['1️⃣', '2️⃣', '3️⃣', '4️⃣'] }, videoQuery: 'Bildergeschichte Reihenfolge Klasse 2 Deutsch' }, ordnenTask, { tagLabels: { zuerst: 'Was passiert zuerst?', danach: 'Was passiert danach?', reihenfolge: 'ganze Reihenfolge' }, testSeconds: 40 }),
 ];
+
+// ---------- Mathe: Tausch- und Umkehraufgaben (Kl. 1) – NRW „Rechenstrategien“ ----------
+
+function tauschTask(r: Rng, s: Stage): Gen {
+  const max = s === 1 ? 10 : 20;
+  let a = ri(r, 1, max - 1);
+  let b = ri(r, 1, max - a);
+  if (a === b) b = Math.max(1, b - 1) === a ? b + 1 : Math.max(1, b - 1);
+  const sum = a + b;
+  const kind = s === 1 ? 'tausch' : pick(r, ['tausch', 'umkehr', 'umkehr', ...(s === 3 ? ['geschickt', 'geschickt'] : [])]);
+  if (kind === 'tausch') {
+    const ok = `${b} + ${a} = ${sum}`;
+    return { key: `t-${a}+${b}`, prompt: `${a} + ${b} = ${sum}\nWie heißt die Tauschaufgabe?`, speak: `${a} plus ${b} ist ${sum}. Wie heißt die Tauschaufgabe?`, answer: choice(r, ok, [`${sum} − ${b} = ${a}`, `${a} + ${sum} = ${a + sum}`, `${b} − ${a} = ${b - a}`].filter((x) => !x.includes('−') || !/= -/.test(x))), tags: ['tauschaufgabe'], solution: [`Bei der Tauschaufgabe tauschen die beiden Zahlen den Platz: ${a} + ${b} → ${b} + ${a}.`, 'Das Ergebnis bleibt gleich!'] };
+  }
+  if (kind === 'umkehr') {
+    const ok = `${sum} − ${b} = ${a}`;
+    return { key: `u-${a}+${b}`, prompt: `${a} + ${b} = ${sum}\nWelche Minusaufgabe gehört dazu?`, speak: `${a} plus ${b} ist ${sum}. Welche Minusaufgabe gehört dazu?`, answer: choice(r, ok, [`${b} + ${a} = ${sum}`, `${sum} − ${a} = ${sum - a + 1}`, `${a} − ${b} = ${a - b}`].filter((x) => !/= -/.test(x) && x !== `${sum} − ${a} = ${b}`)), tags: ['umkehraufgabe'], solution: [`Die Umkehraufgabe geht rückwärts: Du startest beim Ergebnis ${sum} und nimmst ${b} wieder weg.`, `${sum} − ${b} = ${a}`] };
+  }
+  // geschickt rechnen: kleine Zahl zuerst → tauschen
+  const small = Math.min(a, b), big = Math.max(a, b);
+  return { key: `g-${small}+${big}`, prompt: `Rechne geschickt:\n${small} + ${big} = ☐`, speak: `Rechne geschickt: ${small} plus ${big}.`, answer: { type: 'number', value: sum }, tags: ['tauschaufgabe'], solution: [`Tausche: ${big} + ${small} ist leichter – starte bei der großen Zahl.`, `${big} + ${small} = ${sum}`] };
+}
+
+export const MATHE_EXTRA4B: Skill[] = [
+  M(1, 'm1-tausch', 'Tausch- und Umkehraufgaben', '🔄', { text: ['Tauschaufgabe: Die beiden Zahlen tauschen den Platz – das Ergebnis bleibt gleich. 3 + 5 = 8 und 5 + 3 = 8.', 'Trick: Starte bei der größeren Zahl, dann geht es schneller: 2 + 9 → 9 + 2.', 'Umkehraufgabe: Rückwärts gerechnet. 3 + 5 = 8, also 8 − 5 = 3.'], visual: { kind: 'tenframe', a: 3, b: 5 }, videoQuery: 'Tauschaufgabe Umkehraufgabe Klasse 1' }, tauschTask, { tagLabels: { tauschaufgabe: 'Tauschaufgaben', umkehraufgabe: 'Umkehraufgaben' }, testSeconds: 20 }),
+];
+
+// ---------- Englisch: Sätze bauen (2. Lernjahr) – NRW „Verfügbarkeit von sprachlichen Mitteln“ ----------
+
+const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
+const SENT: [string, string][] = [
+  ['I like apples.', 'Ich mag Äpfel.'], ['She has got a cat.', 'Sie hat eine Katze.'], ['We go to school by bus.', 'Wir fahren mit dem Bus zur Schule.'],
+  ['My dog is brown.', 'Mein Hund ist braun.'], ['Can you swim?', 'Kannst du schwimmen?'], ['I have got two brothers.', 'Ich habe zwei Brüder.'],
+  ['The cat is under the table.', 'Die Katze ist unter dem Tisch.'], ['He likes football.', 'Er mag Fußball.'], ['What is your name?', 'Wie heißt du?'],
+  ['Where is the station?', 'Wo ist der Bahnhof?'], ['I get up at seven.', 'Ich stehe um sieben auf.'], ['My favourite colour is blue.', 'Meine Lieblingsfarbe ist Blau.'],
+  ['It is sunny today.', 'Heute ist es sonnig.'], ['They are in the garden.', 'Sie sind im Garten.'], ['I can ride a bike.', 'Ich kann Fahrrad fahren.'],
+  ['Do you like pizza?', 'Magst du Pizza?'], ['The bird is on the roof.', 'Der Vogel ist auf dem Dach.'], ['My mum is a doctor.', 'Meine Mama ist Ärztin.'],
+  ["I don't like spiders.", 'Ich mag keine Spinnen.'], ['How old are you?', 'Wie alt bist du?'],
+];
+const capFirst = (w: string) => w[0].toUpperCase() + w.slice(1);
+// Satzanfang klein zeigen (sonst verrät der große Buchstabe das erste Wort) – außer „I“
+const lowFirst = (w: string) => (w === 'I' || w.startsWith("I'") ? w : w[0].toLowerCase() + w.slice(1));
+function wordOrderTask(r: Rng, s: Stage): Gen {
+  const [en, de] = pick(r, SENT);
+  const end = en.slice(-1);
+  const words = en.slice(0, -1).split(' ');
+  const plain = words.map((w, i) => (i === 0 ? lowFirst(w) : w));
+  const sentence = (ws: string[]) => capFirst(ws.join(' ')) + end;
+  const mixed = shuffle(r, plain);
+  // Ablenker = typische Lernerfehler: zwei Nachbarwörter vertauscht (auch zweimal). Nicht als Ablenker:
+  // Aussagen, die wie eine Frage anfangen (Is it sunny today.), und Umstellungen, die mit dem letzten Wort beginnen
+  // (Apples I like.) – die wären teils richtiges Englisch.
+  const swap = (ws: string[], i: number) => ws.map((w, k) => (k === i ? ws[i + 1] : k === i + 1 ? ws[i] : w));
+  const once = plain.slice(0, -1).map((_, i) => swap(plain, i));
+  const twice = once.flatMap((ws) => ws.slice(0, -1).map((_, i) => swap(ws, i)));
+  const ok = (ws: string[]) => {
+    const t = sentence(ws);
+    if (t === en) return false;
+    if (end === '.' && /^(Is|Are|Can|Do|Does|Has|Have|Don't|Can't) /.test(t)) return false;
+    // Frage ohne Umstellung (You can swim?) – gesprochen möglich, also kein Ablenker
+    if (end === '?' && ws[0] === plain[1] && ws[1] === plain[0]) return false;
+    return ws[0] !== plain[plain.length - 1];
+  };
+  const wrong = new Set<string>();
+  for (const ws of [...shuffle(r, once), ...shuffle(r, twice)]) if (wrong.size < 3 && ok(ws)) wrong.add(sentence(ws));
+  return {
+    key: en,
+    prompt: `${s === 1 ? `„${de}“\n` : ''}Bring die Wörter in die richtige Reihenfolge:\n${mixed.join(' · ')}`,
+    speak: 'Bring die Wörter in die richtige Reihenfolge.',
+    answer: { ...choice(r, en, [...wrong]), speakOptions: 'en' },
+    tags: [end === '?' ? 'fragesatz' : 'aussagesatz'],
+    solution: [`${en} = ${de}`, end === '?' ? 'Bei Fragen steht das Fragewort oder das Verb (can, do, is …) vorne.' : 'Englische Sätze: Wer? – tut was? – den Rest: I – like – apples.'],
+    pronounce: { text: en, lang: 'en' },
+  };
+}
+
+export const ENGLISCH_EXTRA4: Skill[] = [
+  E(2, 'e2-wordorder', 'Sentence builder – Sätze bauen', '🧱', { text: ['Im Englischen ist die Reihenfolge wichtig: Wer? – tut was? – Rest. I like apples.', 'Fragen beginnen mit einem Fragewort (What, Where, How) oder mit can, do, is: Can you swim?', 'Tipp: Lies den Satz am Ende laut – klingt er richtig?'], visual: { kind: 'text', text: 'I · like · apples' }, videoQuery: 'English word order simple sentences for kids' }, wordOrderTask, { tagLabels: { aussagesatz: 'Aussagesätze bauen', fragesatz: 'Fragen bauen' }, testSeconds: 30 }),
+];
