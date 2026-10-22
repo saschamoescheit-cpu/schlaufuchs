@@ -10,11 +10,12 @@ const SUBJ = { mathe: 'Mathe', deutsch: 'Deutsch', englisch: 'Englisch' };
 let bad = 0;
 for (const s of skills) {
   // Stufe 3 setzen, dann Thema direkt über den Fach-Bildschirm öffnen
-  await p.evaluate((id) => {
+  await p.evaluate(([id, sf]) => {
     const d = JSON.parse(localStorage.getItem('schlaufuchs:v1'));
     d.progress.testkind1.skills[id] = { n: 0, ok: 0, recent: [], last: 0, tags: {}, stage: 3 };
+    if (sf) d.profiles.forEach((pr) => (pr.schoolFont = true));
     localStorage.setItem('schlaufuchs:v1', JSON.stringify(d));
-  }, s.id);
+  }, [s.id, process.env.SF === '1']);
   await p.reload();
   await p.getByRole('button', { name: SUBJ[s.subject] }).first().click();
   const lv = s.subject === 'englisch' ? (s.grade === 3 ? '1. Lernjahr' : '2. Lernjahr') : `Klasse ${s.grade}`;

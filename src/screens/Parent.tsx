@@ -7,7 +7,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, saveProfile, schoolYear, type AppData, type Profile } from '../data/store';
+import { deleteProfile, saveProfile, schoolYear, usesSchoolFont, type AppData, type Profile } from '../data/store';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
@@ -516,6 +516,13 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                   ))}
                 </div>
               </div>
+              <label className="switch">
+                <input type="checkbox" checked={usesSchoolFont(p)} onChange={(e) => set({ schoolFont: e.target.checked })} />
+                <span>
+                  <b>Schulschrift in Aufgaben</b>
+                  <div className="small muted">Aufgaben und Wörter in einer Leseschrift mit „a“ und „g“ wie in der Fibel. Hilft Leseanfängern; in Klasse 1 und 2 von Anfang an eingeschaltet.</div>
+                </span>
+              </label>
               <label className="switch">
                 <input type="checkbox" checked={!!p.micPractice} onChange={(e) => set({ micPractice: e.target.checked })} />
                 <span>

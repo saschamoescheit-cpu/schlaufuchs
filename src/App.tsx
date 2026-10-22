@@ -3,7 +3,7 @@ import { buildMix, buildPattern, buildPractice, buildReview } from './engine/ses
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
-import { hasSaveError, useData } from './data/store';
+import { hasSaveError, useData, usesSchoolFont } from './data/store';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
@@ -43,6 +43,12 @@ export default function App() {
   const progress = (profile && data.progress[profile.id]) || emptyProgress();
   const [stack, setStack] = useState<Route[]>([{ r: 'tab', tab: 'home' }]);
   const route = stack[stack.length - 1];
+
+  // Schulschrift für Aufgaben (Profil-Einstellung, Standard in Klasse 1–2)
+  const schoolFont = !!profile && usesSchoolFont(profile);
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-school-font', schoolFont);
+  }, [schoolFont]);
 
   // Zurück-Taste des Geräts/Browsers = eine Ebene zurück
   useEffect(() => {

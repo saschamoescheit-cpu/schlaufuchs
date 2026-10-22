@@ -2185,3 +2185,21 @@ details.more .inner {
   overflow-wrap: break-word;
   hyphens: auto;
 }
+
+/* Schulschrift (Andika: einbäuchiges a/g wie in der Fibel) – nur für Aufgaben, Antworten, Wörter und Lesetexte */
+html[data-school-font] .prompt,
+html[data-school-font] .choice,
+html[data-school-font] .text-input,
+html[data-school-font] .vis-word,
+html[data-school-font] .syll,
+html[data-school-font] .vis-text,
+html[data-school-font] .explain-text,
+html[data-school-font] .steps {
+  font-family: 'Andika', var(--body);
+}
+html[data-school-font] .prompt {
+  font-size: 1.35rem;
+}
+html[data-school-font] .prompt.long {
+  font-size: 1.08rem;
+}
