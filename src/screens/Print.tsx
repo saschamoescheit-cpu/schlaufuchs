@@ -54,7 +54,7 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
                 )}
                 {t.visual && t.visual.kind === 'text' && <div className="paper-reading">{t.visual.text}</div>}
                 {a.type === 'choice' ? (
-                  <div className="paper-options">
+                  <div className={`paper-options ${a.big ? 'big' : ''}`}>
                     {a.options.map((o, k) => (
                       <span key={k}>○ {o}</span>
                     ))}

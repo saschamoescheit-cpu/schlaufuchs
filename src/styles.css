@@ -1818,6 +1818,11 @@ details.more .inner {
   gap: 8px 22px;
   margin-top: 6px;
 }
+/* Bild-Antworten (z. B. „Welches Bild passt?“) im Druck groß genug */
+.paper-options.big span {
+  font-size: 1.8rem;
+  line-height: 1.2;
+}
 .paper-line {
   margin-top: 10px;
 }
