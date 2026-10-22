@@ -6,6 +6,7 @@ import type { Profile } from '../data/store';
 import { useEffect } from 'react';
 import { Fox, TopBar } from '../ui/common';
 import type { Subject } from '../engine/types';
+import { vocabSummary } from '../content/words';
 
 const fmt = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric', year: 'numeric' });
 
@@ -13,6 +14,7 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
   const now = Date.now();
   const total = Object.values(pr.skills).reduce((a, s) => a + s.n, 0);
   const four = periodStats(pr, addDays(now, -28), now + 1);
+  const voc = vocabSummary(pr, now);
   const rel = ALL_SKILLS.filter((s) => pr.skills[s.id]);
   const weak = weaknesses(pr, rel, 6);
   const pats = patterns(pr, rel, 8);
@@ -46,6 +48,11 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
           Insgesamt {total} Aufgaben geübt, {pr.stars} Sterne. Letzte 4 Wochen: an {four.days} Tagen, ca. {four.minutes} Minuten, {four.tasks} Aufgaben
           {four.tasks ? ` (${Math.round((four.right / four.tasks) * 100)} % richtig)` : ''}. In der Fehler-Kiste: {pr.review.length}.
         </p>
+        {voc && (
+          <p className="small">
+            Englisch-Vokabeln (Karteikasten): {voc.sure} von {voc.total} Wörtern sitzen · neu {voc.counts[0]} · Fach 1–5: {voc.counts.slice(1).join(' / ')}.
+          </p>
+        )}
 
         {subjects.map((s) => {
           const skills = currentSkills(s.id, p);
