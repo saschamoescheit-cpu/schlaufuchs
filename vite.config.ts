@@ -39,6 +39,12 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: { cacheName: 'video-thumbs', expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 60 }, cacheableResponse: { statuses: [0, 200] } },
           },
+          {
+            // Cloud-Stimme: gehörte Sätze bleiben auf dem Gerät (auch offline, spart Abrufe)
+            urlPattern: /\/functions\/v1\/tts\?/,
+            handler: 'CacheFirst',
+            options: { cacheName: 'tts', expiration: { maxEntries: 3000, maxAgeSeconds: 60 * 60 * 24 * 365 }, cacheableResponse: { statuses: [200] } },
+          },
         ],
       },
     }),

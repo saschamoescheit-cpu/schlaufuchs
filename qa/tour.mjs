@@ -10,7 +10,8 @@ const ctx = await b.newContext({ ...devices['iPhone 13'], locale: 'de-DE' });
 const p = await ctx.newPage();
 const errs = [];
 p.on('pageerror', (e) => errs.push(e.message));
-p.on('console', (m) => m.type() === 'error' && errs.push(m.text()));
+// Abrufe von Supabase (Sync, Cloud-Stimme) dürfen fehlschlagen – die App fängt sie ab
+p.on('console', (m) => m.type() === 'error' && !/Failed to load resource|supabase|net::/i.test(m.text()) && errs.push(m.text()));
 let n = 0;
 const shot = async (name, full = false) => {
   await p.waitForTimeout(350);

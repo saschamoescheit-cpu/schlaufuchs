@@ -8,7 +8,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
-import { canSpeak, chooseVoice, chosenVoice, onSpeech, onVoicesChanged, slog, speak, speechInfo, speechLog, voicesFor } from '../ui/speech';
+import { canSpeak, chooseVoice, chosenVoice, cloudStatus, cloudVoiceOn, onSpeech, onVoicesChanged, setCloudVoice, slog, speak, speechInfo, speechLog, voicesFor } from '../ui/speech';
 import { hasPin } from '../data/parent';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
@@ -575,6 +575,20 @@ function VoicePicker() {
     <details className="more">
       <summary>🔊 Vorlese-Stimme</summary>
       <div className="inner">
+        <label className="switch">
+          <input
+            type="checkbox"
+            checked={cloudVoiceOn()}
+            onChange={(e) => {
+              setCloudVoice(e.target.checked);
+              setTick((t) => t + 1);
+            }}
+          />
+          <span>
+            <b>Natürliche Stimme aus dem Internet</b>
+            <div className="small muted">Klingt besser und ist auf iPhone und iPad auch im Vibrationsmodus zu hören. Gehörte Sätze bleiben gespeichert. Ohne Internet liest die Gerätestimme. Status: {cloudStatus()}</div>
+          </span>
+        </label>
         {row('de', 'Deutsch', 'Hallo! Ich bin der Schlaufuchs. So klinge ich, wenn ich vorlese.')}
         {row('en', 'Englisch', 'Hello! I am the clever fox. This is how I sound in English.')}
         {status === 'test' && <div className="small muted">Teste …</div>}
@@ -618,7 +632,7 @@ function SpeechDiagnosis() {
       <summary>🩺 Ton-Diagnose</summary>
       <div className="inner stack" style={{ gap: 8 }}>
         <div className="small">
-          Sprachausgabe vorhanden: <b>{ja(info.vorhanden)}</b> · Stimmen: <b>{info.stimmen}</b> (deutsch {info.deutsch}, englisch {info.englisch}) · als App vom Home-Bildschirm: <b>{ja(!!info.homeBildschirm)}</b> · freigeschaltet: <b>{ja(info.freigeschaltet)}</b> · Audio-Sitzung: <b>{info.audioSitzung}</b>
+          Sprachausgabe vorhanden: <b>{ja(info.vorhanden)}</b> · Stimmen: <b>{info.stimmen}</b> (deutsch {info.deutsch}, englisch {info.englisch}) · als App vom Home-Bildschirm: <b>{ja(!!info.homeBildschirm)}</b> · freigeschaltet: <b>{ja(info.freigeschaltet)}</b> · Audio-Sitzung: <b>{info.audioSitzung}</b> · Cloud-Stimme: <b>{cloudStatus()}</b>
           {info.spricht || info.wartet || info.pausiert ? ` · Zustand: ${[info.spricht && 'spricht', info.wartet && 'wartet', info.pausiert && 'pausiert'].filter(Boolean).join(', ')}` : ''}
         </div>
         <div className="small muted" style={{ wordBreak: 'break-word' }}>{navigator.userAgent}</div>

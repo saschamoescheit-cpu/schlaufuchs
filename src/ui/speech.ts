@@ -1,5 +1,6 @@
 // Vorlesen mit der Sprachausgabe des Geräts (Deutsch und Englisch).
 import type { Lang } from '../engine/types';
+import { SUPABASE_URL } from '../data/sync';
 
 const synth = typeof window !== 'undefined' ? window.speechSynthesis : undefined;
 let voices: SpeechSynthesisVoice[] = [];
@@ -7,7 +8,7 @@ const loadVoices = () => (voices = synth?.getVoices() ?? []);
 loadVoices();
 synth?.addEventListener?.('voiceschanged', loadVoices);
 
-export const canSpeak = () => !!synth;
+export const canSpeak = () => !!synth || cloudUsable();
 
 // iPhone/iPad: Vorlese-Ton gilt in Safari sonst als „Umgebungston“ und verstummt im Stummmodus (Glocke/Aktionstaste).
 // Die Audio-Session „playback“ (Safari 17+) behandelt ihn wie Medien – dann ist er auch im Stummmodus zu hören.
@@ -134,11 +135,13 @@ export function speechInfo() {
 let unlocked = false;
 const UNLOCK_EVENTS = ['touchend', 'click', 'keydown'] as const;
 function unlock() {
-  if (unlocked || !synth) return;
+  if (unlocked) return;
   unlocked = true;
+  unlockPlayer();
   playbackSession();
   slog(`freigeschaltet (erstes Antippen, Audio-Sitzung: ${audioSessionType()})`);
   for (const ev of UNLOCK_EVENTS) window.removeEventListener(ev, unlock, true);
+  if (!synth) return;
   try {
     if (synth.paused) synth.resume();
     // Leerzeichen bei normaler Lautstärke: nicht zu hören. Lautstärke 0 bleibt auf iOS für ALLE folgenden Ausgaben hängen.
@@ -148,7 +151,7 @@ function unlock() {
     /* egal */
   }
 }
-if (synth && typeof window !== 'undefined') for (const ev of UNLOCK_EVENTS) window.addEventListener(ev, unlock, true);
+if (typeof window !== 'undefined') for (const ev of UNLOCK_EVENTS) window.addEventListener(ev, unlock, true);
 
 export type SpeechState = 'idle' | 'start' | 'end' | 'problem';
 let state: SpeechState = 'idle';
@@ -164,7 +167,8 @@ export function onSpeech(fn: (s: SpeechState, info?: string) => void) {
 }
 export const speechState = () => state;
 
-export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
+/** Gerätestimme (Web Speech) – Rückfall, wenn die Cloud-Stimme nicht verfügbar ist */
+function speakDevice(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
   if (!synth) return;
   // ein Antippen des Lautsprechers ist selbst eine Berührung – also gilt die Ausgabe als aufgeschlossen
   const wasUnlocked = unlocked;
@@ -228,6 +232,156 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
 }
 
 export function stopSpeaking() {
+  seq++;
+  if (player && !player.paused) player.pause();
   if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
   current = null;
+}
+
+// --- Cloud-Stimme ------------------------------------------------------------------------------------
+// Die Browser-Stimme verstummt auf iPhone/iPad im Vibrations-/Stummmodus. Echte Audiodateien nicht: Die
+// Supabase-Funktion „tts“ macht aus dem Text eine MP3 (Google Text-to-Speech), die App spielt sie über einen
+// Audio-Player ab. Gehörtes bleibt im Service-Worker-Cache. Ohne Internet oder bei Fehlern: Gerätestimme.
+const TTS_URL = SUPABASE_URL ? `${SUPABASE_URL}/functions/v1/tts` : '';
+const CLOUD_KEY = 'schlaufuchs:cloudvoice';
+let cloudDown = false; // Funktion nicht eingerichtet/erreichbar → in dieser Sitzung Gerätestimme
+export function cloudVoiceOn(): boolean {
+  try {
+    return localStorage.getItem(CLOUD_KEY) !== '0';
+  } catch {
+    return true;
+  }
+}
+export function setCloudVoice(on: boolean) {
+  try {
+    localStorage.setItem(CLOUD_KEY, on ? '1' : '0');
+  } catch {
+    /* egal */
+  }
+  if (on) cloudDown = false;
+}
+export function cloudUsable(): boolean {
+  return !!TTS_URL && cloudVoiceOn() && !cloudDown && typeof Audio !== 'undefined' && (typeof navigator === 'undefined' || navigator.onLine !== false);
+}
+export const cloudStatus = () => (!TTS_URL ? 'nicht eingerichtet' : !cloudVoiceOn() ? 'aus' : cloudDown ? 'nicht erreichbar' : 'an');
+
+const player: HTMLAudioElement | null = typeof Audio !== 'undefined' ? new Audio() : null;
+if (player) player.setAttribute('playsinline', '');
+let seq = 0;
+function silentWav(): string {
+  const n = 800; // 0,1 s Stille, 8 kHz, 8 Bit
+  const b = new Uint8Array(44 + n);
+  const v = new DataView(b.buffer);
+  const str = (o: number, t: string) => [...t].forEach((c, i) => (b[o + i] = c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  str(36, 'data'); v.setUint32(40, n, true);
+  b.fill(128, 44);
+  let bin = '';
+  b.forEach((x) => (bin += String.fromCharCode(x)));
+  return 'data:audio/wav;base64,' + btoa(bin);
+}
+/** iOS: ein Audio-Element darf später ohne Antippen spielen, wenn es einmal beim Antippen gespielt hat */
+function unlockPlayer() {
+  if (!player || !TTS_URL) return;
+  try {
+    player.src = silentWav();
+    player.play().then(() => player.pause(), () => {});
+  } catch {
+    /* egal */
+  }
+}
+
+const audioCache = new Map<string, string>(); // Abruf-Adresse → Blob-URL (zuletzt benutzte zuerst)
+const cloudRate = (lang: Lang, slow: boolean) => (slow ? 0.75 : lang === 'en' ? 0.9 : 1);
+const cloudUrl = (text: string, lang: Lang, slow: boolean) =>
+  `${TTS_URL}?l=${lang}&r=${cloudRate(lang, slow)}&t=${encodeURIComponent(lang === 'de' ? speakable(text) : text.replace(/\*\*/g, ''))}`;
+const inflight = new Map<string, Promise<string>>(); // laufende Abrufe (Vorab-Laden + Antippen gleichzeitig)
+function getAudio(url: string): Promise<string> {
+  const run = inflight.get(url);
+  if (run) return run;
+  const p = fetchAudio(url).finally(() => inflight.delete(url));
+  inflight.set(url, p);
+  return p;
+}
+async function fetchAudio(url: string): Promise<string> {
+  const hit = audioCache.get(url);
+  if (hit) {
+    audioCache.delete(url);
+    audioCache.set(url, hit);
+    return hit;
+  }
+  const ctl = new AbortController();
+  const timer = setTimeout(() => ctl.abort(), 8000);
+  try {
+    let r: Response;
+    try {
+      r = await fetch(url, { signal: ctl.signal });
+    } catch (e) {
+      // Netzwerk-/CORS-Fehler (z. B. Funktion noch nicht eingerichtet) → diese Sitzung Gerätestimme; Zeitüberschreitung nicht
+      if ((e as Error)?.name !== 'AbortError') cloudDown = true;
+      throw e;
+    }
+    if (!r.ok) {
+      // 404/403/503: Funktion fehlt, Herkunft gesperrt oder Schlüssel fehlt → Gerätestimme für diese Sitzung
+      if ([401, 403, 404, 503].includes(r.status)) cloudDown = true;
+      throw new Error('HTTP ' + r.status);
+    }
+    const u = URL.createObjectURL(await r.blob());
+    audioCache.set(url, u);
+    if (audioCache.size > 60) {
+      const [k, old] = audioCache.entries().next().value as [string, string];
+      URL.revokeObjectURL(old);
+      audioCache.delete(k);
+    }
+    return u;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+/** schon vorab laden (z. B. den Hör-Satz einer Aufgabe), damit das Vorlesen sofort startet */
+export function prefetchSpeech(text: string, lang: Lang = 'de', slow = false) {
+  if (!cloudUsable() || !text.trim()) return;
+  getAudio(cloudUrl(text, lang, slow)).catch(() => {});
+}
+
+export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
+  if (!cloudUsable() || !player) return speakDevice(text, lang, onEnd, slow);
+  const my = ++seq;
+  unlocked = true;
+  if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
+  current = null;
+  if (!player.paused) player.pause();
+  slog(`Cloud-Stimme (${lang}) laden`);
+  getAudio(cloudUrl(text, lang, slow)).then(
+    (src) => {
+      if (my !== seq) return; // inzwischen etwas anderes angetippt
+      player.onplaying = () => {
+        if (my !== seq) return;
+        slog('✓ Ton startet (Cloud)');
+        setState('start');
+      };
+      player.onended = () => {
+        if (my !== seq) return;
+        setState('end');
+        onEnd?.();
+      };
+      player.onerror = () => {
+        if (my !== seq) return;
+        slog('Cloud-Wiedergabe fehlgeschlagen → Gerätestimme');
+        speakDevice(text, lang, onEnd, slow);
+      };
+      player.src = src;
+      player.play().catch((e) => {
+        if (my !== seq) return;
+        slog(`Cloud-Wiedergabe blockiert (${e?.name ?? e}) → Gerätestimme`);
+        speakDevice(text, lang, onEnd, slow);
+      });
+    },
+    (e) => {
+      if (my !== seq) return;
+      slog(`Cloud-Stimme nicht verfügbar (${e?.message ?? e}) → Gerätestimme`);
+      speakDevice(text, lang, onEnd, slow);
+    },
+  );
 }

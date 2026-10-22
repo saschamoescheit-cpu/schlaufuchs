@@ -2,7 +2,7 @@
 import { useEffect, useRef } from 'react';
 import type { Task } from '../engine/types';
 import { Rich, Speak, SpeakerIcon } from './common';
-import { canSpeak, speak } from './speech';
+import { canSpeak, prefetchSpeech, speak } from './speech';
 import { Visual } from './Visual';
 import { ColumnWork } from './ColumnWork';
 import { TraceInput } from './Trace';
@@ -24,6 +24,13 @@ const groupDigits = (s: string) => (/^\d{5,}$/.test(s) ? s.replace(/\B(?=(\d{3})
 export function TaskView({ task, value, onChange, onSubmit, reveal, autoRead, submitLabel = 'Prüfen' }: Props) {
   const a = task.answer;
   const speakText = task.speak ?? task.prompt;
+
+  // Cloud-Stimme: Hör-Satz (und bei „automatisch vorlesen“ die Aufgabe) vorab laden
+  useEffect(() => {
+    if (task.listen) prefetchSpeech(task.listen.text, task.listen.lang, task.listen.slow);
+    if (autoRead) prefetchSpeech(speakText, 'de');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [task.key, task.skillId]);
 
   useEffect(() => {
     const t = setTimeout(() => {
