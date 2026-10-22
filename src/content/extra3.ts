@@ -986,6 +986,8 @@ const IGICH: [string, 'ig' | 'ich', string, string][] = [
   ['lustig', 'ig', 'ein lustiger Clown', '🤡'], ['mutig', 'ig', 'ein mutiger Ritter', '🦸'], ['eilig', 'ig', 'ein eiliger Bote', '🏃'], ['ruhig', 'ig', 'ein ruhiger Abend', '😌'], ['fertig', 'ig', 'eine fertige Burg', '✅'],
   ['Teppich', 'ich', 'die Teppiche', '🧶'], ['Rettich', 'ich', 'die Rettiche', '🥕'], ['Kranich', 'ich', 'die Kraniche', '🦢'], ['Pfirsich', 'ich', 'die Pfirsiche', '🍑'],
   ['freundlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😊'], ['fröhlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😄'], ['glücklich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🍀'], ['ehrlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🤝'],
+  ['Zweig', 'ig', 'die Zweige', '🌿'], ['hungrig', 'ig', 'ein hungriger Bär', '😋'], ['durstig', 'ig', 'ein durstiges Pferd', '🥤'], ['schmutzig', 'ig', 'ein schmutziges Schwein', '🐷'], ['billig', 'ig', 'ein billiges Spielzeug', '🏷️'],
+  ['pünktlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '⏰'], ['ängstlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😨'], ['gefährlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '⚠️'],
 ];
 function igichTask(r: Rng, s: Stage): Gen {
   const [w, end, hilfe, e] = pick(r, IGICH);
