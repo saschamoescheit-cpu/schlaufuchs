@@ -506,7 +506,16 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
             Profil von {profile.name} löschen
           </button>
         )}
-        <p className="small muted center">Schlaufuchs · Version {__APP_VERSION__}</p>
+        <p className="small muted center">
+          Schlaufuchs · Version {__APP_VERSION__} ·{' '}
+          <a href="datenschutz/" target="_blank" rel="noopener">
+            Datenschutz
+          </a>{' '}
+          ·{' '}
+          <a href="impressum/" target="_blank" rel="noopener">
+            Impressum
+          </a>
+        </p>
       </div>
       {del && (
         <Confirm
