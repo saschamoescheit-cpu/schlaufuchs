@@ -1,4 +1,4 @@
-// node qa/monkey.mjs [url] [schritte] [seed] – zufällige Klicks/Eingaben quer durch die App, sammelt Laufzeitfehler.
+// node qa/monkey.mjs [url] [schritte] [seed] [klasse] [gerät] – zufällige Klicks/Eingaben quer durch die App, sammelt Laufzeitfehler.
 // Gefährliche Knöpfe (Löschen, Abmelden, PIN …) werden ausgelassen.
 import { readFileSync } from 'node:fs';
 import { open } from './lib.mjs';
@@ -7,7 +7,9 @@ const steps = Number(process.argv[3] ?? 300);
 let seed = Number(process.argv[4] ?? 1);
 const rnd = () => ((seed = (seed * 1103515245 + 12345) % 2147483648) / 2147483648);
 const progress = JSON.parse(readFileSync(new URL('./seed.json', import.meta.url), 'utf-8'));
-const { p, done, errs } = await open({ url, out: 'qa/shots/monkey', grade: 3, progress });
+const grade = Number(process.argv[5] ?? 3);
+const device = process.argv[6] ?? 'iPhone 13';
+const { p, done, errs } = await open({ url, out: 'qa/shots/monkey', grade, progress, device });
 p.on('pageerror', (e) => console.log('Seitenfehler:', e.message));
 const SKIP = /löschen|entfernen|abmelden|anmelden|google|pin|eltern|drucken|sperren|kind anlegen|neues kind|youtube|video/i;
 const SEL = 'button, [role=tab], label.list-row';
