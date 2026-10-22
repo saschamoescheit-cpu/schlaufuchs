@@ -747,8 +747,8 @@ const rede = D(4, 'd4-woertliche-rede', 'Wörtliche Rede', '💬', {
     return { key: `v${sp}`, prompt: 'Welcher Satz ist richtig?', answer: choice(r, ok, [`${who} ${verb} „${sp}${p}“`, `${who} ${verb}: „${sp}“${p}`, `${who} ${verb}, „${sp}${p}“`]), tags: ['begleitsatz-vorne'], solution: [ok, 'Begleitsatz vorne → Doppelpunkt, dann die Rede in Anführungszeichen. Das Satzzeichen der Rede steht innen.'] };
   }
   const end = p === '.' ? '' : p;
-  const ok = `„${sp}${end}“, ${verb} ${who.replace(/^Der /, 'der ')}.`;
-  const v2 = who.replace(/^Der /, 'der ');
+  const ok = `„${sp}${end}“, ${verb} ${who.replace(/^(Der|Die|Das|Mein|Meine|Unser|Unsere) /, (m) => m.toLowerCase())}.`;
+  const v2 = who.replace(/^(Der|Die|Das|Mein|Meine|Unser|Unsere) /, (m) => m.toLowerCase());
   return { key: `h${sp}`, prompt: 'Welcher Satz ist richtig?', answer: choice(r, ok, [`„${sp}${end}“ ${verb} ${v2}.`, `„${sp}.“, ${verb} ${v2}.`, `„${sp}${end}“. ${verb} ${v2}.`].filter((x) => x !== ok)), tags: ['begleitsatz-hinten'], solution: [ok, `Begleitsatz hinten → nach dem Anführungszeichen ein Komma.${p === '.' ? ' Der Punkt der Rede fällt weg.' : ' Das ' + (p === '?' ? 'Fragezeichen' : 'Ausrufezeichen') + ' bleibt in der Rede.'}`] };
 }, { tagLabels: { 'begleitsatz-vorne': 'Begleitsatz vorne', 'begleitsatz-hinten': 'Begleitsatz hinten' }, testSeconds: 30 });
 
