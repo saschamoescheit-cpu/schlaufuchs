@@ -953,14 +953,18 @@ const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: stri
   // Tonne (NRW Kl. 4: t, kg, g)
   { q: (r) => { const t = ri(r, 2, 9); return { p: `${t} t = ☐ kg`, v: t * 1000, unit: 'kg', tag: 'gewicht', sol: ['1 t = 1000 kg', `${t} t = ${t} · 1000 kg = ${t * 1000} kg`], trap: t * 100 }; } },
   { q: (r) => { const t = ri(r, 1, 5), k = ri(r, 1, 9) * 100; return { p: `${t} t ${k} kg = ☐ kg`, v: t * 1000 + k, unit: 'kg', tag: 'gewicht', sol: ['1 t = 1000 kg', `${t * 1000} kg + ${k} kg = ${t * 1000 + k} kg`], trap: t * 100 + k }; } },
+  // Kommaschreibweise (NRW Kl. 4): Zahl vor dem Komma = große Einheit, dahinter die kleinere
+  { q: (r) => { const m = ri(r, 1, 9), c = ri(r, 1, 19) * 5; return { p: `${m},${pad(c)} m = ☐ cm`, v: m * 100 + c, unit: 'cm', tag: 'komma', sol: ['1 m = 100 cm', `${m},${pad(c)} m heißt: ${m} m und ${c} cm`, `${m * 100} cm + ${c} cm = ${m * 100 + c} cm`], trap: m * 10 + c }; } },
+  { q: (r) => { const k = ri(r, 1, 9), h = ri(r, 1, 9); return { p: `${k},${h} km = ☐ m`, v: k * 1000 + h * 100, unit: 'm', tag: 'komma', sol: ['1 km = 1000 m', `Die erste Stelle nach dem Komma sind Hunderter: ${k},${h} km = ${k} km ${h * 100} m`, `${k * 1000} m + ${h * 100} m = ${k * 1000 + h * 100} m`], trap: k * 1000 + h }; } },
+  { q: (r) => { const k = ri(r, 1, 9), h = ri(r, 1, 9); return { p: `${k},${h} kg = ☐ g`, v: k * 1000 + h * 100, unit: 'g', tag: 'komma', sol: ['1 kg = 1000 g', `${k},${h} kg = ${k} kg ${h * 100} g`, `${k * 1000} g + ${h * 100} g = ${k * 1000 + h * 100} g`], trap: k * 1000 + h }; } },
 ];
 const groessen4 = M(4, 'm4-groessen', 'Größen umrechnen', '🔄', {
   text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 t = 1000 kg · 1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!'],
   videoQuery: 'Größen umrechnen Klasse 4 Längen Gewichte Zeit Hohlmaße',
 }, (r, s) => {
-  const g = GROESSEN[pick(r, s === 1 ? [0, 1, 3, 4, 8] : s === 3 ? [2, 5, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7, 8])].q(r);
+  const g = GROESSEN[pick(r, s === 1 ? [0, 1, 3, 4, 8, 9] : s === 3 ? [2, 5, 6, 7, 10, 11, 12, 13] : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11])].q(r);
   return { key: g.p, prompt: g.p, answer: { type: 'number', value: g.v, unit: g.unit }, tags: [g.tag], traps: g.trap !== undefined ? [{ answer: String(g.trap), tag: 'umrechnungszahl', hint: g.tag === 'zeit' ? 'Bei der Zeit ist die Umrechnungszahl 60, nicht 100.' : 'Schau noch einmal auf die Umrechnungszahl.' }] : [], solution: g.sol };
-}, { tagLabels: { liter: 'Liter und Milliliter', zeit: 'Zeiteinheiten', geld: 'Euro und Cent', gewicht: 'Gewichte', länge: 'Längen', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 });
+}, { tagLabels: { liter: 'Liter und Milliliter', zeit: 'Zeiteinheiten', geld: 'Euro und Cent', gewicht: 'Gewichte', länge: 'Längen', komma: 'Kommaschreibweise', umrechnungszahl: 'falsche Umrechnungszahl' }, testSeconds: 30 });
 
 const flaeche4 = M(4, 'm4-flaeche', 'Umfang und Fläche', '🟩', {
   text: ['Der Umfang ist der Weg einmal ganz außen herum: Alle Seiten zusammen.', 'Rechteck: Umfang = 2 · Länge + 2 · Breite.', 'Die Fläche sagt, wie viel Platz innen ist: Zähle die Kästchen oder rechne Länge · Breite.', 'Merke: Umfang = Zaun außen herum. Fläche = Rasen innen.'],
