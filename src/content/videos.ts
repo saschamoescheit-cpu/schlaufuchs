@@ -282,6 +282,15 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'MxVUfy-eLDY', title: 'Jobs & Occupations Chant for Children', channel: 'Fun Kids English', len: '3:20' },
     { id: 'ckKQclquAXU', title: 'Jobs Song for Kids | What Do You Do?', channel: 'Fun Kids English', len: '2:52' },
   ],
+  'm2-zahlenfolgen': [{ id: 'lowd2wOTtw4', title: 'Klasse 2 - Zahlenfolgen', channel: 'Peter Grosser', len: '6:03' }],
+  'm4-kopfrechnen': [
+    { id: 'cMIopDdpzoU', title: 'Kopfrechnen Addition (mit Tricks)', channel: 'Gut erklärt', len: '5:16' },
+    { id: 'TjHWS2R00eM', title: 'Kopfrechnen Subtraktion mit Tipps', channel: 'Gut erklärt', len: '4:24' },
+  ],
+  'm4-schriftlich-plusminus': [
+    { id: 'tEBKFoD9LeI', title: 'schriftliches Addieren | Mathematik - einfach erklärt', channel: 'Lehrerschmidt', len: '5:46' },
+    { id: 'wweXKfoprRg', title: 'Schriftliches Subtrahieren | Klasse 4', channel: 'Lehrerschmidt', len: '2:02' },
+  ],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },
