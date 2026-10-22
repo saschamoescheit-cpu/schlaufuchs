@@ -850,6 +850,13 @@ const BODY_OBJ = [
   { name: 'ein Eiswürfel', e: '🧊', s: 'Würfel', why: 'Ein Eiswürfel hat 6 gleich große quadratische Flächen.' },
   { name: 'ein Paket', e: '📦', s: 'Quader', why: 'Ein Paket ist wie ein Schuhkarton: 6 rechteckige Flächen.' },
   { name: 'eine Eistüte (die Waffel)', e: '🍦', s: 'Kegel', why: 'Die Waffel hat oben eine runde Öffnung und unten eine Spitze.' },
+  // Nachtlauf 22.10.2026: mehr Dinge aus dem Alltag
+  { name: 'ein Globus', e: '🌍', s: 'Kugel', why: 'Ein Globus ist rund wie ein Ball – die Erde ist eine Kugel.' },
+  { name: 'ein Ziegelstein', e: '🧱', s: 'Quader', why: 'Ein Ziegelstein hat 6 rechteckige Flächen.' },
+  { name: 'ein Buch', e: '📕', s: 'Quader', why: 'Ein geschlossenes Buch hat 6 rechteckige Flächen.' },
+  { name: 'eine Rolle Klopapier', e: '🧻', s: 'Zylinder', why: 'Die Rolle ist oben und unten rund und dazwischen gerade.' },
+  { name: 'eine Batterie', e: '🔋', s: 'Zylinder', why: 'Eine Batterie hat oben und unten eine runde Fläche.' },
+  { name: 'ein Partyhut', e: '🥳', s: 'Kegel', why: 'Ein Partyhut ist unten rund und oben spitz.' },
 ];
 const BODY_Q = [
   { q: 'Welcher Körper hat keine Ecken und keine Kanten?', s: 'Kugel', why: 'Die Kugel ist ganz rund – nirgends eine Ecke oder Kante.' },
@@ -858,6 +865,11 @@ const BODY_Q = [
   { q: 'Welcher Körper hat 6 gleich große quadratische Flächen?', s: 'Würfel', why: 'Beim Würfel sind alle Flächen gleich große Quadrate.' },
   { q: 'Welcher Körper hat 6 Flächen, aber nicht alle sind gleich groß?', s: 'Quader', why: 'Beim Quader sind die Flächen Rechtecke – gegenüberliegende sind gleich, aber nicht alle.' },
   { q: 'Welcher Körper hat 5 Ecken?', s: 'Pyramide', why: 'Die Pyramide hat 4 Ecken unten und 1 Spitze oben: 5 Ecken.' },
+  // Nachtlauf 22.10.2026: mehr Fragen
+  { q: 'Welcher Körper hat 8 Kanten?', s: 'Pyramide', why: 'Die Pyramide hat 4 Kanten unten und 4 Kanten nach oben zur Spitze: 8 Kanten.' },
+  { q: 'Welcher Körper hat 12 gleich lange Kanten?', s: 'Würfel', why: 'Beim Würfel sind alle 12 Kanten gleich lang.' },
+  { q: 'Welcher Körper hat eine viereckige Grundfläche und eine Spitze?', s: 'Pyramide', why: 'Die Pyramide steht auf einem Viereck und läuft oben spitz zu.' },
+  { q: 'Welcher Körper besteht nur aus einer gebogenen Fläche?', s: 'Kugel', why: 'Die Kugel hat nur eine Fläche – und die ist überall gebogen.' },
 ];
 const koerper3 = M(3, 'm3-koerper', 'Geometrische Körper', '🧊', {
   text: ['Körper sind räumlich – man kann sie anfassen.', 'Würfel und Quader haben 8 Ecken, 12 Kanten und 6 Flächen.', 'Kugel, Zylinder und Kegel haben runde Flächen.'],

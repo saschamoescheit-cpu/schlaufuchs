@@ -519,6 +519,13 @@ const FAMILIEN: { stamm: string; fam: string[]; out: string[] }[] = [
   { stamm: 'wohn', fam: ['wohnen', 'Wohnung', 'Wohnzimmer', 'Bewohner'], out: ['Wolle', 'Wolke', 'wohin'] },
   { stamm: 'freu', fam: ['Freude', 'freuen', 'erfreut', 'freudig'], out: ['frei', 'Freitag', 'fressen'] },
   { stamm: 'kauf', fam: ['kaufen', 'Verkäufer', 'Einkauf', 'Kaufhaus'], out: ['kauen', 'Kauz', 'Kaugummi'] },
+  // Nachtlauf 22.10.2026: mehr Wortfamilien
+  { stamm: 'spring', fam: ['springen', 'Springseil', 'Springbrunnen', 'abspringen'], out: ['spritzen', 'Spinne', 'Ring'] },
+  { stamm: 'lern', fam: ['lernen', 'Lernspiel', 'verlernen', 'gelernt'], out: ['Laterne', 'leer', 'Lerche'] },
+  { stamm: 'koch', fam: ['kochen', 'Koch', 'Kochtopf', 'Kochbuch'], out: ['Knochen', 'Kuchen', 'Kopf'] },
+  { stamm: 'mal', fam: ['malen', 'Maler', 'Malkasten', 'bemalt'], out: ['mahlen', 'Mehl', 'Mantel'] },
+  { stamm: 'trink', fam: ['trinken', 'Trinkflasche', 'Trinkhalm', 'austrinken'], out: ['Trick', 'tragen', 'trocken'] },
+  { stamm: 'schlaf', fam: ['schlafen', 'Schlafanzug', 'einschlafen', 'schläfrig'], out: ['Schlange', 'schlau', 'Schaf'] },
 ];
 const wortfamilie = D(3, 'd3-wortfamilie', 'Wortfamilien', '👨‍👩‍👧', {
   text: ['Wörter mit dem gleichen Wortstamm gehören zu einer Wortfamilie: fahren, Fahrer, Fahrrad, Abfahrt.', 'Der Wortstamm wird gleich (oder fast gleich, z. B. a → ä) geschrieben.', 'Achtung: Nicht jedes Wort, das ähnlich anfängt, gehört dazu – „fallen“ hat nichts mit „fahren“ zu tun.'],
