@@ -358,7 +358,7 @@ const TEST = (typeof window !== 'undefined' ? (window as unknown as { __schlaufu
 export const SUPABASE_URL: string = TEST?.url ?? 'https://gypgaepmlftnqwywupeq.supabase.co'; // Projekt „Schlaufuchs“ (EU, Frankfurt)
 export const SUPABASE_KEY: string = TEST?.key ?? 'sb_publishable_o6xh8QQjKQBq1NXuVbBBRA_uJhRKAo9'; // öffentlich – die Zeilen-Regel schützt die Daten
 /** „Mit Google anmelden“ erst zeigen, wenn Google im Schlaufuchs-Projekt eingerichtet ist. */
-export const GOOGLE_LOGIN: boolean = TEST?.google ?? false;
+export const GOOGLE_LOGIN: boolean = TEST?.google ?? true; // eingerichtet (Sascha 22.10.2026, eigener Google-Client)
 export const syncConfigured = (): boolean => SUPABASE_URL !== '' && SUPABASE_KEY !== '';
 const TABLE = 'schlaufuchs_items';
 
