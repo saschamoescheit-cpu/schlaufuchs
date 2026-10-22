@@ -2335,3 +2335,105 @@ html[data-school-font] .prompt.long {
   max-width: 560px;
   margin: 0 auto;
 }
+
+/* Vokabelkarten (Karteikasten) */
+.card-boxes {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 6px;
+}
+.card-box {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 2px 6px;
+  border-radius: 12px;
+  background: var(--englisch-soft);
+  border-bottom: 4px solid var(--englisch);
+  min-width: 0;
+}
+.card-box.new {
+  background: var(--card);
+  border: 2px dashed var(--line);
+  border-bottom-width: 4px;
+}
+.card-box b {
+  font-family: var(--head);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.card-box span {
+  font-size: 0.72rem;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.vcard {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+  border: 0;
+  border-radius: 24px;
+  background: var(--card);
+  box-shadow: var(--shadow), inset 0 0 0 3px var(--englisch-soft);
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  padding: 20px 16px;
+  transition: transform 0.25s;
+}
+.vcard.flipped {
+  cursor: default;
+  box-shadow: var(--shadow), inset 0 0 0 3px var(--englisch);
+  animation: vcard-flip 0.35s ease;
+}
+@keyframes vcard-flip {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .vcard.flipped { animation: none; }
+}
+.vcard:focus-visible {
+  outline: 3px solid var(--englisch);
+  outline-offset: 3px;
+}
+.vcard-face {
+  display: grid;
+  justify-items: center;
+  align-content: center;
+  gap: 12px;
+  min-height: 220px;
+  text-align: center;
+}
+.vcard-vis {
+  font-size: 3.4rem;
+  line-height: 1;
+}
+.vcard-word {
+  font-family: var(--head);
+  font-size: 2rem;
+  font-weight: 600;
+  word-break: break-word;
+}
+.vcard-back {
+  font-family: var(--head);
+  font-size: 1.6rem;
+  color: var(--englisch-dark);
+  border-top: 2px dashed var(--line);
+  padding-top: 10px;
+  width: 100%;
+  word-break: break-word;
+}
+.btn.vrate {
+  font-size: 1.15rem;
+  justify-content: center;
+}
+.btn.vrate.ok {
+  --c: var(--ok);
+  --d: var(--ok-dark);
+}
+.btn.vrate.bad {
+  --c: var(--bad);
+  --d: #b8402d;
+}

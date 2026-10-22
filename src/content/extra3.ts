@@ -4,6 +4,7 @@ import { chance, choice, fixedChoice, fmt, pick, pickN, ri, shuffle, type Rng } 
 import type { Skill, Stage } from '../engine/types';
 import { NAMES, columnAdd, columnSub, skill, type Gen } from './helpers';
 import { VT, wordTask, type W } from './extra';
+import { registerWords, withWord } from './words';
 
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
 const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
@@ -225,8 +226,9 @@ function festTask(r: Rng, s: Stage): Gen {
       return { key: `w-de-${en}`, prompt: `Was sagst du auf Englisch?\n„${de}“`, visual: { kind: 'emoji', chars: e }, answer: { ...choice(r, en, WISHES.filter((w) => w[0] !== en).map((w) => w[0])), speakOptions: 'en' }, tags: ['wünsche'], solution: [`${de} = ${en}`], pronounce: say };
     return { key: `w-${en}`, prompt: 'Hör gut zu! Was bedeutet das?', speak: 'Hör gut zu!', listen: say, visual: { kind: 'emoji', chars: e }, answer: choice(r, de, WISHES.filter((w) => w[0] !== en).map((w) => w[1])), tags: ['wünsche'], solution: [`${en} = ${de}`], pronounce: say };
   }
-  return wordTask(r, FESTE, s);
+  return withWord(wordTask(r, FESTE, s), FESTE);
 }
+registerWords('e1-festivals', FESTE);
 
 // ---------- Englisch: Einkaufen (2. Lernjahr) ----------
 

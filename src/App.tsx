@@ -12,6 +12,9 @@ import { ProfileEdit, Settings, Welcome } from './screens/Profile';
 import { ParentChild, ParentHome, PinGate } from './screens/Parent';
 import { PrintView } from './screens/Print';
 import { Blitz } from './screens/Blitz';
+import { VocabCards } from './screens/VocabCards';
+import type { CardDir, VocabStart } from './screens/Vocab';
+import { buildDictation } from './content/words';
 import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
 
@@ -23,6 +26,7 @@ type Route =
   | { r: 'test'; spec: TestSpec }
   | { r: 'print'; spec: TestSpec }
   | { r: 'blitz'; skill: Skill; n: number }
+  | { r: 'cards'; skillIds: string[]; size: number; dir: CardDir; n: number }
   | { r: 'result'; id: string }
   | { r: 'profile-edit' }
   | { r: 'profile-new' }
@@ -104,7 +108,13 @@ export default function App() {
 
   const practiceSkill = (s: Skill) => push({ r: 'practice', title: s.title, tasks: buildPractice(s, progress), mode: 'übung', again: () => buildPractice(s, data.progress[profile.id] ?? progress), n: 0 });
   // Vokabeltrainer: nur Wortfelder, wählbare Länge
-  const practiceVocab = (skills: Skill[], n: number) => push({ r: 'practice', title: `Vokabeln: ${skills.length === 1 ? skills[0].title : `${skills.length} Wortfelder`}`, tasks: buildMix(skills, progress, undefined, undefined, n), mode: 'übung', again: () => buildMix(skills, data.progress[profile.id] ?? progress, undefined, undefined, n), n: 0 });
+  const practiceVocab = ({ skills, n, kind, dir }: VocabStart) => {
+    const ids = skills.map((s) => s.id);
+    const title = `${kind === 'diktat' ? 'Diktat' : 'Vokabeln'}: ${skills.length === 1 ? skills[0].title : `${skills.length} Wortfelder`}`;
+    if (kind === 'karten') push({ r: 'cards', skillIds: ids, size: n, dir, n: 0 });
+    else if (kind === 'diktat') push({ r: 'practice', title, tasks: buildDictation(ids, progress, n), mode: 'übung', again: () => buildDictation(ids, data.progress[profile.id] ?? progress, n), n: 0 });
+    else push({ r: 'practice', title, tasks: buildMix(skills, progress, undefined, undefined, n), mode: 'übung', again: () => buildMix(skills, data.progress[profile.id] ?? progress, undefined, undefined, n), n: 0 });
+  };
   const practiceMix = (skills: Skill[], title: string) => push({ r: 'practice', title, tasks: buildMix(skills, progress), mode: 'übung', again: () => buildMix(skills, data.progress[profile.id] ?? progress), n: 0 });
   const reviewAll = (subject?: Subject) => {
     const skills = ALL_SKILLS.filter((s) => !subject || s.subject === subject);
@@ -147,6 +157,8 @@ export default function App() {
       );
     case 'blitz':
       return <Blitz key={route.n} profile={profile} progress={progress} skill={route.skill} onExit={back} />;
+    case 'cards':
+      return <VocabCards key={route.n} profile={profile} progress={progress} skillIds={route.skillIds} n={route.size} dir={route.dir} onExit={back} onRestart={() => replace({ ...route, n: route.n + 1 })} />;
     case 'print':
       return <PrintView profile={profile} spec={route.spec} onBack={back} />;
     case 'test':

@@ -1,7 +1,7 @@
 // Lernfortschritt: Statistik je Thema, Fehlermuster, Wiederholungs-Kiste (bis es sitzt), Tagesverlauf.
 import type { Skill, Subject, Task, Stage } from './types';
 
-export type Mode = 'übung' | 'wiederholung' | 'test';
+export type Mode = 'übung' | 'wiederholung' | 'test' | 'karten';
 
 export interface SkillStat {
   n: number;
@@ -32,6 +32,8 @@ export interface Attempt {
   ok: 0 | 1;
   m: Mode;
   tag?: string;
+  /** englische Vokabel (Vokabelkarten: Fach und nächste Wiederholung ergeben sich aus diesen Einträgen) */
+  w?: string;
 }
 
 export interface TestItem {
@@ -119,7 +121,7 @@ export function record(p: Progress, task: Task, ok: boolean, mode: Mode, now: nu
   const stageChange = mode === 'test' ? undefined : adaptStage(st, task, ok);
   const dk = dayKey(now);
   p.days[dk] = (p.days[dk] ?? 0) + 1;
-  p.log.push({ t: now, s: task.skillId, ok: ok ? 1 : 0, m: mode, ...(trapTag ? { tag: trapTag } : {}) });
+  p.log.push({ t: now, s: task.skillId, ok: ok ? 1 : 0, m: mode, ...(trapTag ? { tag: trapTag } : {}), ...(task.word ? { w: task.word } : {}) });
   if (p.log.length > LOG_MAX) p.log.splice(0, p.log.length - LOG_MAX);
 
   const i = p.review.findIndex((r) => r.task.key === task.key && r.task.skillId === task.skillId);

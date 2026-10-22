@@ -11,7 +11,7 @@ import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
 import type { TestSpec } from './Tests';
 import { blitzable, BlitzPicker } from './Blitz';
-import { VocabPicker } from './Vocab';
+import { VocabPicker, type VocabStart } from './Vocab';
 import { unseenOutfits, Wardrobe, wearing } from '../ui/Outfits';
 
 function greeting(name: string) {
@@ -175,7 +175,7 @@ function NewSchoolYear({ profile }: { profile: Profile }) {
   );
 }
 
-export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix, onBlitz, onVocab }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void; onBlitz: (skill: Skill) => void; onVocab?: (skills: Skill[], n: number) => void }) {
+export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix, onBlitz, onVocab }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void; onBlitz: (skill: Skill) => void; onVocab?: (s: VocabStart) => void }) {
   const info = subjectInfo(subject);
   const [lv, setLv] = useState<Grade>(currentLevel(subject, profile));
   const [explain, setExplain] = useState<Skill | null>(null);
@@ -215,9 +215,9 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
           lv={lv}
           progress={progress}
           onClose={() => setVocab(false)}
-          onStart={(sk, n) => {
+          onStart={(st) => {
             setVocab(false);
-            onVocab(sk, n);
+            onVocab(st);
           }}
         />
       )}

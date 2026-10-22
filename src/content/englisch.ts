@@ -1,13 +1,13 @@
 // Englisch in der Grundschule – 1. und 2. Lernjahr (Skill.grade 3 = 1. Lernjahr, 4 = 2. Lernjahr).
 // In NRW beginnt Englisch in Klasse 3; in Ländern mit Beginn in Klasse 1 wird das 1. Lernjahr früher gezeigt (curriculum.ts).
 import { chance, choice, fixedChoice, pick, pickN, ri, type Rng } from '../engine/rng';
-import type { Skill, Stage, Visual } from '../engine/types';
+import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
+import { registerWords, visualOf, withWord, type VocabWord } from './words';
 
 const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
 
-type Word = { en: string; de: string; e?: string; hex?: string; txt?: string };
-const visualOf = (w: Word): Visual => (w.hex ? { kind: 'color', hex: w.hex } : w.e ? { kind: 'emoji', chars: w.e } : { kind: 'text', text: w.txt ?? w.de });
+type Word = VocabWord;
 
 const VTAGS = { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', verstehen: 'Englisch → Deutsch', schreiben: 'Wörter schreiben' };
 
@@ -37,7 +37,8 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2, stage: Stage = 2): Gen {
 }
 
 function vocabSkill(year: 1 | 2, id: string, title: string, icon: string, words: Word[], tips: string[], q: string) {
-  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r, s) => vocabTask(r, words, year, s), { tagLabels: VTAGS, testSeconds: 15 });
+  registerWords(id, words);
+  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r, s) => withWord(vocabTask(r, words, year, s), words), { tagLabels: VTAGS, testSeconds: 15 });
 }
 
 const COLOURS: Word[] = [

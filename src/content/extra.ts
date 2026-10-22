@@ -4,6 +4,7 @@
 import { chance, choice, fixedChoice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
+import { registerWords, withWord } from './words';
 
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
 const D = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('deutsch', grade, ...a);
@@ -314,6 +315,8 @@ export const DEUTSCH_EXTRA: Skill[] = [
 export type W = { en: string; de: string; e: string };
 const TOYS: W[] = [{ en: 'ball', de: 'Ball', e: '⚽' }, { en: 'teddy', de: 'Teddy', e: '🧸' }, { en: 'kite', de: 'Drachen', e: '🪁' }, { en: 'train', de: 'Zug', e: '🚂' }, { en: 'robot', de: 'Roboter', e: '🤖' }, { en: 'puzzle', de: 'Puzzle', e: '🧩' }, { en: 'doll', de: 'Puppe', e: '🪆' }, { en: 'yo-yo', de: 'Jo-Jo', e: '🪀' }, { en: 'dice', de: 'Würfel', e: '🎲' }, { en: 'balloon', de: 'Luftballon', e: '🎈' }];
 const HOBBIES: W[] = [{ en: 'play the guitar', de: 'Gitarre spielen', e: '🎸' }, { en: 'play the piano', de: 'Klavier spielen', e: '🎹' }, { en: 'play tennis', de: 'Tennis spielen', e: '🎾' }, { en: 'play basketball', de: 'Basketball spielen', e: '🏀' }, { en: 'ride a horse', de: 'reiten', e: '🏇' }, { en: 'go skiing', de: 'Ski fahren', e: '⛷️' }, { en: 'draw pictures', de: 'Bilder malen', e: '🖍️' }, { en: 'go fishing', de: 'angeln', e: '🎣' }, { en: 'play computer games', de: 'Computerspiele spielen', e: '🎮' }, { en: 'take photos', de: 'fotografieren', e: '📷' }];
+registerWords('e1-toys', TOYS);
+registerWords('e2-hobbies', HOBBIES);
 export function wordTask(r: Rng, words: W[], s: Stage): Gen {
   const w = pick(r, words);
   const others = words.filter((x) => x !== w);
@@ -386,8 +389,8 @@ function qaTask(r: Rng, s: Stage): Gen {
 
 export const VT = { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', schreiben: 'Wörter schreiben' };
 export const ENGLISCH_EXTRA: Skill[] = [
-  E(1, 'e1-toys', 'Toys – Spielsachen', '🧸', { text: ['ball, teddy, kite (Drachen), train, robot, puzzle, doll (Puppe).', "What's your favourite toy? – My favourite toy is my teddy."], visual: { kind: 'emoji', chars: '🧸' }, videoQuery: 'toys vocabulary English for kids' }, (r, s) => wordTask(r, TOYS, s), { tagLabels: VT, testSeconds: 15 }),
-  E(2, 'e2-hobbies', 'Hobbies – Freizeit', '🎸', { text: ['play the guitar, play tennis, ride a horse, go skiing …', 'I like playing tennis. = Ich spiele gern Tennis.', 'Bei Instrumenten sagt man „the“: play the piano.'], visual: { kind: 'emoji', chars: '🎸' }, videoQuery: 'hobbies vocabulary English for kids' }, (r, s) => wordTask(r, HOBBIES, s), { tagLabels: VT, testSeconds: 15 }),
+  E(1, 'e1-toys', 'Toys – Spielsachen', '🧸', { text: ['ball, teddy, kite (Drachen), train, robot, puzzle, doll (Puppe).', "What's your favourite toy? – My favourite toy is my teddy."], visual: { kind: 'emoji', chars: '🧸' }, videoQuery: 'toys vocabulary English for kids' }, (r, s) => withWord(wordTask(r, TOYS, s), TOYS), { tagLabels: VT, testSeconds: 15 }),
+  E(2, 'e2-hobbies', 'Hobbies – Freizeit', '🎸', { text: ['play the guitar, play tennis, ride a horse, go skiing …', 'I like playing tennis. = Ich spiele gern Tennis.', 'Bei Instrumenten sagt man „the“: play the piano.'], visual: { kind: 'emoji', chars: '🎸' }, videoQuery: 'hobbies vocabulary English for kids' }, (r, s) => withWord(wordTask(r, HOBBIES, s), HOBBIES), { tagLabels: VT, testSeconds: 15 }),
   E(2, 'e2-listening', 'Listen and choose – Sätze hören', '🎧', { text: ['Hör dir den ganzen Satz an – du kannst ihn so oft anhören, wie du willst.', 'Achte auf die wichtigen Wörter: Wer? Was? Welche Farbe? Welcher Tag?', 'Du musst nicht jedes Wort verstehen, um den Satz zu verstehen.'], visual: { kind: 'emoji', chars: '🎧' }, videoQuery: 'English listening practice for kids simple sentences' }, listenTask, { tagLabels: { 'saetze-hoeren': 'Sätze hören und verstehen' }, testSeconds: 25 }),
   E(2, 'e2-questions', 'Questions and answers', '❓', { text: ["What's your name? – My name is …", 'How old are you? – I’m … years old.', 'Can you …? – Yes, I can. / No, I can’t.', 'Do you like …? – Yes, I do. / No, I don’t.'], visual: { kind: 'text', text: 'Can you swim? – Yes, I can.' }, videoQuery: 'simple questions and answers English for kids' }, qaTask, { tagLabels: { 'ja-nein-fragen': 'Ja/Nein-Fragen (Can, Do, Have)', 'w-fragen': 'W-Fragen' }, testSeconds: 20 }),
 ];

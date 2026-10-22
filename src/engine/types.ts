@@ -85,6 +85,8 @@ export interface Task {
   solutionVisual?: Visual;
   /** Wort zum Anhören in der Erklärung (z. B. englische Aussprache) */
   pronounce?: { text: string; lang: Lang };
+  /** englische Vokabel dieser Aufgabe (für die Vokabelkarten) */
+  word?: string;
   /** Stufe, mit der die Aufgabe erzeugt wurde */
   stage?: Stage;
   /** Punkte in einer Lernzielkontrolle */
