@@ -141,6 +141,14 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'Wk8WUn7xOaY', title: 'Der Zahlenstrahl bis 1000 (Klasse 3)', channel: 'Anja Wanke', len: '5:08' },
     { id: 'g1J7fY7Ebfw', title: 'Zahldarstellungen - Zahlenraum bis 1000 - Klasse 3', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:55' },
   ],
+  'm1-ordnen': [
+    { id: 'YxGL1z6U7Ig', title: 'Zahlen ordnen | Fundamente der Mathematik', channel: 'Cornelsen Verlag', len: '1:18' },
+    { id: '7UW56fXmYHg', title: 'Kleiner, größer, gleich - Teil 1 - Klasse 1', channel: 'GoMo - Erklärvideos Mathematik Grundschule', len: '1:35' },
+  ],
+  'm2-ergaenzen': [
+    { id: 'nY0ePYxrONI', title: 'Ergänzungsaufgaben im Zahlenraum bis 100 - 2. Klasse', channel: 'LiveLoveTeach', len: '4:39' },
+    { id: 'zNCDmBneaDY', title: 'Klasse 2 - Lückenaufgaben mit Minus', channel: 'Frau F. Fuchsklasse', len: '4:58' },
+  ],
   'm1-geld': [
     { id: 'uhXcy-X31nE', title: 'Rechnen mit Geld in Klasse 1 – einfach erklärt', channel: 'Mathe - Sivakids', len: '6:32' },
     { id: 'ihk1gUcr51E', title: 'Einführung Euro / Mathematik Klasse 1', channel: 'Lernen mit Leo', len: '6:22' },

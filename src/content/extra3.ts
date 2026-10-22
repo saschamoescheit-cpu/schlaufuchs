@@ -431,8 +431,10 @@ function cubesTask(r: Rng, s: Stage): Gen {
 
 export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
+  M(1, 'm1-ordnen', 'Zahlen ordnen', '🔢', { text: ['Am Zahlenstrahl stehen die kleinen Zahlen links, die großen rechts.', 'Zum Ordnen suchst du zuerst die kleinste Zahl, dann die nächstgrößere – bis zur größten.', 'Das Zeichen < heißt „kleiner als“: 3 < 7.'], visual: { kind: 'numberline', from: 0, to: 10, start: 7, jumps: [] }, videoQuery: 'Zahlen ordnen der Größe nach Klasse 1' }, ordnenTask, { tagLabels: { kleinste: 'kleinste Zahl finden', groesste: 'größte Zahl finden', ordnen: 'Zahlen der Reihe nach ordnen', verwechselt: 'kleinste und größte verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-geld', 'Geld bis 20 €', '💶', { text: ['Auf jeder Münze und jedem Schein steht, wie viel sie wert sind: 1 €, 2 €, 5 €, 10 €.', 'Zähle immer vom größten zum kleinsten Wert und zähle dabei weiter: 10, 15, 17, 18.', 'Nicht die Münzen zählen – ihren Wert zählen!'], visual: { kind: 'money', items: [1000, 500, 200, 100] }, videoQuery: 'Geld zählen Euro Klasse 1' }, geld1Task, { tagLabels: { zaehlen: 'Geld zählen', rest: 'Restgeld', 'stueck-gezaehlt': 'Münzen statt Wert gezählt', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 25 }),
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
+  M(2, 'm2-ergaenzen', 'Ergänzen und Platzhalter', '🧩', { text: ['Ergänzen bis 100: Erst bis zum nächsten Zehner, dann bis 100. 37 + 3 = 40, 40 + 60 = 100 → 63.', 'Steht die Lücke in der Mitte oder vorne, hilft die Umkehraufgabe: 25 + ☐ = 60 → 60 − 25 = 35.', 'Mach immer die Probe: Stimmt die Aufgabe mit deiner Zahl?'], visual: { kind: 'numberline', from: 30, to: 100, start: 37, jumps: [3, 60], step: 10, minor: 5 }, videoQuery: 'Ergänzen bis 100 Platzhalteraufgaben Klasse 2' }, ergaenzenTask, { tagLabels: { 'bis-100': 'bis 100 ergänzen', platzhalter: 'Platzhalteraufgaben', 'zehner-zu-viel': 'einen Zehner zu viel', 'falsch-gerechnet': 'Umkehraufgabe nicht genutzt' }, testSeconds: 25 }),
   M(3, 'm3-geteilt-gross', 'Teilen mit großen Zahlen', '➗', { text: ['Große Zahlen teilst du in Schritten: Zerlege die Zahl in zwei Teile, die du gut teilen kannst.', '84 : 4 → 80 : 4 = 20 und 4 : 4 = 1 → zusammen 21.', 'Probe mit der Malaufgabe: 21 · 4 = 84 ✓'], visual: { kind: 'text', text: '84 : 4 = 80 : 4 + 4 : 4 = 21' }, videoQuery: 'halbschriftliche Division Klasse 3 erklärt' }, teilenGrossTask, { tagLabels: { zweistellig: 'zweistellige Zahlen teilen', dreistellig: 'dreistellige Zahlen teilen', 'teil-vergessen': 'einen Teil vergessen' }, testSeconds: 30 }),
   M(3, 'm3-zahlenstrahl', 'Zahlenstrahl bis 1000', '📐', { text: ['Am Zahlenstrahl bis 1000 ist ein kleiner Strich oft 10 oder 50 wert.', 'Schau dir zuerst zwei beschriftete Zahlen an: Wie viele Striche liegen dazwischen? So findest du den Wert eines Strichs.', 'Dann zählst du von der nächsten beschrifteten Zahl weiter.'], visual: { kind: 'numberline', from: 300, to: 400, start: 370, jumps: [], step: 50, minor: 10, ask: true }, videoQuery: 'Zahlenstrahl bis 1000 Klasse 3' }, strahl1000, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(3, 'm3-zahlwoerter', 'Zahlwörter lesen und schreiben', '🔤', { text: ['Zahlwörter schreibt man zusammen: dreihundertvierundfünfzig = 354.', 'Achtung: Im Deutschen sagt man die Einer vor den Zehnern – vier-und-fünfzig, aber geschrieben 54.', 'Lies lange Zahlwörter in Stücken: drei-hundert | vier-und-fünfzig.'], visual: { kind: 'text', text: 'dreihundert · vierund · fünfzig = 354' }, videoQuery: 'Zahlwörter schreiben Zahlen bis 1000 Klasse 3' }, zahlwortTask, { tagLabels: { 'bis-100': 'Zahlwörter bis 100', 'bis-1000': 'Zahlwörter bis 1000', zahlendreher: 'Zahlendreher (Einer und Zehner vertauscht)' }, testSeconds: 20 }),
@@ -440,6 +442,57 @@ export const MATHE_EXTRA3: Skill[] = [
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
   M(4, 'm4-bruchgroessen', 'Brüche bei Größen: ½, ¼, ¾', '🍰', { text: ['½ heißt: die Hälfte. ½ kg = 500 g, ½ h = 30 min.', '¼ heißt: ein Viertel – das Ganze durch 4. ¼ l = 250 ml, ¼ h = 15 min.', '¾ sind drei Viertel: ¾ h = 45 min, ¾ kg = 750 g.'], visual: { kind: 'text', text: '½ kg = 500 g · ¼ h = 15 min' }, videoQuery: 'Brüche bei Größen halb viertel Klasse 4' }, fracTask, { tagLabels: { halb: 'halbe Größen', viertel: 'Viertel und Dreiviertel', 'prozent-gedacht': 'Umrechnungszahl vergessen' }, testSeconds: 25 }),
 ];
+
+// ---------- Ergänzen und Platzhalter bis 100 (Kl. 2) ----------
+
+function ergaenzenTask(r: Rng, s: Stage): Gen {
+  const form = s === 1 ? 'bis100' : s === 2 ? pick(r, ['bis100', 'plus']) : pick(r, ['plus', 'vorne', 'minus']);
+  if (form === 'bis100') {
+    const a = s === 1 ? ri(r, 1, 9) * 10 : ri(r, 11, 89);
+    const x = 100 - a;
+    const toTen = (10 - (a % 10)) % 10;
+    const wrongTens = x + 10;
+    return {
+      key: `e-${a}`,
+      prompt: `${a} + ☐ = 100`,
+      answer: { type: 'number', value: x },
+      tags: ['bis-100'],
+      traps: toTen ? [{ answer: String(wrongTens), tag: 'zehner-zu-viel', hint: `Prüfe: ${a} + ${wrongTens} = ${a + wrongTens} – das ist zu viel. Nach dem Ergänzen zum Zehner ist ein Zehner schon voll.` }] : [],
+      solution: toTen ? [`Erst bis zum nächsten Zehner: ${a} + ${toTen} = ${a + toTen}`, `Dann bis 100: ${a + toTen} + ${100 - a - toTen} = 100`, `Zusammen: ${toTen} + ${100 - a - toTen} = ${x}`] : [`${a} + ${x} = 100`, `${a / 10} Zehner + ${x / 10} Zehner = 10 Zehner`],
+    };
+  }
+  const a = ri(r, 12, 58);
+  const x = ri(r, 11, 99 - a);
+  const sum = a + x;
+  if (form === 'plus') return { key: `p-${a}-${sum}`, prompt: `${a} + ☐ = ${sum}`, answer: { type: 'number', value: x }, tags: ['platzhalter'], traps: [{ answer: String(sum + a), tag: 'falsch-gerechnet', hint: `Gesucht ist, was zu ${a} dazukommt. Rechne ${sum} − ${a}.` }], solution: [`Was fehlt von ${a} bis ${sum}?`, `Umkehraufgabe: ${sum} − ${a} = ${x}`, `Probe: ${a} + ${x} = ${sum}`] };
+  if (form === 'vorne') return { key: `v-${x}-${sum}`, prompt: `☐ + ${x} = ${sum}`, answer: { type: 'number', value: a }, tags: ['platzhalter'], traps: [{ answer: String(sum + x), tag: 'falsch-gerechnet', hint: `Rechne rückwärts: ${sum} − ${x}.` }], solution: [`Umkehraufgabe: ${sum} − ${x} = ${a}`, `Probe: ${a} + ${x} = ${sum}`] };
+  return { key: `m-${sum}-${a}`, prompt: `${sum} − ☐ = ${a}`, answer: { type: 'number', value: x }, tags: ['platzhalter'], traps: [{ answer: String(sum + a), tag: 'falsch-gerechnet', hint: `Wie viel muss weg, damit ${a} übrig bleibt? Rechne ${sum} − ${a}.` }], solution: [`Von ${sum} bis ${a} – wie viel ist weggenommen?`, `${sum} − ${a} = ${x}`, `Probe: ${sum} − ${x} = ${a}`] };
+}
+
+// ---------- Zahlen ordnen (Kl. 1) ----------
+
+function ordnenTask(r: Rng, s: Stage): Gen {
+  const n = s === 1 ? 3 : 4;
+  const nums = pickN(r, Array.from({ length: s === 1 ? 10 : 20 }, (_, i) => i + 1), n);
+  const sorted = [...nums].sort((a, b) => a - b);
+  const v = s === 1 ? pick(r, ['klein', 'gross']) : pick(r, ['klein', 'gross', 'reihe']);
+  if (v === 'reihe') {
+    const ok = sorted.join(' < ');
+    const wrong = [[...sorted].reverse().join(' < '), [sorted[1], sorted[0], ...sorted.slice(2)].join(' < '), [...sorted.slice(0, -2), sorted[n - 1], sorted[n - 2]].join(' < ')];
+    return { key: `r-${sorted.join('-')}`, prompt: `Welche Reihe ist richtig – von klein nach groß?\n${nums.join(', ')}`, answer: choice(r, ok, wrong), tags: ['ordnen'], solution: [`Von klein nach groß: ${ok}`, 'Suche zuerst die kleinste Zahl, dann die nächstgrößere …'] };
+  }
+  const ok = v === 'klein' ? sorted[0] : sorted[n - 1];
+  return {
+    key: `${v}-${sorted.join('-')}`,
+    prompt: `Welche Zahl ist am ${v === 'klein' ? 'kleinsten' : 'größten'}?`,
+    speak: `Welche Zahl ist am ${v === 'klein' ? 'kleinsten' : 'größten'}? ${nums.join(', ')}`,
+    answer: { ...choice(r, String(ok), nums.filter((x) => x !== ok).map(String)), big: true },
+    tags: [v === 'klein' ? 'kleinste' : 'groesste'],
+    traps: [{ answer: String(v === 'klein' ? sorted[n - 1] : sorted[0]), tag: 'verwechselt', hint: `Das ist die ${v === 'klein' ? 'größte' : 'kleinste'} Zahl. Gesucht ist die ${v === 'klein' ? 'kleinste' : 'größte'}.` }],
+    solution: [`Der Reihe nach: ${sorted.join(', ')}`, `Am ${v === 'klein' ? 'kleinsten' : 'größten'} ist ${ok}.`],
+    solutionVisual: { kind: 'numberline', from: 0, to: s === 1 ? 10 : 20, start: ok, jumps: [], step: s === 1 ? 1 : 5, minor: 1 },
+  };
+}
 
 // ---------- Zahlwörter (Kl. 3) ----------
 
