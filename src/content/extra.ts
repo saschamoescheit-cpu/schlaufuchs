@@ -377,6 +377,15 @@ const LISTEN: [string, string, string[]][] = [
   ['The shop is next to the school.', 'Der Laden ist neben der Schule.', ['Der Laden ist hinter der Schule.', 'Die Schule ist neben dem Park.', 'Der Laden ist in der Schule.']],
   ['My favourite food is spaghetti.', 'Mein Lieblingsessen ist Spaghetti.', ['Mein Lieblingsessen ist Pizza.', 'Ich mag keine Spaghetti.', 'Mein Lieblingstier ist ein Hund.']],
   ['Please open the window.', 'Bitte öffne das Fenster.', ['Bitte schließ das Fenster.', 'Bitte öffne die Tür.', 'Das Fenster ist offen.']],
+  // Nachtlauf 22.10.2026: mehr Aufgaben
+  ['My dad is a doctor.', 'Mein Papa ist Arzt.', ['Mein Papa ist Lehrer.', 'Meine Mama ist Ärztin.', 'Mein Opa ist Arzt.']],
+  ['The station is next to the park.', 'Der Bahnhof ist neben dem Park.', ['Der Bahnhof ist hinter dem Park.', 'Die Kirche ist neben dem Park.', 'Der Bahnhof ist im Park.']],
+  ['I have got a headache.', 'Ich habe Kopfschmerzen.', ['Ich habe Bauchschmerzen.', 'Ich habe Zahnschmerzen.', 'Ich bin müde.']],
+  ['My favourite subject is Art.', 'Mein Lieblingsfach ist Kunst.', ['Mein Lieblingsfach ist Musik.', 'Mein Lieblingsfach ist Mathe.', 'Ich mag keine Kunst.']],
+  ['Look! A rainbow!', 'Schau! Ein Regenbogen!', ['Schau! Ein Flugzeug!', 'Schau! Eine Wolke!', 'Ich sehe keinen Regenbogen.']],
+  ['We go to the beach in summer.', 'Im Sommer fahren wir an den Strand.', ['Im Winter fahren wir an den Strand.', 'Im Sommer fahren wir in die Berge.', 'Im Sommer gehen wir ins Schwimmbad.']],
+  ['Can I have two pears, please?', 'Kann ich bitte zwei Birnen haben?', ['Kann ich bitte zwei Äpfel haben?', 'Kann ich bitte drei Birnen haben?', 'Ich mag keine Birnen.']],
+  ['The owl sleeps in the day.', 'Die Eule schläft am Tag.', ['Die Eule schläft in der Nacht.', 'Die Katze schläft am Tag.', 'Die Eule fliegt am Tag.']],
 ];
 function listenTask(r: Rng, s: Stage): Gen {
   const [en, de, w] = pick(r, LISTEN);

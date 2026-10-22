@@ -354,7 +354,10 @@ const doppel = D(2, 'd2-doppelkonsonant', 'Doppelte Mitlaute', '👯‍♀️', 
 
 const CKTZ: Pair[] = [['Zucker', 'Zuker', '🍬'], ['Decke', 'Deke', '🛏️'], ['Glocke', 'Gloke', '🔔'], ['Socke', 'Soke', '🧦'], ['Jacke', 'Jake', '🧥'], ['Schnecke', 'Schneke', '🐌'], ['Brücke', 'Brüke', '🌉'], ['Rucksack', 'Ruksak', '🎒'],
   ['Katze', 'Kaze', '🐱'], ['Mütze', 'Müze', '🧢'], ['Spatz', 'Spaz', '🐦'], ['Blitz', 'Bliz', '⚡'], ['Platz', 'Plaz', '🏟️'], ['Tatze', 'Taze', '🐾'], ['Pfütze', 'Pfüze', '💦'],
-  ['Brezel', 'Bretzel', '🥨'], ['Kerze', 'Kertze', '🕯️'], ['Pilz', 'Piltz', '🍄'], ['Kreuz', 'Kreutz', '✝️'], ['Onkel', 'Onckel', '👨'], ['Bank', 'Banck', '🪑'], ['Haken', 'Hacken', '🪝']];
+  ['Brezel', 'Bretzel', '🥨'], ['Kerze', 'Kertze', '🕯️'], ['Pilz', 'Piltz', '🍄'], ['Kreuz', 'Kreutz', '✝️'], ['Onkel', 'Onckel', '👨'], ['Bank', 'Banck', '🪑'], ['Haken', 'Hacken', '🪝'],
+  // Nachtlauf 22.10.2026: mehr Aufgaben
+  ['Wecker', 'Weker', '⏰'], ['Bäcker', 'Bäker', '🥖'], ['Rock', 'Rok', '👗'], ['Mücke', 'Müke', '🦟'], ['Hitze', 'Hize', '🥵'], ['Witz', 'Wiz', '😂'], ['Netz', 'Nez', '🥅'], ['Schatz', 'Schaz', '💰'],
+  ['Herz', 'Hertz', '❤️'], ['Salz', 'Saltz', '🧂'], ['Park', 'Parck', '🏞️']];
 const cktz = D(2, 'd2-ck-tz', 'ck und tz', '🧦', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ck statt kk und tz statt zz: Socke, Katze.', 'Nach einem langen Selbstlaut, nach au/ei/eu oder nach einem Mitlaut (l, n, r) steht nur k oder z: Haken, Kreuz, Kerze, Onkel.', 'Merkspruch: Nach l, n, r – das merke ja – steht nie tz und nie ck!'],
   visual: { kind: 'word', word: 'Socke', mark: [[2, 4]] },
@@ -552,6 +555,11 @@ const AE_EU: [string, string, string, string, string?][] = [
   ['Fenster', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🪟'], ['Wetter', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🌦️'], ['Ende', 'E', 'Ä', 'Es gibt kein verwandtes Wort mit a – also e.'], ['Mensch', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🧑'],
   ['Bäume', 'äu', 'eu', 'Bäume kommt von Baum.', '🌳'], ['Häuser', 'äu', 'eu', 'Häuser kommt von Haus.', '🏘️'], ['Mäuse', 'äu', 'eu', 'Mäuse kommt von Maus.', '🐭'], ['Träume', 'äu', 'eu', 'Träume kommt von Traum.', '💭'], ['läuft', 'äu', 'eu', 'läuft kommt von laufen.', '🏃'],
   ['Feuer', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🔥'], ['heute', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '📆'], ['Freund', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🤝'], ['Eule', 'Eu', 'Äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🦉'], ['Leute', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '👥'],
+  // Nachtlauf 22.10.2026: mehr Aufgaben
+  ['Blätter', 'ä', 'e', 'Blätter kommt von Blatt.', '🍂'], ['Zähne', 'ä', 'e', 'Zähne kommt von Zahn.', '🦷'], ['Räder', 'ä', 'e', 'Räder kommt von Rad.', '🚲'], ['Nächte', 'ä', 'e', 'Nächte kommt von Nacht.', '🌙'],
+  ['Hemd', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '👔'], ['Becher', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🥤'],
+  ['Kräuter', 'äu', 'eu', 'Kräuter kommt von Kraut.', '🌿'], ['träumen', 'äu', 'eu', 'träumen kommt von Traum.', '😴'],
+  ['Beule', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🤕'], ['neun', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '9️⃣'], ['Euro', 'Eu', 'Äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '💶'],
 ];
 const aeEu = D(3, 'd3-ae-aeu', 'ä oder e, äu oder eu', '🌳', {
   text: ['ä und e klingen gleich, äu und eu auch.', 'Trick: Suche ein verwandtes Wort mit a oder au (ableiten).', 'Bäume → Baum: also äu. Hände → Hand: also ä.', 'Findest du kein verwandtes Wort mit a/au, schreibst du e oder eu: Feuer, Fenster.'],
@@ -653,6 +661,10 @@ const FAELLE: { s: string; mark: string; fall: 'Nominativ' | 'Genitiv' | 'Dativ'
   { s: 'Lena ruft **ihren Bruder**.', mark: 'ihren Bruder', fall: 'Akkusativ' }, { s: 'Tim schreibt **seiner Freundin** einen Brief.', mark: 'seiner Freundin', fall: 'Dativ' }, { s: '**Mein Opa** repariert das Fahrrad.', mark: 'Mein Opa', fall: 'Nominativ' }, { s: 'Wir besuchen **den Zoo**.', mark: 'den Zoo', fall: 'Akkusativ' },
   { s: '**Der Ball** liegt im Gras.', mark: 'Der Ball', fall: 'Nominativ' }, { s: 'Ich werfe **den Ball**.', mark: 'den Ball', fall: 'Akkusativ' }, { s: 'Der Hund rennt **dem Ball** hinterher.', mark: 'dem Ball', fall: 'Dativ' }, { s: 'Die Farbe **des Balles** ist rot.', mark: 'des Balles', fall: 'Genitiv' },
   { s: 'Wir danken **dem Arzt**.', mark: 'dem Arzt', fall: 'Dativ' }, { s: 'Mama ruft **den Arzt** an.', mark: 'den Arzt', fall: 'Akkusativ' }, { s: 'Die Praxis **des Arztes** ist groß.', mark: 'des Arztes', fall: 'Genitiv' }, { s: '**Die Katze** jagt eine Maus.', mark: 'Die Katze', fall: 'Nominativ' }, { s: 'Die Katze jagt **eine Maus**.', mark: 'eine Maus', fall: 'Akkusativ' },
+  // Nachtlauf 22.10.2026: mehr Aufgaben
+  { s: '**Die Katze** schläft auf dem Sofa.', mark: 'Die Katze', fall: 'Nominativ' }, { s: 'Ich streichle **die Katze**.', mark: 'die Katze', fall: 'Akkusativ' }, { s: 'Ich gebe **der Katze** Milch.', mark: 'der Katze', fall: 'Dativ' },
+  { s: 'Das Fell **der Katze** ist weich.', mark: 'der Katze', fall: 'Genitiv' }, { s: 'Das Dach **des Hauses** ist rot.', mark: 'des Hauses', fall: 'Genitiv' }, { s: 'Wir besuchen **unsere Oma**.', mark: 'unsere Oma', fall: 'Akkusativ' },
+  { s: 'Ben hilft **seinem Vater** im Garten.', mark: 'seinem Vater', fall: 'Dativ' }, { s: '**Die Kinder** spielen Verstecken.', mark: 'Die Kinder', fall: 'Nominativ' },
 ];
 const FRAGE = { Nominativ: 'Wer oder was?', Genitiv: 'Wessen?', Dativ: 'Wem?', Akkusativ: 'Wen oder was?' } as const;
 const faelle = D(4, 'd4-faelle', 'Die vier Fälle', '🗝️', {
@@ -685,6 +697,9 @@ const DAS_DASS: [string, 'das' | 'dass'][] = [
   ['Ich weiß, ☐ du das kannst.', 'dass'], ['Das Lied, ☐ wir singen, ist lustig.', 'das'], ['Papa meint, ☐ es zu kalt zum Baden ist.', 'dass'], ['Gib mir bitte ☐ Heft.', 'das'],
   ['Es ist wichtig, ☐ wir uns die Hände waschen.', 'dass'], ['☐ Wetter ist heute schön.', 'das'], ['Lea erzählt, ☐ ihre Katze Junge bekommen hat.', 'dass'], ['Das Spiel, ☐ wir gestern gespielt haben, war toll.', 'das'],
   ['Ich bin froh, ☐ heute Freitag ist.', 'dass'], ['Kennst du ☐ Mädchen mit der roten Mütze?', 'das'],
+  // Nachtlauf 22.10.2026: mehr Aufgaben
+  ['Ich finde, ☐ du recht hast.', 'dass'], ['☐ Auto, ☐ dort parkt, gehört meinem Onkel.', 'das'], ['Hast du gehört, ☐ morgen die Schule ausfällt?', 'dass'], ['Wir sehen ☐ Feuerwerk vom Balkon aus.', 'das'],
+  ['Ich wünsche mir, ☐ es schneit.', 'dass'], ['☐ Mädchen, ☐ neben mir sitzt, heißt Lara.', 'das'], ['Mia ist traurig, ☐ ihr Hamster krank ist.', 'dass'], ['Bring bitte ☐ Brot mit.', 'das'],
 ];
 const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   text: ['„das“ ist ein Artikel oder Begleiter: das Buch – oder es steht für ein Nomen.', 'Probe: Kannst du „dieses“, „jenes“ oder „welches“ einsetzen? Dann schreibst du „das“.', '„dass“ verbindet zwei Sätze und steht oft nach Verben wie glauben, hoffen, sagen, wissen: „Ich hoffe, dass …“.', 'Vor „dass“ steht immer ein Komma.'],
