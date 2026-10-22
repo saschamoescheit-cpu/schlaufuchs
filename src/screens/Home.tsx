@@ -125,6 +125,15 @@ export function Home({ profile, progress, onSubject, onReview, onPractice, onPro
           <span className="btn small ok">Üben</span>
         </button>
       )}
+
+      <button className="callout plain" onClick={() => onMix(SUBJECTS.flatMap((s) => (s.id === 'englisch' && englishYear(profile) === 0 ? [] : currentSkills(s.id, profile))), 'Tagesmix')}>
+        <span className="ci">🎲</span>
+        <span className="grow">
+          <b style={{ fontFamily: 'var(--head)', fontSize: '1.1rem' }}>Tagesmix</b>
+          <div className="small muted">Von allem etwas – was schwerfällt, kommt öfter.</div>
+        </span>
+        <span className="btn small">Los</span>
+      </button>
     </div>
   );
 }

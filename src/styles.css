@@ -2145,3 +2145,8 @@ details.more .inner {
   color: var(--ink, #2b2340);
   font-weight: 700;
 }
+
+.callout.plain {
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
