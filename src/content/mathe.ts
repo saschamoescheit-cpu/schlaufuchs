@@ -823,9 +823,12 @@ const GROESSEN: { q: (r: Rng) => { p: string; v: number; unit: string; tag: stri
   { q: (r) => { const k = ri(r, 2, 9), g = ri(r, 1, 9) * 100; return { p: `${k} kg ${g} g = ☐ g`, v: k * 1000 + g, unit: 'g', tag: 'gewicht', sol: ['1 kg = 1000 g', `${k * 1000} g + ${g} g = ${k * 1000 + g} g`], trap: k * 100 + g }; } },
   { q: (r) => { const k = ri(r, 2, 9), m = ri(r, 1, 9) * 100; return { p: `${k} km ${m} m = ☐ m`, v: k * 1000 + m, unit: 'm', tag: 'länge', sol: ['1 km = 1000 m', `${k * 1000} m + ${m} m = ${k * 1000 + m} m`], trap: k * 100 + m }; } },
   { q: (r) => { const t = ri(r, 2, 9); return { p: `${t * 1000} ml = ☐ l`, v: t, unit: 'l', tag: 'liter', sol: ['1000 ml = 1 l', `${t * 1000} ml = ${t} l`] }; } },
+  // Tonne (NRW Kl. 4: t, kg, g)
+  { q: (r) => { const t = ri(r, 2, 9); return { p: `${t} t = ☐ kg`, v: t * 1000, unit: 'kg', tag: 'gewicht', sol: ['1 t = 1000 kg', `${t} t = ${t} · 1000 kg = ${t * 1000} kg`], trap: t * 100 }; } },
+  { q: (r) => { const t = ri(r, 1, 5), k = ri(r, 1, 9) * 100; return { p: `${t} t ${k} kg = ☐ kg`, v: t * 1000 + k, unit: 'kg', tag: 'gewicht', sol: ['1 t = 1000 kg', `${t * 1000} kg + ${k} kg = ${t * 1000 + k} kg`], trap: t * 100 + k }; } },
 ];
 const groessen4 = M(4, 'm4-groessen', 'Größen umrechnen', '🔄', {
-  text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!'],
+  text: ['Merke dir die Umrechnungszahlen:', '1 km = 1000 m · 1 m = 100 cm · 1 cm = 10 mm', '1 t = 1000 kg · 1 kg = 1000 g · 1 l = 1000 ml · 1 € = 100 ct', '1 Tag = 24 h · 1 h = 60 min · 1 min = 60 s', 'Achtung bei der Zeit: Hier ist die Umrechnungszahl 60, nicht 100!'],
   videoQuery: 'Größen umrechnen Klasse 4 Längen Gewichte Zeit Hohlmaße',
 }, (r, s) => {
   const g = GROESSEN[pick(r, s === 1 ? [0, 1, 3, 4, 8] : s === 3 ? [2, 5, 6, 7] : [0, 1, 2, 3, 4, 5, 6, 7, 8])].q(r);
