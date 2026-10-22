@@ -282,5 +282,17 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'MxVUfy-eLDY', title: 'Jobs & Occupations Chant for Children', channel: 'Fun Kids English', len: '3:20' },
     { id: 'ckKQclquAXU', title: 'Jobs Song for Kids | What Do You Do?', channel: 'Fun Kids English', len: '2:52' },
   ],
+  'm2-zufall': [
+    { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
+    { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },
+  ],
+  'm2-daten': [
+    { id: 'Bt4ixLS3W1o', title: 'Strichliste erstellen bis 10 - Grundschule - Klasse 1', channel: 'Lehrerschmidt - Grundschule', len: '4:07' },
+    { id: 'notqFpwVAts', title: 'Urliste, Strichliste und Häufigkeitstabelle', channel: 'Lehrerschmidt', len: '5:10' },
+  ],
+  'e2-subjects': [
+    { id: 'AnZxeX_8mVk', title: "School Subjects [Kids Vocab] What's Your Favorite Subject?", channel: 'English Singsing', len: '2:24' },
+    { id: 'JoDm0RC5gk8', title: 'School Subjects Song | What Do You Study at School?', channel: 'Fun Kids English', len: '2:52' },
+  ],
   'e2-wildanimals': [{ id: 'Oxw6FoUNeT4', title: 'Sea Animals [Kids Vocab] Under the Sea – Shark, Whale & Sea Creatures', channel: 'English Singsing', len: '4:09' }],
 };

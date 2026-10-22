@@ -551,6 +551,47 @@ function Word({ word, mark }: { word: string; mark?: [number, number][] }) {
 }
 
 const MARBLE: Record<string, string> = { rot: '#E5484D', blau: '#3E7BFA', grün: '#30A46C', gelb: '#F5C518' };
+/** Strichliste: vier senkrechte Striche, der fünfte quer darüber */
+function TallyMarks({ n }: { n: number }) {
+  const groups = Math.ceil(n / 5);
+  const w = groups * 34;
+  return (
+    <svg width={Math.max(w, 10)} height="28" viewBox={`0 0 ${Math.max(w, 10)} 28`} aria-hidden>
+      {Array.from({ length: groups }, (_, g) => {
+        const k = Math.min(5, n - g * 5);
+        const x0 = g * 34 + 3;
+        return (
+          <g key={g} stroke="currentColor" strokeWidth="2.6" strokeLinecap="round">
+            {Array.from({ length: Math.min(4, k) }, (_, i) => (
+              <line key={i} x1={x0 + i * 6} y1="4" x2={x0 + i * 6} y2="24" />
+            ))}
+            {k === 5 && <line x1={x0 - 3} y1="20" x2={x0 + 21} y2="8" />}
+          </g>
+        );
+      })}
+    </svg>
+  );
+}
+function Tally({ title, rows }: { title?: string; rows: { label: string; n: number }[] }) {
+  return (
+    <div className="vis-table-wrap">
+      {title && <div className="vis-text-title">{title}</div>}
+      <table className="vis-table tally">
+        <tbody>
+          {rows.map((r) => (
+            <tr key={r.label}>
+              <th scope="row">{r.label}</th>
+              <td aria-label={`${r.n} Striche`}>
+                <TallyMarks n={r.n} />
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
 function Marbles({ colors }: { colors: Record<string, number> }) {
   const list = Object.entries(colors).flatMap(([c, n]) => Array.from({ length: n }, () => c));
   const per = 5;
@@ -794,6 +835,8 @@ export function Visual({ v }: { v: V }) {
       return <div className="vis-color" style={{ background: v.hex }} aria-label="Farbe" />;
     case 'marbles':
       return <Marbles colors={v.colors} />;
+    case 'tally':
+      return <Tally title={v.title} rows={v.rows} />;
     case 'compare':
       return <Compare a={v.a} b={v.b} />;
     case 'text':

@@ -7,6 +7,7 @@ import { DIKTAT } from './diktat';
 import { DEUTSCH_EXTRA, ENGLISCH_EXTRA, MATHE_EXTRA } from './extra';
 import { DEUTSCH_EXTRA2, ENGLISCH_EXTRA2, MATHE_EXTRA2 } from './extra2';
 import { DEUTSCH_EXTRA3, ENGLISCH_EXTRA3, MATHE_EXTRA3 } from './extra3';
+import { MATHE_EXTRA4 } from './extra4';
 
 export interface StateInfo {
   code: string;
@@ -47,7 +48,7 @@ export const SUBJECTS: { id: Subject; name: string; icon: string; color: string;
 ];
 export const subjectInfo = (s: Subject) => SUBJECTS.find((x) => x.id === s)!;
 
-export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3];
+export const ALL_SKILLS: Skill[] = [...MATHE, ...MATHE_EXTRA, ...MATHE_EXTRA2, ...MATHE_EXTRA3, ...MATHE_EXTRA4, ...DIKTAT, ...DEUTSCH, ...DEUTSCH_EXTRA, ...DEUTSCH_EXTRA2, ...DEUTSCH_EXTRA3, ...ENGLISCH, ...ENGLISCH_EXTRA, ...ENGLISCH_EXTRA2, ...ENGLISCH_EXTRA3];
 // Erklärbilder für Themen, die (noch) keins im Inhalt mitbringen – zu jedem Erklärtext gehört ein Bild
 const EXPLAIN_VISUALS: Record<string, Visual> = {
   'm2-verdoppeln': { kind: 'array', rows: 2, cols: 8 },
@@ -94,7 +95,7 @@ export function currentLevel(subject: Subject, p: ProfileLike): Grade {
 export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((s) => s.subject === subject && (grade === undefined || s.grade === grade));
 
 /** Englisch-Themen, die reine Wortfelder sind (Vokabeltrainer, Vokabeltest) */
-const VOCAB_RE = /colours|numbers|animals|family|body|school|food|clothes|days|toys|festivals|months|weather|feelings|actions|home|hobbies|shapes|fruit|transport|nature|town|jobs/;
+const VOCAB_RE = /colours|numbers|animals|family|body|school|food|clothes|days|toys|festivals|months|weather|feelings|actions|home|hobbies|shapes|fruit|transport|nature|town|jobs|subjects/;
 export const isVocab = (s: Skill) => s.subject === 'englisch' && VOCAB_RE.test(s.id);
 
 /** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
@@ -103,7 +104,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
     { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen|ziffern/ },
     { name: 'Rechnen', re: /plus|minus|ergaenzen|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|ueberschlag/ },
     { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|rechengeschichten|fahrplan|massstab/ },
-    { name: 'Geometrie und Daten', re: /formen|lage|parallel|muster|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik/ },
+    { name: 'Geometrie und Daten', re: /formen|lage|parallel|muster|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik|zufall|daten/ },
   ],
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben|nachspuren|lautposition/ },

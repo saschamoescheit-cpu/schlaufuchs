@@ -123,6 +123,11 @@ const WILD: Word[] = [
   { en: 'bee', de: 'Biene', e: '🐝' }, { en: 'butterfly', de: 'Schmetterling', e: '🦋' }, { en: 'spider', de: 'Spinne', e: '🕷️' }, { en: 'giraffe', de: 'Giraffe', e: '🦒' }, { en: 'zebra', de: 'Zebra', e: '🦓' },
   { en: 'hedgehog', de: 'Igel', e: '🦔' }, { en: 'squirrel', de: 'Eichhörnchen', e: '🐿️' },
 ];
+const SUBJECTS: Word[] = [
+  { en: 'Maths', de: 'Mathe', e: '🔢' }, { en: 'English', de: 'Englisch', e: '💂' }, { en: 'German', de: 'Deutsch', e: '📚' }, { en: 'Art', de: 'Kunst', e: '🎨' },
+  { en: 'Music', de: 'Musik', e: '🎼' }, { en: 'PE', de: 'Sport', e: '🤸' }, { en: 'Science', de: 'Sachunterricht', e: '🔬' }, { en: 'timetable', de: 'Stundenplan', e: '🗓️' },
+  { en: 'break', de: 'Pause', e: '🥪' }, { en: 'homework', de: 'Hausaufgaben', e: '📝' }, { en: 'lesson', de: 'Unterrichtsstunde', e: '🔔' },
+];
 
 // ---------- 1. Lernjahr ----------
 const colours = vocabSkill(1, 'e1-colours', 'Colours – Farben', '🎨', COLOURS, ['red = rot, blue = blau, green = grün, yellow = gelb.', 'Achtung: purple = lila, pink = rosa, grey = grau.', 'Im Englischen schreibt man Farben klein.'], 'colours song for kids English');
@@ -182,6 +187,7 @@ const actions = vocabSkill(2, 'e2-actions', 'Actions – Was ich tue', '🏃', A
 const home = vocabSkill(2, 'e2-home', 'My home – Zuhause', '🏠', HOME, ['kitchen = Küche, bathroom = Bad, bedroom = Schlafzimmer, living room = Wohnzimmer.', "Where's mum? – She's in the kitchen."], 'rooms in the house English for kids');
 const town = vocabSkill(2, 'e2-town', 'In town – In der Stadt', '🏙️', TOWN, ['hospital = Krankenhaus, station = Bahnhof, church = Kirche, cinema = Kino.', "Where's the station? – It's next to the park.", 'swimming pool = Schwimmbad, post office = Post, fire station = Feuerwache.'], 'places in town vocabulary English for kids');
 const jobs = vocabSkill(2, 'e2-jobs', 'Jobs – Berufe', '🧑‍🚒', JOBS, ['doctor = Arzt / Ärztin, farmer = Bauer / Bäuerin, pilot = Pilot / Pilotin.', 'Im Englischen ist das Wort meist für Frauen und Männer gleich: She is a doctor. He is a doctor.', 'What do you want to be? – I want to be a firefighter.'], 'jobs and occupations vocabulary English for kids');
+const subjects = vocabSkill(2, 'e2-subjects', 'School subjects – Schulfächer', '🗓️', SUBJECTS, ['Maths = Mathe, German = Deutsch, Art = Kunst, Music = Musik, PE = Sport.', 'Schulfächer schreibt man im Englischen groß: I like Maths.', "What's your favourite subject? – My favourite subject is Art."], 'school subjects vocabulary English for kids');
 const wild = vocabSkill(2, 'e2-wildanimals', 'Wild animals – Wilde Tiere', '🦊', WILD, ['In the sea: shark (Hai), whale (Wal), dolphin (Delfin), octopus (Krake).', 'In the forest: fox (Fuchs), owl (Eule), hedgehog (Igel), squirrel (Eichhörnchen).', 'Mehrzahl: one butterfly – two butterflies, one fox – two foxes.'], 'wild animals vocabulary English for kids');
 
 const clockEn = (h: number, m: number) => (m === 0 ? `${numEn(h)} o'clock` : m === 30 ? `half past ${numEn(h)}` : m === 15 ? `quarter past ${numEn(h)}` : `quarter to ${numEn(h % 12 + 1)}`);
@@ -273,4 +279,4 @@ const sentences = E(2, 'e2-sentences', 'Little sentences', '💬', { text: ['I a
   return { key: b.s, prompt: `Was passt?\n${b.s}`, speak: 'Was passt in die Lücke?', answer: { ...choice(r, b.ok, b.opts), speakOptions: 'en' }, tags: [b.tag], solution: [full, b.why], pronounce: { text: full.replace(/[^\x20-\x7E']/g, '').trim(), lang: 'en' } };
 }, { tagLabels: { 'to-be': 'am / is / are', can: "can / can't", like: 'like / likes', 'have-got': 'have got / has got', my: 'my' }, testSeconds: 20 });
 
-export const ENGLISCH: Skill[] = [colours, numbers20, animals, family, body, school, food, clothes, days, fruit, transport, nature, phrases, numbers100, months, weather, feelings, actions, home, town, jobs, wild, time, preps, grammar1, sentences];
+export const ENGLISCH: Skill[] = [colours, numbers20, animals, family, body, school, food, clothes, days, fruit, transport, nature, phrases, numbers100, months, weather, feelings, actions, home, town, jobs, wild, subjects, time, preps, grammar1, sentences];

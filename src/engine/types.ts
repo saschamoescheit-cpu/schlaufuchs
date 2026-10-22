@@ -39,6 +39,8 @@ export type Visual =
   | { kind: 'net'; cells: [number, number][] }
   /** Säulendiagramm */
   | { kind: 'bars'; title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string; step?: number; top?: number }
+  // Strichliste: je Zeile Striche in Fünferbündeln
+  | { kind: 'tally'; title?: string; rows: { label: string; n: number }[] }
   /** Raster aus Bildern (Lagebeziehungen): Zeilen von oben nach unten, '' = leer */
   | { kind: 'grid'; rows: string[][]; mark?: [number, number] }
   /** Würfelgebäude im Schrägbild: Höhen je Feld, Zeilen von hinten nach vorne */
