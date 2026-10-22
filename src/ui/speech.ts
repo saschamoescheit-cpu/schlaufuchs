@@ -141,8 +141,8 @@ function unlock() {
   for (const ev of UNLOCK_EVENTS) window.removeEventListener(ev, unlock, true);
   try {
     if (synth.paused) synth.resume();
+    // Leerzeichen bei normaler Lautstärke: nicht zu hören. Lautstärke 0 bleibt auf iOS für ALLE folgenden Ausgaben hängen.
     const u = new SpeechSynthesisUtterance(' ');
-    u.volume = 0;
     synth.speak(u);
   } catch {
     /* egal */
@@ -180,6 +180,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
     if (v) u.voice = v;
     u.rate = slow ? 0.75 : lang === 'en' ? 0.85 : 0.95;
     u.pitch = 1.05;
+    u.volume = 1; // ausdrücklich: iOS übernimmt sonst eine früher gesetzte Lautstärke
     return u;
   };
   let tries = 0;

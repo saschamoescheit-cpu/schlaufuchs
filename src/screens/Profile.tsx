@@ -605,6 +605,7 @@ function SpeechDiagnosis() {
     if (!s) return slog('direkt: keine Sprachausgabe im Browser');
     const u = new SpeechSynthesisUtterance('Hallo, hier spricht der Browser direkt.');
     u.lang = 'de-DE';
+    u.volume = 1;
     u.onstart = () => slog('direkt: ✓ Ton startet');
     u.onend = () => slog('direkt: Ende');
     u.onerror = (e) => slog(`direkt: Fehler ${e.error}`);
