@@ -758,7 +758,49 @@ function Bars({ title, items, unit, step, top: topIn }: { title: string; items: 
   );
 }
 
+/**
+ * Text für Bildschirmleser: beschreibt, was zu sehen ist – gleichwertig zum Bild, ohne die Lösung zu verraten
+ * (z. B. die Zeigerstellung, nicht die Uhrzeit). null = Bild hat selbst Text/Tabelle oder bleibt ohne Beschreibung.
+ */
+export function describeVisual(v: V): string | null {
+  const euro = (c: number) => (c >= 100 ? `${c / 100} Euro` : `${c} Cent`);
+  switch (v.kind) {
+    case 'dots':
+      return `Zehnerfeld mit ${v.n} Punkten${v.m ? ` und ${v.m} Punkten in einer anderen Farbe` : ''}`;
+    case 'tenframe':
+      return `Zehnerfeld mit ${v.a} Plättchen${v.b ? ` und ${v.b} weiteren Plättchen` : ''}${v.crossOut ? `, davon ${v.crossOut} durchgestrichen` : ''}`;
+    case 'clock':
+      return `Uhr: Der kleine Zeiger steht ${v.m === 0 ? `auf der ${v.h % 12 || 12}` : `zwischen der ${v.h % 12 || 12} und der ${(v.h % 12) + 1}`}, der große Zeiger auf der ${v.m / 5 || 12}`;
+    case 'money':
+      return `Geld: ${v.items.map(euro).join(', ')}`;
+    case 'blocks':
+      return `Rechenmaterial: ${[v.th ? `${v.th} Tausenderwürfel` : '', v.h ? `${v.h} Hunderterplatten` : '', `${v.t} Zehnerstangen`, `${v.o} Einerwürfel`].filter(Boolean).join(', ')}`;
+    case 'array':
+      return `Punktefeld: ${v.rows} Reihen mit je ${v.cols} Punkten`;
+    case 'marbles':
+      return `Beutel mit Kugeln: ${Object.entries(v.colors).map(([c, n]) => `${n} ${c}`).join(', ')}`;
+    case 'compare':
+      return `Zwei Mengen: ${v.a} und ${v.b}`;
+    case 'numberline':
+      return `Zahlenstrahl von ${v.from} bis ${v.to}`;
+    default:
+      return null;
+  }
+}
+
 export function Visual({ v }: { v: V }) {
+  const label = describeVisual(v);
+  const inner = <VisualInner v={v} />;
+  return label ? (
+    <div role="img" aria-label={label} className="vis-a11y">
+      {inner}
+    </div>
+  ) : (
+    inner
+  );
+}
+
+function VisualInner({ v }: { v: V }) {
   switch (v.kind) {
     case 'dots':
       return <TenFrames n={v.n} m={v.m} />;

@@ -2524,3 +2524,9 @@ html[data-school-font] .prompt.long {
   outline: 3px solid var(--ink);
   outline-offset: 3px;
 }
+/* Hülle mit Bildbeschreibung für Bildschirmleser – ändert das Layout nicht */
+.vis-a11y {
+  display: flex;
+  justify-content: center;
+  max-width: 100%;
+}
