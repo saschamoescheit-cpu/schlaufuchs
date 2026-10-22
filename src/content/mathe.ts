@@ -43,6 +43,23 @@ const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', 
   videoQuery: 'größer kleiner gleich Zeichen Krokodil Klasse 1',
 }, (r, s) => {
   const max = s === 1 ? 10 : 20;
+  // Stufe 3 auch mit Plusaufgabe auf einer Seite: erst rechnen, dann vergleichen
+  if (s === 3 && chance(r, 0.35)) {
+    const x = ri(r, 2, 10), y = ri(r, 1, 10), sum = x + y;
+    const b = Math.max(1, Math.min(20, sum + pick(r, [-1, 0, 1, 2, -2])));
+    const left = chance(r, 0.5);
+    const sign = sum < b ? '<' : sum > b ? '>' : '=';
+    const sg = left ? sign : sign === '<' ? '>' : sign === '>' ? '<' : '=';
+    const [l, rt] = left ? [`${x} + ${y}`, String(b)] : [String(b), `${x} + ${y}`];
+    return {
+      key: `t${x}+${y}-${b}-${left}`,
+      prompt: `Welches Zeichen passt?\n${l} ☐ ${rt}`,
+      speak: `Welches Zeichen passt zwischen ${l.replace('+', 'plus')} und ${rt.replace('+', 'plus')}?`,
+      answer: fixedChoice(['<', '=', '>'], sg),
+      tags: sg === '=' ? ['gleich'] : ['ungleich', 'rechnen-vergleichen'],
+      solution: [`Rechne zuerst: ${x} + ${y} = ${sum}`, `Vergleiche dann ${left ? `${sum} und ${b}` : `${b} und ${sum}`}.`, `Also: ${l} ${sg} ${rt}`],
+    };
+  }
   const a = ri(r, 0, max);
   // schwer: nah beieinander liegende Zahlen
   const b = chance(r, 0.2) ? a : s === 3 ? Math.max(0, Math.min(20, a + pick(r, [-2, -1, 1, 2]))) : ri(r, 0, max);
@@ -57,7 +74,7 @@ const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', 
     tags: sign === '=' ? ['gleich'] : ['ungleich'],
     solution: [`${a} ist ${word} ${b}.`, `Also: ${a} ${sign} ${b}`, sign === '=' ? 'Beide Zahlen sind gleich groß.' : 'Das Krokodilmaul ist offen zur größeren Zahl.'],
   };
-}, { testSeconds: 15 });
+}, { tagLabels: { gleich: 'gleich (=)', ungleich: 'größer oder kleiner', 'rechnen-vergleichen': 'erst rechnen, dann vergleichen' }, testSeconds: 15 });
 
 const nachbarn = M(1, 'm1-nachbarn', 'Nachbarzahlen', '🏘️', {
   text: [

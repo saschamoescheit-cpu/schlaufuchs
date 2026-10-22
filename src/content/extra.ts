@@ -159,9 +159,11 @@ function chartTask(r: Rng, s: Stage): Gen {
     return { key: `${c.title}-max-${its.map((i) => i.value).join()}`, prompt: `Welche Säule ist am höchsten?`, visual: vis, answer: choice(r, best.label, its.map((i) => i.label)), tags: ['vergleichen'], solution: [`Die höchste Säule hat „${best.label}“ mit ${best.value}.`] };
   }
   if (v === 2) {
+    // zwei Säulen mit verschiedener Höhe – „0 mehr“ wäre eine Fangfrage
     const [a, b] = pickN(r, its, 2);
+    if (a.value === b.value) b.value = a.value > 1 ? a.value - 1 : a.value + 1;
     const [hi, lo] = a.value >= b.value ? [a, b] : [b, a];
-    return { key: `${c.title}-d-${a.label}-${b.label}-${its.map((i) => i.value).join()}`, prompt: `Wie viele ${c.unit} mehr hat „${hi.label}“ als „${lo.label}“?`, visual: vis, answer: { type: 'number', value: hi.value - lo.value }, tags: ['unterschied'], solution: [`${hi.label}: ${hi.value}, ${lo.label}: ${lo.value}`, `${hi.value} − ${lo.value} = ${hi.value - lo.value}`] };
+    return { key: `${c.title}-d-${a.label}-${b.label}-${its.map((i) => i.value).join()}`, prompt: `Wie viele ${c.unit} mehr sind es bei „${hi.label}“ als bei „${lo.label}“?`, visual: vis, answer: { type: 'number', value: hi.value - lo.value }, tags: ['unterschied'], solution: [`${hi.label}: ${hi.value}, ${lo.label}: ${lo.value}`, `${hi.value} − ${lo.value} = ${hi.value - lo.value}`] };
   }
   const sum = its.reduce((x, i) => x + i.value, 0);
   return { key: `${c.title}-s-${its.map((i) => i.value).join()}`, prompt: `Wie viele ${c.unit} sind es zusammen?`, visual: vis, answer: { type: 'number', value: sum }, tags: ['summe'], solution: [`Lies jede Säule ab und rechne zusammen:`, `${its.map((i) => i.value).join(' + ')} = ${sum}`] };
