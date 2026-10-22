@@ -10,6 +10,7 @@ const ueber = { 'zehnerübergang': 'Zehnerübergang', 'ohne-übergang': 'ohne Ze
 
 // ---------- Klasse 1 ----------
 
+const SCATTER_THINGS: [string, string][] = [['🐞', 'Marienkäfer'], ['🍓', 'Erdbeeren'], ['⭐', 'Sterne'], ['🐟', 'Fische'], ['🌸', 'Blüten'], ['🍄', 'Pilze']];
 const zaehlen = M(1, 'm1-zaehlen', 'Mengen zählen bis 20', '🔢', {
   text: [
     'Zähle nicht jeden Punkt einzeln – das dauert lange und man verzählt sich leicht.',
@@ -20,6 +21,13 @@ const zaehlen = M(1, 'm1-zaehlen', 'Mengen zählen bis 20', '🔢', {
   videoQuery: 'Zehnerfeld Mengen erfassen Klasse 1',
 }, (r, s) => {
   const n = s === 1 ? ri(r, 3, 10) : s === 2 ? ri(r, 6, 15) : ri(r, 11, 20);
+  // ungeordnete Menge: Bilder durcheinander – abzählen und Fünfer bilden
+  if (s > 1 && chance(r, 0.4)) {
+    const [e, name] = pick(r, SCATTER_THINGS);
+    const cells = shuffle(r, Array.from({ length: 24 }, (_, i) => i)).slice(0, n);
+    const pts = cells.map((c) => [20 + (c % 6) * 40 + ri(r, -8, 8), 20 + Math.floor(c / 6) * 36 + ri(r, -6, 6)] as [number, number]);
+    return { key: `s${n}-${e}-${cells.join('.')}`, prompt: `Wie viele ${name} sind es?`, visual: { kind: 'scatter', emoji: e, pts }, answer: { type: 'number', value: n }, tags: ['streubild'], solution: ['Tipp: Tippe jedes Bild beim Zählen einmal an – so zählst du keins doppelt.', 'Oder bilde Fünfer-Gruppen und zähle 5, 10, 15 …', `Es sind ${n}.`], solutionVisual: { kind: 'dots', n } };
+  }
   return {
     key: `${n}`,
     prompt: 'Wie viele Punkte siehst du?',
@@ -31,7 +39,7 @@ const zaehlen = M(1, 'm1-zaehlen', 'Mengen zählen bis 20', '🔢', {
       : [`Eine volle Reihe hat 5 Punkte.${n > 5 ? ` Darunter sind noch ${n - 5}. 5 + ${n - 5} = ${n}` : ''}`, `Es sind ${n} Punkte.`],
     solutionVisual: { kind: 'dots', n },
   };
-}, { tagLabels: { 'über-10': 'Mengen über 10', 'bis-10': 'Mengen bis 10' }, testSeconds: 20 });
+}, { tagLabels: { 'über-10': 'Mengen über 10', 'bis-10': 'Mengen bis 10', streubild: 'durcheinander liegende Dinge zählen' }, testSeconds: 20 });
 
 const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', {
   text: [

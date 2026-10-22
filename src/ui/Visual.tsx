@@ -439,6 +439,19 @@ function Lines({ a, b, right }: { a: [number, number, number, number]; b: [numbe
   );
 }
 
+/** ungeordnete Menge (Streubild) zum Zählen */
+function Scatter({ emoji, pts }: { emoji: string; pts: [number, number][] }) {
+  return (
+    <Svg w={240} h={150} label={`${pts.length} Bilder`} max={340}>
+      {pts.map(([x, y], i) => (
+        <text key={i} x={x} y={y} fontSize={24} textAnchor="middle" dominantBaseline="central">
+          {emoji}
+        </text>
+      ))}
+    </Svg>
+  );
+}
+
 const MIX_COLORS = ['#CFE0FF', '#FFD9B8', '#C9F0D6', '#F6C9E4', '#FFF0A8'];
 /** Mehrere kleine Formen in einer Reihe (bunt, verschieden groß, gedreht) – zum Zählen einer Form */
 function ShapeMix({ items }: { items: { s: string; rot: number; c: number; big: boolean }[] }) {
@@ -743,6 +756,8 @@ export function Visual({ v }: { v: V }) {
       return <Shape shape={v.shape} rot={v.rot} fill={v.fill} />;
     case 'lines':
       return <Lines a={v.a} b={v.b} right={v.right} />;
+    case 'scatter':
+      return <Scatter emoji={v.emoji} pts={v.pts} />;
     case 'shapemix':
       return <ShapeMix items={v.items} />;
     case 'rect':
