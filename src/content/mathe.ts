@@ -438,7 +438,23 @@ const geld2 = M(2, 'm2-geld', 'Geld: Euro und Cent', '💶', {
   text: ['1 Euro = 100 Cent.', 'Zähle Geld immer vom größten zum kleinsten Wert: 50 ct, 20 ct, 10 ct, 5 ct …', 'Zähle dabei weiter: 50, 70, 80, 85 – zusammen 85 Cent.'],
   visual: { kind: 'money', items: [50, 20, 10, 5] },
   videoQuery: 'Geld zählen Euro Cent Klasse 2',
-}, (r) => {
+}, (r, s) => {
+  // Stufe 3: Einkaufen mit Rückgeld (ganze Euro bis 100)
+  if (s === 3 && chance(r, 0.5)) {
+    const paid = pick(r, [20, 50, 100]);
+    const price = ri(r, Math.floor(paid / 4), paid - 1);
+    const [thing, e] = pick(r, [['ein Spiel', '🎲'], ['ein Buch', '📕'], ['einen Ball', '⚽'], ['einen Teddy', '🧸'], ['ein Puzzle', '🧩'], ['Turnschuhe', '👟']]);
+    const name = pick(r, NAMES);
+    return {
+      key: `rg-${price}-${paid}`,
+      prompt: `${name} kauft ${thing} ${e} für ${price} € und bezahlt mit einem ${paid}-€-Schein.\nWie viel Rückgeld bekommt ${name}?`,
+      visual: { kind: 'money', items: [paid * 100] },
+      answer: { type: 'number', value: paid - price, unit: '€' },
+      tags: ['rueckgeld'],
+      traps: [{ answer: String(paid + price), tag: 'plus-statt-minus', hint: 'Rückgeld ist das, was übrig bleibt – du musst minus rechnen.' }],
+      solution: [`Ergänze von ${price} € bis ${paid} €:`, `${price} € + ${paid - price} € = ${paid} €`, `Rückgeld: ${paid - price} €`],
+    };
+  }
   const ct = chance(r, 0.5);
   const pool = ct ? COINS_CT : MONEY_EUR;
   let items: number[];
@@ -456,7 +472,7 @@ const geld2 = M(2, 'm2-geld', 'Geld: Euro und Cent', '💶', {
     solution: ['Zähle vom größten zum kleinsten Wert weiter:', running, `Zusammen: ${ct ? `${total} ct` : euro(total)}`],
     solutionVisual: { kind: 'money', items },
   };
-}, { tagLabels: { cent: 'Cent zählen', euro: 'Euro zählen' }, testSeconds: 30 });
+}, { tagLabels: { cent: 'Cent zählen', euro: 'Euro zählen', rueckgeld: 'Rückgeld', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 30 });
 
 const LEN_OBJ = [
   { e: '✏️', name: 'ein Bleistift', ok: '15 cm', wrong: ['15 m', '1 cm', '150 cm'] },
