@@ -12,5 +12,15 @@ describe('Wochenbericht', () => {
     const text = weekReport(p, emptyProgress());
     expect(text).toContain('Nächster Test: Mathe am');
     expect(text).toContain('(in 3 Tagen) – Kapitel 3, vorbereitet: 0 %');
+    expect(text).not.toContain('Englisch-Vokabeln');
+  });
+  it('nennt den Karteikasten, sobald Vokabeln geübt wurden', () => {
+    const p = newProfile({ name: 'Mia', grade: 4 });
+    const pr = emptyProgress();
+    const t = Date.now() - 2 * 24 * 60 * 60 * 1000;
+    pr.log.push({ t, s: 'e1-animals', ok: 1, m: 'karten', w: 'dog' }, { t: t + 1, s: 'e1-animals', ok: 1, m: 'karten', w: 'cat' });
+    const text = weekReport(p, pr);
+    expect(text).toContain('Englisch-Vokabeln: 0 von 17 Wörtern sitzen');
+    expect(text).toContain('2 sind gerade zum Wiederholen dran');
   });
 });

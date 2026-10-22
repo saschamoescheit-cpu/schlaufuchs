@@ -1,7 +1,7 @@
 // Wortlisten der Englisch-Wortfelder – für Vokabelkarten und Buchstabier-Diktat (Nachtlauf 22.10.2026).
 // Die Wortfelder tragen sich beim Laden selbst ein (englisch.ts, extra.ts, extra3.ts).
 import type { Task, Visual } from '../engine/types';
-import { cardStates, stateOf } from '../engine/cards';
+import { boxCounts, cardStates, pickCards, stateOf } from '../engine/cards';
 import type { Progress } from '../engine/learning';
 
 export type VocabWord = { en: string; de: string; e?: string; hex?: string; txt?: string };
@@ -64,4 +64,14 @@ export function buildDictation(skillIds: string[], p: Progress, n: number, r: ()
     [picked[i], picked[j]] = [picked[j], picked[i]];
   }
   return picked.map((c) => dictationTask(c.skillId, c));
+}
+
+/** Karteikasten in Zahlen (Eltern-Bereich, Wochenbericht) – null, solange noch keine Vokabel geübt wurde */
+export function vocabSummary(p: Progress, now = Date.now()) {
+  const states = cardStates(p.log);
+  const ids = [...new Set([...states.keys()].map((k) => k.split('|')[0]))].filter((id) => WORDS[id]);
+  if (!ids.length) return null;
+  const cards = cardsOf(ids);
+  const counts = boxCounts(cards, states);
+  return { counts, total: cards.length, sure: counts[4] + counts[5], due: pickCards(cards, states, 9999, now).due.length, fields: ids.length };
 }

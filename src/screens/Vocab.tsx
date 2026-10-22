@@ -2,7 +2,7 @@
 // mit Vokabelkarten (Karteikasten mit Wiederholung in wachsenden Abständen) oder als Buchstabier-Diktat.
 import { useMemo, useState } from 'react';
 import { isVocab, levelsFor, skillsOf } from '../content/curriculum';
-import { cardsOf, dictatable, WORDS } from '../content/words';
+import { cardsOf, dictatable, vocabSummary, WORDS } from '../content/words';
 import { boxCounts, cardStates, nextDue, pickCards } from '../engine/cards';
 import { level, LEVEL_NAMES, type Progress } from '../engine/learning';
 import type { Grade, Skill } from '../engine/types';
@@ -184,19 +184,15 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
 
 /** Eltern-Bereich: Karteikasten des Kindes (nur Wortfelder, in denen schon Vokabeln geübt wurden) */
 export function VocabBoxCard({ progress }: { progress: Progress }) {
-  const states = useMemo(() => cardStates(progress.log), [progress.log]);
-  const ids = [...new Set([...states.keys()].map((k) => k.split('|')[0]))];
-  if (!ids.length) return null;
-  const cards = cardsOf(ids);
-  const counts = boxCounts(cards, states);
-  const due = pickCards(cards, states, 999).due.length;
-  const sure = counts[4] + counts[5];
+  const v = useMemo(() => vocabSummary(progress), [progress]);
+  if (!v) return null;
+  const { counts, due, sure, total, fields } = v;
   return (
     <div className="card" style={{ display: 'grid', gap: 10 }}>
       <h3 style={{ margin: 0 }}>🗂️ Englisch-Vokabeln (Karteikasten)</h3>
       <CardBoxes counts={counts} />
       <div className="small muted">
-        {sure} von {cards.length} Wörtern sitzen (Fach 4 und 5) · {due ? `${due} heute zum Wiederholen dran` : 'heute nichts fällig'} · {ids.length} {ids.length === 1 ? 'Wortfeld' : 'Wortfelder'}
+        {sure} von {total} Wörtern sitzen (Fach 4 und 5) · {due ? `${due} heute zum Wiederholen dran` : 'heute nichts fällig'} · {fields} {fields === 1 ? 'Wortfeld' : 'Wortfelder'}
       </div>
     </div>
   );

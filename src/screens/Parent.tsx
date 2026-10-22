@@ -16,6 +16,7 @@ import { SubjectStats } from './Stats';
 import { countdownText, daysUntil, fmtDay, nextPlanned, readiness } from './Planner';
 import { ProgressReport } from './Report';
 import { VocabBoxCard } from './Vocab';
+import { vocabSummary } from '../content/words';
 
 const DAY = 86400000;
 const fmtDate = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit' });
@@ -299,6 +300,8 @@ export function weekReport(p: Profile, pr: Progress, now = Date.now()): string {
     const cur = currentSkills(s.id, p);
     lines.push(`${s.name}: ${cur.filter((k) => level(pr, k.id) === 3).length} von ${cur.length} Lernzielen sicher.`);
   }
+  const voc = vocabSummary(pr, now);
+  if (voc) lines.push(`Englisch-Vokabeln: ${voc.sure} von ${voc.total} Wörtern sitzen (Karteikasten Fach 4 und 5)${voc.due ? `, ${voc.due} sind gerade zum Wiederholen dran` : ''}.`);
   const plan = nextPlanned(p, 30);
   if (plan) lines.push('', `Nächster Test: ${subjectInfo(plan.subject).name} am ${fmtDay(plan.date)} (${countdownText(daysUntil(plan.date))})${plan.note ? ` – ${plan.note}` : ''}, vorbereitet: ${Math.round(readiness(pr, plan) * 100)} %`);
   if (w.tests.length) lines.push('', 'Lernzielkontrollen:', ...w.tests.map((t) => `- ${subjectInfo(t.subject).name}${t.kind === 'vokabeln' ? ' (Vokabeltest)' : ''}: ${t.percent} %${t.grade ? `, Note ${t.grade} (${GRADE_NAMES[t.grade]})` : ''}`));
