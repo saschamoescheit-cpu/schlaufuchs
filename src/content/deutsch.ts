@@ -242,8 +242,15 @@ const NOMEN: { w: string; a: 'der' | 'die' | 'das'; e: string; pl: string }[] = 
   { w: 'Stern', a: 'der', e: '⭐', pl: 'Sterne' }, { w: 'Brille', a: 'die', e: '👓', pl: 'Brillen' }, { w: 'Bett', a: 'das', e: '🛏️', pl: 'Betten' },
   { w: 'Zahn', a: 'der', e: '🦷', pl: 'Zähne' }, { w: 'Hand', a: 'die', e: '✋', pl: 'Hände' }, { w: 'Kind', a: 'das', e: '🧒', pl: 'Kinder' },
   { w: 'Mond', a: 'der', e: '🌙', pl: 'Monde' }, { w: 'Gurke', a: 'die', e: '🥒', pl: 'Gurken' }, { w: 'Schwein', a: 'das', e: '🐷', pl: 'Schweine' },
+  // Nachtlauf 22.10.2026: mehr Nomen (keine Wörter mit Doppel-Selbstlaut – „Boöte“ – und keine mit gleicher Mehrzahl wie Kuchen)
+  { w: 'Hase', a: 'der', e: '🐰', pl: 'Hasen' }, { w: 'Kuh', a: 'die', e: '🐄', pl: 'Kühe' }, { w: 'Glas', a: 'das', e: '🥛', pl: 'Gläser' },
+  { w: 'Hut', a: 'der', e: '🎩', pl: 'Hüte' }, { w: 'Nase', a: 'die', e: '👃', pl: 'Nasen' }, { w: 'Schiff', a: 'das', e: '🚢', pl: 'Schiffe' },
+  { w: 'Frosch', a: 'der', e: '🐸', pl: 'Frösche' }, { w: 'Biene', a: 'die', e: '🐝', pl: 'Bienen' }, { w: 'Herz', a: 'das', e: '❤️', pl: 'Herzen' },
+  { w: 'Bär', a: 'der', e: '🐻', pl: 'Bären' }, { w: 'Kerze', a: 'die', e: '🕯️', pl: 'Kerzen' }, { w: 'Brot', a: 'das', e: '🍞', pl: 'Brote' },
+  { w: 'Topf', a: 'der', e: '🍲', pl: 'Töpfe' }, { w: 'Tomate', a: 'die', e: '🍅', pl: 'Tomaten' }, { w: 'Zelt', a: 'das', e: '⛺', pl: 'Zelte' },
+  { w: 'Hahn', a: 'der', e: '🐓', pl: 'Hähne' }, { w: 'Ente', a: 'die', e: '🦆', pl: 'Enten' }, { w: 'Krokodil', a: 'das', e: '🐊', pl: 'Krokodile' },
 ];
-const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen'];
+const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen', 'graben', 'fahren', 'nähen', 'füttern', 'hüpfen', 'gießen', 'wandern', 'pflücken', 'zeichnen', 'rutschen'];
 // Verben in der er-Form: als Ablenker bei „Nomen erkennen“ eindeutig keine Nomen (ESSEN oder RENNEN könnten es sein: das Essen)
 const VERBEN_ER = ['läuft', 'spielt', 'liest', 'schreibt', 'singt', 'malt', 'springt', 'isst', 'trinkt', 'lacht', 'schwimmt', 'tanzt', 'ruft', 'baut', 'schläft', 'kocht', 'klettert', 'wirft', 'fliegt', 'hilft', 'rennt', 'weint', 'sägt', 'bastelt', 'putzt', 'turnt'];
 const ADJ = ['groß', 'klein', 'schnell', 'langsam', 'laut', 'leise', 'bunt', 'lustig', 'müde', 'warm', 'kalt', 'süß', 'nass', 'weich', 'hell', 'dunkel'];
