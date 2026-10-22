@@ -304,6 +304,7 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'd3-fehlerdetektiv': [{ id: 'GpRRobZLA1E', title: 'So findest du deine Rechtschreibfehler selber - 5 Tipps', channel: 'lernfoerderung', len: '3:24' }],
   'e2-story': [{ id: 'by1QAoRcc-U', title: 'Ch.1 Hello', channel: 'LucyMax English', len: '8:43' }],
   'd2-zuhoeren': [{ id: '4VbIqJWexsw', title: 'Aktives Zuhören | Deutsch | Grundschule', channel: 'sofaDeutsch', len: '1:36' }],
+  'd3-zuhoeren': [{ id: '4VbIqJWexsw', title: 'Aktives Zuhören | Deutsch | Grundschule', channel: 'sofaDeutsch', len: '1:36' }],
   'm2-zufall': [
     { id: 'Wid6zjjU3kU', title: 'unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse', channel: 'sofatutor', len: '5:49' },
     { id: 'MD4T34NSZ5k', title: 'Wahrscheinlichkeit: Das Glücksrad – Klassen 1 und 2', channel: 'Lernen mit Leo', len: '2:03' },

@@ -264,8 +264,8 @@ function readTask(r: Rng, stories: typeof STORIES2): Gen {
 }
 
 // Zuhören (NRW „Sprechen und Zuhören“): dieselben kurzen Geschichten – nur vorgelesen, der Text erscheint erst in der Lösung
-function zuhoerTask(r: Rng, s: Stage): Gen {
-  const st = pick(r, STORIES2);
+function zuhoerTask(r: Rng, s: Stage, stories: typeof STORIES2 = STORIES2): Gen {
+  const st = pick(r, stories);
   const [q, a, w] = pick(r, st.qs) as [string, string, string[]];
   return {
     key: `z-${st.t.slice(0, 24)}|${q}`,
@@ -346,6 +346,7 @@ function bausteinTask(r: Rng): Gen {
 
 export const DEUTSCH_EXTRA: Skill[] = [
   D(2, 'd2-zuhoeren', 'Gut zuhören', '👂', { text: ['Du hörst eine kurze Geschichte – der Text wird nicht angezeigt.', 'Hör ganz genau hin: Wer? Was? Wo? Wann?', 'Du kannst die Geschichte so oft anhören, wie du willst – auch langsam.'], visual: { kind: 'emoji', chars: '👂📖' }, videoQuery: 'Zuhören üben Grundschule Hörgeschichte Klasse 2' }, zuhoerTask, { tagLabels: { zuhoeren: 'Geschichten zuhören' }, testSeconds: 50 }),
+  D(3, 'd3-zuhoeren', 'Gut zuhören: längere Geschichten', '🎧', { text: ['Du hörst eine längere Geschichte – der Text wird nicht angezeigt.', 'Merke dir beim Zuhören: Wer kommt vor? Was passiert zuerst, was danach? Wie geht es aus?', 'Hör die Geschichte ruhig zweimal an – beim zweiten Mal achtest du auf die Frage.'], visual: { kind: 'emoji', chars: '🎧📘' }, videoQuery: 'Zuhören üben Grundschule Hörgeschichte Klasse 3' }, (r, s) => zuhoerTask(r, s, STORIES3), { tagLabels: { zuhoeren: 'Geschichten zuhören' }, testSeconds: 70 }),
   D(1, 'd1-saetze', 'Sätze lesen', '🖼️', { text: ['Lies den Satz Wort für Wort.', 'Schau dann aufs Bild: Passt alles? Wer macht was?', 'Oft ist nur ein einziges Wort anders – lies genau!'], visual: { kind: 'emoji', chars: '🐶💤', label: 'Der Hund schläft.' }, videoQuery: 'Sätze lesen Klasse 1 Leseverständnis' }, satzBild, { tagLabels: { 'satz-bild': 'Satz zum Bild finden' }, testSeconds: 25 }),
   D(2, 'd2-silbentrennung', 'Wörter trennen', '✂️', { text: ['Am Zeilenende trennt man Wörter nach Sprechsilben: Son-ne, To-ma-te.', 'Sprich das Wort langsam und klatsche mit.', 'ck bleibt zusammen und kommt auf die neue Zeile: Zu-cker, Brü-cke.', 'Einen einzelnen Buchstaben trennt man nicht ab.'], visual: { kind: 'syllables', parts: ['Zu', 'cker'], emoji: '🍬' }, videoQuery: 'Silbentrennung Wörter trennen Klasse 2' }, trennTask, { tagLabels: { silben: 'nach Silben trennen', 'ck-trennen': 'ck beim Trennen' }, testSeconds: 20 }),
   D(2, 'd2-lesen', 'Lesen und verstehen', '📗', { text: ['Lies den kurzen Text in Ruhe.', 'Lies dann die Frage und suche die Antwort im Text.', 'Bei „Warum“-Fragen musst du ein bisschen nachdenken.'], videoQuery: 'Leseverständnis Klasse 2 üben' }, (r) => readTask(r, STORIES2), { tagLabels: { schlussfolgern: 'Schlussfolgern (Warum?)', 'informationen-finden': 'Informationen im Text finden' }, testSeconds: 45 }),
