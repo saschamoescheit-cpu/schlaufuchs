@@ -656,6 +656,18 @@ const MINI: [string, string, string, string[]][] = [
   ['Emil malt ein Haus. Das Haus hat ein rotes Dach.', 'Was malt Emil?', '🏠', ['🌳', '🚗', '🌼']],
   ['Ida pflückt eine Blume. Sie schenkt sie Mama.', 'Was pflückt Ida?', '🌼', ['🍎', '🍄', '🍀']],
   ['Der Bus ist gelb. Er hält an der Schule.', 'Was hält an der Schule?', '🚌', ['🚲', '🚂', '✈️']],
+  ['Max hat Hunger. Er isst eine Banane.', 'Was isst Max?', '🍌', ['🍎', '🍇', '🥕']],
+  ['Im Garten steht ein Baum. Ein Vogel sitzt darauf.', 'Wer sitzt auf dem Baum?', '🐦', ['🐱', '🐿️', '🦋']],
+  ['Lotta spielt Geige. Sie übt jeden Tag.', 'Was spielt Lotta?', '🎻', ['🥁', '🎺', '🎹']],
+  ['Es ist Winter. Die Kinder bauen einen Schneemann.', 'Was bauen die Kinder?', '⛄', ['🏰', '🏠', '🪁']],
+  ['Opa liest die Zeitung. Er trägt eine Brille.', 'Was liest Opa?', '📰', ['📖', '✉️', '🗺️']],
+  ['Auf der Wiese hoppelt ein Hase. Er frisst eine Möhre.', 'Was frisst der Hase?', '🥕', ['🍎', '🌽', '🥦']],
+  ['Nele hat Geburtstag. Sie bekommt einen Luftballon.', 'Was bekommt Nele?', '🎈', ['🧸', '📚', '⚽']],
+  ['Das Baby weint. Mama gibt ihm die Flasche.', 'Was bekommt das Baby?', '🍼', ['🥤', '🍪', '🧸']],
+  ['Paul geht schwimmen. Im Wasser ist ein Fisch.', 'Was ist im Wasser?', '🐟', ['🦆', '🐸', '🐢']],
+  ['Die Sonne scheint. Jana trägt ihre Sonnenbrille.', 'Was trägt Jana?', '🕶️', ['🧢', '🧣', '👒']],
+  ['Ein Flugzeug fliegt hoch über das Haus.', 'Was fliegt über das Haus?', '✈️', ['🚁', '🎈', '🦅']],
+  ['Kim hat Durst. Sie trinkt ein Glas Milch.', 'Was trinkt Kim?', '🥛', ['🧃', '☕', '🍵']],
 ];
 function miniTask(r: Rng, s: Stage): Gen {
   const [t, q, ok, wrong] = pick(r, MINI);
