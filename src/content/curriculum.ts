@@ -94,9 +94,13 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
 };
 export const areaOf = (s: Skill) => AREAS[s.subject].find((a) => a.re.test(s.id))?.name ?? 'Weitere';
 /** Themen einer Liste nach Bereichen gruppiert (leere Bereiche fallen weg) */
+/** Themen, die in ihrem Bereich zuerst stehen (Lernreihenfolge: erst Buchstaben/Ziffern schreiben, dann Wörter) */
+const LEAD = ['d1-nachspuren', 'd1-anlaut', 'd1-buchstaben', 'm1-zaehlen', 'm1-ziffern'];
+
 export const byArea = (subject: Subject, skills: Skill[]) => {
   const names = [...AREAS[subject].map((a) => a.name), 'Weitere'];
-  return names.map((name) => ({ name, skills: skills.filter((s) => areaOf(s) === name) })).filter((g) => g.skills.length);
+  const rank = (s: Skill) => (LEAD.includes(s.id) ? LEAD.indexOf(s.id) : LEAD.length);
+  return names.map((name) => ({ name, skills: skills.filter((s) => areaOf(s) === name).sort((x, y) => rank(x) - rank(y)) })).filter((g) => g.skills.length);
 };
 
 /** Lernziele des aktuellen Schuljahres (für Fortschritt und Mix) */
