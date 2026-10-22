@@ -236,7 +236,7 @@ const minus20 = M(1, 'm1-minus20', 'Minus bis 20', '🎢', {
     prompt: `${a} − ${b} = ☐`,
     answer: { type: 'number', value: a - b },
     tags: ['ohne-übergang'],
-    solution: [`Rechne mit den Einern: ${e} − ${b} = ${e - b}`, `Der Zehner bleibt: 10 + ${e - b} = ${a - b}`],
+    solution: [`Rechne mit den Einern: ${e} − ${b} = ${e - b}`, e === b ? 'Es bleibt nur der Zehner: 10' : `Der Zehner bleibt: 10 + ${e - b} = ${a - b}`],
     solutionVisual: { kind: 'numberline', from: 8, to: 20, start: a, jumps: [-b] },
   };
 }, { tagLabels: ueber, testSeconds: 20 });
@@ -333,7 +333,7 @@ const stellenwert2 = M(2, 'm2-stellenwert', 'Zehner und Einer', '🧱', {
   const rev = 10 * o + t;
   const traps = o > 0 && o !== t ? [{ answer: String(rev), tag: 'zahlendreher', hint: 'Zahlendreher! Zuerst kommen die Zehner, dann die Einer.' }] : [];
   const v = ri(r, 0, 3);
-  if (v === 0) return { key: `b${n}`, prompt: 'Welche Zahl ist das?', visual: { kind: 'blocks', t, o }, answer: { type: 'number', value: n }, tags: ['bündeln'], traps, solution: [`${t} Zehnerstangen = ${10 * t}`, `${o} Einerwürfel = ${o}`, `${10 * t} + ${o} = ${n}`], solutionVisual: { kind: 'placetable', digits: [t, o], labels: ['Z', 'E'] } };
+  if (v === 0) return { key: `b${n}`, prompt: 'Welche Zahl ist das?', visual: { kind: 'blocks', t, o }, answer: { type: 'number', value: n }, tags: ['bündeln'], traps, solution: o === 0 ? [`${t} Zehnerstangen = ${10 * t}`, `Keine Einerwürfel – die Zahl ist ${n}.`] : [`${t} Zehnerstangen = ${10 * t}`, `${o} Einerwürfel = ${o}`, `${10 * t} + ${o} = ${n}`], solutionVisual: { kind: 'placetable', digits: [t, o], labels: ['Z', 'E'] } };
   if (v === 1) return { key: `z${n}`, prompt: `Wie viele Zehner hat die Zahl ${n}?`, answer: { type: 'number', value: t }, tags: ['zehner'], traps: [{ answer: String(o), tag: 'zehner-einer', hint: 'Das sind die Einer. Die Zehner stehen vorne.' }].filter(() => o !== t), solution: [`Bei ${n} steht vorne die ${t}: ${t === 1 ? 'Das ist 1 Zehner.' : `Das sind ${t} Zehner.`}`], solutionVisual: { kind: 'placetable', digits: [t, o], labels: ['Z', 'E'], highlight: 0 } };
   if (v === 2) return { key: `e${n}`, prompt: `Wie viele Einer hat die Zahl ${n}?`, answer: { type: 'number', value: o }, tags: ['einer'], traps: [{ answer: String(t), tag: 'zehner-einer', hint: 'Das sind die Zehner. Die Einer stehen hinten.' }].filter(() => o !== t), solution: [`Bei ${n} steht hinten die ${o}: ${o === 1 ? 'Das ist 1 Einer.' : o === 0 ? 'Das sind 0 Einer.' : `Das sind ${o} Einer.`}`], solutionVisual: { kind: 'placetable', digits: [t, o], labels: ['Z', 'E'], highlight: 1 } };
   return { key: `s${n}`, prompt: `${t} Zehner und ${o} Einer sind ☐`, answer: { type: 'number', value: n }, tags: ['bündeln'], traps, solution: [`${t} Zehner = ${10 * t}, dazu ${o} Einer: ${n}`], solutionVisual: { kind: 'blocks', t, o } };
@@ -471,7 +471,7 @@ const verdoppeln2 = M(2, 'm2-verdoppeln', 'Verdoppeln und Halbieren bis 100', '�
   if (chance(r, 0.5)) {
     const n = ri(r, 11, 49);
     const t = n - (n % 10);
-    return { key: `d${n}`, prompt: `Verdopple ${n}.`, answer: { type: 'number', value: 2 * n }, tags: ['verdoppeln'], solution: [`Zehner verdoppeln: ${t} + ${t} = ${2 * t}`, `Einer verdoppeln: ${n % 10} + ${n % 10} = ${2 * (n % 10)}`, `Zusammen: ${2 * n}`] };
+    return { key: `d${n}`, prompt: `Verdopple ${n}.`, answer: { type: 'number', value: 2 * n }, tags: ['verdoppeln'], solution: [`Zehner verdoppeln: ${t} + ${t} = ${2 * t}`, ...(n % 10 ? [`Einer verdoppeln: ${n % 10} + ${n % 10} = ${2 * (n % 10)}`] : []), `Zusammen: ${2 * n}`] };
   }
   const h = ri(r, 6, 50);
   const n = 2 * h;
@@ -949,7 +949,10 @@ const schrMal = M(4, 'm4-schriftlich-mal', 'Schriftliche Multiplikation', '✖�
     const a = s === 1 ? ri(r, 12, 399) : ri(r, 120, 2999), d = s === 1 ? ri(r, 2, 5) : ri(r, 3, 9);
     return { key: `${a}x${d}`, prompt: `Rechne schriftlich:\n${a} · ${d}`, speak: `Rechne schriftlich: ${a} mal ${d}`, visual: { kind: 'column', op: '·', rows: [a, d] }, work: { op: '·', rows: [a, d], result: a * d }, answer: { type: 'number', value: a * d }, tags: ['einstellig'], solution: [...columnMul1(a, d), `Ergebnis: ${fmt(a * d)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, d], result: a * d } };
   }
-  const a = ri(r, 102, 899), b = ri(r, 12, 49);
+  const a = ri(r, 102, 899);
+  // keine glatten Zehner (· 30): die zweite Zeile wäre „· 0 = 0“ und hilft beim Üben nicht
+  let b = ri(r, 12, 49);
+  if (b % 10 === 0) b++;
   const t = Math.floor(b / 10), o = b % 10;
   return { key: `${a}x${b}`, prompt: `Rechne schriftlich:\n${a} · ${b}`, speak: `Rechne schriftlich: ${a} mal ${b}`, visual: { kind: 'column', op: '·', rows: [a, b] }, work: { op: '·', rows: [a, b], result: a * b }, answer: { type: 'number', value: a * b }, tags: ['zweistellig'], traps: [{ answer: String(a * (t + o)), tag: 'stelle-verschoben', hint: `Die Zehnerziffer ${t} bedeutet ${t * 10}! Das Teilergebnis mit dem Zehner ist ${a} · ${t * 10} = ${a * t * 10}.` }], solution: [`${a} · ${t} Zehner = ${fmt(a * t * 10)}`, `${a} · ${o} = ${fmt(a * o)}`, `${fmt(a * t * 10)} + ${fmt(a * o)} = ${fmt(a * b)}`], solutionVisual: { kind: 'column', op: '·', rows: [a, b], result: a * b, steps: [String(a * t), String(a * o)] } };
 }, { tagLabels: { einstellig: 'mal einstellige Zahl', zweistellig: 'mal zweistellige Zahl', 'stelle-verschoben': 'Stellen verschoben' }, testSeconds: 90 });

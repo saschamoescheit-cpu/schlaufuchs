@@ -482,7 +482,7 @@ function geldKommaTask(r: Rng, s: Stage): Gen {
     answer: choice(r, ok, wrong),
     tags: ['addieren'],
     traps: noCarry !== sum ? [{ answer: eur(noCarry), tag: 'cent-uebertrag', hint: '100 Cent sind 1 Euro – die Cent über 100 werden zu einem Euro mehr.' }] : [],
-    solution: [`Euro zusammen: ${prices.map((p) => Math.floor(p / 100)).join(' + ')} = ${prices.reduce((a, p) => a + Math.floor(p / 100), 0)} €`, `Cent zusammen: ${prices.map((p) => p % 100).join(' + ')} = ${prices.reduce((a, p) => a + (p % 100), 0)} ct`, `Zusammen: ${ok}`],
+    solution: [`Euro zusammen: ${prices.map((p) => Math.floor(p / 100)).join(' + ')} = ${prices.reduce((a, p) => a + Math.floor(p / 100), 0)} €`, ...(prices.some((p) => p % 100) ? [`Cent zusammen: ${prices.map((p) => p % 100).join(' + ')} = ${prices.reduce((a, p) => a + (p % 100), 0)} ct`] : []), `Zusammen: ${ok}`],
   };
 }
 
