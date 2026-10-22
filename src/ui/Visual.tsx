@@ -570,9 +570,10 @@ function Net({ cells }: { cells: [number, number][] }) {
   );
 }
 
-function Bars({ title, items, unit }: { title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string }) {
+function Bars({ title, items, unit, step, top: topIn }: { title: string; items: { label: string; value: number; emoji?: string }[]; unit?: string; step?: number; top?: number }) {
   const max = Math.max(...items.map((i) => i.value));
-  const top = Math.ceil(max / 2) * 2 + 2;
+  // ohne step: Linie bei jeder Einheit (kleine Zahlen); mit step (z. B. Prozent): nur alle step Einheiten
+  const top = topIn ?? (step ? Math.ceil(max / step) * step : Math.ceil(max / 2) * 2 + 2);
   const W = 320;
   const H = 220;
   const left = 30;
@@ -586,10 +587,10 @@ function Bars({ title, items, unit }: { title: string; items: { label: string; v
         {title}
         {unit ? ` (${unit})` : ''}
       </text>
-      {Array.from({ length: top + 1 }, (_, v) => v).map((v) => (
+      {(step ? Array.from({ length: Math.floor(top / step) + 1 }, (_, k) => k * step) : Array.from({ length: top + 1 }, (_, v) => v)).map((v) => (
         <g key={v}>
-          <line x1={left} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v ? (v % 2 ? '#F1EEF7' : '#E2DCEE') : C.ink} strokeWidth={v ? 1 : 2} />
-          <text x={left - 6} y={y(v) + 4} textAnchor="end" fontSize={v % 2 ? 8 : 10} fill={v % 2 ? '#9A93AE' : C.ink} fontFamily="Fredoka, sans-serif">
+          <line x1={left} x2={W - 6} y1={y(v)} y2={y(v)} stroke={v ? (!step && v % 2 ? '#F1EEF7' : '#E2DCEE') : C.ink} strokeWidth={v ? 1 : 2} />
+          <text x={left - 6} y={y(v) + 4} textAnchor="end" fontSize={!step && v % 2 ? 8 : 10} fill={!step && v % 2 ? '#9A93AE' : C.ink} fontFamily="Fredoka, sans-serif">
             {v}
           </text>
         </g>
@@ -597,6 +598,11 @@ function Bars({ title, items, unit }: { title: string; items: { label: string; v
       {items.map((it, i) => (
         <g key={it.label}>
           <rect x={left + 6 + i * bw} y={y(it.value)} width={bw - 12} height={y(0) - y(it.value)} rx={4} fill={COLS[i % COLS.length]} />
+          {step && (
+            <text x={left + i * bw + bw / 2} y={y(it.value) - 4} textAnchor="middle" fontSize={11} fontWeight={700} fill={C.ink} fontFamily="Fredoka, sans-serif">
+              {it.value}
+            </text>
+          )}
           {it.emoji && (
             <text x={left + i * bw + bw / 2} y={H - bottom + 20} textAnchor="middle" fontSize={16}>
               {it.emoji}
