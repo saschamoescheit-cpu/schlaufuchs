@@ -916,6 +916,13 @@ const LAUTPOS: [string, string, string, Pos][] = [
   ['S', 'Sonne', '☀️', 'am Anfang'], ['S', 'Hose', '👖', 'in der Mitte'], ['S', 'Eis', '🍦', 'am Ende'], ['S', 'Haus', '🏠', 'am Ende'], ['S', 'Rose', '🌹', 'in der Mitte'],
   ['F', 'Fisch', '🐟', 'am Anfang'], ['F', 'Affe', '🐒', 'in der Mitte'], ['F', 'Schaf', '🐑', 'am Ende'], ['F', 'Fuchs', '🦊', 'am Anfang'],
   ['T', 'Tiger', '🐯', 'am Anfang'], ['T', 'Auto', '🚗', 'in der Mitte'], ['T', 'Zelt', '⛺', 'am Ende'], ['T', 'Hut', '👒', 'am Ende'],
+  // Nachtlauf 23.10.2026: mehr Wörter (der Laut kommt in jedem Wort nur an einer Stelle vor)
+  ['M', 'Mütze', '🧢', 'am Anfang'], ['M', 'Turm', '🗼', 'am Ende'], ['M', 'Hammer', '🔨', 'in der Mitte'],
+  ['N', 'Nadel', '🪡', 'am Anfang'], ['N', 'Hahn', '🐓', 'am Ende'], ['N', 'Kanu', '🛶', 'in der Mitte'],
+  ['L', 'Leiter', '🪜', 'am Anfang'], ['L', 'Stuhl', '🪑', 'am Ende'], ['L', 'Tulpe', '🌷', 'in der Mitte'],
+  ['S', 'Salat', '🥗', 'am Anfang'], ['S', 'Bus', '🚌', 'am Ende'], ['S', 'Vase', '🏺', 'in der Mitte'],
+  ['F', 'Feder', '🪶', 'am Anfang'], ['F', 'Schiff', '🚢', 'am Ende'], ['F', 'Seife', '🧼', 'in der Mitte'],
+  ['T', 'Tasse', '☕', 'am Anfang'], ['T', 'Boot', '⛵', 'am Ende'], ['T', 'Butter', '🧈', 'in der Mitte'],
 ];
 function lautposTask(r: Rng, s: Stage): Gen {
   const [l, w, e, pos] = pick(r, s === 1 ? LAUTPOS.filter((x) => x[3] !== 'in der Mitte') : LAUTPOS);
