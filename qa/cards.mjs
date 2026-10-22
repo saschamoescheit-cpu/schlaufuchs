@@ -35,9 +35,9 @@ const end = await p.locator('body').innerText();
 await shot('karten-ende', true);
 check(/✓ 10/.test(end) && /↻ 2/.test(end), 'Ergebnis: 10 gewusst, 2 nicht');
 const boxes = await p.locator('.card-box b').allInnerTexts();
-check(boxes.join(',') === '2,10,0,0,0,0', `Karteikasten nach der Runde: ${boxes.join(',')} (2 neu, 10 in Fach 1)`);
+check(boxes.join(',') === '4,10,0,0,0,0', `Karteikasten nach der Runde: ${boxes.join(',')} (4 neu, 10 in Fach 1)`);
 check(/morgen/.test(end) || /neue Karten/.test(end), 'nächster Termin genannt');
-// gespeichert? neue Runde: nichts fällig, nur noch 2 neue
+// gespeichert? neue Runde: nichts fällig, nur noch die 4 neuen (Jobs hat 14 Wörter)
 await click('Noch eine Runde');
 await p.waitForTimeout(300);
 let n2 = 0;
@@ -46,7 +46,7 @@ for (let i = 0; i < 10 && (await p.locator('.vcard').isVisible().catch(() => fal
   await p.getByRole('button', { name: /Gewusst/ }).click();
   n2++;
 }
-check(n2 === 2, `zweite Runde: nur die 2 restlichen neuen Karten (${n2})`);
+check(n2 === 4, `zweite Runde: nur die 4 restlichen neuen Karten (${n2})`);
 await click('Fertig');
 
 // 2) Diktat

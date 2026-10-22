@@ -10,5 +10,5 @@ await p.waitForTimeout(200);
 await p.locator('.word-list').scrollIntoViewIfNeeded();
 await shot('liste');
 const n = await p.locator('.word-item').count();
-console.log(n === 12 ? '✓ 12 Wörter in der Liste' : `✗ ${n} Wörter`);
+console.log(n === 14 ? '✓ 14 Wörter in der Liste' : `✗ ${n} Wörter`);
 process.exit((await done()) + (n === 12 ? 0 : 1));
