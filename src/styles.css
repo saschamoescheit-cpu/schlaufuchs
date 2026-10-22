@@ -1451,9 +1451,9 @@ details.more .inner {
 .cw-static,
 .cw-empty,
 .cw-cell {
-  width: 44px;
+  width: var(--cw, 44px);
   text-align: center;
-  font-size: 1.9rem;
+  font-size: var(--cwf, 1.9rem);
   font-weight: 500;
   flex: none;
 }

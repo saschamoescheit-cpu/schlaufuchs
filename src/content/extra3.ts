@@ -2,7 +2,7 @@
 // Lagebeziehungen (Kl. 1), Zahlenstrahl bis 100 (Kl. 2) und bis 1000 (Kl. 3), Im Wörterbuch nachschlagen (Kl. 3).
 import { chance, choice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
-import { NAMES, skill, type Gen } from './helpers';
+import { NAMES, columnAdd, columnSub, skill, type Gen } from './helpers';
 import { VT, wordTask, type W } from './extra';
 
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
@@ -446,6 +446,57 @@ function geldKommaTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Schriftlich plus und minus bis 1 Million (Kl. 4) ----------
+
+function schriftlich4Task(r: Rng, s: Stage): Gen {
+  const digits = s === 1 ? 4 : s === 2 ? 5 : 6;
+  const lo = 10 ** (digits - 1);
+  const minus = chance(r, 0.5);
+  if (!minus) {
+    let a = 0, b = 0;
+    do {
+      a = ri(r, lo, 10 * lo - 1);
+      b = ri(r, Math.floor(lo / 2), 10 * lo - 1);
+    } while (a + b > 999999);
+    const nums = [a, b];
+    const res = a + b;
+    const { steps, carries } = columnAdd(nums);
+    const len = String(res).length;
+    const noCarry = Number(Array.from({ length: len }, (_, i) => nums.reduce((acc, n) => acc + (Math.floor(n / 10 ** i) % 10), 0) % 10).reverse().join(''));
+    return {
+      key: `${a}+${b}`,
+      prompt: `Rechne schriftlich:\n${a} + ${b}`,
+      speak: `Rechne schriftlich: ${a} plus ${b}`,
+      visual: { kind: 'column', op: '+', rows: nums },
+      work: { op: '+', rows: nums, result: res },
+      answer: { type: 'number', value: res },
+      tags: ['plus'],
+      traps: noCarry !== res ? [{ answer: String(noCarry), tag: 'übertrag-vergessen', hint: 'Du hast einen Übertrag vergessen. Schreibe ihn klein in die nächste Spalte und rechne ihn mit.' }] : [],
+      solution: steps,
+      solutionVisual: { kind: 'column', op: '+', rows: nums, result: res, carries },
+    };
+  }
+  const a = ri(r, 2 * lo, 10 * lo - 1);
+  const b = ri(r, Math.floor(lo / 2), a - lo);
+  const res = a - b;
+  const { steps, carries } = columnSub(a, b);
+  const da = String(a).split('').reverse().map(Number);
+  const db = String(b).split('').reverse().map(Number);
+  const wrong = Number(da.map((d, i) => Math.abs(d - (db[i] ?? 0))).reverse().join(''));
+  return {
+    key: `${a}-${b}`,
+    prompt: `Rechne schriftlich:\n${a} − ${b}`,
+    speak: `Rechne schriftlich: ${a} minus ${b}`,
+    visual: { kind: 'column', op: '−', rows: [a, b] },
+    work: { op: '−', rows: [a, b], result: res },
+    answer: { type: 'number', value: res },
+    tags: ['minus'],
+    traps: wrong !== res ? [{ answer: String(wrong), tag: 'kleiner-minus-größer', hint: 'Du hast an einer Stelle unten minus oben gerechnet. Wenn oben zu wenig ist, musst du entbündeln.' }] : [],
+    solution: [...steps, `Probe: ${res} + ${b} = ${a}`],
+    solutionVisual: { kind: 'column', op: '−', rows: [a, b], result: res, carries },
+  };
+}
+
 // ---------- Würfelgebäude (Kl. 3) ----------
 
 const ROW_NAMES = ['hinten', 'in der Mitte', 'vorne'];
@@ -490,6 +541,7 @@ export const MATHE_EXTRA3: Skill[] = [
   M(4, 'm4-fahrplan', 'Fahrplan lesen', '🚌', { text: ['In einem Fahrplan stehen die Haltestellen untereinander, die Busse nebeneinander.', 'Suche erst die richtige Zeile (Haltestelle), dann die Spalte (Bus) – wo sie sich treffen, steht die Uhrzeit.', 'Wie lange fährt der Bus? Rechne von der Abfahrt bis zur Ankunft: von 7:10 bis 7:25 sind es 15 Minuten.'], visual: { kind: 'table', title: '🚌 Fahrplan', head: ['Haltestelle', '1. Bus', '2. Bus'], rows: [['Bahnhof', '7:10', '7:30'], ['Schule', '7:25', '7:45']] }, videoQuery: 'Fahrplan lesen Mathe Klasse 4 Grundschule' }, fahrplanTask, { tagLabels: { ablesen: 'Fahrplan ablesen', zeitspanne: 'Fahrzeit und Wartezeit', planen: 'den richtigen Bus finden', 'zu-spaet': 'zu späten Bus gewählt' }, testSeconds: 45 }),
   M(4, 'm4-bruchgroessen', 'Brüche bei Größen: ½, ¼, ¾', '🍰', { text: ['½ heißt: die Hälfte. ½ kg = 500 g, ½ h = 30 min.', '¼ heißt: ein Viertel – das Ganze durch 4. ¼ l = 250 ml, ¼ h = 15 min.', '¾ sind drei Viertel: ¾ h = 45 min, ¾ kg = 750 g.'], visual: { kind: 'text', text: '½ kg = 500 g · ¼ h = 15 min' }, videoQuery: 'Brüche bei Größen halb viertel Klasse 4' }, fracTask, { tagLabels: { halb: 'halbe Größen', viertel: 'Viertel und Dreiviertel', 'prozent-gedacht': 'Umrechnungszahl vergessen' }, testSeconds: 25 }),
   M(4, 'm4-geld-komma', 'Rechnen mit Geld: Kommazahlen', '💶', { text: ['3,45 € heißt: 3 Euro und 45 Cent. 100 Cent sind 1 Euro.', 'Beim Zusammenrechnen: erst die Euro, dann die Cent. Sind es 100 Cent oder mehr, wird daraus ein Euro mehr.', 'Rückgeld: Ergänze erst die Cent bis zum vollen Euro, dann bis zum bezahlten Betrag.'], visual: { kind: 'money', items: [500, 200, 50, 20, 5] }, videoQuery: 'Rechnen mit Geld Kommazahlen Rückgeld Klasse 4' }, geldKommaTask, { tagLabels: { addieren: 'Preise zusammenrechnen', rueckgeld: 'Rückgeld berechnen', 'cent-uebertrag': '100 Cent = 1 Euro vergessen', 'cent-ergaenzen': 'Cent falsch ergänzt' }, testSeconds: 40 }),
+  M(4, 'm4-schriftlich-plusminus', 'Schriftlich plus und minus bis 1 Million', '🧮', { text: ['Genauso wie bei kleinen Zahlen: Stellen genau untereinander, rechts bei den Einern anfangen.', 'Plus: Ist eine Spalte 10 oder mehr, merkst du dir den Übertrag für die nächste Spalte.', 'Minus: Ist oben zu wenig, entbündelst du – hol dir 1 von der nächsten Stelle. Mach am Ende die Probe mit plus.'], visual: { kind: 'column', op: '+', rows: [45218, 37956], result: 83174, carries: [0, 1, 0, 1, 1] }, videoQuery: 'schriftliche Addition Subtraktion große Zahlen Klasse 4' }, schriftlich4Task, { tagLabels: { plus: 'schriftlich addieren', minus: 'schriftlich subtrahieren', 'übertrag-vergessen': 'Übertrag vergessen', 'kleiner-minus-größer': 'unten minus oben gerechnet' }, testSeconds: 90 }),
 ];
 
 // ---------- Ergänzen und Platzhalter bis 100 (Kl. 2) ----------
