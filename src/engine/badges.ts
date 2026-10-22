@@ -1,6 +1,7 @@
 // Abzeichen: werden aus dem Lernstand berechnet (nichts extra gespeichert – auf allen Geräten gleich).
 import { ALL_SKILLS, currentSkills, englishYear, SUBJECTS, type ProfileLike } from '../content/curriculum';
 import { level, streakDays, type Progress } from './learning';
+import { cardStates } from './cards';
 
 /** was die Abzeichen vom Profil brauchen */
 export type BadgeProfile = ProfileLike & { dailyGoal?: number; blitz?: Record<string, number> };
@@ -28,6 +29,7 @@ export const BADGES: Badge[] = [
   { id: 'bestnote', icon: '🏆', title: 'Bestleistung', text: '{n}× eine Note 1 (oder 3 Sterne) im Test', tiers: [1, 3, 10], value: (p) => p.tests.filter((t) => (t.grade ? t.grade === 1 : t.percent >= 90)).length },
   { id: 'stufe3', icon: '🚀', title: 'Hoch hinaus', text: 'In {n} Themen die schwerste Stufe erreicht', tiers: [1, 5, 15], value: (p) => Object.values(p.skills).filter((s) => s.stage === 3).length },
   { id: 'tagesziel', icon: '📅', title: 'Zielstrebig', text: 'An {n} Tagen das Tagesziel geschafft', tiers: [1, 5, 20], value: (p, prof) => (prof.dailyGoal ? Object.values(p.days).filter((n) => n >= prof.dailyGoal!).length : 0) },
+  { id: 'vokabeln', icon: '🗂️', title: 'Vokabel-Profi', text: '{n} englische Wörter sitzen (Karteikasten Fach 4 oder 5)', tiers: [10, 50, 150], value: (p) => [...cardStates(p.log).values()].filter((c) => c.box >= 4).length },
   { id: 'blitz', icon: '⚡', title: 'Blitzmerker', text: 'In der Blitzrunde {n} Aufgaben in 60 Sekunden', tiers: [10, 20, 30], value: (_p, prof) => Math.max(0, ...Object.values(prof.blitz ?? {})) },
   {
     id: 'meister',
