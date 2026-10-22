@@ -303,6 +303,8 @@ const PRONOMEN: [string, string, string][] = [
   ['Der Hase', 'Er', 'Der Hase hoppelt. ☐ sucht eine Möhre.'], ['Die Lehrerin', 'Sie', 'Die Lehrerin lacht. ☐ erzählt einen Witz.'], ['Das Buch', 'Es', 'Das Buch ist spannend. ☐ handelt von Piraten.'],
   ['Die Äpfel', 'Sie', 'Die Äpfel sind reif. ☐ hängen am Baum.'], ['Ben und ich', 'Wir', 'Ben und ich sind Brüder. ☐ teilen ein Zimmer.'], ['Du und Mia', 'Ihr', 'Du und Mia, ☐ habt gewonnen!'],
   ['Der Baum', 'Er', 'Der Baum ist hoch. ☐ steht im Garten.'], ['Das Fahrrad', 'Es', 'Das Fahrrad ist neu. ☐ hat eine Klingel.'], ['Die Sonne', 'Sie', 'Die Sonne geht auf. ☐ scheint hell.'],
+  ['Die Maus', 'Sie', 'Die Maus piepst. ☐ hat Angst vor der Katze.'], ['Der Zug', 'Er', 'Der Zug hat Verspätung. ☐ kommt erst um acht.'], ['Das Schwein', 'Es', 'Das Schwein grunzt. ☐ wälzt sich im Schlamm.'],
+  ['Mila und ich', 'Wir', 'Mila und ich malen. ☐ brauchen viele Farben.'], ['Du und Paul', 'Ihr', 'Du und Paul, ☐ räumt heute auf!'], ['Die Fische', 'Sie', 'Die Fische schwimmen. ☐ glitzern in der Sonne.'],
 ];
 function pronTask(r: Rng): Gen {
   const [who, pr, s] = pick(r, PRONOMEN);

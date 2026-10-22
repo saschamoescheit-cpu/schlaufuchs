@@ -519,6 +519,10 @@ const ZUSAMMEN: [string, string, string, string, string, string][] = [
   ['die', 'Hand', 'der', 'Schuh', 'Handschuh', '🧤'], ['der', 'Regen', 'der', 'Schirm', 'Regenschirm', '☂️'], ['das', 'Feuer', 'das', 'Werk', 'Feuerwerk', '🎆'],
   ['die', 'Schule', 'die', 'Tasche', 'Schultasche', '🎒'], ['das', 'Wasser', 'die', 'Flasche', 'Wasserflasche', '🍶'], ['der', 'Garten', 'das', 'Haus', 'Gartenhaus', '🏡'],
   ['das', 'Spiel', 'der', 'Platz', 'Spielplatz', '🎠'], ['die', 'Erde', 'die', 'Beere', 'Erdbeere', '🍓'], ['der', 'Stuhl', 'das', 'Bein', 'Stuhlbein', '🪑'],
+  ['der', 'Kopf', 'das', 'Kissen', 'Kopfkissen', '🛏️'], ['der', 'Mond', 'das', 'Licht', 'Mondlicht', '🌙'], ['das', 'Eis', 'die', 'Waffel', 'Eiswaffel', '🍦'],
+  ['die', 'Hose', 'die', 'Tasche', 'Hosentasche', '👖'], ['der', 'Vogel', 'das', 'Nest', 'Vogelnest', '🐦'], ['der', 'Brief', 'die', 'Marke', 'Briefmarke', '✉️'],
+  ['die', 'Tomate', 'die', 'Suppe', 'Tomatensuppe', '🍅'], ['das', 'Rad', 'der', 'Weg', 'Radweg', '🚲'], ['die', 'Nacht', 'der', 'Himmel', 'Nachthimmel', '🌌'],
+  ['der', 'Sand', 'die', 'Burg', 'Sandburg', '🏰'], ['das', 'Tier', 'der', 'Arzt', 'Tierarzt', '🐾'], ['die', 'Uhr', 'der', 'Zeiger', 'Uhrzeiger', '🕐'],
 ];
 const zusammen = D(3, 'd3-zusammengesetzt', 'Zusammengesetzte Nomen', '🔗', {
   text: ['Aus zwei Nomen kann man ein neues Nomen bauen: das Haus + die Tür = die Haustür.', 'Das letzte Wort bestimmt den Artikel: die Tür → die Haustür.', 'Das erste Wort sagt genauer, was gemeint ist: eine Tür am Haus.', 'Das neue Wort schreibt man zusammen und groß.'],
@@ -737,6 +741,8 @@ const DAS_DASS: [string, 'das' | 'dass'][] = [
   // Nachtlauf 22.10.2026: mehr Aufgaben
   ['Ich finde, ☐ du recht hast.', 'dass'], ['☐ Auto, ☐ dort parkt, gehört meinem Onkel.', 'das'], ['Hast du gehört, ☐ morgen die Schule ausfällt?', 'dass'], ['Wir sehen ☐ Feuerwerk vom Balkon aus.', 'das'],
   ['Ich wünsche mir, ☐ es schneit.', 'dass'], ['☐ Mädchen, ☐ neben mir sitzt, heißt Lara.', 'das'], ['Mia ist traurig, ☐ ihr Hamster krank ist.', 'dass'], ['Bring bitte ☐ Brot mit.', 'das'],
+  ['Ich merke, ☐ ich müde werde.', 'dass'], ['☐ Eis schmeckt lecker.', 'das'], ['Oma schreibt, ☐ sie uns bald besucht.', 'dass'], ['Wer hat ☐ Fenster offen gelassen?', 'das'],
+  ['Es ist schade, ☐ die Ferien vorbei sind.', 'dass'], ['Das Bild, ☐ an der Wand hängt, hat Paul gemalt.', 'das'], ['Der Lehrer sagt, ☐ wir leise sein sollen.', 'dass'], ['Ist ☐ dein Rucksack?', 'das'],
 ];
 const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   text: ['„das“ ist ein Artikel oder Begleiter: das Buch – oder es steht für ein Nomen.', 'Probe: Kannst du „dieses“, „jenes“ oder „welches“ einsetzen? Dann schreibst du „das“.', '„dass“ verbindet zwei Sätze und steht oft nach Verben wie glauben, hoffen, sagen, wissen: „Ich hoffe, dass …“.', 'Vor „dass“ steht immer ein Komma.'],
