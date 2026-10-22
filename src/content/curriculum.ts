@@ -93,6 +93,10 @@ export function currentLevel(subject: Subject, p: ProfileLike): Grade {
 
 export const skillsOf = (subject: Subject, grade?: Grade) => ALL_SKILLS.filter((s) => s.subject === subject && (grade === undefined || s.grade === grade));
 
+/** Englisch-Themen, die reine Wortfelder sind (Vokabeltrainer, Vokabeltest) */
+const VOCAB_RE = /colours|numbers|animals|family|body|school|food|clothes|days|toys|festivals|months|weather|feelings|actions|home|hobbies|shapes/;
+export const isVocab = (s: Skill) => s.subject === 'englisch' && VOCAB_RE.test(s.id);
+
 /** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
 const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   mathe: [
@@ -108,8 +112,9 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
     { name: 'Sprache untersuchen', re: /./ },
   ],
   englisch: [
-    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading/ },
-    { name: 'Wörter', re: /./ },
+    { name: 'Vokabeln', re: VOCAB_RE },
+    { name: 'Sätze, Hören und Lesen', re: /phrases|time|prepositions|a-an|sentences|listening|questions|shopping|classroom|reading|myday|health/ },
+    { name: 'ABC und Aussprache', re: /./ },
   ],
 };
 export const areaOf = (s: Skill) => AREAS[s.subject].find((a) => a.re.test(s.id))?.name ?? 'Weitere';

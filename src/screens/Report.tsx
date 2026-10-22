@@ -91,7 +91,7 @@ export function ProgressReport({ profile: p, progress: pr, onBack }: { profile: 
                 {tests.map((t) => (
                   <tr key={t.id}>
                     <td className="nowrap">{fmt(t.t)}</td>
-                    <td>{SUBJECTS.find((x) => x.id === t.subject)?.name}</td>
+                    <td>{SUBJECTS.find((x) => x.id === t.subject)?.name}{t.kind === 'vokabeln' ? ' – Vokabeltest' : ''}</td>
                     <td className="nowrap right">
                       {t.percent} %{t.grade ? ` · Note ${t.grade} (${GRADE_NAMES[t.grade]})` : ''}
                     </td>

@@ -103,6 +103,8 @@ export default function App() {
   }
 
   const practiceSkill = (s: Skill) => push({ r: 'practice', title: s.title, tasks: buildPractice(s, progress), mode: 'übung', again: () => buildPractice(s, data.progress[profile.id] ?? progress), n: 0 });
+  // Vokabeltrainer: nur Wortfelder, wählbare Länge
+  const practiceVocab = (skills: Skill[], n: number) => push({ r: 'practice', title: `Vokabeln: ${skills.length === 1 ? skills[0].title : `${skills.length} Wortfelder`}`, tasks: buildMix(skills, progress, undefined, undefined, n), mode: 'übung', again: () => buildMix(skills, data.progress[profile.id] ?? progress, undefined, undefined, n), n: 0 });
   const practiceMix = (skills: Skill[], title: string) => push({ r: 'practice', title, tasks: buildMix(skills, progress), mode: 'übung', again: () => buildMix(skills, data.progress[profile.id] ?? progress), n: 0 });
   const reviewAll = (subject?: Subject) => {
     const skills = ALL_SKILLS.filter((s) => !subject || s.subject === subject);
@@ -125,7 +127,7 @@ export default function App() {
         );
       break;
     case 'subject':
-      body = <SubjectScreen profile={profile} progress={progress} subject={route.subject} onBack={back} onPractice={practiceSkill} onMix={practiceMix} onBlitz={(skill) => push({ r: 'blitz', skill, n: 0 })} />;
+      body = <SubjectScreen profile={profile} progress={progress} subject={route.subject} onBack={back} onPractice={practiceSkill} onMix={practiceMix} onBlitz={(skill) => push({ r: 'blitz', skill, n: 0 })} onVocab={practiceVocab} />;
       break;
     case 'practice':
       return (

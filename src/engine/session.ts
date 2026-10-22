@@ -49,7 +49,8 @@ export function buildPattern(skill: Skill, tag: string, p: Progress, now = Date.
 }
 
 /** Fuchs-Mix: Themen gewichtet – was schwerfällt oder noch nicht sicher ist, kommt öfter */
-export function buildMix(skills: Skill[], p: Progress, now = Date.now(), seed = randomSeed()): Task[] {
+/** gemischte Runde aus mehreren Themen (Schwächen öfter); len: Anzahl Aufgaben */
+export function buildMix(skills: Skill[], p: Progress, now = Date.now(), seed = randomSeed(), len = SESSION_LEN): Task[] {
   const r = mulberry32(seed);
   const ids = new Set(skills.map((s) => s.id));
   const due = dueReviews(p, now, (id) => ids.has(id)).slice(0, 4).map((x) => x.task);
@@ -57,7 +58,7 @@ export function buildMix(skills: Skill[], p: Progress, now = Date.now(), seed = 
   const total = skills.reduce((a, s) => a + weight(s), 0);
   const used = new Set(due.map((t) => t.key));
   const news: Task[] = [];
-  while (news.length < SESSION_LEN - due.length) {
+  while (news.length < len - due.length) {
     let x = r() * total;
     const s = skills.find((k) => (x -= weight(k)) <= 0) ?? pick(r, skills);
     news.push(fresh(s, r, used, stageOf(p, s.id)));
@@ -85,12 +86,13 @@ export const PACES: { id: Pace; label: string; factor: number; info: string }[] 
 ];
 
 /** Lernzielkontrolle: Aufgaben reihum aus den gewählten Themen, Zeit nach Schultempo */
-export function buildTest(skills: Skill[], n: number, pace: Pace, seed = randomSeed()) {
+/** stage: feste Stufe für alle Aufgaben (z. B. Vokabeltest: 3 = viel selbst schreiben) */
+export function buildTest(skills: Skill[], n: number, pace: Pace, seed = randomSeed(), stage?: Stage) {
   const r = mulberry32(seed);
   const used = new Set<string>();
   const order = shuffle(r, skills);
   // Lernzielkontrolle: Klassenniveau (mittel) mit einigen schweren Aufgaben
-  const tasks = Array.from({ length: n }, (_, i) => fresh(order[i % order.length], r, used, i % 3 === 2 ? 3 : 2));
+  const tasks = Array.from({ length: n }, (_, i) => fresh(order[i % order.length], r, used, stage ?? (i % 3 === 2 ? 3 : 2)));
   const secs = tasks.reduce((a, t) => a + (skills.find((s) => s.id === t.skillId)?.testSeconds ?? 30), 0);
   const factor = PACES.find((x) => x.id === pace)!.factor;
   const limit = Math.max(60, Math.ceil((secs * factor) / 60) * 60);

@@ -11,6 +11,7 @@ import { BadgeWatcher, DailyGoal } from '../ui/Badges';
 import { countdownText, daysUntil, nextPlanned, PlannedCard } from './Planner';
 import type { TestSpec } from './Tests';
 import { blitzable, BlitzPicker } from './Blitz';
+import { VocabPicker } from './Vocab';
 import { unseenOutfits, Wardrobe, wearing } from '../ui/Outfits';
 
 function greeting(name: string) {
@@ -174,11 +175,12 @@ function NewSchoolYear({ profile }: { profile: Profile }) {
   );
 }
 
-export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix, onBlitz }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void; onBlitz: (skill: Skill) => void }) {
+export function SubjectScreen({ profile, progress, subject, onBack, onPractice, onMix, onBlitz, onVocab }: { profile: Profile; progress: Progress; subject: Subject; onBack: () => void; onPractice: (skill: Skill) => void; onMix: (skills: Skill[], label: string) => void; onBlitz: (skill: Skill) => void; onVocab?: (skills: Skill[], n: number) => void }) {
   const info = subjectInfo(subject);
   const [lv, setLv] = useState<Grade>(currentLevel(subject, profile));
   const [explain, setExplain] = useState<Skill | null>(null);
   const [blitz, setBlitz] = useState(false);
+  const [vocab, setVocab] = useState(false);
   const skills = skillsOf(subject, lv);
   const canBlitz = useMemo(() => skills.some(blitzable), [skills]);
   const levels = levelsFor(subject);
@@ -203,6 +205,22 @@ export function SubjectScreen({ profile, progress, subject, onBack, onPractice, 
       <button className={`btn block ${subject}`} onClick={() => onMix(skills, `Fuchs-Mix ${info.name} · ${lvLabel}`)}>
         🦊 Fuchs-Mix – alles gemischt
       </button>
+      {subject === 'englisch' && onVocab && (
+        <button className="btn block ghost" onClick={() => setVocab(true)}>
+          📚 Vokabeln lernen
+        </button>
+      )}
+      {vocab && onVocab && (
+        <VocabPicker
+          lv={lv}
+          progress={progress}
+          onClose={() => setVocab(false)}
+          onStart={(sk, n) => {
+            setVocab(false);
+            onVocab(sk, n);
+          }}
+        />
+      )}
       {canBlitz && (
         <button className="btn block ghost" onClick={() => setBlitz(true)}>
           ⚡ Blitzrunde – 60 Sekunden

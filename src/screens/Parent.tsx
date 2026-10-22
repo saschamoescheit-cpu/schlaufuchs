@@ -300,7 +300,7 @@ export function weekReport(p: Profile, pr: Progress, now = Date.now()): string {
   }
   const plan = nextPlanned(p, 30);
   if (plan) lines.push('', `Nächster Test: ${subjectInfo(plan.subject).name} am ${fmtDay(plan.date)} (${countdownText(daysUntil(plan.date))})${plan.note ? ` – ${plan.note}` : ''}, vorbereitet: ${Math.round(readiness(pr, plan) * 100)} %`);
-  if (w.tests.length) lines.push('', 'Lernzielkontrollen:', ...w.tests.map((t) => `- ${subjectInfo(t.subject).name}: ${t.percent} %${t.grade ? `, Note ${t.grade} (${GRADE_NAMES[t.grade]})` : ''}`));
+  if (w.tests.length) lines.push('', 'Lernzielkontrollen:', ...w.tests.map((t) => `- ${subjectInfo(t.subject).name}${t.kind === 'vokabeln' ? ' (Vokabeltest)' : ''}: ${t.percent} %${t.grade ? `, Note ${t.grade} (${GRADE_NAMES[t.grade]})` : ''}`));
   if (weak.length) lines.push('', 'Hier hakt es noch:', ...weak.map((x) => `- ${x.skill.title} (${Math.round(x.acc * 100)} % richtig)`));
   if (pats.length) lines.push('', 'Typische Fehler:', ...pats.map((x) => `- ${x.label} (${x.skill.title})`));
   lines.push('', `Offene Aufgaben in der Fehler-Kiste: ${pr.review.length}`);

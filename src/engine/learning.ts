@@ -44,6 +44,8 @@ export interface TestResult {
   id: string;
   t: number;
   subject: Subject;
+  /** besondere Testart (z. B. Vokabeltest) */
+  kind?: 'vokabeln';
   skills: string[];
   correct: number;
   total: number;

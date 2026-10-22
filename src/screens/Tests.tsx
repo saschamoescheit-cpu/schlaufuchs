@@ -5,7 +5,7 @@ import { GRADE_NAMES, gradeFor, verbalFor } from '../engine/grading';
 import { record, type TestItem, type TestResult } from '../engine/learning';
 import { buildTest, PACES, type Pace } from '../engine/session';
 import type { Grade, Skill, Subject, Task } from '../engine/types';
-import { byArea, currentLevel, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
+import { byArea, currentLevel, isVocab, levelsFor, skillById, skillsOf, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { updateProgress, type Profile } from '../data/store';
 import type { Progress } from '../engine/learning';
 import { Confetti, Confirm, Rich, Sheet, Speak, Toast, TopBar } from '../ui/common';
@@ -22,6 +22,8 @@ const fmtDate = (t: number) => new Date(t).toLocaleDateString('de-DE', { day: '2
 
 export interface TestSpec {
   subject: Subject;
+  /** Vokabeltest (nur Wortfelder, viel selbst schreiben) */
+  kind?: 'vokabeln';
   skills: string[];
   tasks: Task[];
   limit: number;
@@ -35,13 +37,15 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
   const [sel, setSel] = useState<Set<string>>(new Set());
   const [n, setN] = useState(12);
   const [pace, setPace] = useState<Pace>(profile.pace);
-  const skills = skillsOf(subject, level);
+  const [vocabTest, setVocabTest] = useState(false);
+  const vocab = subject === 'englisch' && vocabTest;
+  const skills = vocab ? skillsOf(subject, level).filter(isVocab) : skillsOf(subject, level);
 
   useEffect(() => {
     const lv = currentLevel(subject, profile);
     setLevel(lv);
   }, [subject, profile]);
-  useEffect(() => setSel(new Set(skillsOf(subject, level).map((s) => s.id))), [subject, level]);
+  useEffect(() => setSel(new Set(skillsOf(subject, level).filter((s) => !vocab || isVocab(s)).map((s) => s.id))), [subject, level, vocab]);
 
   const chosen = skills.filter((s) => sel.has(s.id));
   const estimate = useMemo(() => {
@@ -84,6 +88,21 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
           ))}
         </div>
       </div>
+
+      {subject === 'englisch' && (
+        <div className="field">
+          <span className="label">Test-Art</span>
+          <div className="chips">
+            <button className={`chip ${!vocabTest ? 'on' : ''}`} onClick={() => setVocabTest(false)}>
+              Alle Themen
+            </button>
+            <button className={`chip ${vocabTest ? 'on' : ''}`} onClick={() => setVocabTest(true)}>
+              📚 Vokabeltest
+            </button>
+          </div>
+          {vocabTest && <div className="small muted">Nur Wortfelder – du übersetzt und schreibst die Wörter selbst, wie beim Vokabeltest in der Schule.</div>}
+        </div>
+      )}
 
       <div className="field">
         <span className="label">Stoff</span>
@@ -154,8 +173,8 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
         className={`btn block ${subject}`}
         disabled={!chosen.length}
         onClick={() => {
-          const t = buildTest(chosen, n, pace);
-          onStart({ subject, skills: chosen.map((s) => s.id), tasks: t.tasks, limit: t.limit, pace });
+          const t = buildTest(chosen, n, pace, undefined, vocab ? 3 : undefined);
+          onStart({ subject, kind: vocab ? 'vokabeln' : undefined, skills: chosen.map((s) => s.id), tasks: t.tasks, limit: t.limit, pace });
         }}
       >
         Test starten
@@ -164,8 +183,8 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
         className="btn ghost block small"
         disabled={!chosen.length}
         onClick={() => {
-          const t = buildTest(chosen, n, pace);
-          onPrint({ subject, skills: chosen.map((s) => s.id), tasks: t.tasks, limit: t.limit, pace });
+          const t = buildTest(chosen, n, pace, undefined, vocab ? 3 : undefined);
+          onPrint({ subject, kind: vocab ? 'vokabeln' : undefined, skills: chosen.map((s) => s.id), tasks: t.tasks, limit: t.limit, pace });
         }}
       >
         🖨️ Als Arbeitsblatt drucken
@@ -184,7 +203,7 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
             <button key={t.id} className="list-row" style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit' }} onClick={() => onOpenResult(t.id)}>
               <span style={{ fontSize: '1.4rem' }}>{subjectInfo(t.subject).icon}</span>
               <span className="grow">
-                <b>{subjectInfo(t.subject).name}</b> <span className="muted small">· {fmtDate(t.t)}</span>
+                <b>{subjectInfo(t.subject).name}{t.kind === 'vokabeln' ? ' – Vokabeltest' : ''}</b> <span className="muted small">· {fmtDate(t.t)}</span>
                 <div className="small muted">
                   {t.points} von {t.maxPoints} Punkten · {t.percent} %
                 </div>
@@ -250,6 +269,7 @@ export function TestRun({ profile, spec, onDone, onCancel }: { profile: Profile;
       id: Math.random().toString(36).slice(2, 10),
       t,
       subject: spec.subject,
+      kind: spec.kind,
       skills: spec.skills,
       correct: items.filter((x) => x.ok).length,
       total: items.length,
@@ -380,7 +400,7 @@ export function TestResultView({ profile, result, onBack, onPractice }: { profil
       <div className="stack">
         <div className="card center stack" style={{ gap: 10 }}>
           <div className="muted">
-            {info.icon} {info.name} · {fmtDate(result.t)}
+            {info.icon} {info.name}{result.kind === 'vokabeln' ? ' – Vokabeltest' : ''} · {fmtDate(result.t)}
           </div>
           {result.grade ? (
             <>
