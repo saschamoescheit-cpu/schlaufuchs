@@ -17,11 +17,33 @@ import { hasPin, isUnlocked } from './data/parent';
 import { stopSpeaking } from './ui/speech';
 
 // Selten gebrauchte Bildschirme erst bei Bedarf laden (kleineres Startpaket; offline vom Service Worker vorgehalten)
-const ParentHome = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentHome })));
-const ParentChild = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentChild })));
-const PinGate = lazy(() => import('./screens/Parent').then((m) => ({ default: m.PinGate })));
-const PrintView = lazy(() => import('./screens/Print').then((m) => ({ default: m.PrintView })));
-const VocabCards = lazy(() => import('./screens/VocabCards').then((m) => ({ default: m.VocabCards })));
+// Fehlt ein Teil (App war während eines Updates offen), einmal neu laden statt einer Fehlerseite
+const RELOAD_KEY = 'schlaufuchs:chunk-reload';
+const reloadOnce = (e: unknown): Promise<never> => {
+  try {
+    if (!sessionStorage.getItem(RELOAD_KEY)) {
+      sessionStorage.setItem(RELOAD_KEY, '1');
+      location.reload();
+      return new Promise<never>(() => {});
+    }
+  } catch {
+    /* kein sessionStorage – dann die Fehlerseite */
+  }
+  throw e;
+};
+// nach erfolgreichem Start darf später wieder einmal neu geladen werden
+setTimeout(() => {
+  try {
+    sessionStorage.removeItem(RELOAD_KEY);
+  } catch {
+    /* egal */
+  }
+}, 10000);
+const ParentHome = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentHome }), reloadOnce));
+const ParentChild = lazy(() => import('./screens/Parent').then((m) => ({ default: m.ParentChild }), reloadOnce));
+const PinGate = lazy(() => import('./screens/Parent').then((m) => ({ default: m.PinGate }), reloadOnce));
+const PrintView = lazy(() => import('./screens/Print').then((m) => ({ default: m.PrintView }), reloadOnce));
+const VocabCards = lazy(() => import('./screens/VocabCards').then((m) => ({ default: m.VocabCards }), reloadOnce));
 const Loading = () => <div className="app full" aria-busy="true" />;
 
 type Tab = 'home' | 'review' | 'tests' | 'stats';
