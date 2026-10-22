@@ -589,6 +589,9 @@ _ _${w.slice(2)}`,
 const EIIE: [string, string][] = [
   ['Eis', '🍦'], ['Bein', '🦵'], ['Kleid', '👗'], ['Pfeil', '🏹'], ['Eimer', '🪣'], ['Schwein', '🐷'], ['Seil', '🪢'], ['Eichhörnchen', '🐿️'], ['Kreis', '⭕'],
   ['Biene', '🐝'], ['Brief', '✉️'], ['Fliege', '🪰'], ['Ziege', '🐐'], ['Wiese', '🌾'], ['Spiegel', '🪞'], ['Riegel', '🍫'], ['Lied', '🎵'], ['Dieb', '🦹'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Reis', '🍚'], ['Leiter', '🪜'], ['Geige', '🎻'], ['Seife', '🧼'], ['Zeitung', '📰'], ['Stein', '🪨'], ['Schleife', '🎀'],
+  ['Stiefel', '👢'], ['Ziel', '🏁'], ['Papier', '📄'], ['Fieber', '🤒'], ['Spiel', '🎲'], ['Klavier', '🎹'], ['Zwiebel', '🧅'],
 ];
 function eiieTask(r: Rng, s: Stage): Gen {
 
@@ -1340,6 +1343,12 @@ const NOMI: [string, string, boolean, string][] = [
   ['Heute gibt es nichts ☐ im Fernsehen.', 'spannendes', true, 'nichts'], ['Mama kann sehr gut ☐.', 'kochen', false, ''], ['Alles ☐ zum Geburtstag!', 'gute', true, 'alles'],
   ['Beim ☐ muss man leise sein.', 'lernen', true, 'beim'], ['Das Wasser ist sehr ☐.', 'kalt', false, ''], ['Lisa hilft beim ☐ der Wäsche.', 'aufhängen', true, 'beim'],
   ['Wir hören dem ☐ der Vögel zu.', 'singen', true, 'dem'], ['Tim kann schon gut ☐.', 'rechnen', false, ''], ['Ich habe etwas ☐ für dich.', 'schönes', true, 'etwas'],
+  // Nachtlauf 22.10.2026: mehr Sätze
+  ['Nach dem ☐ putze ich mir die Zähne.', 'essen', true, 'dem'], ['Wir wollen heute ☐.', 'basteln', false, ''], ['Zum ☐ gehe ich in den Garten.', 'spielen', true, 'zum'],
+  ['Im Urlaub haben wir viel ☐ erlebt.', 'schönes', true, 'viel'], ['Die Suppe ist noch zu ☐.', 'heiß', false, ''], ['Das ☐ fällt mir noch schwer.', 'rechnen', true, 'das'],
+  ['Beim ☐ der Zähne summe ich ein Lied.', 'putzen', true, 'beim'], ['Hast du etwas ☐ gehört?', 'neues', true, 'etwas'], ['Der Hund ist sehr ☐.', 'schnell', false, ''],
+  ['Vom ☐ tun mir die Arme weh.', 'tragen', true, 'vom'], ['Morgen wollen wir zusammen ☐.', 'backen', false, ''], ['Im Wald gibt es nichts ☐.', 'gefährliches', true, 'nichts'],
+  ['Mein Bruder kann laut ☐.', 'pfeifen', false, ''],
 ];
 const cap = (w: string) => w[0].toUpperCase() + w.slice(1);
 function nomiTask(r: Rng, s: Stage): Gen {
@@ -1367,6 +1376,13 @@ const ADV: { s: string; mark: string; was: Adv }[] = [
   { s: 'Papa kocht **in der Küche**.', mark: 'in der Küche', was: 'wo' }, { s: '**Am Wochenende** besuchen wir Opa.', mark: 'Am Wochenende', was: 'zeit' },
   { s: 'Lisa geht morgens **in die Schule**.', mark: 'in die Schule', was: 'wohin' }, { s: 'Der Ball fliegt **über den Zaun**.', mark: 'über den Zaun', was: 'wohin' },
   { s: 'Nach dem Essen legt Mama das Buch **auf den Tisch**.', mark: 'auf den Tisch', was: 'wohin' }, { s: '**Nach dem Essen** legt Mama das Buch auf den Tisch.', mark: 'Nach dem Essen', was: 'zeit' },
+  // Nachtlauf 22.10.2026: mehr Sätze
+  { s: '**Im Winter** bauen wir einen Schneemann.', mark: 'Im Winter', was: 'zeit' }, { s: 'Der Vogel sitzt **auf dem Dach**.', mark: 'auf dem Dach', was: 'wo' },
+  { s: 'Der Hund rennt **in den Garten**.', mark: 'in den Garten', was: 'wohin' }, { s: '**Heute Abend** gehen wir ins Kino.', mark: 'Heute Abend', was: 'zeit' },
+  { s: 'Heute Abend gehen wir **ins Kino**.', mark: 'ins Kino', was: 'wohin' }, { s: 'Mein Fahrrad steht **neben der Garage**.', mark: 'neben der Garage', was: 'wo' },
+  { s: '**Vor dem Frühstück** putzt Ben die Zähne.', mark: 'Vor dem Frühstück', was: 'zeit' }, { s: 'Die Kinder klettern **auf den Baum**.', mark: 'auf den Baum', was: 'wohin' },
+  { s: 'Oma liest **jeden Abend** ein Buch.', mark: 'jeden Abend', was: 'zeit' }, { s: 'Die Fische schwimmen **im Teich**.', mark: 'im Teich', was: 'wo' },
+  { s: 'Lea stellt die Blumen **ans Fenster**.', mark: 'ans Fenster', was: 'wohin' },
 ];
 const ADV_NAME = { zeit: 'Zeitangabe (Wann?)', ort: 'Ortsangabe (Wo? Wohin?)' };
 function advTask(r: Rng, s: Stage): Gen {

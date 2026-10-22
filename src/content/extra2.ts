@@ -156,6 +156,11 @@ const NACH: [string, string, string, string?][] = [
   ['ehrlich', 'Ehrlichkeit', 'keit'], ['freundlich', 'Freundlichkeit', 'keit'], ['sauber', 'Sauberkeit', 'keit'], ['traurig', 'Traurigkeit', 'keit'], ['pünktlich', 'Pünktlichkeit', 'keit'],
   ['wohnen', 'Wohnung', 'ung'], ['zeichnen', 'Zeichnung', 'ung'], ['hoffen', 'Hoffnung', 'ung'], ['meinen', 'Meinung', 'ung'], ['bewegen', 'Bewegung', 'ung'],
   ['erleben', 'Erlebnis', 'nis', 'das'], ['ergeben', 'Ergebnis', 'nis', 'das'], ['zeugen', 'Zeugnis', 'nis', 'das'], ['geheim', 'Geheimnis', 'nis', 'das'], ['erlauben', 'Erlaubnis', 'nis'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['klug', 'Klugheit', 'heit'], ['faul', 'Faulheit', 'heit'], ['sicher', 'Sicherheit', 'heit'], ['gleich', 'Gleichheit', 'heit'],
+  ['fröhlich', 'Fröhlichkeit', 'keit'], ['höflich', 'Höflichkeit', 'keit'], ['flüssig', 'Flüssigkeit', 'keit'], ['fähig', 'Fähigkeit', 'keit'],
+  ['rechnen', 'Rechnung', 'ung'], ['warnen', 'Warnung', 'ung'], ['lösen', 'Lösung', 'ung'], ['ordnen', 'Ordnung', 'ung'],
+  ['finster', 'Finsternis', 'nis'], ['hindern', 'Hindernis', 'nis', 'das'], ['wild', 'Wildnis', 'nis'], ['ärgern', 'Ärgernis', 'nis', 'das'],
 ];
 function nachTask(r: Rng, s: Stage): Gen {
   const [base, noun, suf, art = 'die'] = pick(r, NACH);

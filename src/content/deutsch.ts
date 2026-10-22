@@ -374,6 +374,11 @@ const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Am', 'Abend', 'lese', 'ich', 'ein', 'Buch'], noun: [1, 5] }, { w: ['Der', 'Fisch', 'schwimmt', 'im', 'Teich'], noun: [1, 4] },
   { w: ['Unsere', 'Lehrerin', 'erzählt', 'eine', 'Geschichte'], noun: [1, 4] }, { w: ['Ben', 'trägt', 'eine', 'rote', 'Mütze'], noun: [0, 4] },
   { w: ['Die', 'Sonne', 'scheint', 'hell', 'am', 'Himmel'], noun: [1, 5] }, { w: ['Nach', 'der', 'Schule', 'spielen', 'wir', 'im', 'Park'], noun: [2, 6] },
+  // Nachtlauf 22.10.2026: mehr Sätze
+  { w: ['Der', 'Opa', 'repariert', 'das', 'Fahrrad'], noun: [1, 4] }, { w: ['Im', 'Sommer', 'essen', 'wir', 'gern', 'Eis'], noun: [1, 5] },
+  { w: ['Mia', 'füttert', 'ihren', 'Hasen'], noun: [0, 3] }, { w: ['Die', 'Ente', 'schwimmt', 'auf', 'dem', 'See'], noun: [1, 5] },
+  { w: ['Am', 'Montag', 'haben', 'wir', 'Sport'], noun: [1, 4] }, { w: ['Der', 'Wind', 'weht', 'die', 'Blätter', 'vom', 'Baum'], noun: [1, 4, 6] },
+  { w: ['Jonas', 'schreibt', 'einen', 'Brief', 'an', 'Oma'], noun: [0, 3, 5] }, { w: ['Die', 'Kinder', 'singen', 'ein', 'Lied'], noun: [1, 4] },
 ];
 const grossschreibung = D(2, 'd2-grossschreibung', 'Groß oder klein?', '🔠', {
   text: ['Groß schreibt man: das erste Wort im Satz und alle Nomen (Namenwörter).', 'Klein schreibt man: Verben (Tunwörter), Adjektive (Wiewörter) und kleine Wörter wie mit, auf, ein.', 'Probe für Nomen: Passt der, die oder das davor?'],
@@ -552,7 +557,10 @@ const aeEu = D(3, 'd3-ae-aeu', 'ä oder e, äu oder eu', '🌳', {
 }, { tagLabels: { 'ä-e': 'ä oder e', 'äu-eu': 'äu oder eu' }, testSeconds: 15 });
 
 const DEHNUNG: Pair[] = [['fahren', 'faren', '🚗'], ['Zahl', 'Zal', '🔢'], ['Uhr', 'Ur', '⌚'], ['Kuh', 'Ku', '🐮'], ['Huhn', 'Hun', '🐔'], ['Stuhl', 'Stul', '🪑'], ['Sohn', 'Son', '👦'], ['wohnen', 'wonen', '🏠'], ['Zahn', 'Zan', '🦷'], ['Bahn', 'Ban', '🚆'], ['Jahr', 'Jar', '📅'], ['Ohr', 'Or', '👂'], ['Schuh', 'Schu', '👟'], ['fühlen', 'fülen', '🤲'],
-  ['Name', 'Nahme', '📛'], ['Hose', 'Hohse', '👖'], ['Tafel', 'Tahfel', '🧑‍🏫'], ['Schule', 'Schuhle', '🏫'], ['Blume', 'Bluhme', '🌷'], ['Brot', 'Broht', '🍞'], ['Nase', 'Nahse', '👃'], ['Igel', 'Ihgel', '🦔']];
+  ['Name', 'Nahme', '📛'], ['Hose', 'Hohse', '👖'], ['Tafel', 'Tahfel', '🧑‍🏫'], ['Schule', 'Schuhle', '🏫'], ['Blume', 'Bluhme', '🌷'], ['Brot', 'Broht', '🍞'], ['Nase', 'Nahse', '👃'], ['Igel', 'Ihgel', '🦔'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Fahne', 'Fane', '🚩'], ['Hahn', 'Han', '🐓'], ['Fehler', 'Feler', '❌'], ['Höhle', 'Höle', '🕳️'], ['Fahrrad', 'Farrad', '🚲'], ['Rahmen', 'Ramen', '🖼️'], ['Möhre', 'Möre', '🥕'],
+  ['Rose', 'Rohse', '🌹'], ['Hut', 'Huht', '👒'], ['Tor', 'Tohr', '🥅'], ['Tomate', 'Tohmate', '🍅']];
 const dehnung = D(3, 'd3-dehnungs-h', 'Wörter mit Dehnungs-h', '🐔', {
   text: ['Manchmal zeigt ein h, dass der Selbstlaut davor lang ist: fahren, Zahl, Uhr.', 'Das h hört man nicht – diese Wörter musst du dir merken (Merkwörter).', 'Das Dehnungs-h steht oft vor l, m, n oder r: Zahl, nehmen, Zahn, Uhr.', 'Aber Vorsicht: Die meisten Wörter mit langem Selbstlaut haben KEIN h: Name, Hose, Schule.'],
   visual: { kind: 'word', word: 'Zahl', mark: [[2, 3]] },
@@ -737,6 +745,14 @@ const KOMMA: { ok: string; wrong: string[]; tag: string; why: string }[] = [
   { ok: 'Weil es regnet, bleiben wir drinnen.', wrong: ['Weil es regnet bleiben wir drinnen.', 'Weil, es regnet bleiben wir drinnen.'], tag: 'nebensatz', why: 'Auch wenn „weil“ vorne steht, trennt ein Komma die beiden Satzteile.' },
   { ok: 'Als es dunkel wurde, gingen wir nach Hause.', wrong: ['Als es dunkel wurde gingen wir nach Hause.', 'Als, es dunkel wurde gingen wir nach Hause.'], tag: 'nebensatz', why: 'Der Satzteil mit „als“ wird mit einem Komma abgetrennt.' },
   { ok: 'Ich hoffe, dass du bald gesund wirst.', wrong: ['Ich hoffe dass du bald gesund wirst.', 'Ich hoffe dass, du bald gesund wirst.'], tag: 'nebensatz', why: 'Vor „dass“ steht immer ein Komma.' },
+  // Nachtlauf 22.10.2026: mehr Sätze
+  { ok: 'In meiner Schultasche sind Hefte, Stifte und ein Lineal.', wrong: ['In meiner Schultasche sind Hefte Stifte und ein Lineal.', 'In meiner Schultasche sind Hefte, Stifte, und ein Lineal.'], tag: 'aufzählung', why: 'Bei Aufzählungen trennt ein Komma die Wörter. Vor „und“ steht kein Komma.' },
+  { ok: 'Wir backen einen Kuchen, weil Oma Geburtstag hat.', wrong: ['Wir backen einen Kuchen weil Oma Geburtstag hat.', 'Wir backen einen Kuchen weil, Oma Geburtstag hat.'], tag: 'nebensatz', why: 'Vor „weil“ steht ein Komma – es trennt die beiden Satzteile.' },
+  { ok: 'Ich frage Papa, ob wir ins Kino gehen.', wrong: ['Ich frage Papa ob wir ins Kino gehen.', 'Ich frage Papa ob, wir ins Kino gehen.'], tag: 'nebensatz', why: 'Vor „ob“ steht ein Komma.' },
+  { ok: 'Der Hund bellt, wenn es klingelt.', wrong: ['Der Hund bellt wenn es klingelt.', 'Der Hund, bellt wenn es klingelt.'], tag: 'nebensatz', why: 'Vor „wenn“ steht ein Komma.' },
+  { ok: 'Ich mag Hunde, aber ich habe Angst vor Pferden.', wrong: ['Ich mag Hunde aber ich habe Angst vor Pferden.', 'Ich mag Hunde aber, ich habe Angst vor Pferden.'], tag: 'nebensatz', why: 'Vor „aber“ steht ein Komma.' },
+  { ok: 'Am Strand bauen wir Burgen, sammeln Muscheln und baden im Meer.', wrong: ['Am Strand bauen wir Burgen sammeln Muscheln und baden im Meer.', 'Am Strand bauen wir Burgen, sammeln Muscheln, und baden im Meer.'], tag: 'aufzählung', why: 'Auch Tätigkeiten kann man aufzählen: Komma dazwischen, aber nicht vor „und“.' },
+  { ok: 'Nachdem wir gegessen hatten, spielten wir Karten.', wrong: ['Nachdem wir gegessen hatten spielten wir Karten.', 'Nachdem, wir gegessen hatten spielten wir Karten.'], tag: 'nebensatz', why: 'Der Satzteil mit „nachdem“ wird mit einem Komma abgetrennt.' },
 ];
 const komma = D(4, 'd4-komma', 'Kommas setzen', '✏️', {
   text: ['Aufzählungen: Zwischen die Wörter kommt ein Komma – aber nicht vor „und“ oder „oder“.', 'Vor Bindewörtern wie weil, dass, wenn, denn, aber steht ein Komma.', 'Beispiel: „Ich bleibe zu Hause, weil ich krank bin.“'],
@@ -791,6 +807,21 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: 'Mit dem Fernglas ☐ Opa die Vögel im Wald.', ok: 'beobachtet', opts: ['überhört', 'vergisst', 'verpasst'], feld: 'sehen' },
   { s: 'Vor Schreck ☐ Mia mit großen Augen auf die Spinne.', ok: 'starrt', opts: ['blinzelt', 'gähnt', 'lächelt'], feld: 'sehen' },
   { s: 'Neugierig ☐ Paul durch das Schlüsselloch.', ok: 'späht', opts: ['gähnt', 'übersieht', 'schläft'], feld: 'sehen' },
+  // Nachtlauf 22.10.2026: mehr Sätze, Wortfeld „essen“ neu
+  { s: 'Die Lehrerin ☐ den Kindern, wie das Experiment funktioniert.', ok: 'erklärt', opts: ['flüstert', 'jammert', 'kichert'], feld: 'sagen' },
+  { s: '„Mein Bauch tut so weh!“, ☐ Ben.', ok: 'jammert', opts: ['jubelt', 'befiehlt', 'kichert'], feld: 'sagen' },
+  { s: '„Wir haben gewonnen!“, ☐ die Mannschaft.', ok: 'jubelt', opts: ['jammert', 'flüstert', 'murmelt'], feld: 'sagen' },
+  { s: 'Mit vollem Mund ☐ Opa etwas, das keiner versteht.', ok: 'murmelt', opts: ['brüllt', 'jubelt', 'befiehlt'], feld: 'sagen' },
+  { s: 'Auf dem glatten Eis ☐ Lena und fällt hin.', ok: 'rutscht', opts: ['schleicht', 'bummelt', 'trottet'], feld: 'gehen' },
+  { s: 'Fröhlich ☐ der Hase über die Wiese.', ok: 'hoppelt', opts: ['schleicht', 'humpelt', 'trottet'], feld: 'gehen' },
+  { s: 'Der Bergsteiger ☐ auf den steilen Felsen.', ok: 'klettert', opts: ['schwebt', 'bummelt', 'trippelt'], feld: 'gehen' },
+  { s: 'Im Dunkeln ☐ Tim plötzlich ein Licht in der Ferne.', ok: 'entdeckt', opts: ['überhört', 'vergisst', 'verschläft'], feld: 'sehen' },
+  { s: 'Ganz genau ☐ die Forscherin den Käfer mit der Lupe.', ok: 'betrachtet', opts: ['übersieht', 'verpasst', 'überhört'], feld: 'sehen' },
+  { s: 'Die Sonne blendet. Ali ☐ mit halb geschlossenen Augen.', ok: 'blinzelt', opts: ['starrt', 'glotzt', 'beobachtet'], feld: 'sehen' },
+  { s: 'Der hungrige Hund ☐ sein Futter in einer Sekunde.', ok: 'verschlingt', opts: ['nascht', 'knabbert', 'kostet'], feld: 'essen' },
+  { s: 'Die Maus ☐ an einem Stück Käse.', ok: 'knabbert', opts: ['verschlingt', 'schlürft', 'trinkt'], feld: 'essen' },
+  { s: 'Heimlich ☐ Mia ein Stück Schokolade aus der Dose.', ok: 'nascht', opts: ['verschlingt', 'schlürft', 'trinkt'], feld: 'essen' },
+  { s: 'Laut ☐ Opa seine heiße Suppe vom Löffel.', ok: 'schlürft', opts: ['knabbert', 'nascht', 'beißt'], feld: 'essen' },
 ];
 const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
   text: ['Ein Wortfeld sind Wörter mit ähnlicher Bedeutung: sagen – flüstern – rufen – fragen – antworten.', 'Treffende Wörter machen deine Texte spannender: Statt „Tim sagt leise“ schreibst du „Tim flüstert“.', 'Achte auf Hinweise im Satz: leise, laut, schnell, verletzt …'],
@@ -799,7 +830,7 @@ const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
 }, (r) => {
   const w = pick(r, WORTFELD);
   return { key: w.s, prompt: `Welches Wort passt am besten?\n${w.s}`, speak: w.s.replace('☐', 'Lücke'), answer: { ...choice(r, w.ok, w.opts), speakOptions: 'de' }, tags: [`wortfeld-${w.feld}`], solution: [w.s.replace('☐', w.ok), `„${w.ok}“ passt am besten zu den Hinweisen im Satz.`] };
-}, { tagLabels: { 'wortfeld-sagen': 'Wortfeld „sagen“', 'wortfeld-gehen': 'Wortfeld „gehen“', 'wortfeld-sehen': 'Wortfeld „sehen“' }, testSeconds: 20 });
+}, { tagLabels: { 'wortfeld-sagen': 'Wortfeld „sagen“', 'wortfeld-gehen': 'Wortfeld „gehen“', 'wortfeld-sehen': 'Wortfeld „sehen“', 'wortfeld-essen': 'Wortfeld „essen“' }, testSeconds: 20 });
 
 function story4(r: Rng): Gen {
   const stories = [
