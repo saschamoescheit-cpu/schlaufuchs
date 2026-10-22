@@ -1,6 +1,6 @@
 // Buchstaben nachspuren: grauer Buchstabe in Schulschrift auf Schreiblinien, das Kind fährt ihn mit dem Finger nach.
 // Bewertung: Wie viel vom Buchstaben ist bedeckt – und wie viel wurde daneben gemalt?
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 const S = 300; // innere Zeichenfläche (Koordinaten unabhängig von der Bildschirmgröße)
 const FONT = `400 220px Andika, 'Nunito', sans-serif`;
@@ -77,8 +77,85 @@ export function traceScore(letter: string, strokes: Pt[][]): { cover: number; in
 
 export const tracePassed = (s: { cover: number; inside: number }) => s.cover >= 0.7 && s.inside >= 0.75;
 
-/** oberster Punkt des Buchstabens: dort fängt man (fast immer) an */
+// Schreibrichtung der Großbuchstaben (Druckschrift): Striche in Reihenfolge, Punkte relativ zum Buchstaben (0..1, oben links = 0,0)
+type Rel = [number, number][];
+const DEMO: Record<string, Rel[]> = {
+  A: [[[0.5, 0], [0, 1]], [[0.5, 0], [1, 1]], [[0.2, 0.68], [0.8, 0.68]]],
+  B: [[[0, 0], [0, 1]], [[0, 0], [0.6, 0], [0.85, 0.1], [0.85, 0.38], [0.6, 0.48], [0, 0.48]], [[0, 0.48], [0.65, 0.48], [0.97, 0.62], [0.97, 0.88], [0.65, 1], [0, 1]]],
+  D: [[[0, 0], [0, 1]], [[0, 0], [0.5, 0], [0.88, 0.18], [1, 0.5], [0.88, 0.82], [0.5, 1], [0, 1]]],
+  E: [[[0, 0], [0, 1]], [[0, 0], [1, 0]], [[0, 0.5], [0.85, 0.5]], [[0, 1], [1, 1]]],
+  F: [[[0, 0], [0, 1]], [[0, 0], [1, 0]], [[0, 0.5], [0.85, 0.5]]],
+  G: [[[0.95, 0.14], [0.7, 0], [0.35, 0], [0.08, 0.2], [0, 0.5], [0.08, 0.8], [0.35, 1], [0.7, 1], [1, 0.85], [1, 0.55], [0.6, 0.55]]],
+  H: [[[0, 0], [0, 1]], [[1, 0], [1, 1]], [[0, 0.5], [1, 0.5]]],
+  I: [[[0.5, 0], [0.5, 1]]],
+  J: [[[0.8, 0], [0.8, 0.75], [0.6, 1], [0.3, 1], [0.05, 0.85]]],
+  K: [[[0, 0], [0, 1]], [[1, 0], [0, 0.55]], [[0.3, 0.4], [1, 1]]],
+  L: [[[0, 0], [0, 1], [1, 1]]],
+  M: [[[0, 1], [0, 0], [0.5, 0.75], [1, 0], [1, 1]]],
+  N: [[[0, 1], [0, 0], [1, 1], [1, 0]]],
+  O: [[[0.5, 0], [0.15, 0.12], [0, 0.5], [0.15, 0.88], [0.5, 1], [0.85, 0.88], [1, 0.5], [0.85, 0.12], [0.5, 0]]],
+  P: [[[0, 0], [0, 1]], [[0, 0], [0.6, 0], [0.95, 0.15], [0.95, 0.4], [0.6, 0.55], [0, 0.55]]],
+  R: [[[0, 0], [0, 1]], [[0, 0], [0.6, 0], [0.95, 0.15], [0.95, 0.4], [0.6, 0.55], [0, 0.55]], [[0.45, 0.55], [1, 1]]],
+  S: [[[0.95, 0.12], [0.7, 0], [0.3, 0], [0.05, 0.15], [0.05, 0.35], [0.3, 0.48], [0.7, 0.52], [0.95, 0.65], [0.95, 0.85], [0.7, 1], [0.3, 1], [0.05, 0.88]]],
+  T: [[[0.5, 0], [0.5, 1]], [[0, 0], [1, 0]]],
+  U: [[[0, 0], [0, 0.7], [0.2, 0.95], [0.5, 1], [0.8, 0.95], [1, 0.7], [1, 0]]],
+  W: [[[0, 0], [0.25, 1], [0.5, 0], [0.75, 1], [1, 0]]],
+  Z: [[[0, 0], [1, 0], [0, 1], [1, 1]]],
+};
+
+/** Striche der Schreibrichtung in Zeichenflächen-Koordinaten (an den echten Umriss des Buchstabens angepasst) */
+export function demoStrokes(letter: string): Pt[][] | null {
+  const rel = DEMO[letter];
+  if (!rel) return null;
+  const m = glyphMask(letter);
+  let x0 = S, x1 = 0, y0 = S, y1 = 0;
+  for (let y = 0; y < S; y++)
+    for (let x = 0; x < S; x++)
+      if (m[(y * S + x) * 4 + 3] > 128) {
+        if (x < x0) x0 = x;
+        if (x > x1) x1 = x;
+        if (y < y0) y0 = y;
+        if (y > y1) y1 = y;
+      }
+  if (x1 <= x0) return null;
+  const inset = 12; // halbe Strichbreite: die Linie läuft in der Mitte des Strichs
+  const W = Math.max(0, x1 - x0 - 2 * inset), H = Math.max(0, y1 - y0 - 2 * inset);
+  return rel.map((st) => st.map(([u, v]) => [x0 + inset + u * W, y0 + inset + v * H] as Pt));
+}
+
+const DEMO_SPEED = 170; // Punkte je Sekunde
+const DEMO_PAUSE = 0.4; // Pause zwischen zwei Strichen (s)
+
+/** Schreibrichtung bis zum Zeitpunkt t: fertige Striche, angefangener Strich und Position des Stifts */
+function demoAt(strokes: Pt[][], t: number): { parts: Pt[][]; pen: Pt | null; finished: boolean } {
+  const parts: Pt[][] = [];
+  let left = t;
+  for (const st of strokes) {
+    const part: Pt[] = [st[0]];
+    parts.push(part);
+    for (let i = 1; i < st.length; i++) {
+      const [ax, ay] = st[i - 1], [bx, by] = st[i];
+      const d = Math.hypot(bx - ax, by - ay) / DEMO_SPEED;
+      if (left >= d) {
+        part.push(st[i]);
+        left -= d;
+      } else {
+        const k = d ? left / d : 1;
+        const pen: Pt = [ax + (bx - ax) * k, ay + (by - ay) * k];
+        part.push(pen);
+        return { parts, pen, finished: false };
+      }
+    }
+    if (left < DEMO_PAUSE) return { parts, pen: st[st.length - 1], finished: false };
+    left -= DEMO_PAUSE;
+  }
+  return { parts, pen: null, finished: true };
+}
+
+/** Startpunkt: Anfang des ersten Strichs – sonst der oberste Punkt des Buchstabens */
 function startPoint(letter: string): Pt {
+  const demo = demoStrokes(letter);
+  if (demo) return demo[0][0];
   const m = glyphMask(letter);
   for (let y = 0; y < S; y++)
     for (let x = 0; x < S; x++)
@@ -96,6 +173,22 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
   const [strokes, setStrokes] = useState<Pt[][]>([]);
   const drawing = useRef<Pt[] | null>(null);
   const [fontReady, setFontReady] = useState(false);
+  // „Zeig's mir“: Zeit seit Start der Vorführung (s), null = aus
+  const [demoT, setDemoT] = useState<number | null>(null);
+  const [demoRun, setDemoRun] = useState(0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const demo = useMemo(() => (fontReady ? demoStrokes(letter) : null), [letter, fontReady]);
+
+  useEffect(() => {
+    if (!demoRun || !demo) return;
+    const start = performance.now();
+    let id = requestAnimationFrame(function tick(now) {
+      const t = (now - start) / 1000;
+      setDemoT(t);
+      if (!demoAt(demo, t).finished) id = requestAnimationFrame(tick);
+    });
+    return () => cancelAnimationFrame(id);
+  }, [demoRun, demo]);
 
   useEffect(() => {
     let alive = true;
@@ -106,7 +199,11 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
     };
   }, [letter]);
 
-  useEffect(() => setStrokes([]), [letter]);
+  useEffect(() => {
+    setStrokes([]);
+    setDemoT(null);
+    setDemoRun(0);
+  }, [letter]);
 
   // Zeichnen
   useEffect(() => {
@@ -136,15 +233,42 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
     g.setLineDash([]);
     g.fillStyle = reveal ? (ok ? '#BFEBD1' : '#FFD4D1') : '#E6E2EE';
     g.fillText(letter, S / 2, BASE);
-    if (!reveal && !strokes.length) {
+    if (!reveal && !strokes.length && demoT === null) {
       const [sx, sy] = startPoint(letter);
       g.fillStyle = '#2FA868';
       g.beginPath();
       g.arc(sx, sy, 9, 0, Math.PI * 2);
       g.fill();
     }
+    if (demo && demoT !== null && !reveal) {
+      const { parts, pen } = demoAt(demo, demoT);
+      g.globalAlpha = 0.85;
+      drawStrokes(g, parts, 9, '#3D7BF7');
+      g.globalAlpha = 1;
+      // Nummern an den Strich-Anfängen: in dieser Reihenfolge schreiben
+      parts.forEach((st, i) => {
+        if (demo.length < 2) return;
+        g.fillStyle = '#3D7BF7';
+        g.beginPath();
+        g.arc(st[0][0], st[0][1], 11, 0, Math.PI * 2);
+        g.fill();
+        g.fillStyle = '#fff';
+        g.font = "700 14px Nunito, sans-serif";
+        g.textAlign = 'center';
+        g.fillText(String(i + 1), st[0][0], st[0][1] + 5);
+      });
+      if (pen) {
+        g.fillStyle = '#2FA868';
+        g.strokeStyle = '#fff';
+        g.lineWidth = 3;
+        g.beginPath();
+        g.arc(pen[0], pen[1], 12, 0, Math.PI * 2);
+        g.fill();
+        g.stroke();
+      }
+    }
     drawStrokes(g, strokes, INK, reveal ? (ok ? '#2FA868' : '#F7862A') : '#F7862A');
-  }, [letter, strokes, reveal, ok, fontReady]);
+  }, [letter, strokes, reveal, ok, fontReady, demo, demoT]);
 
   const pos = (e: React.PointerEvent<HTMLCanvasElement>): Pt => {
     const r = e.currentTarget.getBoundingClientRect();
@@ -153,12 +277,15 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
 
   return (
     <div className="trace">
+      <div className="trace-wrap">
       <canvas
         ref={ref}
         className="trace-canvas"
         aria-label={`Buchstabe ${letter} zum Nachspuren`}
         onPointerDown={(e) => {
           if (reveal) return;
+          setDemoT(null);
+          setDemoRun(0);
           e.currentTarget.setPointerCapture(e.pointerId);
           // Strich lokal festhalten: der Updater läuft erst später, dann kann drawing.current schon null sein
           const st: Pt[] = [pos(e)];
@@ -177,6 +304,17 @@ export function TraceInput({ letter, onDone, reveal, ok }: { letter: string; onD
         onPointerUp={() => (drawing.current = null)}
         onPointerCancel={() => (drawing.current = null)}
       />
+      {demo && !reveal && (
+        <button className="trace-play" aria-label={`Zeig mir, wie man ${letter} schreibt`} onClick={() => {
+          setDemoT(0);
+          setDemoRun((n) => n + 1);
+        }}>
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="#fff" aria-hidden="true">
+            <path d="M8 5v14l11-7z" />
+          </svg>
+        </button>
+      )}
+      </div>
       {!reveal && (
         <div className="row trace-btns">
           <button className="btn ghost" disabled={!strokes.length} onClick={() => setStrokes([])}>
