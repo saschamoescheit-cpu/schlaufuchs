@@ -8,7 +8,7 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
-import { canSpeak, chooseVoice, chosenVoice, onSpeech, onVoicesChanged, speak, voicesFor } from '../ui/speech';
+import { canSpeak, chooseVoice, chosenVoice, onSpeech, onVoicesChanged, slog, speak, speechInfo, speechLog, voicesFor } from '../ui/speech';
 import { hasPin } from '../data/parent';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
@@ -497,6 +497,7 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
         </button>
 
         <VoicePicker />
+        <SpeechDiagnosis />
 
         <SyncCard data={data} />
 
@@ -584,6 +585,52 @@ function VoicePicker() {
           </div>
         )}
         <div className="small muted">Tipp fürs iPad: Unter Einstellungen → Bedienungshilfen → Gesprochene Inhalte → Stimmen kannst du eine „verbesserte“ Stimme laden. Sie klingt viel natürlicher.</div>
+      </div>
+    </details>
+  );
+}
+
+/** Ton-Diagnose: was meldet das Gerät, und spricht es – über die App und ganz direkt (ohne App-Logik)? */
+function SpeechDiagnosis() {
+  const [open, setOpen] = useState(false);
+  const [, setTick] = useState(0);
+  useEffect(() => {
+    if (!open) return;
+    const id = setInterval(() => setTick((t) => t + 1), 500);
+    return () => clearInterval(id);
+  }, [open]);
+  const info = speechInfo();
+  const direct = () => {
+    const s = window.speechSynthesis;
+    if (!s) return slog('direkt: keine Sprachausgabe im Browser');
+    const u = new SpeechSynthesisUtterance('Hallo, hier spricht der Browser direkt.');
+    u.lang = 'de-DE';
+    u.onstart = () => slog('direkt: ✓ Ton startet');
+    u.onend = () => slog('direkt: Ende');
+    u.onerror = (e) => slog(`direkt: Fehler ${e.error}`);
+    slog('direkt: sprechen');
+    s.speak(u);
+  };
+  const ja = (b: boolean) => (b ? 'ja' : 'nein');
+  return (
+    <details className="more" onToggle={(e) => setOpen((e.target as HTMLDetailsElement).open)}>
+      <summary>🩺 Ton-Diagnose</summary>
+      <div className="inner stack" style={{ gap: 8 }}>
+        <div className="small">
+          Sprachausgabe vorhanden: <b>{ja(info.vorhanden)}</b> · Stimmen: <b>{info.stimmen}</b> (deutsch {info.deutsch}, englisch {info.englisch}) · als App vom Home-Bildschirm: <b>{ja(!!info.homeBildschirm)}</b> · freigeschaltet: <b>{ja(info.freigeschaltet)}</b>
+          {info.spricht || info.wartet || info.pausiert ? ` · Zustand: ${[info.spricht && 'spricht', info.wartet && 'wartet', info.pausiert && 'pausiert'].filter(Boolean).join(', ')}` : ''}
+        </div>
+        <div className="small muted" style={{ wordBreak: 'break-word' }}>{navigator.userAgent}</div>
+        <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+          <button className="btn ghost small" onClick={() => speak('Hallo, ich bin der Schlaufuchs.', 'de')}>
+            Test über die App
+          </button>
+          <button className="btn ghost small" onClick={direct}>
+            Test direkt
+          </button>
+        </div>
+        <pre className="small" style={{ whiteSpace: 'pre-wrap', margin: 0, background: 'var(--soft, #f4f1fa)', padding: 8, borderRadius: 10 }}>{speechLog().join('\n') || 'Noch nichts passiert – tippe auf einen Test.'}</pre>
+        <div className="small muted">Bitte einen Screenshot von diesem Bereich schicken, wenn das Vorlesen nicht klappt.</div>
       </div>
     </details>
   );

@@ -1,0 +1,23 @@
+// node qa/tts-diag.mjs [url] – Einstellungen → Ton-Diagnose öffnen, beide Tests drücken, Bild machen (Edge mit echten Stimmen)
+import { chromium, devices } from 'playwright';
+const url = process.argv[2] ?? 'http://localhost:5192/';
+const b = await chromium.launch({ channel: 'msedge' });
+const ctx = await b.newContext({ ...devices['iPhone 13'], locale: 'de-DE', isMobile: false, hasTouch: false });
+const app = { schema: 1, profiles: [{ id: 'k1', name: 'Mia', avatar: '🦊', age: 9, grade: 3, state: 'NW', englishFrom: 3, gradesFrom: 3, gradeKey: [95, 80, 65, 50, 25], autoRead: false, sound: false, pace: 'schule', created: 1, gradeYear: 9999 }], progress: { k1: { skills: {}, review: [], solved: 0, log: [], tests: [], stars: 0, days: {} } }, activeId: 'k1', parent: { pin: null } };
+await ctx.addInitScript((d) => { if (!sessionStorage.getItem('s')) { localStorage.setItem('schlaufuchs:v1', JSON.stringify(d)); sessionStorage.setItem('s', '1'); } }, app);
+const p = await ctx.newPage();
+p.on('pageerror', (e) => console.log('pageerror', e.message));
+await p.goto(url);
+await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
+await p.getByText('🩺 Ton-Diagnose').click();
+await p.getByRole('button', { name: 'Test über die App' }).click();
+await p.waitForTimeout(4500);
+await p.getByRole('button', { name: 'Test direkt' }).click();
+await p.waitForTimeout(4500);
+const log = await p.locator('details.more pre').innerText();
+console.log(log);
+await p.locator('details.more[open]').last().screenshot({ path: 'qa/shots/tts-diag.png' });
+const ok = /✓ Ton startet/.test(log) && /direkt: ✓ Ton startet/.test(log);
+console.log(ok ? '✓ beide Tests sprechen' : '✗ Test ohne Ton');
+await b.close();
+process.exit(ok ? 0 : 1);

@@ -86,11 +86,36 @@ let current: SpeechSynthesisUtterance | null = null;
 //    läuft, und dann kurz versetzt sprechen.
 // 3) Startet die Ausgabe nicht, wird es einmal neu versucht; klappt es dann noch nicht, erfahren es die
 //    Zuhörer von onSpeechProblem (Hinweis „Kein Ton?“).
+// Protokoll der letzten Ereignisse – für die Ton-Diagnose in den Einstellungen
+const LOG: string[] = [];
+const t0 = typeof performance !== 'undefined' ? performance.now() : 0;
+export function slog(m: string) {
+  LOG.push(`${((performance.now() - t0) / 1000).toFixed(1)} s  ${m}`);
+  if (LOG.length > 14) LOG.shift();
+}
+export const speechLog = () => [...LOG];
+/** was das Gerät zur Sprachausgabe meldet */
+export function speechInfo() {
+  if (!voices.length) loadVoices();
+  return {
+    vorhanden: !!synth,
+    stimmen: voices.length,
+    deutsch: voices.filter((v) => /^de/i.test(v.lang)).length,
+    englisch: voices.filter((v) => /^en/i.test(v.lang)).length,
+    spricht: !!synth?.speaking,
+    wartet: !!synth?.pending,
+    pausiert: !!synth?.paused,
+    homeBildschirm: typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true),
+    freigeschaltet: unlocked,
+  };
+}
+
 let unlocked = false;
 const UNLOCK_EVENTS = ['touchend', 'click', 'keydown'] as const;
 function unlock() {
   if (unlocked || !synth) return;
   unlocked = true;
+  slog('freigeschaltet (erstes Antippen)');
   for (const ev of UNLOCK_EVENTS) window.removeEventListener(ev, unlock, true);
   try {
     if (synth.paused) synth.resume();
@@ -140,6 +165,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
     let started = false;
     u.onstart = () => {
       started = true;
+      slog('✓ Ton startet');
       setState('start');
     };
     u.onend = () => {
@@ -148,12 +174,14 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
       onEnd?.();
     };
     u.onerror = (e) => {
+      slog(`Fehler: ${e.error}`);
       if (current === u) current = null;
       // „interrupted“/„canceled“ heißt nur: eine neue Ausgabe hat diese abgelöst
       if (e.error !== 'interrupted' && e.error !== 'canceled') setState('problem', e.error);
       onEnd?.();
     };
     current = u;
+    slog(`sprechen (${u.lang}, Stimme: ${u.voice?.name ?? 'Standard'}${tries ? ', 2. Versuch' : ''})`);
     synth.speak(u);
     // Wächter: nichts zu hören? einmal neu versuchen, dann Bescheid geben
     setTimeout(() => {
@@ -164,6 +192,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
         setTimeout(go, 80);
       } else {
         current = null;
+        slog('✗ kein Ton nach zwei Versuchen');
         setState('problem', 'nostart');
         onEnd?.();
       }
