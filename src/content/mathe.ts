@@ -234,24 +234,52 @@ const SHAPES2D = [
   { s: 'Quadrat', ecken: 4, info: 'Ein Quadrat hat 4 Ecken und 4 gleich lange Seiten.' },
   { s: 'Rechteck', ecken: 4, info: 'Ein Rechteck hat 4 Ecken. Gegenüberliegende Seiten sind gleich lang.' },
 ];
+const FORM_OBJ = [
+  { name: 'eine Münze', e: '🪙', s: 'Kreis', why: 'Eine Münze ist ganz rund.' },
+  { name: 'ein Teller', e: '🍽️', s: 'Kreis', why: 'Ein Teller ist (von oben gesehen) ganz rund.' },
+  { name: 'ein Stück Pizza', e: '🍕', s: 'Dreieck', why: 'Ein Pizzastück hat eine Spitze und ist fast ein Dreieck.' },
+  { name: 'eine Tür', e: '🚪', s: 'Rechteck', why: 'Eine Tür ist hoch und schmal: zwei lange und zwei kurze Seiten.' },
+  { name: 'ein Buch', e: '📕', s: 'Rechteck', why: 'Ein Buch hat zwei lange und zwei kurze Seiten.' },
+];
 const formen = M(1, 'm1-formen', 'Formen erkennen', '🔺', {
   text: ['Kreis: ganz rund, keine Ecken.', 'Dreieck: 3 Ecken, 3 Seiten.', 'Quadrat: 4 Ecken, alle Seiten gleich lang.', 'Rechteck: 4 Ecken, zwei lange und zwei kurze Seiten.'],
   visual: { kind: 'shape', shape: 'Dreieck' },
   videoQuery: 'geometrische Formen Kreis Dreieck Quadrat Rechteck Grundschule',
-}, (r) => {
+}, (r, st) => {
+  const v = ri(r, 0, st === 1 ? 2 : 3);
+  // Formen im Alltag
+  if (v === 2) {
+    const o = pick(r, FORM_OBJ);
+    return { key: `o-${o.name}`, prompt: `Welche Form hat ${o.name}?`, visual: { kind: 'emoji', chars: o.e }, answer: choice(r, o.s, SHAPES2D.map((x) => x.s)), tags: ['alltag'], solution: [o.why, SHAPES2D.find((x) => x.s === o.s)!.info] };
+  }
+  // Formen zählen: bunt, verschieden groß, auch gedreht
+  if (v === 3) {
+    const target = pick(r, ['Kreis', 'Dreieck', 'Quadrat']);
+    const n = ri(r, 1, st === 3 ? 4 : 3);
+    const total = st === 3 ? ri(r, 7, 9) : ri(r, 5, 6);
+    const others = SHAPES2D.map((x) => x.s).filter((x) => x !== target);
+    const turn = (sh: string) => (st === 1 ? 0 : sh === 'Quadrat' ? pick(r, [0, 0, 45]) : sh === 'Dreieck' ? pick(r, [0, 0, 180, 90]) : sh === 'Rechteck' ? pick(r, [0, 90]) : 0);
+    const items = shuffle(r, [...Array.from({ length: n }, () => target), ...Array.from({ length: total - n }, () => pick(r, others))]).map((sh) => ({ s: sh, rot: turn(sh), c: ri(r, 0, 4), big: chance(r, 0.5) }));
+    const plural = target === 'Kreis' ? 'Kreise' : target === 'Dreieck' ? 'Dreiecke' : 'Quadrate';
+    const traps = target === 'Quadrat' ? items.filter((x) => x.s === 'Rechteck').length ? [{ answer: String(n + items.filter((x) => x.s === 'Rechteck').length), tag: 'quadrat-rechteck', hint: 'Rechtecke zählen nicht mit – beim Quadrat sind alle Seiten gleich lang.' }] : [] : [];
+    return { key: `z-${items.map((x) => x.s[0] + x.rot).join('')}`, prompt: `Wie viele ${plural} siehst du?`, visual: { kind: 'shapemix', items }, answer: { type: 'number', value: n }, tags: ['zählen'], traps, solution: [`Zeige mit dem Finger auf jede Form und zähle nur die ${plural}.`, 'Größe, Farbe und Drehung sind egal – die Form zählt.', `Es sind ${n}.`] };
+  }
   const f = pick(r, SHAPES2D);
-  if (f.ecken > 0 && chance(r, 0.3)) {
-    return { key: `e-${f.s}`, prompt: `Wie viele Ecken hat ein ${f.s}?`, visual: { kind: 'shape', shape: f.s }, answer: { type: 'number', value: f.ecken }, tags: ['ecken'], solution: [f.info] };
+  // ab Stufe 2 auch gedreht: Ein Quadrat bleibt ein Quadrat, auch wenn es auf der Spitze steht
+  const rot = st > 1 && f.s !== 'Kreis' && chance(r, 0.5) ? (f.s === 'Quadrat' ? 45 : f.s === 'Dreieck' ? pick(r, [180, 90]) : pick(r, [90, 30])) : 0;
+  const turned = rot ? 'Auch gedreht bleibt die Form gleich.' : '';
+  if (v === 1 && f.ecken > 0) {
+    return { key: `e-${f.s}-${rot}`, prompt: `Wie viele Ecken hat diese Form?`, visual: { kind: 'shape', shape: f.s, rot }, answer: { type: 'number', value: f.ecken }, tags: ['ecken'], solution: [f.info, turned].filter(Boolean) };
   }
   return {
-    key: f.s,
+    key: `${f.s}-${rot}`,
     prompt: 'Wie heißt diese Form?',
-    visual: { kind: 'shape', shape: f.s },
+    visual: { kind: 'shape', shape: f.s, rot },
     answer: choice(r, f.s, SHAPES2D.map((x) => x.s)),
-    tags: [f.s === 'Quadrat' || f.s === 'Rechteck' ? 'quadrat-rechteck' : 'formen'],
-    solution: [f.info],
+    tags: [f.s === 'Quadrat' || f.s === 'Rechteck' ? 'quadrat-rechteck' : 'formen', ...(rot ? ['gedreht'] : [])],
+    solution: [f.info, turned].filter(Boolean),
   };
-}, { tagLabels: { 'quadrat-rechteck': 'Quadrat oder Rechteck', ecken: 'Ecken zählen' }, testSeconds: 15 });
+}, { tagLabels: { 'quadrat-rechteck': 'Quadrat oder Rechteck', ecken: 'Ecken zählen', gedreht: 'gedrehte Formen', zählen: 'Formen zählen', alltag: 'Formen im Alltag' }, testSeconds: 15 });
 
 // ---------- Klasse 2 ----------
 
@@ -740,18 +768,47 @@ const BODIES = [
   { s: 'Kegel', info: 'Ein Kegel hat eine runde Grundfläche und eine Spitze – wie eine Eistüte.', e: 0, f: 2, k: 1 },
   { s: 'Pyramide', info: 'Eine Pyramide (mit viereckiger Grundfläche) hat 5 Ecken, 5 Flächen und 8 Kanten.', e: 5, f: 5, k: 8 },
 ];
+const BODY_OBJ = [
+  { name: 'ein Fußball', e: '⚽', s: 'Kugel', why: 'Ein Ball ist überall rund – er rollt in jede Richtung.' },
+  { name: 'eine Orange', e: '🍊', s: 'Kugel', why: 'Eine Orange ist rund wie ein Ball.' },
+  { name: 'eine Konservendose', e: '🥫', s: 'Zylinder', why: 'Eine Dose hat oben und unten eine runde Fläche.' },
+  { name: 'eine Kerze', e: '🕯️', s: 'Zylinder', why: 'Eine Kerze ist rund und gerade – oben und unten ein Kreis.' },
+  { name: 'ein Spielwürfel', e: '🎲', s: 'Würfel', why: 'Alle 6 Flächen sind gleich große Quadrate.' },
+  { name: 'ein Eiswürfel', e: '🧊', s: 'Würfel', why: 'Ein Eiswürfel hat 6 gleich große quadratische Flächen.' },
+  { name: 'ein Paket', e: '📦', s: 'Quader', why: 'Ein Paket ist wie ein Schuhkarton: 6 rechteckige Flächen.' },
+  { name: 'eine Eistüte (die Waffel)', e: '🍦', s: 'Kegel', why: 'Die Waffel hat oben eine runde Öffnung und unten eine Spitze.' },
+];
+const BODY_Q = [
+  { q: 'Welcher Körper hat keine Ecken und keine Kanten?', s: 'Kugel', why: 'Die Kugel ist ganz rund – nirgends eine Ecke oder Kante.' },
+  { q: 'Welcher Körper hat eine Spitze und eine runde Grundfläche?', s: 'Kegel', why: 'Der Kegel: unten ein Kreis, oben eine Spitze.' },
+  { q: 'Welcher Körper hat zwei runde Flächen – oben und unten?', s: 'Zylinder', why: 'Der Zylinder hat oben und unten je einen Kreis.' },
+  { q: 'Welcher Körper hat 6 gleich große quadratische Flächen?', s: 'Würfel', why: 'Beim Würfel sind alle Flächen gleich große Quadrate.' },
+  { q: 'Welcher Körper hat 6 Flächen, aber nicht alle sind gleich groß?', s: 'Quader', why: 'Beim Quader sind die Flächen Rechtecke – gegenüberliegende sind gleich, aber nicht alle.' },
+  { q: 'Welcher Körper hat 5 Ecken?', s: 'Pyramide', why: 'Die Pyramide hat 4 Ecken unten und 1 Spitze oben: 5 Ecken.' },
+];
 const koerper3 = M(3, 'm3-koerper', 'Geometrische Körper', '🧊', {
   text: ['Körper sind räumlich – man kann sie anfassen.', 'Würfel und Quader haben 8 Ecken, 12 Kanten und 6 Flächen.', 'Kugel, Zylinder und Kegel haben runde Flächen.'],
   visual: { kind: 'shape', shape: 'Würfel' },
   videoQuery: 'geometrische Körper Würfel Quader Kugel Zylinder Kegel Pyramide Grundschule',
 }, (r) => {
+  const v = ri(r, 0, 3);
+  // Körper im Alltag
+  if (v === 2) {
+    const o = pick(r, BODY_OBJ);
+    return { key: `o-${o.name}`, prompt: `Welche Form hat ${o.name}?`, visual: { kind: 'emoji', chars: o.e }, answer: choice(r, o.s, BODIES.map((x) => x.s)), tags: ['alltag'], solution: [o.why, BODIES.find((x) => x.s === o.s)!.info] };
+  }
+  // Eigenschaften: Welcher Körper …?
+  if (v === 3) {
+    const q = pick(r, BODY_Q);
+    return { key: `q-${q.q}`, prompt: q.q, answer: choice(r, q.s, BODIES.map((x) => x.s)), tags: ['eigenschaften'], solution: [q.why, BODIES.find((x) => x.s === q.s)!.info] };
+  }
   const b = pick(r, BODIES);
-  if (b.e > 0 && chance(r, 0.4)) {
+  if (b.e > 0 && v === 1) {
     const w = pick(r, [['Ecken', b.e], ['Kanten', b.k], ['Flächen', b.f]] as const);
     return { key: `${b.s}-${w[0]}`, prompt: `Wie viele ${w[0]} hat ein${b.s === 'Pyramide' ? 'e' : ''} ${b.s}?`, visual: { kind: 'shape', shape: b.s }, answer: { type: 'number', value: w[1] }, tags: ['ecken-kanten'], solution: [b.info] };
   }
   return { key: b.s, prompt: 'Wie heißt dieser Körper?', visual: { kind: 'shape', shape: b.s }, answer: choice(r, b.s, BODIES.map((x) => x.s)), tags: ['benennen'], solution: [b.info] };
-}, { tagLabels: { 'ecken-kanten': 'Ecken, Kanten, Flächen', benennen: 'Körper benennen' }, testSeconds: 20 });
+}, { tagLabels: { 'ecken-kanten': 'Ecken, Kanten, Flächen', benennen: 'Körper benennen', alltag: 'Körper im Alltag', eigenschaften: 'Eigenschaften von Körpern' }, testSeconds: 20 });
 
 const sach3 = M(3, 'm3-sachaufgaben', 'Sachaufgaben', '🧐', sachEx('Klasse 3'), (r, s) => storyTask(r, 3, s), { tagLabels: SACH_TAGS, testSeconds: 90 });
 

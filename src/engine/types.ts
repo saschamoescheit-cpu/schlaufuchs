@@ -19,7 +19,8 @@ export type Visual =
   | { kind: 'emoji'; chars: string; label?: string }
   | { kind: 'column'; op: '+' | '−' | '·' | ':'; rows: number[]; result?: number; carries?: number[]; steps?: string[] }
   | { kind: 'array'; rows: number; cols: number; split?: number }
-  | { kind: 'shape'; shape: string }
+  | { kind: 'shape'; shape: string; rot?: number } // rot: gedreht (Grad)
+  | { kind: 'shapemix'; items: { s: string; rot: number; c: number; big: boolean }[] } // bunte Formen zum Zählen
   | { kind: 'rect'; w: number; h: number; show?: 'umfang' | 'flaeche' }
   | { kind: 'syllables'; parts: string[]; emoji?: string }
   | { kind: 'word'; word: string; mark?: [number, number][] } // Buchstaben markieren [start, ende)

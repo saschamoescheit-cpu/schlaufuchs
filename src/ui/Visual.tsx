@@ -344,7 +344,7 @@ function ArrayDots({ rows, cols, split }: { rows: number; cols: number; split?: 
   );
 }
 
-function Shape({ shape }: { shape: string }) {
+function Shape({ shape, rot = 0 }: { shape: string; rot?: number }) {
   const st = { fill: '#CFE0FF', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
   const side = { fill: '#9DBDF5', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
   const top = { fill: '#E4EEFF', stroke: C.ink, strokeWidth: 3, strokeLinejoin: 'round' as const };
@@ -396,9 +396,44 @@ function Shape({ shape }: { shape: string }) {
       </>
     ),
   };
+  // gedreht: größere Zeichenfläche, damit nichts abgeschnitten wird
+  if (rot)
+    return (
+      <Svg w={180} h={180} label="Form" max={210}>
+        <g transform={`translate(10 20) rotate(${rot} 80 70)`}>{g[shape]}</g>
+      </Svg>
+    );
   return (
     <Svg w={160} h={140} label={shape} max={200}>
       {g[shape]}
+    </Svg>
+  );
+}
+
+const MIX_COLORS = ['#CFE0FF', '#FFD9B8', '#C9F0D6', '#F6C9E4', '#FFF0A8'];
+/** Mehrere kleine Formen in einer Reihe (bunt, verschieden groß, gedreht) – zum Zählen einer Form */
+function ShapeMix({ items }: { items: { s: string; rot: number; c: number; big: boolean }[] }) {
+  const cell = 64;
+  const perRow = Math.min(items.length, 5);
+  const rows = Math.ceil(items.length / perRow);
+  return (
+    <Svg w={perRow * cell} h={rows * cell} label="Formen" max={perRow * 80}>
+      {items.map((it, i) => {
+        const cx = (i % perRow) * cell + cell / 2;
+        const cy = Math.floor(i / perRow) * cell + cell / 2;
+        const k = it.big ? 1 : 0.72;
+        const st = { fill: MIX_COLORS[it.c % MIX_COLORS.length], stroke: C.ink, strokeWidth: 2.5 / k, strokeLinejoin: 'round' as const };
+        const el =
+          it.s === 'Kreis' ? <circle r={24} {...st} /> :
+          it.s === 'Dreieck' ? <path d="M0 -25 L27 21 L-27 21 Z" {...st} /> :
+          it.s === 'Quadrat' ? <rect x={-21} y={-21} width={42} height={42} {...st} /> :
+          <rect x={-28} y={-15} width={56} height={30} {...st} />;
+        return (
+          <g key={i} transform={`translate(${cx} ${cy}) scale(${k}) rotate(${it.rot})`}>
+            {el}
+          </g>
+        );
+      })}
     </Svg>
   );
 }
@@ -676,7 +711,9 @@ export function Visual({ v }: { v: V }) {
     case 'array':
       return <ArrayDots {...v} />;
     case 'shape':
-      return <Shape shape={v.shape} />;
+      return <Shape shape={v.shape} rot={v.rot} />;
+    case 'shapemix':
+      return <ShapeMix items={v.items} />;
     case 'rect':
       return <Rect {...v} />;
     case 'syllables':
