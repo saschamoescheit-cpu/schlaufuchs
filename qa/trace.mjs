@@ -41,7 +41,7 @@ const draw = async (p, strokes) => {
     await p.mouse.up();
   }
 };
-for (const mode of ['gut', 'kritzel', 'gut', 'gut']) {
+for (const mode of ['gut', 'kritzel', 'gut', 'unten']) {
   const { p, shot, click, done } = await open({ url, out: 'qa/shots/trace', grade: 1, device, progress });
   await click(subj);
   await p.locator('.topic-main', { hasText: topic }).first().click();
@@ -49,6 +49,7 @@ for (const mode of ['gut', 'kritzel', 'gut', 'gut']) {
   await p.waitForTimeout(600);
   const { letter, out } = await fillStrokes(p);
   if (mode === 'gut') await draw(p, out);
+  else if (mode === 'unten') await draw(p, [...out].reverse());
   else {
     const r = await p.locator('.trace-canvas').boundingBox();
     await draw(p, [[[r.x + 10, r.y + 20], [r.x + 60, r.y + 40]], [[r.x + r.width - 20, r.y + r.height - 20], [r.x + r.width - 70, r.y + r.height - 60]]]);
@@ -57,7 +58,8 @@ for (const mode of ['gut', 'kritzel', 'gut', 'gut']) {
   await p.getByRole('button', { name: 'Fertig' }).click();
   await p.waitForTimeout(500);
   const wrong = await p.locator('.feedback.wrong').count();
-  const okExpected = mode === 'gut';
+  const okExpected = mode !== 'kritzel';
+  if (mode === 'unten' && !(await p.locator('.trace-tip').count())) { bad++; console.log('✗ kein Schreibrichtungs-Tipp'); }
   if (okExpected === !!wrong) {
     bad++;
     console.log(`✗ ${mode} ${letter}: ${wrong ? 'als falsch' : 'als richtig'} gewertet`);

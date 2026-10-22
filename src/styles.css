@@ -2262,3 +2262,10 @@ html[data-school-font] .prompt.long {
 .paper-visual .vis-compare svg {
   width: 110px !important;
 }
+.trace-tip {
+  width: min(300px, 100%);
+  font-size: 0.95rem;
+  background: var(--ok-soft, #e3f6ea);
+  border-radius: 12px;
+  padding: 8px 12px;
+}

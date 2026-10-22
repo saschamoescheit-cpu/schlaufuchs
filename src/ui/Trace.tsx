@@ -185,6 +185,23 @@ function demoAt(strokes: Pt[][], t: number): { parts: Pt[][]; pen: Pt | null; fi
   return { parts, pen: null, finished: true };
 }
 
+/** Tipp, wenn das Kind woanders anfängt oder den ersten Strich in die Gegenrichtung zieht (Bewertung bleibt unberührt) */
+export function directionTip(demo: Pt[][] | null, strokes: Pt[][]): string {
+  if (!demo || !strokes.length) return '';
+  const first = strokes.find((st) => st.length > 3);
+  if (!first) return '';
+  const [sx, sy] = demo[0][0];
+  if (Math.hypot(first[0][0] - sx, first[0][1] - sy) > 45) return 'Fang beim nächsten Mal am grünen Punkt an. Tippe auf ▶, dann siehst du, wie es geht.';
+  // Richtung der ersten 30 Punkte-Längen vergleichen
+  const d = demo[0];
+  const tx = d[1][0] - d[0][0], ty = d[1][1] - d[0][1];
+  const k = first[Math.min(first.length - 1, 6)];
+  const cx = k[0] - first[0][0], cy = k[1] - first[0][1];
+  const cos = (tx * cx + ty * cy) / (Math.hypot(tx, ty) * Math.hypot(cx, cy) || 1);
+  if (cos < -0.3) return 'Schreib den ersten Strich andersherum – tippe auf ▶, dann siehst du die Richtung.';
+  return '';
+}
+
 /** Startpunkt: Anfang des ersten Strichs – sonst der oberste Punkt des Buchstabens */
 function startPoint(letter: string): Pt {
   const demo = demoStrokes(letter);
@@ -210,6 +227,8 @@ export function TraceInput({ letter, onDone, reveal, ok, test, saved }: { letter
   // „Zeig's mir“: Zeit seit Start der Vorführung (s), null = aus
   const [demoT, setDemoT] = useState<number | null>(null);
   const [demoRun, setDemoRun] = useState(0);
+  // Tipp zur Schreibrichtung nach dem Prüfen (Start weit weg vom grünen Punkt oder erster Strich andersherum)
+  const [tip, setTip] = useState('');
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const demo = useMemo(() => (fontReady ? demoStrokes(letter) : null), [letter, fontReady]);
 
@@ -237,6 +256,7 @@ export function TraceInput({ letter, onDone, reveal, ok, test, saved }: { letter
     setStrokes([]);
     setDemoT(null);
     setDemoRun(0);
+    setTip('');
   }, [letter]);
 
   // Zeichnen
@@ -357,12 +377,16 @@ export function TraceInput({ letter, onDone, reveal, ok, test, saved }: { letter
           <button
             className="btn ok grow"
             disabled={!strokes.length}
-            onClick={() => onDone(tracePassed(traceScore(letter, strokes)) ? 'ok' : 'daneben')}
+            onClick={() => {
+              setTip(directionTip(demo, strokes));
+              onDone(tracePassed(traceScore(letter, strokes)) ? 'ok' : 'daneben');
+            }}
           >
             Fertig
           </button>
         </div>
       )}
+      {reveal && tip && <div className="trace-tip">💡 {tip}</div>}
       {saved && !reveal && <div className="small muted">✓ Gespeichert – du kannst es noch verbessern.</div>}
     </div>
   );
