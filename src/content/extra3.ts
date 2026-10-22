@@ -708,6 +708,59 @@ function lageLinienTask(r: Rng, s: Stage): Gen {
   }
 }
 
+// ---------- Wortarten bestimmen (Kl. 4): sechs Wortarten ----------
+
+// Wort/Kürzel – N Nomen, V Verb, A Adjektiv, Art Artikel, P Pronomen, Pr Präposition, X wird nicht abgefragt
+const WA_SAETZE = [
+  'Der/Art kleine/A Hund/N schläft/V unter/Pr dem/Art Tisch/N.',
+  'Er/P trinkt/V kalten/A Saft/N aus/Pr der/Art Flasche/N.',
+  'Die/Art Kinder/N spielen/V fröhlich/A auf/Pr der/Art Wiese/N.',
+  'Wir/P backen/V einen/Art leckeren/A Kuchen/N.',
+  'Die/Art Katze/N springt/V auf/Pr das/Art hohe/A Regal/N.',
+  'Lena/N schreibt/V einen/Art langen/A Brief/N an/Pr ihren/X Opa/N.',
+  'Ich/P lege/V das/Art Buch/N neben/Pr die/Art Lampe/N.',
+  'Der/Art Vogel/N baut/V ein/Art Nest/N auf/Pr dem/Art Dach/N.',
+  'Sie/P laufen/V schnell/A durch/Pr den/Art dunklen/A Wald/N.',
+  'Ihr/P sitzt/V auf/Pr der/Art alten/A Bank/N.',
+  'Mama/N kauft/V frische/A Äpfel/N auf/Pr dem/Art Markt/N.',
+  'Es/P regnet/V seit/Pr dem/Art frühen/A Morgen/N.',
+  'Nach/Pr der/Art Schule/N essen/V wir/P eine/Art warme/A Suppe/N.',
+  'Du/P findest/V den/Art roten/A Ball/N hinter/Pr der/Art Tür/N.',
+];
+const WA: Record<string, { name: string; why: string }> = {
+  N: { name: 'Nomen', why: 'Nomen sind Namen für Menschen, Tiere und Dinge. Man schreibt sie groß und kann einen Artikel davorsetzen.' },
+  V: { name: 'Verb', why: 'Verben sagen, was jemand tut oder was geschieht. Sie verändern sich mit der Person: ich laufe, du läufst.' },
+  A: { name: 'Adjektiv', why: 'Adjektive sagen, wie etwas ist. Man kann sie steigern: groß, größer, am größten.' },
+  Art: { name: 'Artikel', why: 'Artikel begleiten Nomen: der, die, das, ein, eine.' },
+  P: { name: 'Pronomen', why: 'Pronomen stehen für ein Nomen: ich, du, er, sie, es, wir, ihr.' },
+  Pr: { name: 'Präposition', why: 'Präpositionen zeigen, wo, wann oder wie etwas ist: auf, unter, neben, nach, seit.' },
+};
+function wortart4Task(r: Rng, s: Stage): Gen {
+  const allowed = s === 1 ? ['N', 'V', 'A'] : s === 2 ? ['N', 'V', 'A', 'Art', 'P'] : ['N', 'V', 'A', 'Art', 'P', 'Pr'];
+  const satz = pick(r, WA_SAETZE);
+  const toks = satz.split(' ').map((t) => {
+    const m = /^(.+)\/(\w+)([.!?]?)$/.exec(t)!;
+    return { w: m[1], t: m[2], p: m[3] };
+  });
+  const cand = toks.map((_, i) => i).filter((i) => allowed.includes(toks[i].t));
+  // seltene Wortarten bevorzugen, damit nicht nur Nomen gefragt werden
+  const rare = cand.filter((i) => toks[i].t !== 'N');
+  const i = pick(r, chance(r, 0.7) && rare.length ? rare : cand);
+  const t = toks[i];
+  const text = toks.map((x, k) => (k === i ? `**${x.w}**` : x.w) + x.p).join(' ');
+  const plain = toks.map((x) => x.w + x.p).join(' ');
+  const opts = s === 1 ? ['Nomen', 'Verb', 'Adjektiv'] : pickN(r, allowed.filter((x) => x !== t.t), 3).map((x) => WA[x].name);
+  return {
+    key: `${plain}-${i}`,
+    prompt: `Welche Wortart ist das markierte Wort?
+${text}`,
+    speak: `Welche Wortart ist ${t.w}? ${plain}`,
+    answer: s === 1 ? fixedChoice(opts, WA[t.t].name) : choice(r, WA[t.t].name, opts),
+    tags: [`wa-${t.t.toLowerCase()}`],
+    solution: [`„${t.w}“ ist ${t.t === 'Pr' ? 'eine' : 'ein'} ${WA[t.t].name}.`, WA[t.t].why],
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
   M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),
   M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),
@@ -1077,6 +1130,7 @@ function spurTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(4, 'd4-wortarten', 'Wortarten: auch Pronomen und Präpositionen', '🏷️', { text: ['Nomen (Hund), Verben (schläft) und Adjektive (klein) kennst du schon.', 'Artikel begleiten Nomen: der, die, ein. Pronomen stehen für ein Nomen: er, sie, wir.', 'Präpositionen zeigen, wo oder wann etwas ist: unter, auf, nach.'], visual: { kind: 'text', text: 'Der kleine Hund schläft unter dem Tisch.\nArtikel · Adjektiv · Nomen · Verb · Präposition · Artikel · Nomen' }, videoQuery: 'Wortarten Pronomen Präposition Grundschule Klasse 4' }, wortart4Task, { tagLabels: { 'wa-n': 'Nomen', 'wa-v': 'Verben', 'wa-a': 'Adjektive', 'wa-art': 'Artikel', 'wa-p': 'Pronomen', 'wa-pr': 'Präpositionen' }, testSeconds: 20 }),
   D(2, 'd2-sp-st', 'Sp und St am Wortanfang', '🕷️', { text: ['Am Wortanfang hört man oft „schp“ oder „scht“: Spinne, Stern.', 'Geschrieben wird aber nur Sp oder St – ohne ch!', 'Sprich langsam und denk dran: Hört man schp → schreib Sp. Hört man scht → schreib St.'], visual: { kind: 'word', word: 'Spinne · Stern', mark: [[0, 2], [9, 11]] }, videoQuery: 'Wörter mit Sp und St Grundschule Klasse 2' }, spstTask, { tagLabels: { sp: 'Wörter mit Sp', st: 'Wörter mit St', 'sch-geschrieben': 'sch geschrieben statt S' }, testSeconds: 15 }),
   D(2, 'd2-ei-ie', 'ei oder ie?', '🐝', { text: ['ei klingt wie „ai“: Eis, Bein, Schwein.', 'ie ist ein langes i: Biene, Brief, Wiese.', 'Achtung, die beiden sehen sich ähnlich: Beine 🦵 – Biene 🐝!'], visual: { kind: 'word', word: 'Beine · Biene', mark: [[1, 3], [9, 11]] }, videoQuery: 'ei oder ie Grundschule Rechtschreibung' }, eiieTask, { tagLabels: { ei: 'Wörter mit ei', ie: 'Wörter mit ie', 'ei-ie-vertauscht': 'ei und ie vertauscht' }, testSeconds: 15 }),
   D(1, 'd1-nachspuren', 'Buchstaben nachspuren', '✍️', { text: ['Jeder Buchstabe hat eine feste Form – und eine Richtung, in die man ihn schreibt.', 'Fang oben am grünen Punkt an und fahre den grauen Buchstaben mit dem Finger nach.', 'Sprich dabei leise mit: A wie Affe!'], visual: { kind: 'word', word: 'A a' }, videoQuery: 'Buchstaben schreiben lernen Druckschrift Klasse 1' }, spurTask, { tagLabels: { gross: 'große Buchstaben', klein: 'kleine Buchstaben' }, testSeconds: 40 }),

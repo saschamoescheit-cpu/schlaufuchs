@@ -173,6 +173,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '7TQxNYQBt8g', title: 'Parallel, Senkrecht, Rechter Winkel – einfache Erklärung', channel: 'Nachhilfe vom Lehrer', len: '5:51' },
     { id: '8WAx4bGgMTQ', title: 'Mathematik Klasse 4: senkrecht – parallel – rechter Winkel – Geodreieck', channel: 'Eulenkanal - Lernvideos', len: '15:03' },
   ],
+  'd4-wortarten': [
+    { id: 'PuGzuYAw1Pk', title: 'Pronomen (Lernvideo für Deutsch, Klasse 3-4)', channel: 'Grundschulatelier', len: '1:47' },
+    { id: 'whuRMee9oKg', title: 'Präpositionen – einfach erklärt', channel: 'Linguistik - einfach einfach', len: '4:00' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
