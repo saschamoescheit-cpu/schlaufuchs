@@ -141,12 +141,16 @@ function endTask(r: Rng): Gen {
   const [w, e, l] = pick(r, END);
   return { key: w, prompt: 'Mit welchem Buchstaben endet das Wort?', speak: `Mit welchem Buchstaben endet das Wort ${w}?`, listen: { text: w, lang: 'de' }, visual: { kind: 'emoji', chars: e }, answer: { ...choice(r, l, ['a', 'e', 'l', 'n', 'o', 'r', 's', 't', 'z'].filter((x) => x !== l)), big: true }, tags: ['endlaut'], solution: [`Sprich langsam: ${w.split('').join(' – ')}`, `${w} endet mit ${l}.`], solutionVisual: { kind: 'word', word: w, mark: [[w.length - 1, w.length]] } };
 }
-const COUNT_W: [string, string][] = [['Ei', '🥚'], ['Hut', '🎩'], ['Bus', '🚌'], ['Maus', '🐭'], ['Igel', '🦔'], ['Sofa', '🛋️'], ['Ente', '🦆'], ['Kamel', '🐫'], ['Tiger', '🐯'], ['Apfel', '🍎'], ['Banane', '🍌'], ['Tomate', '🍅'], ['Fisch', '🐟'], ['Schaf', '🐑'], ['Oma', '👵'], ['Auto', '🚗'], ['Hund', '🐶'], ['Katze', '🐱'], ['Mond', '🌙'], ['Sonne', '☀️'], ['Rose', '🌹'], ['Uhr', '⏰'], ['Schuh', '👟'], ['Pinsel', '🖌️']];
+const COUNT_W: [string, string][] = [['Ei', '🥚'], ['Hut', '🎩'], ['Bus', '🚌'], ['Maus', '🐭'], ['Igel', '🦔'], ['Sofa', '🛋️'], ['Ente', '🦆'], ['Kamel', '🐫'], ['Tiger', '🐯'], ['Apfel', '🍎'], ['Banane', '🍌'], ['Tomate', '🍅'], ['Fisch', '🐟'], ['Schaf', '🐑'], ['Oma', '👵'], ['Auto', '🚗'], ['Hund', '🐶'], ['Katze', '🐱'], ['Mond', '🌙'], ['Sonne', '☀️'], ['Rose', '🌹'], ['Uhr', '⏰'], ['Schuh', '👟'], ['Pinsel', '🖌️'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Nase', '👃'], ['Brot', '🍞'], ['Stern', '⭐'], ['Zebra', '🦓'], ['Eule', '🦉'], ['Schule', '🏫'], ['Kerze', '🕯️'], ['Wolke', '☁️']];
 function countTask(r: Rng): Gen {
   const [w, e] = pick(r, COUNT_W);
   return { key: w, prompt: `Wie viele Buchstaben hat das Wort?\n${w}`, speak: `Wie viele Buchstaben hat das Wort ${w}?`, visual: { kind: 'emoji', chars: e }, answer: { type: 'number', value: w.length }, tags: [w.includes('sch') || w.startsWith('Sch') ? 'sch-zaehlen' : 'buchstaben-zaehlen'], solution: [`${w.split('').join(' – ')}`, `Das sind ${w.length} Buchstaben.`, ...(w.toLowerCase().includes('sch') ? ['Achtung: „sch“ klingt wie ein Laut, sind aber 3 Buchstaben (s, c, h).'] : [])], solutionVisual: { kind: 'word', word: w } };
 }
-const BUILD: [string[], string][] = [[['Ba', 'na', 'ne'], '🍌'], [['To', 'ma', 'te'], '🍅'], [['Ra', 'ke', 'te'], '🚀'], [['Me', 'lo', 'ne'], '🍉'], [['Ap', 'fel'], '🍎'], [['Ti', 'ger'], '🐯'], [['Ka', 'mel'], '🐫'], [['So', 'fa'], '🛋️'], [['Lö', 'we'], '🦁'], [['Na', 'se'], '👃'], [['Zi', 'tro', 'ne'], '🍋'], [['Ha', 'se'], '🐰'], [['Ro', 'se'], '🌹'], [['Do', 'se'], '🥫'], [['Pi', 'rat'], '🏴‍☠️'], [['Ro', 'bo', 'ter'], '🤖'], [['Ka', 'rot', 'te'], '🥕'], [['Piz', 'za'], '🍕'], [['Ga', 'bel'], '🍴'], [['Kro', 'ko', 'dil'], '🐊'], [['Pa', 'pa', 'gei'], '🦜'], [['Wol', 'ke'], '☁️']];
+const BUILD: [string[], string][] = [[['Ba', 'na', 'ne'], '🍌'], [['To', 'ma', 'te'], '🍅'], [['Ra', 'ke', 'te'], '🚀'], [['Me', 'lo', 'ne'], '🍉'], [['Ap', 'fel'], '🍎'], [['Ti', 'ger'], '🐯'], [['Ka', 'mel'], '🐫'], [['So', 'fa'], '🛋️'], [['Lö', 'we'], '🦁'], [['Na', 'se'], '👃'], [['Zi', 'tro', 'ne'], '🍋'], [['Ha', 'se'], '🐰'], [['Ro', 'se'], '🌹'], [['Do', 'se'], '🥫'], [['Pi', 'rat'], '🏴‍☠️'], [['Ro', 'bo', 'ter'], '🤖'], [['Ka', 'rot', 'te'], '🥕'], [['Piz', 'za'], '🍕'], [['Ga', 'bel'], '🍴'], [['Kro', 'ko', 'dil'], '🐊'], [['Pa', 'pa', 'gei'], '🦜'], [['Wol', 'ke'], '☁️'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  [['Ku', 'chen'], '🍰'], [['Hu', 'pe'], '📯'], [['Ei', 'mer'], '🪣'], [['Ka', 'nu'], '🛶'], [['Bril', 'le'], '👓'], [['Lam', 'pe'], '💡'], [['Mu', 'schel'], '🐚'], [['Schne', 'cke'], '🐌'], [['Ze', 'bra'], '🦓'], [['Te', 'le', 'fon'], '☎️'], [['Pin', 'gu', 'in'], '🐧']];
 function buildTask(r: Rng, s: Stage): Gen {
   const [parts, e] = pick(r, BUILD);
   const word = parts.join('');

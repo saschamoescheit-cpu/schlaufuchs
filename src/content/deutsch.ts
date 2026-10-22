@@ -308,6 +308,9 @@ const SAETZE_ZEICHEN: [string, '.' | '?' | '!'][] = [
   ['Pass auf', '!'], ['Hilfe', '!'], ['Komm sofort her', '!'], ['Sei leise', '!'], ['Vorsicht, heiß', '!'], ['Lauf schnell weg', '!'],
   ['Was machst du heute', '?'], ['Kannst du mir helfen', '?'], ['Wie spät ist es', '?'], ['Am Montag haben wir Sport', '.'], ['Lena malt ein Bild', '.'], ['Im Herbst fallen die Blätter', '.'],
   ['Mach bitte sofort die Tür zu', '!'], ['Halt, stopp', '!'], ['Juhu, wir haben gewonnen', '!'],
+  // Nachtlauf 22.10.2026: mehr Sätze
+  ['Wer hat meinen Stift genommen', '?'], ['Warum weint das Baby', '?'], ['Gehst du morgen schwimmen', '?'], ['Unser Hund heißt Bello', '.'], ['Oma backt einen Apfelkuchen', '.'], ['Im Winter ist es kalt', '.'],
+  ['Räum bitte dein Zimmer auf', '!'], ['Gib mir sofort den Ball', '!'], ['Toll, ein Regenbogen', '!'],
 ];
 const SATZART: Record<'.' | '?' | '!', string> = { '.': 'Aussagesatz', '?': 'Fragesatz', '!': 'Ausrufe- oder Aufforderungssatz' };
 const FRAGE_UM: [string, string, string[]][] = [
@@ -317,6 +320,11 @@ const FRAGE_UM: [string, string, string[]][] = [
   ['Ihr spielt Fußball.', 'Spielt ihr Fußball?', ['Ihr spielt Fußball?', 'Spielt ihr Fußball.', 'Fußball spielt ihr!']],
   ['Tim kann schwimmen.', 'Kann Tim schwimmen?', ['Tim kann schwimmen?', 'Kann Tim schwimmen.', 'Schwimmen kann Tim!']],
   ['Es regnet heute.', 'Regnet es heute?', ['Es regnet heute?', 'Regnet es heute.', 'Heute regnet es!']],
+  // Nachtlauf 22.10.2026: mehr Sätze
+  ['Mama kocht Nudeln.', 'Kocht Mama Nudeln?', ['Mama kocht Nudeln?', 'Kocht Mama Nudeln.', 'Nudeln kocht Mama!']],
+  ['Du kommst mit.', 'Kommst du mit?', ['Du kommst mit?', 'Kommst du mit.', 'Mit kommst du!']],
+  ['Der Hund ist müde.', 'Ist der Hund müde?', ['Der Hund ist müde?', 'Ist der Hund müde.', 'Müde ist der Hund!']],
+  ['Ihr habt Hunger.', 'Habt ihr Hunger?', ['Ihr habt Hunger?', 'Habt ihr Hunger.', 'Hunger habt ihr!']],
 ];
 const satzarten = D(3, 'd3-satzarten', 'Satzarten', '💬', {
   text: ['Aussagesatz: Ich erzähle etwas. Am Ende steht ein Punkt. „Lena malt ein Bild.“', 'Fragesatz: Ich frage etwas. Das Verb oder ein W-Wort steht vorne, am Ende ein Fragezeichen. „Malt Lena ein Bild?“', 'Ausrufe- oder Aufforderungssatz: Ich rufe oder fordere auf. Am Ende ein Ausrufezeichen. „Komm her!“'],
