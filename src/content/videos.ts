@@ -187,6 +187,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },
   ],
+  'd1-lautposition': [
+    { id: 'dWhKTkGvxWQ', title: 'Das M hören – Buchstabe M (Anfang, Mitte, Ende)', channel: 'OnLearn', len: '6:08' },
+    { id: '2ILnbDQbc8E', title: 'Deutsch Klasse 1: Wörter mit I, i – Laute hören', channel: 'Frau Ehmanns', len: '4:55' },
+  ],
   'd1-nachspuren': [
     { id: 'NhF9Kaa50B0', title: 'Buchstaben schreiben lernen; Schreibrichtung', channel: 'Kinder Lern Kanal', len: '4:02' },
   ],

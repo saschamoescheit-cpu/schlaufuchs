@@ -860,6 +860,37 @@ function mydayTask(r: Rng, s: Stage): Gen {
   return { key: `b-${d.en}`, prompt: 'What do you do?', visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, wrong), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
 }
 
+// ---------- Wo hörst du den Laut? (Kl. 1) ----------
+
+type Pos = 'am Anfang' | 'in der Mitte' | 'am Ende';
+// [Laut, Wort, Bild, Position]
+const LAUTPOS: [string, string, string, Pos][] = [
+  ['M', 'Maus', '🐭', 'am Anfang'], ['M', 'Lampe', '💡', 'in der Mitte'], ['M', 'Baum', '🌳', 'am Ende'], ['M', 'Mond', '🌙', 'am Anfang'], ['M', 'Ampel', '🚦', 'in der Mitte'],
+  ['N', 'Nase', '👃', 'am Anfang'], ['N', 'Ente', '🦆', 'in der Mitte'], ['N', 'Zahn', '🦷', 'am Ende'], ['N', 'Nuss', '🥜', 'am Anfang'], ['N', 'Kran', '🏗️', 'am Ende'],
+  ['L', 'Löwe', '🦁', 'am Anfang'], ['L', 'Wolke', '☁️', 'in der Mitte'], ['L', 'Ball', '⚽', 'am Ende'], ['L', 'Igel', '🦔', 'am Ende'], ['L', 'Eule', '🦉', 'in der Mitte'],
+  ['S', 'Sonne', '☀️', 'am Anfang'], ['S', 'Hose', '👖', 'in der Mitte'], ['S', 'Eis', '🍦', 'am Ende'], ['S', 'Haus', '🏠', 'am Ende'], ['S', 'Rose', '🌹', 'in der Mitte'],
+  ['F', 'Fisch', '🐟', 'am Anfang'], ['F', 'Affe', '🐒', 'in der Mitte'], ['F', 'Schaf', '🐑', 'am Ende'], ['F', 'Fuchs', '🦊', 'am Anfang'],
+  ['T', 'Tiger', '🐯', 'am Anfang'], ['T', 'Auto', '🚗', 'in der Mitte'], ['T', 'Zelt', '⛺', 'am Ende'], ['T', 'Hut', '👒', 'am Ende'],
+];
+function lautposTask(r: Rng, s: Stage): Gen {
+  const [l, w, e, pos] = pick(r, s === 1 ? LAUTPOS.filter((x) => x[3] !== 'in der Mitte') : LAUTPOS);
+  const opts: Pos[] = s === 1 ? ['am Anfang', 'am Ende'] : ['am Anfang', 'in der Mitte', 'am Ende'];
+  const i = w.toLowerCase().indexOf(l.toLowerCase());
+  // Doppelbuchstaben (Ball, Affe) ganz markieren
+  const end = w[i + 1] && w[i + 1].toLowerCase() === w[i].toLowerCase() ? i + 2 : i + 1;
+  return {
+    key: `${l}-${w}`,
+    prompt: `Wo hörst du das „${l}“?`,
+    speak: `Wo hörst du das ${l} in ${w}?`,
+    listen: { text: w, lang: 'de', slow: true },
+    visual: { kind: 'emoji', chars: e },
+    answer: fixedChoice(opts, pos),
+    tags: [pos === 'am Anfang' ? 'anfang' : pos === 'am Ende' ? 'ende' : 'mitte'],
+    solution: [`Sprich langsam: ${w}.`, `Das „${l}“ hörst du ${pos}.`],
+    solutionVisual: { kind: 'word', word: w, mark: [[i, end]] },
+  };
+}
+
 export const MATHE_EXTRA3: Skill[] = [
   M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),
   M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),
@@ -1229,6 +1260,7 @@ function spurTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA3: Skill[] = [
+  D(1, 'd1-lautposition', 'Wo hörst du den Laut?', '👂', { text: ['Sprich das Wort ganz langsam und dehne es: Mmmaus.', 'Hörst du den Laut gleich zuerst? Dann ist er am Anfang. Ganz zum Schluss? Dann am Ende.', 'Dazwischen ist die Mitte: La-mm-pe.'], visual: { kind: 'word', word: 'Maus · Lampe · Baum', mark: [[0, 1], [9, 10], [18, 19]] }, videoQuery: 'Anlaut Inlaut Auslaut hören Klasse 1' }, lautposTask, { tagLabels: { anfang: 'Laut am Anfang', mitte: 'Laut in der Mitte', ende: 'Laut am Ende' }, testSeconds: 20 }),
   D(4, 'd4-wortarten', 'Wortarten: auch Pronomen und Präpositionen', '🏷️', { text: ['Nomen (Hund), Verben (schläft) und Adjektive (klein) kennst du schon.', 'Artikel begleiten Nomen: der, die, ein. Pronomen stehen für ein Nomen: er, sie, wir.', 'Präpositionen zeigen, wo oder wann etwas ist: unter, auf, nach.'], visual: { kind: 'text', text: 'Der kleine Hund schläft unter dem Tisch.\nArtikel · Adjektiv · Nomen · Verb · Präposition · Artikel · Nomen' }, videoQuery: 'Wortarten Pronomen Präposition Grundschule Klasse 4' }, wortart4Task, { tagLabels: { 'wa-n': 'Nomen', 'wa-v': 'Verben', 'wa-a': 'Adjektive', 'wa-art': 'Artikel', 'wa-p': 'Pronomen', 'wa-pr': 'Präpositionen' }, testSeconds: 20 }),
   D(2, 'd2-sp-st', 'Sp und St am Wortanfang', '🕷️', { text: ['Am Wortanfang hört man oft „schp“ oder „scht“: Spinne, Stern.', 'Geschrieben wird aber nur Sp oder St – ohne ch!', 'Sprich langsam und denk dran: Hört man schp → schreib Sp. Hört man scht → schreib St.'], visual: { kind: 'word', word: 'Spinne · Stern', mark: [[0, 2], [9, 11]] }, videoQuery: 'Wörter mit Sp und St Grundschule Klasse 2' }, spstTask, { tagLabels: { sp: 'Wörter mit Sp', st: 'Wörter mit St', 'sch-geschrieben': 'sch geschrieben statt S' }, testSeconds: 15 }),
   D(2, 'd2-ei-ie', 'ei oder ie?', '🐝', { text: ['ei klingt wie „ai“: Eis, Bein, Schwein.', 'ie ist ein langes i: Biene, Brief, Wiese.', 'Achtung, die beiden sehen sich ähnlich: Beine 🦵 – Biene 🐝!'], visual: { kind: 'word', word: 'Beine · Biene', mark: [[1, 3], [9, 11]] }, videoQuery: 'ei oder ie Grundschule Rechtschreibung' }, eiieTask, { tagLabels: { ei: 'Wörter mit ei', ie: 'Wörter mit ie', 'ei-ie-vertauscht': 'ei und ie vertauscht' }, testSeconds: 15 }),
