@@ -581,6 +581,12 @@ const LEN_OBJ = [
   { e: '🚌', name: 'ein Bus', ok: '12 m', wrong: ['12 cm', '120 m', '1 m'] },
   { e: '📱', name: 'ein Handy', ok: '15 cm', wrong: ['15 m', '150 cm', '1 cm'] },
   { e: '🧒', name: 'ein Kind in der 2. Klasse', ok: '125 cm', wrong: ['125 m', '12 cm', '12 m'] },
+  { e: '🚗', name: 'ein Auto', ok: '4 m', wrong: ['4 cm', '40 m', '40 cm'] },
+  { e: '🍌', name: 'eine Banane', ok: '20 cm', wrong: ['20 m', '2 m', '2 cm'] },
+  { e: '🛏️', name: 'ein Bett', ok: '2 m', wrong: ['2 cm', '20 m', '20 cm'] },
+  { e: '🖍️', name: 'ein Wachsmalstift', ok: '8 cm', wrong: ['8 m', '80 cm', '80 m'] },
+  { e: '🏊', name: 'ein Schwimmbecken', ok: '25 m', wrong: ['25 cm', '250 m', '2 cm'] },
+  { e: '🐞', name: 'ein Marienkäfer', ok: '1 cm', wrong: ['1 m', '10 cm', '10 m'] },
 ];
 const laengen2 = M(2, 'm2-laengen', 'Längen: cm und m', '📏', {
   text: ['Kurze Dinge misst man in Zentimetern (cm), lange in Metern (m).', '1 m = 100 cm.', 'Beim Messen mit dem Lineal legst du die 0 an den Anfang des Gegenstands – nicht den Rand des Lineals!'],
@@ -594,6 +600,11 @@ const laengen2 = M(2, 'm2-laengen', 'Längen: cm und m', '📏', {
   }
   if (v === 1) {
     const m = ri(r, 1, 9);
+    // gemischte Angabe: 1 m 20 cm = 120 cm
+    if (chance(r, 0.3)) {
+      const c = ri(r, 1, 9) * 10;
+      return { key: `mix${m}-${c}`, prompt: `${m} m ${c} cm = ☐ cm`, answer: { type: 'number', value: m * 100 + c, unit: 'cm' }, tags: ['umrechnen'], traps: [{ answer: String(m * 10 + c), tag: 'umrechnungszahl', hint: '1 m sind 100 cm, nicht 10 cm.' }], solution: ['1 m = 100 cm', `${m} m = ${m * 100} cm`, `${m * 100} cm + ${c} cm = ${m * 100 + c} cm`] };
+    }
     if (chance(r, 0.5)) return { key: `mcm${m}`, prompt: `${m} m = ☐ cm`, answer: { type: 'number', value: m * 100, unit: 'cm' }, tags: ['umrechnen'], traps: [{ answer: String(m * 10), tag: 'umrechnungszahl', hint: '1 m sind 100 cm, nicht 10 cm.' }], solution: ['1 m = 100 cm', `${m} m = ${m} · 100 cm = ${m * 100} cm`] };
     return { key: `cmm${m}`, prompt: `${m * 100} cm = ☐ m`, answer: { type: 'number', value: m, unit: 'm' }, tags: ['umrechnen'], solution: ['100 cm = 1 m', `${m * 100} cm = ${m} m`] };
   }
