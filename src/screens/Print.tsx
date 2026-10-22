@@ -86,7 +86,7 @@ export function PrintView({ profile, spec, onBack }: { profile: Profile; spec: T
         <ol className="paper-solutions">
           {spec.tasks.map((t, i) => (
             <li key={i}>
-              <span className="muted">{strip(t.prompt.split('\n').slice(-1)[0])}</span> → <b>{correctText(t.answer)}</b>
+              <span className="muted">{strip(t.prompt.split('\n').filter((l) => !l.startsWith('(')).slice(-1)[0] ?? '')}</span> → <b>{correctText(t.answer)}</b>
             </li>
           ))}
         </ol>
