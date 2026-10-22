@@ -96,7 +96,11 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
             {info}
           </p>
         </div>
-        {groups.length > 0 && <div className="label" style={{ marginBottom: -8 }}>Wortfelder</div>}
+        {groups.length > 0 && (
+          <div className="field" style={{ marginBottom: -8 }}>
+            <span className="label">Welche Wortfelder?</span>
+          </div>
+        )}
         {shown.map((g) => (
           <div key={g.label}>
             <div className="area-label">{g.label}</div>
