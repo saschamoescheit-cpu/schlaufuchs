@@ -412,17 +412,42 @@ const VERB_TAB: [string, string, string, string, 'hat' | 'ist', string, string[]
   ['bauen', 'baut', 'baute', 'gebaut', 'hat', 'eine Sandburg', ['bau', 'bot', 'bauten']],
   ['tanzen', 'tanzt', 'tanzte', 'getanzt', 'hat', 'im Kreis', ['tanz', 'tonz', 'tänzte']],
   ['fliegen', 'fliegt', 'flog', 'geflogen', 'ist', 'nach Spanien', ['fliegte', 'flug', 'flogte']],
+  ['helfen', 'hilft', 'half', 'geholfen', 'hat', 'der Oma', ['helfte', 'hilf', 'halfte']],
+  ['rufen', 'ruft', 'rief', 'gerufen', 'hat', 'laut', ['rufte', 'ruf', 'riefte']],
+  ['nehmen', 'nimmt', 'nahm', 'genommen', 'hat', 'den Ball', ['nehmte', 'nimm', 'nahmte']],
+  ['schlafen', 'schläft', 'schlief', 'geschlafen', 'hat', 'lange', ['schlafte', 'schläfte', 'schliefte']],
+  ['werfen', 'wirft', 'warf', 'geworfen', 'hat', 'den Ball', ['werfte', 'wirf', 'warfte']],
+  ['denken', 'denkt', 'dachte', 'gedacht', 'hat', 'an die Ferien', ['denkte', 'dank', 'dachtete']],
+  ['bringen', 'bringt', 'brachte', 'gebracht', 'hat', 'ein Geschenk', ['bringte', 'brang', 'brachtete']],
+  ['rennen', 'rennt', 'rannte', 'gerannt', 'ist', 'zum Bus', ['rennte', 'rann', 'ranntete']],
+  ['lachen', 'lacht', 'lachte', 'gelacht', 'hat', 'laut', ['lach', 'lucht', 'lachten']],
+  ['kochen', 'kocht', 'kochte', 'gekocht', 'hat', 'Suppe', ['koch', 'kuchte', 'kochten']],
 ];
-const REGULAR = new Set(['spielen', 'malen', 'bauen', 'tanzen']);
+const REGULAR = new Set(['spielen', 'malen', 'bauen', 'tanzen', 'lachen', 'kochen']);
 const zeit3 = D(3, 'd3-zeitformen', 'Gegenwart und Vergangenheit', '⏳', {
   text: ['Gegenwart (Präsens): Das passiert jetzt. „Lena spielt Fußball.“', 'Vergangenheit (Präteritum): Das ist schon passiert – so schreibt man in Geschichten. „Lena spielte Fußball.“', 'Viele Verben bekommen nur ein -te: spielen → spielte.', 'Starke Verben verändern sich: gehen → ging, singen → sang. Diese musst du üben!'],
   visual: { kind: 'text', text: 'spielt → spielte · geht → ging' },
   videoQuery: 'Präteritum Vergangenheit Verben Klasse 3',
-}, (r) => {
+}, (r, st) => {
   const v = pick(r, VERB_TAB);
   const n = pick(r, NAMES);
+  const kind = REGULAR.has(v[0]) ? 'regelmäßig' : 'unregelmäßig';
+  const w = st === 1 ? 0 : ri(r, 0, 3);
+  // Gegenwart oder Vergangenheit erkennen
+  if (w === 2) {
+    const past = chance(r, 0.5);
+    const sent = `${n} ${past ? v[2] : v[1]} ${v[5]}.`;
+    return { key: `e-${v[0]}-${past}`, prompt: `Gegenwart oder Vergangenheit?
+${sent}`, answer: fixedChoice(['Gegenwart', 'Vergangenheit'], past ? 'Vergangenheit' : 'Gegenwart'), tags: ['erkennen'], solution: [sent, past ? `„${v[2]}“ ist schon passiert → Vergangenheit. Jetzt hieße es: ${n} ${v[1]} …` : `„${v[1]}“ passiert jetzt → Gegenwart. Früher hieße es: ${n} ${v[2]} …`] };
+  }
+  // Rückrichtung: Vergangenheit → Gegenwart
+  if (w === 3) {
+    return { key: `g-${v[0]}`, prompt: `Setze in die Gegenwart:
+${n} ${v[2]} ${v[5]}.
+${n} ☐ ${v[5]}.`, speak: `Setze in die Gegenwart: ${n} ${v[2]} ${v[5]}.`, answer: choice(r, v[1], [v[0], v[2], ...v[6]].filter((x) => x !== v[1])), tags: [kind], solution: [`${n} ${v[1]} ${v[5]}.`, `Grundform: ${v[0]} – Gegenwart: ${v[1]} – Vergangenheit: ${v[2]}`] };
+  }
   return { key: v[0], prompt: `Setze in die Vergangenheit:\n${n} ${v[1]} ${v[5]}.\n${n} ☐ ${v[5]}.`, speak: `Setze in die Vergangenheit: ${n} ${v[1]} ${v[5]}.`, answer: choice(r, v[2], v[6]), tags: [REGULAR.has(v[0]) ? 'regelmäßig' : 'unregelmäßig'], solution: [`${n} ${v[2]} ${v[5]}.`, REGULAR.has(v[0]) ? `${v[0]} ist ein schwaches Verb: Es bekommt -te.` : `${v[0]} ist ein starkes Verb: Es verändert sich (${v[1]} → ${v[2]}). Merke dir die Form!`] };
-}, { tagLabels: { regelmäßig: 'schwache Verben (-te)', unregelmäßig: 'starke Verben (ging, sang …)' }, testSeconds: 20 });
+}, { tagLabels: { regelmäßig: 'schwache Verben (-te)', unregelmäßig: 'starke Verben (ging, sang …)', erkennen: 'Gegenwart oder Vergangenheit erkennen' }, testSeconds: 20 });
 
 const ZUSAMMEN: [string, string, string, string, string, string][] = [
   ['das', 'Haus', 'die', 'Tür', 'Haustür', '🚪'], ['der', 'Apfel', 'der', 'Baum', 'Apfelbaum', '🌳'], ['der', 'Schnee', 'der', 'Mann', 'Schneemann', '⛄'],
