@@ -9,6 +9,26 @@ synth?.addEventListener?.('voiceschanged', loadVoices);
 
 export const canSpeak = () => !!synth;
 
+// iPhone/iPad: Vorlese-Ton gilt in Safari sonst als „Umgebungston“ und verstummt im Stummmodus (Glocke/Aktionstaste).
+// Die Audio-Session „playback“ (Safari 17+) behandelt ihn wie Medien – dann ist er auch im Stummmodus zu hören.
+type AudioSessionNav = Navigator & { audioSession?: { type: string } };
+function playbackSession() {
+  try {
+    const n = navigator as AudioSessionNav;
+    if (n.audioSession && n.audioSession.type !== 'playback') n.audioSession.type = 'playback';
+  } catch {
+    /* ältere Browser */
+  }
+}
+if (typeof navigator !== 'undefined') playbackSession();
+export const audioSessionType = () => {
+  try {
+    return (navigator as AudioSessionNav).audioSession?.type ?? '—';
+  } catch {
+    return '—';
+  }
+};
+
 const PREFER: Record<Lang, RegExp[]> = {
   de: [/^de-DE$/i, /^de/i],
   en: [/^en-GB$/i, /^en-US$/i, /^en/i],
@@ -107,6 +127,7 @@ export function speechInfo() {
     pausiert: !!synth?.paused,
     homeBildschirm: typeof window !== 'undefined' && (window.matchMedia?.('(display-mode: standalone)').matches || (navigator as unknown as { standalone?: boolean }).standalone === true),
     freigeschaltet: unlocked,
+    audioSitzung: audioSessionType(),
   };
 }
 
@@ -115,7 +136,8 @@ const UNLOCK_EVENTS = ['touchend', 'click', 'keydown'] as const;
 function unlock() {
   if (unlocked || !synth) return;
   unlocked = true;
-  slog('freigeschaltet (erstes Antippen)');
+  playbackSession();
+  slog(`freigeschaltet (erstes Antippen, Audio-Sitzung: ${audioSessionType()})`);
   for (const ev of UNLOCK_EVENTS) window.removeEventListener(ev, unlock, true);
   try {
     if (synth.paused) synth.resume();
@@ -147,6 +169,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
   // ein Antippen des Lautsprechers ist selbst eine Berührung – also gilt die Ausgabe als aufgeschlossen
   const wasUnlocked = unlocked;
   unlocked = true;
+  playbackSession();
   const busy = !!current && (synth.speaking || synth.pending);
   if (busy) synth.cancel();
   if (synth.paused) synth.resume();

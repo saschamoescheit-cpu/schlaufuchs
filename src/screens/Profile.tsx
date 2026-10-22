@@ -617,7 +617,7 @@ function SpeechDiagnosis() {
       <summary>🩺 Ton-Diagnose</summary>
       <div className="inner stack" style={{ gap: 8 }}>
         <div className="small">
-          Sprachausgabe vorhanden: <b>{ja(info.vorhanden)}</b> · Stimmen: <b>{info.stimmen}</b> (deutsch {info.deutsch}, englisch {info.englisch}) · als App vom Home-Bildschirm: <b>{ja(!!info.homeBildschirm)}</b> · freigeschaltet: <b>{ja(info.freigeschaltet)}</b>
+          Sprachausgabe vorhanden: <b>{ja(info.vorhanden)}</b> · Stimmen: <b>{info.stimmen}</b> (deutsch {info.deutsch}, englisch {info.englisch}) · als App vom Home-Bildschirm: <b>{ja(!!info.homeBildschirm)}</b> · freigeschaltet: <b>{ja(info.freigeschaltet)}</b> · Audio-Sitzung: <b>{info.audioSitzung}</b>
           {info.spricht || info.wartet || info.pausiert ? ` · Zustand: ${[info.spricht && 'spricht', info.wartet && 'wartet', info.pausiert && 'pausiert'].filter(Boolean).join(', ')}` : ''}
         </div>
         <div className="small muted" style={{ wordBreak: 'break-word' }}>{navigator.userAgent}</div>
@@ -630,6 +630,11 @@ function SpeechDiagnosis() {
           </button>
         </div>
         <pre className="small" style={{ whiteSpace: 'pre-wrap', margin: 0, background: 'var(--soft, #f4f1fa)', padding: 8, borderRadius: 10 }}>{speechLog().join('\n') || 'Noch nichts passiert – tippe auf einen Test.'}</pre>
+        {speechLog().some((l) => l.includes('✓ Ton startet')) && (
+          <div className="small">
+            <b>„Ton startet“, aber du hörst nichts?</b> Dann ist das Gerät stumm: am iPhone den Stummmodus ausschalten (Glocke im Kontrollzentrum, Aktionstaste oder Schalter an der Seite), Lautstärke hochdrehen und prüfen, ob Bluetooth-Kopfhörer verbunden sind.
+          </div>
+        )}
         <div className="small muted">Bitte einen Screenshot von diesem Bereich schicken, wenn das Vorlesen nicht klappt.</div>
       </div>
     </details>
