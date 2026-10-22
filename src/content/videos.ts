@@ -49,6 +49,7 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'm4-wahrscheinlichkeit': [{ id: 'Wid6zjjU3kU', title: "unmöglich, möglich oder sicher? einfach erklärt – Mathematik 1. & 2. Klasse", channel: "sofatutor", len: '5:49' }],
   'm4-sachaufgaben': [{ id: '8NtppHBtM-M', title: "Erklärvideo Sachaufgaben: Skizze", channel: "Grundschule Ludwigsfeld", len: '3:50' }],
   'd1-anlaut': [{ id: 'cN1npTJQ51s', title: "Flex und Flora Anlautrap", channel: "Westermann", len: '3:13' }],
+  'd1-endlaut': [{ id: '_84FJMCvv0Q', title: "Auslaute hören - Was hörst du am Ende?", channel: "Mitgedacht", len: '2:11' }, { id: 'HXj-oXSLfTU', title: "Laute erkennen in einem Wort – Erklärung & Beispiele", channel: "Deutsch - sofatutor", len: '5:37' }],
   'd1-silben': [{ id: 'cBiJAEGDt7Y', title: "Silben klatschen und zeichnen", channel: "Gerharts Mäuseschule", len: '4:08' }],
   'd1-reime': [{ id: 'eRD2CJe4XlY', title: "D 08 Reimwörter", channel: "Frau_Bu&Du", len: '4:26' }],
   'd1-buchstaben': [{ id: 'c7PGee_1t5A', title: "★ b und d unterscheiden", channel: "Grundschullehrerin Diana Wegel", len: '3:28' }],
