@@ -100,7 +100,7 @@ function NumberLine({ from, to, start, jumps, step, minor, ask }: { from: number
             <path d={`M${x(a)} ${y - 4} Q${mx} ${y - 4 - h * 1.6} ${x(b)} ${y - 4}`} fill="none" stroke={col} strokeWidth={2.5} />
             <path d={`M${x(b)} ${y - 4} l${j > 0 ? -7 : 7} -6 l${j > 0 ? 1 : -1} 7 z`} fill={col} />
             <text x={mx} y={y - 8 - h * 0.85} fontSize={13} fontWeight={700} textAnchor="middle" fill={col} fontFamily="Fredoka, sans-serif">
-              {j > 0 ? `+${j}` : `−${-j}`}
+              {j > 0 ? `+${lab(j)}` : `−${lab(-j)}`}
             </text>
           </g>
         );
