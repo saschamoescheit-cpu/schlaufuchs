@@ -1,6 +1,6 @@
 // Weitere Themen (Nachtlauf 21./22.10.2026, Teil 3) nach Abgleich mit dem NRW-Lehrplan:
 // Lagebeziehungen (Kl. 1), Zahlenstrahl bis 100 (Kl. 2) und bis 1000 (Kl. 3), Im Wörterbuch nachschlagen (Kl. 3).
-import { chance, choice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
+import { chance, choice, fixedChoice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { NAMES, columnAdd, columnSub, skill, type Gen } from './helpers';
 import { VT, wordTask, type W } from './extra';
@@ -685,6 +685,8 @@ function miniTask(r: Rng, s: Stage): Gen {
 
 const VF: [string, string, string][] = [
   ['Vogel', 'V', '🐦'], ['Vater', 'V', '👨'], ['vier', 'v', '4️⃣'], ['viel', 'v', '➕'], ['Vase', 'V', '🏺'], ['Vulkan', 'V', '🌋'], ['Vampir', 'V', '🧛'],
+  ['verstecken', 'v', '🙈'], ['vergessen', 'v', '🤔'], ['vorlesen', 'v', '📖'], ['voll', 'v', '🥛'], ['Vorsicht', 'V', '⚠️'],
+  ['Feuer', 'F', '🔥'], ['Fuß', 'F', '🦶'], ['Fee', 'F', '🧚'], ['Flasche', 'F', '🍾'], ['Ferien', 'F', '🏖️'], ['finden', 'f', '🔎'],
   ['Fisch', 'F', '🐟'], ['Fuchs', 'F', '🦊'], ['Feder', 'F', '🪶'], ['Fahrrad', 'F', '🚲'], ['fünf', 'f', '5️⃣'], ['Frosch', 'F', '🐸'], ['Fenster', 'F', '🪟'], ['fliegen', 'f', '✈️'],
 ];
 function vfTask(r: Rng, s: Stage): Gen {
@@ -716,7 +718,32 @@ const FRAC_UNITS: { big: string; small: string; per: number; name: string }[] = 
   { big: 'km', small: 'm', per: 1000, name: 'Kilometer' }, { big: 'm', small: 'cm', per: 100, name: 'Meter' }, { big: '€', small: 'ct', per: 100, name: 'Euro' },
 ];
 const SMALL_SPOKEN: Record<string, string> = { g: 'Gramm', ml: 'Milliliter', min: 'Minuten', m: 'Meter', cm: 'Zentimeter', ct: 'Cent' };
+const TIME_WORDS: [string, number, string][] = [
+  ['eine Viertelstunde', 15, '¼ Stunde = 60 min : 4 = 15 min'],
+  ['eine halbe Stunde', 30, '½ Stunde = 60 min : 2 = 30 min'],
+  ['eine Dreiviertelstunde', 45, '¾ Stunde = 3 · 15 min = 45 min'],
+  ['anderthalb Stunden', 90, 'anderthalb = 1 und ½: 60 min + 30 min = 90 min'],
+];
 function fracTask(r: Rng, s: Stage): Gen {
+  const v0 = s === 1 ? 0 : ri(r, 0, 3);
+  // Zeitwörter aus dem Alltag
+  if (v0 === 2) {
+    const [w, min, why] = pick(r, s === 2 ? TIME_WORDS.slice(0, 3) : TIME_WORDS);
+    return { key: `t-${min}`, prompt: `Wie viele Minuten sind ${w}?`, answer: { type: 'number', value: min, unit: 'min' }, tags: [min === 30 || min === 90 ? 'halb' : 'viertel'], solution: ['1 Stunde = 60 min', why] };
+  }
+  // Rückrichtung: kleine Einheit → Bruch der großen Einheit
+  if (v0 === 3) {
+    const u = pick(r, FRAC_UNITS.filter((x) => x.big !== '€'));
+    const fr = pick(r, FRAC);
+    const part = Math.round(fr.val * u.per);
+    return {
+      key: `r-${part}${u.small}`,
+      prompt: `${part} ${u.small} = ☐ ${u.big}`,
+      answer: { ...fixedChoice(['¼', '½', '¾', '1'], fr.f), big: true },
+      tags: [fr.f === '½' ? 'halb' : 'viertel'],
+      solution: [`1 ${u.big} = ${u.per} ${u.small}`, `Halb: ${u.per / 2} ${u.small}, ein Viertel: ${u.per / 4} ${u.small}, drei Viertel: ${(3 * u.per) / 4} ${u.small}`, `${part} ${u.small} = ${fr.f} ${u.big}`],
+    };
+  }
   const u = pick(r, FRAC_UNITS);
   // beim Geld nur „halbe Euro“ – ¼ € oder ¾ € sagt niemand
   const fr = s === 1 || u.big === '€' ? FRAC[0] : pick(r, FRAC);
