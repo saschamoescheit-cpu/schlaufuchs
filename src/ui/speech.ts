@@ -150,6 +150,40 @@ function unlock() {
 }
 if (synth && typeof window !== 'undefined') for (const ev of UNLOCK_EVENTS) window.addEventListener(ev, unlock, true);
 
+// iPhone/iPad: Läuft gleichzeitig ein (stilles) Audio-Element, spielt Safari den Ton über den Medienkanal –
+// der ist auch im Stummmodus zu hören (wie bei Videos). Deshalb läuft während des Vorlesens eine stille Tonspur mit.
+const IOS = typeof navigator !== 'undefined' && (/iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1));
+let medium: HTMLAudioElement | null = null;
+function silentWav(): string {
+  // 0,5 s Stille, 8 kHz, 8 Bit mono
+  const n = 4000;
+  const b = new Uint8Array(44 + n);
+  const v = new DataView(b.buffer);
+  const str = (o: number, t: string) => [...t].forEach((c, i) => (b[o + i] = c.charCodeAt(0)));
+  str(0, 'RIFF'); v.setUint32(4, 36 + n, true); str(8, 'WAVE'); str(12, 'fmt ');
+  v.setUint32(16, 16, true); v.setUint16(20, 1, true); v.setUint16(22, 1, true); v.setUint32(24, 8000, true); v.setUint32(28, 8000, true); v.setUint16(32, 1, true); v.setUint16(34, 8, true);
+  str(36, 'data'); v.setUint32(40, n, true);
+  b.fill(128, 44);
+  let bin = '';
+  b.forEach((x) => (bin += String.fromCharCode(x)));
+  return 'data:audio/wav;base64,' + btoa(bin);
+}
+function mediaChannel(on: boolean) {
+  if (!IOS) return;
+  try {
+    if (on) {
+      if (!medium) {
+        medium = new Audio(silentWav());
+        medium.loop = true;
+        medium.setAttribute('playsinline', '');
+      }
+      medium.play().then(() => slog('Medienkanal an'), (e) => slog('Medienkanal blockiert: ' + (e?.name ?? e)));
+    } else medium?.pause();
+  } catch {
+    /* egal */
+  }
+}
+
 export type SpeechState = 'idle' | 'start' | 'end' | 'problem';
 let state: SpeechState = 'idle';
 const listeners = new Set<(s: SpeechState, info?: string) => void>();
@@ -170,6 +204,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
   const wasUnlocked = unlocked;
   unlocked = true;
   playbackSession();
+  mediaChannel(true);
   const busy = !!current && (synth.speaking || synth.pending);
   if (busy) synth.cancel();
   if (synth.paused) synth.resume();
@@ -192,7 +227,10 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
       setState('start');
     };
     u.onend = () => {
-      if (current === u) current = null;
+      if (current === u) {
+        current = null;
+        mediaChannel(false);
+      }
       setState('end');
       onEnd?.();
     };
@@ -200,7 +238,10 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
       slog(`Fehler: ${e.error}`);
       if (current === u) current = null;
       // „interrupted“/„canceled“ heißt nur: eine neue Ausgabe hat diese abgelöst
-      if (e.error !== 'interrupted' && e.error !== 'canceled') setState('problem', e.error);
+      if (e.error !== 'interrupted' && e.error !== 'canceled') {
+        mediaChannel(false);
+        setState('problem', e.error);
+      }
       onEnd?.();
     };
     current = u;
@@ -215,6 +256,7 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
         setTimeout(go, 80);
       } else {
         current = null;
+        mediaChannel(false);
         slog('✗ kein Ton nach zwei Versuchen');
         setState('problem', 'nostart');
         onEnd?.();
@@ -228,5 +270,6 @@ export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow 
 
 export function stopSpeaking() {
   if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
+  if (current) mediaChannel(false);
   current = null;
 }
