@@ -263,7 +263,9 @@ const artikel = D(2, 'd2-artikel', 'der, die, das', '🎩', {
 
 function wrongPlurals(w: string, pl: string): string[] {
   const uml = (s: string) => s.replace(/a(?=[^a]*$)/, 'ä').replace(/o(?=[^o]*$)/, 'ö').replace(/u(?=[^u]*$)/, 'ü');
-  return [w + 's', w + 'en', w + 'e', w + 'er', uml(w) + 'e', w + 'n', uml(w) + 'er'].filter((x) => x !== pl && x !== w);
+  // Wörter auf -e (Sonne, Biene): keine Formen wie „Sönnee“ oder „Sonneer“
+  const c = w.endsWith('e') ? [w + 's', w + 'r', uml(w) + 'n', uml(w), w.slice(0, -1) + 's'] : [w + 's', w + 'en', w + 'e', w + 'er', uml(w) + 'e', w + 'n', uml(w) + 'er'];
+  return [...new Set(c)].filter((x) => x !== pl && x !== w);
 }
 const mehrzahl = D(2, 'd2-mehrzahl', 'Einzahl und Mehrzahl', '👯', {
   text: ['Einzahl: ein Ding. Mehrzahl: viele Dinge.', 'Die Mehrzahl bildet man verschieden: Hund → Hunde, Katze → Katzen, Buch → Bücher, Auto → Autos.', 'Oft wird aus a, o, u ein ä, ö, ü: Baum → Bäume, Vogel → Vögel.', 'In der Mehrzahl ist der Artikel immer „die“.'],

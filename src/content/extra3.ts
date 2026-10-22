@@ -562,7 +562,7 @@ function zifferTask(r: Rng, s: Stage): Gen {
 const SPST: [string, string][] = [
   ['Spinne', '🕷️'], ['Spiegel', '🪞'], ['Spiel', '🎲'], ['Spritze', '💉'], ['Spinat', '🥬'], ['spielen', '🧩'], ['springen', '🤸'], ['sparen', '🪙'],
   ['Stern', '⭐'], ['Stuhl', '🪑'], ['Stein', '🪨'], ['Stiefel', '👢'], ['Straße', '🛣️'], ['Strand', '🏖️'], ['Stadt', '🏙️'], ['stehen', '🧍'],
-  ['Stift', '✏️'], ['Strumpf', '🧦'], ['Strauß', '💐'], ['Stunde', '⏳'], ['Spaghetti', '🍝'], ['Spielzeug', '🧸'], ['Sprechblase', '💬'], ['Spatz', '🐦'],
+  ['Stift', '✏️'], ['Strumpf', '🧦'], ['Strauß', '💐'], ['Stunde', '⏳'], ['Sport', '⚽'], ['Spielzeug', '🧸'], ['Sprechblase', '💬'], ['Spatz', '🐦'],
 ];
 function spstTask(r: Rng, s: Stage): Gen {
   const [w, e] = pick(r, SPST);
