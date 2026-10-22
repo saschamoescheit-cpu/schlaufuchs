@@ -760,6 +760,8 @@ const SSZ: [string, 's' | 'ss' | 'ß', string, string?][] = [
   ['Messer', 'ss', 'Das e ist kurz → ss.', '🔪'], ['Kissen', 'ss', 'Das i ist kurz → ss.', '🛏️'], ['Schlüssel', 'ss', 'Das ü ist kurz → ss.', '🔑'], ['Schüssel', 'ss', 'Das ü ist kurz → ss.', '🥣'],
   ['Nase', 's', 'Man hört ein weiches, summendes s → s.', '👃'], ['Rose', 's', 'Man hört ein weiches, summendes s → s.', '🌹'], ['Preis', 's', 'Verlängere: Preise – weiches s → s.', '🏷️'],
   ['Haus', 's', 'Verlängere: Häuser – man hört ein weiches s → s.', '🏠'], ['Gras', 's', 'Verlängere: Gräser – weiches s → s.', '🌱'], ['Maus', 's', 'Verlängere: Mäuse – weiches s → s.', '🐭'], ['Glas', 's', 'Verlängere: Gläser – weiches s → s.', '🥛'], ['Hose', 's', 'Man hört ein weiches, summendes s → s.', '👖'], ['Bus', 's', 'Merkwort: Bus (die Busse).', '🚌'],
+  ['Kloß', 'ß', 'Das o ist lang → ß.', '🥟'], ['beißen', 'ß', 'Nach ei schreibt man ß.', '🦷'], ['Pass', 'ss', 'Das a ist kurz → ss.', '🛂'],
+  ['Hase', 's', 'Man hört ein weiches, summendes s → s.', '🐰'], ['Esel', 's', 'Man hört ein weiches, summendes s → s.', '🐴'], ['Käse', 's', 'Man hört ein weiches, summendes s → s.', '🧀'],
 ];
 const ssz = D(4, 'd4-s-ss-sz', 's, ss oder ß', '🐍', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ss: Fluss, Wasser.', 'Nach einem langen Selbstlaut oder ei, au, eu schreibt man ß, wenn das s zischt (stimmlos): Straße, heiß.', 'Klingt das s weich und summend (stimmhaft), schreibt man s: Hose, Nase.', 'Am Wortende verlängern: Haus → Häuser (weich) → s. Fuß → Füße (zischend) → ß.'],
@@ -777,6 +779,9 @@ const REDE: [string, string, string, '.' | '?' | '!'][] = [
   ['Oma', 'fragt', 'Möchtest du Kuchen', '?'], ['Ben', 'schreit', 'Pass auf', '!'], ['Lena', 'erzählt', 'Wir fahren ans Meer', '.'], ['Papa', 'fragt', 'Wer hat die Tür offen gelassen', '?'],
   ['Lisa', 'ruft', 'Komm schnell her', '!'], ['Opa', 'erzählt', 'Früher gab es keine Handys', '.'], ['Emil', 'fragt', 'Wie spät ist es', '?'], ['Die Lehrerin', 'sagt', 'Heute schreiben wir ein Diktat', '.'],
   ['Paul', 'fragt', 'Darf ich mitspielen', '?'], ['Mama', 'flüstert', 'Das Baby schläft', '.'], ['Jonas', 'ruft', 'Wir haben gewonnen', '!'],
+  ['Sophie', 'fragt', 'Hast du meinen Stift gesehen', '?'], ['Der Trainer', 'ruft', 'Lauft schneller', '!'], ['Anna', 'sagt', 'Morgen habe ich Geburtstag', '.'],
+  ['Max', 'fragt', 'Wann fängt der Film an', '?'], ['Oma', 'sagt', 'Ich backe heute Waffeln', '.'], ['Die Ärztin', 'sagt', 'Du musst im Bett bleiben', '.'],
+  ['Leo', 'ruft', 'Hilfe, ich falle', '!'], ['Mila', 'fragt', 'Wo ist mein Turnbeutel', '?'], ['Papa', 'sagt', 'Wir gehen morgen schwimmen', '.'], ['Der Polizist', 'ruft', 'Stehen bleiben', '!'],
 ];
 const rede = D(4, 'd4-woertliche-rede', 'Wörtliche Rede', '💬', {
   text: ['Was jemand genau sagt, steht in Anführungszeichen: unten „ … und oben “.', 'Begleitsatz vorne: Danach kommt ein Doppelpunkt. Mia sagt: „Ich habe Hunger.“', 'Begleitsatz hinten: Nach den Anführungszeichen kommt ein Komma. „Ich habe Hunger“, sagt Mia. (Bei Aussagen fällt der Punkt in der Rede weg.)', 'Fragezeichen und Ausrufezeichen bleiben immer in den Anführungszeichen.'],
