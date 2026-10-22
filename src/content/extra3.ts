@@ -563,6 +563,8 @@ const SPST: [string, string][] = [
   ['Spinne', '🕷️'], ['Spiegel', '🪞'], ['Spiel', '🎲'], ['Spritze', '💉'], ['Spinat', '🥬'], ['spielen', '🧩'], ['springen', '🤸'], ['sparen', '🪙'],
   ['Stern', '⭐'], ['Stuhl', '🪑'], ['Stein', '🪨'], ['Stiefel', '👢'], ['Straße', '🛣️'], ['Strand', '🏖️'], ['Stadt', '🏙️'], ['stehen', '🧍'],
   ['Stift', '✏️'], ['Strumpf', '🧦'], ['Strauß', '💐'], ['Stunde', '⏳'], ['Sport', '⚽'], ['Spielzeug', '🧸'], ['Sprechblase', '💬'], ['Spatz', '🐦'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Strohhalm', '🥤'], ['Steckdose', '🔌'], ['Stoppschild', '🛑'], ['Speck', '🥓'], ['spritzen', '💦'],
 ];
 function spstTask(r: Rng, s: Stage): Gen {
   const [w, e] = pick(r, SPST);

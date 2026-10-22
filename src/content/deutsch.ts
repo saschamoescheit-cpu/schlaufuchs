@@ -551,7 +551,11 @@ const AUSLAUT: [string, string, string, string, string][] = [
   ['Hund', 'd', 't', 'die Hunde', '🐶'], ['Wand', 'd', 't', 'die Wände', '🧱'], ['Rad', 'd', 't', 'die Räder', '🚲'], ['Kind', 'd', 't', 'die Kinder', '🧒'], ['Geld', 'd', 't', 'die Gelder', '💰'], ['Mund', 'd', 't', 'die Münder', '👄'], ['Bild', 'd', 't', 'die Bilder', '🖼️'], ['Pferd', 'd', 't', 'die Pferde', '🐴'],
   ['Hut', 't', 'd', 'die Hüte', '🎩'], ['Brot', 't', 'd', 'die Brote', '🍞'], ['Zelt', 't', 'd', 'die Zelte', '⛺'], ['Nest', 't', 'd', 'die Nester', '🐣'], ['Boot', 't', 'd', 'die Boote', '⛵'],
   ['Zug', 'g', 'k', 'die Züge', '🚂'], ['Berg', 'g', 'k', 'die Berge', '⛰️'], ['Tag', 'g', 'k', 'die Tage', '📅'], ['Zwerg', 'g', 'k', 'die Zwerge', '🧙'], ['Flugzeug', 'g', 'k', 'die Flugzeuge', '✈️'],
-  ['Schrank', 'k', 'g', 'die Schränke', '🗄️'], ['Park', 'k', 'g', 'die Parks', '🏞️'], ['Korb', 'b', 'p', 'die Körbe', '🧺'], ['Dieb', 'b', 'p', 'die Diebe', '🦹'], ['Kalb', 'b', 'p', 'die Kälber', '🐄'], ['gelb', 'b', 'p', 'das gelbe Auto', '💛'], ['lieb', 'b', 'p', 'die liebe Oma', '💗'],
+  ['Schrank', 'k', 'g', 'die Schränke', '🗄️'], ['Park', 'k', 'g', 'parken', '🏞️'], ['Korb', 'b', 'p', 'die Körbe', '🧺'], ['Dieb', 'b', 'p', 'die Diebe', '🦹'], ['Kalb', 'b', 'p', 'die Kälber', '🐄'], ['gelb', 'b', 'p', 'das gelbe Auto', '💛'], ['lieb', 'b', 'p', 'die liebe Oma', '💗'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Hemd', 'd', 't', 'die Hemden', '👔'], ['Wald', 'd', 't', 'die Wälder', '🌲'], ['Strand', 'd', 't', 'die Strände', '🏖️'], ['Mond', 'd', 't', 'die Monde', '🌙'],
+  ['Licht', 't', 'd', 'die Lichter', '💡'], ['Weg', 'g', 'k', 'die Wege', '🛤️'], ['Krug', 'g', 'k', 'die Krüge', '🏺'], ['Sieg', 'g', 'k', 'die Siege', '🏆'],
+  ['Bank', 'k', 'g', 'die Bänke', '🪑'], ['Stab', 'b', 'p', 'die Stäbe', '🪄'],
 ];
 const auslaut = D(3, 'd3-auslaut', 'Wörter verlängern: d/t, g/k, b/p', '🔍', {
   text: ['Am Wortende klingen d und t gleich – ebenso g und k, b und p.', 'Trick: Verlängere das Wort! Bilde die Mehrzahl (Hund → Hunde), steigere das Adjektiv (wild → wilder) oder nimm die Grundform des Verbs (er gibt → geben).', 'Hund → die Hunde: Jetzt hörst du das d deutlich.', 'Zug → die Züge: Jetzt hörst du das g.'],

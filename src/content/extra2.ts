@@ -136,6 +136,9 @@ export const MATHE_EXTRA2: Skill[] = [
 const END: [string, string, string][] = [
   ['Hut', '🎩', 't'], ['Maus', '🐭', 's'], ['Igel', '🦔', 'l'], ['Sofa', '🛋️', 'a'], ['Ente', '🦆', 'e'], ['Kamel', '🐫', 'l'], ['Auto', '🚗', 'o'], ['Uhr', '⌚', 'r'],
   ['Eis', '🍦', 's'], ['Löwe', '🦁', 'e'], ['Tiger', '🐯', 'r'], ['Rose', '🌹', 'e'], ['Bus', '🚌', 's'], ['Lama', '🦙', 'a'], ['Nest', '🐣', 't'], ['Pilz', '🍄', 'z'], ['Ufo', '🛸', 'o'], ['Kuchen', '🍰', 'n'], ['Apfel', '🍎', 'l'], ['Ball', '⚽', 'l'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Kran', '🏗️', 'n'], ['Brot', '🍞', 't'], ['Schaf', '🐑', 'f'], ['Oma', '👵', 'a'], ['Kino', '🎬', 'o'], ['Stern', '⭐', 'n'], ['Pinsel', '🖌️', 'l'],
+  ['Tomate', '🍅', 'e'], ['Radio', '📻', 'o'], ['Pizza', '🍕', 'a'], ['Elefant', '🐘', 't'], ['Hammer', '🔨', 'r'], ['Kerze', '🕯️', 'e'],
 ];
 function endTask(r: Rng): Gen {
   const [w, e, l] = pick(r, END);

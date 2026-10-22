@@ -223,6 +223,10 @@ const TRENN: [string, string, string[]][] = [
   ['Mutter', 'Mut-ter', ['Mu-tter', 'Mutt-er']], ['Blume', 'Blu-me', ['Bl-ume', 'Blum-e']], ['Hexe', 'He-xe', ['Hex-e', 'H-exe']], ['Wolke', 'Wol-ke', ['Wo-lke', 'Wolk-e']],
   ['Kirsche', 'Kir-sche', ['Kirs-che', 'Ki-rsche']], ['Schokolade', 'Scho-ko-la-de', ['Schok-ol-ade', 'Sch-oko-la-de']], ['Rucksack', 'Ruck-sack', ['Ru-cksack', 'Rucks-ack']],
   ['Pflaster', 'Pflas-ter', ['Pfla-ster', 'Pflast-er']], ['Zimmer', 'Zim-mer', ['Zi-mmer', 'Zimm-er']], ['Jacke', 'Ja-cke', ['Jac-ke', 'Jack-e']],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Hammer', 'Ham-mer', ['Ha-mmer', 'Hamm-er']], ['Kerze', 'Ker-ze', ['Ke-rze', 'Kerz-e']], ['Pinsel', 'Pin-sel', ['Pi-nsel', 'Pins-el']], ['Lampe', 'Lam-pe', ['La-mpe', 'Lamp-e']],
+  ['Butter', 'But-ter', ['Bu-tter', 'Butt-er']], ['Tasche', 'Ta-sche', ['Tas-che', 'Tasch-e']], ['Decke', 'De-cke', ['Dec-ke', 'Deck-e']], ['Fahrrad', 'Fahr-rad', ['Fah-rrad', 'Fahrr-ad']],
+  ['Kissen', 'Kis-sen', ['Ki-ssen', 'Kiss-en']], ['Pirat', 'Pi-rat', ['Pir-at', 'P-irat']],
 ];
 function trennTask(r: Rng): Gen {
   const [w, ok, wrong] = pick(r, TRENN);
