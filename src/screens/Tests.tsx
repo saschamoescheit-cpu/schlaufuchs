@@ -178,15 +178,7 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
         <div className="empty card">Noch keine Lernzielkontrolle geschrieben.</div>
       ) : (
         <>
-        {SUBJECTS.map((s) => {
-          const ts = progress.tests.filter((t) => t.subject === s.id).slice(-8);
-          if (ts.length < 2) return null;
-          return (
-            <div key={s.id} className="card">
-              <Visual v={{ kind: 'bars', title: `${s.icon} ${s.name}: Verlauf (Prozent richtig)`, step: 25, top: 100, items: ts.map((t) => ({ label: new Date(t.t).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' }), value: t.percent })) }} />
-            </div>
-          );
-        })}
+        <TestHistory progress={progress} />
         <div className="card" style={{ padding: '4px 14px' }}>
           {[...progress.tests].reverse().slice(0, 20).map((t) => (
             <button key={t.id} className="list-row" style={{ width: '100%', border: 0, background: 'none', textAlign: 'left', cursor: 'pointer', font: 'inherit' }} onClick={() => onOpenResult(t.id)}>
@@ -205,6 +197,23 @@ export function TestSetup({ profile, progress, onStart, onOpenResult, onPractice
       )}
       </>)}
     </div>
+  );
+}
+
+/** Verlauf der letzten Lernzielkontrollen je Fach (ab 2 Tests) */
+export function TestHistory({ progress }: { progress: Progress }) {
+  return (
+    <>
+      {SUBJECTS.map((s) => {
+        const ts = progress.tests.filter((t) => t.subject === s.id).slice(-8);
+        if (ts.length < 2) return null;
+        return (
+          <div key={s.id} className="card">
+            <Visual v={{ kind: 'bars', title: `${s.icon} ${s.name}: Verlauf (Prozent richtig)`, step: 25, top: 100, items: ts.map((t) => ({ label: new Date(t.t).toLocaleDateString('de-DE', { day: 'numeric', month: 'numeric' }), value: t.percent })) }} />
+          </div>
+        );
+      })}
+    </>
   );
 }
 

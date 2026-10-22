@@ -11,7 +11,7 @@ import { deleteProfile, saveProfile, schoolYear, type AppData, type Profile } fr
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
-import { GradeKeyEditor } from './Tests';
+import { GradeKeyEditor, TestHistory } from './Tests';
 import { SubjectStats } from './Stats';
 import { countdownText, daysUntil, fmtDay, nextPlanned, readiness } from './Planner';
 import { ProgressReport } from './Report';
@@ -444,6 +444,8 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
             {pr.tests.length === 0 ? (
               <div className="empty card">Noch kein Test geschrieben.</div>
             ) : (
+              <>
+              <TestHistory progress={pr} />
               <div className="card" style={{ padding: '4px 14px' }}>
                 {bySubj.map((x) => (
                   <div key={x.s.id} className="list-row">
@@ -467,6 +469,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
                     </div>
                   ))}
               </div>
+              </>
             )}
           </>
         )}
