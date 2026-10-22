@@ -227,10 +227,10 @@ const preps = E(2, 'e2-prepositions', 'Where is the cat?', '📦', { text: ['in 
   return { key: `${p.pos}-${an.en}`, prompt: `Where is the ${an.en}?`, visual: { kind: 'prep', pos: p.pos, animal: an.e }, answer: { ...choice(r, `The ${an.en} is ${p.pos} the box.`, PREPS.filter((x) => x !== p).map((x) => `The ${an.en} is ${x.pos} the box.`)), speakOptions: 'en' }, tags: [tag], solution: sol, solutionVisual: { kind: 'prep', pos: p.pos, animal: an.e }, pronounce: say };
 }, { tagLabels: Object.fromEntries(PREPS.map((p) => [`prep-${p.pos.replace(/ /g, '-')}`, p.pos])), testSeconds: 15 });
 
-const AN = [['apple', '🍎'], ['egg', '🥚'], ['elephant', '🐘'], ['orange', '🍊'], ['ice cream', '🍦'], ['umbrella', '☂️'], ['owl', '🦉']];
-const A = [['banana', '🍌'], ['cat', '🐱'], ['dog', '🐶'], ['house', '🏠'], ['pencil', '✏️'], ['ball', '⚽'], ['tiger', '🐯']];
-const IRREG: [string, string, string][] = [['mouse', 'mice', '🐭'], ['child', 'children', '🧒'], ['foot', 'feet', '🦶'], ['tooth', 'teeth', '🦷'], ['man', 'men', '👨'], ['woman', 'women', '👩'], ['sheep', 'sheep', '🐑']];
-const REG: [string, string, string][] = [['cat', 'cats', '🐱'], ['dog', 'dogs', '🐶'], ['book', 'books', '📖'], ['apple', 'apples', '🍎'], ['bus', 'buses', '🚌'], ['box', 'boxes', '📦'], ['baby', 'babies', '👶']];
+const AN = [['apple', '🍎'], ['egg', '🥚'], ['elephant', '🐘'], ['orange', '🍊'], ['ice cream', '🍦'], ['umbrella', '☂️'], ['owl', '🦉'], ['ant', '🐜'], ['octopus', '🐙'], ['onion', '🧅'], ['ear', '👂'], ['eagle', '🦅']];
+const A = [['banana', '🍌'], ['cat', '🐱'], ['dog', '🐶'], ['house', '🏠'], ['pencil', '✏️'], ['ball', '⚽'], ['tiger', '🐯'], ['frog', '🐸'], ['horse', '🐴'], ['car', '🚗'], ['cake', '🎂'], ['rabbit', '🐰']];
+const IRREG: [string, string, string][] = [['mouse', 'mice', '🐭'], ['child', 'children', '🧒'], ['foot', 'feet', '🦶'], ['tooth', 'teeth', '🦷'], ['man', 'men', '👨'], ['woman', 'women', '👩'], ['sheep', 'sheep', '🐑'], ['deer', 'deer', '🦌'], ['leaf', 'leaves', '🍃'], ['knife', 'knives', '🔪']];
+const REG: [string, string, string][] = [['cat', 'cats', '🐱'], ['dog', 'dogs', '🐶'], ['book', 'books', '📖'], ['apple', 'apples', '🍎'], ['bus', 'buses', '🚌'], ['box', 'boxes', '📦'], ['baby', 'babies', '👶'], ['bird', 'birds', '🐦'], ['car', 'cars', '🚗'], ['fox', 'foxes', '🦊'], ['dress', 'dresses', '👗'], ['cherry', 'cherries', '🍒'], ['watch', 'watches', '⌚']];
 const grammar1 = E(2, 'e2-a-an-plural', 'a / an and plurals', '🍏', { text: ['Vor Wörtern, die mit a, e, i, o, u anfangen (gesprochen!), steht „an“: an apple, an egg.', 'Sonst steht „a“: a banana, a dog.', 'Mehrzahl meistens mit -s: cat → cats. Nach s, x, sh, ch mit -es: bus → buses.', 'Besondere Mehrzahl: mouse → mice, child → children, foot → feet, tooth → teeth.'], visual: { kind: 'text', text: 'an apple · a banana' }, videoQuery: 'a or an for kids English grammar' }, (r) => {
   const v = ri(r, 0, 2);
   if (v === 0) {
