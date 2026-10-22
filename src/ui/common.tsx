@@ -166,7 +166,7 @@ export function Confetti() {
 
 export function LevelDots({ level }: { level: number }) {
   return (
-    <span className={`lvl ${level === 3 ? 'done' : ''}`} aria-label={`Stufe ${level} von 3`}>
+    <span className={`lvl ${level === 3 ? 'done' : ''}`} role="img" aria-label={`Stufe ${level} von 3`}>
       {[1, 2, 3].map((i) => (
         <i key={i} className={i <= level ? 'on' : ''} />
       ))}

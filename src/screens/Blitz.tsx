@@ -156,7 +156,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
 
   if (phase === 'count')
     return (
-      <div className="app full narrow">
+      <div role="main" className="app full narrow">
         <div className="stack center" style={{ paddingTop: 120 }}>
           <div className="muted">
             {skill.icon} {skill.title}
@@ -169,7 +169,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
   if (phase === 'done') {
     const best = score > record0;
     return (
-      <div className="app full narrow">
+      <div role="main" className="app full narrow">
         {best && score > 0 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
@@ -210,7 +210,7 @@ export function Blitz({ profile, progress, skill, onExit }: { profile: Profile; 
 
   const a = task.answer;
   return (
-    <div className="app full narrow">
+    <div role="main" className="app full narrow">
       <div className="session-top">
         <button className="icon-btn" aria-label="Blitzrunde beenden" onClick={onExit}>
           <CloseIcon />

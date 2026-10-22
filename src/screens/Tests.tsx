@@ -314,7 +314,7 @@ export function TestRun({ profile, spec, onDone, onCancel }: { profile: Profile;
   const setAnswer = (v: string) => setAnswers((a) => a.map((x, i) => (i === idx ? v : x)));
 
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <div className="session-top" style={{ flexWrap: 'wrap', rowGap: 8 }}>
         <button className="btn ghost small" onClick={() => setAsk('cancel')}>
           Abbrechen
@@ -394,7 +394,7 @@ export function TestResultView({ profile, result, onBack, onPractice }: { profil
   const info = subjectInfo(result.subject);
   const good = result.grade ? result.grade <= 2 : v.stars >= 2;
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       {good && <Confetti />}
       <TopBar title="Ergebnis" onBack={onBack} />
       <div className="stack">

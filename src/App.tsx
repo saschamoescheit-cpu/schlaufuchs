@@ -196,7 +196,7 @@ export default function App() {
   const activeTab = route.r === 'tab' ? route.tab : route.r === 'subject' ? 'home' : null;
   return (
     <>
-      <div className="app">
+      <main className="app">
         {hasSaveError() && (
           <div className="save-warn" role="alert">
             {mirrorOk() ? (
@@ -211,7 +211,7 @@ export default function App() {
           </div>
         )}
         {body}
-      </div>
+      </main>
       <nav className="tabbar" aria-label="Menü">
         <div className="tabbar-inner">
           {TABS.map((t) => (

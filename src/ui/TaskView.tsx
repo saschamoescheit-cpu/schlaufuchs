@@ -87,13 +87,13 @@ function Choices({ task, value, onPick, reveal }: { task: Task; value: string; o
         const chosen = value === String(i);
         const state = reveal ? (i === a.correct ? 'right' : chosen ? 'wrong' : '') : chosen ? 'sel' : '';
         return (
-          <button key={i} className={`choice ${a.big ? 'big' : ''} ${state}`} disabled={reveal} onClick={() => onPick(String(i))}>
+          <button key={i} className={`choice ${a.big ? 'big' : ''} ${state}`} lang={a.speakOptions === 'en' ? 'en' : undefined} disabled={reveal} onClick={() => onPick(String(i))}>
             {o}
             {a.speakOptions && !reveal && (
               <span
                 className="opt-say"
-                role="button"
-                aria-label={`${o} vorlesen`}
+                // nur für Sehende zum Antippen – ein Knopf im Knopf verwirrt Bildschirmleser (die lesen die Antwort ohnehin vor)
+                aria-hidden
                 onClick={(e) => {
                   e.stopPropagation();
                   speak(o, a.speakOptions);

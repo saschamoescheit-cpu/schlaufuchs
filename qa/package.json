@@ -5,5 +5,8 @@
   "description": "Browser-Prüfungen und Bildschirmfotos von Schlaufuchs (Playwright). Nicht Teil des App-Builds.",
   "dependencies": {
     "playwright": "1.56.1"
+  },
+  "devDependencies": {
+    "axe-core": "^4.10.2"
   }
 }

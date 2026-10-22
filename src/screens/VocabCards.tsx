@@ -91,7 +91,7 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
     const next = pickCards(all, st, 1).cards.length ? null : nextDue(all, st);
     const pct = known / Math.max(1, known + again);
     return (
-      <div className="app full narrow">
+      <div role="main" className="app full narrow">
         {pct >= 0.8 && known > 0 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
@@ -129,7 +129,7 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const back = dir === 'en-de' ? card.de : card.en;
   const box = stateOf(cardStates(progress.log), card);
   return (
-    <div className="app full narrow">
+    <div role="main" className="app full narrow">
       <div className="session-top">
         <button className="icon-btn" aria-label="Karten beenden" onClick={onExit}>
           <CloseIcon />

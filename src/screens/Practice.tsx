@@ -107,7 +107,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
     const topTag = top?.[0].split('|')[1];
     const topLabel = topSkill && topTag ? topSkill.tagLabels?.[topTag] : undefined;
     return (
-      <div className="app full">
+      <div role="main" className="app full">
         {pct >= 0.7 && <Confetti />}
         <div className="stack center" style={{ paddingTop: 40 }}>
           <div>
@@ -175,12 +175,12 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
 
   const a = item.task.answer;
   return (
-    <div className="app full">
+    <div role="main" className="app full">
       <div className="session-top">
         <button className="icon-btn" aria-label="Übung beenden" onClick={() => (idx === 0 && !result ? onExit() : setAskQuit(true))}>
           <CloseIcon />
         </button>
-        <div className="progress" role="progressbar" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
+        <div className="progress" role="progressbar" aria-label="Fortschritt" aria-valuenow={Math.round(progress * 100)} aria-valuemin={0} aria-valuemax={100}>
           <i style={{ width: `${progress * 100}%` }} />
         </div>
         <span className="pill">⭐ {stars}</span>

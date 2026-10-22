@@ -18,7 +18,7 @@ export class ErrorBoundary extends Component<{ children: ReactNode }, { error: E
     const { error, n } = this.state;
     if (error)
       return (
-        <div className="app full">
+        <div role="main" className="app full">
           <div className="stack center" style={{ paddingTop: 60 }}>
             <div>
               <Fox size={120} mood="think" />
