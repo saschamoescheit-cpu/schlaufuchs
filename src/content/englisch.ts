@@ -61,10 +61,12 @@ const FAMILY: Word[] = [
 const BODY: Word[] = [
   { en: 'head', de: 'Kopf', e: '🙂' }, { en: 'eye', de: 'Auge', e: '👁️' }, { en: 'ear', de: 'Ohr', e: '👂' }, { en: 'nose', de: 'Nase', e: '👃' }, { en: 'mouth', de: 'Mund', e: '👄' },
   { en: 'hand', de: 'Hand', e: '✋' }, { en: 'foot', de: 'Fuß', e: '🦶' }, { en: 'leg', de: 'Bein', e: '🦵' }, { en: 'arm', de: 'Arm', e: '💪' }, { en: 'tooth', de: 'Zahn', e: '🦷' }, { en: 'hair', de: 'Haare', e: '💇' },
+  { en: 'finger', de: 'Finger', e: '☝️' }, { en: 'thumb', de: 'Daumen', e: '👍' }, { en: 'tongue', de: 'Zunge', e: '👅' }, { en: 'bone', de: 'Knochen', e: '🦴' },
 ];
 const SCHOOL: Word[] = [
   { en: 'pen', de: 'Stift / Füller', e: '🖊️' }, { en: 'pencil', de: 'Bleistift', e: '✏️' }, { en: 'book', de: 'Buch', e: '📖' }, { en: 'ruler', de: 'Lineal', e: '📏' }, { en: 'scissors', de: 'Schere', e: '✂️' },
   { en: 'school bag', de: 'Schultasche', e: '🎒' }, { en: 'crayon', de: 'Wachsmalstift', e: '🖍️' }, { en: 'chair', de: 'Stuhl', e: '🪑' }, { en: 'teacher', de: 'Lehrer / Lehrerin', e: '🧑‍🏫' }, { en: 'school', de: 'Schule', e: '🏫' },
+  { en: 'paper', de: 'Papier', e: '📄' }, { en: 'exercise book', de: 'Heft', e: '📓' }, { en: 'paintbrush', de: 'Pinsel', e: '🖌️' }, { en: 'computer', de: 'Computer', e: '💻' },
 ];
 const FOOD: Word[] = [
   { en: 'apple', de: 'Apfel', e: '🍎' }, { en: 'banana', de: 'Banane', e: '🍌' }, { en: 'bread', de: 'Brot', e: '🍞' }, { en: 'milk', de: 'Milch', e: '🥛' }, { en: 'cheese', de: 'Käse', e: '🧀' },
@@ -75,6 +77,7 @@ const CLOTHES: Word[] = [
   { en: 'T-shirt', de: 'T-Shirt', e: '👕' }, { en: 'trousers', de: 'Hose', e: '👖' }, { en: 'dress', de: 'Kleid', e: '👗' }, { en: 'shoes', de: 'Schuhe', e: '👟' }, { en: 'cap', de: 'Mütze / Kappe', e: '🧢' },
   { en: 'socks', de: 'Socken', e: '🧦' }, { en: 'jacket', de: 'Jacke', e: '🧥' }, { en: 'scarf', de: 'Schal', e: '🧣' }, { en: 'gloves', de: 'Handschuhe', e: '🧤' }, { en: 'boots', de: 'Stiefel', e: '🥾' },
   { en: 'shorts', de: 'kurze Hose', e: '🩳' }, { en: 'hat', de: 'Hut', e: '👒' },
+  { en: 'swimsuit', de: 'Badeanzug', e: '🩱' }, { en: 'sandals', de: 'Sandalen', e: '👡' }, { en: 'shirt', de: 'Hemd', e: '👔' },
 ];
 const DAYS: Word[] = [
   { en: 'Monday', de: 'Montag', txt: 'Mo' }, { en: 'Tuesday', de: 'Dienstag', txt: 'Di' }, { en: 'Wednesday', de: 'Mittwoch', txt: 'Mi' }, { en: 'Thursday', de: 'Donnerstag', txt: 'Do' },
@@ -82,14 +85,15 @@ const DAYS: Word[] = [
 ];
 const MONTHS: Word[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((en, i) => ({ en, de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][i], txt: String(i + 1) + '.' }));
 const SEASONS: Word[] = [{ en: 'spring', de: 'Frühling', e: '🌷' }, { en: 'summer', de: 'Sommer', e: '🏖️' }, { en: 'autumn', de: 'Herbst', e: '🍂' }, { en: 'winter', de: 'Winter', e: '⛄' }];
-const WEATHER: Word[] = [{ en: 'sunny', de: 'sonnig', e: '☀️' }, { en: 'rainy', de: 'regnerisch', e: '🌧️' }, { en: 'cloudy', de: 'bewölkt', e: '☁️' }, { en: 'windy', de: 'windig', e: '🌬️' }, { en: 'snowy', de: 'verschneit', e: '❄️' }, { en: 'stormy', de: 'stürmisch', e: '⛈️' }, { en: 'hot', de: 'heiß', e: '🥵' }, { en: 'cold', de: 'kalt', e: '🥶' }];
-const FEELINGS: Word[] = [{ en: 'happy', de: 'fröhlich', e: '😀' }, { en: 'sad', de: 'traurig', e: '😢' }, { en: 'angry', de: 'wütend', e: '😠' }, { en: 'tired', de: 'müde', e: '😴' }, { en: 'scared', de: 'ängstlich', e: '😱' }, { en: 'hungry', de: 'hungrig', e: '😋' }, { en: 'bored', de: 'gelangweilt', e: '🥱' }, { en: 'surprised', de: 'überrascht', e: '😮' }, { en: 'sick', de: 'krank', e: '🤒' }, { en: 'thirsty', de: 'durstig', e: '🥤' }];
+const WEATHER: Word[] = [{ en: 'sunny', de: 'sonnig', e: '☀️' }, { en: 'rainy', de: 'regnerisch', e: '🌧️' }, { en: 'cloudy', de: 'bewölkt', e: '☁️' }, { en: 'windy', de: 'windig', e: '🌬️' }, { en: 'snowy', de: 'verschneit', e: '❄️' }, { en: 'stormy', de: 'stürmisch', e: '⛈️' }, { en: 'hot', de: 'heiß', e: '🥵' }, { en: 'cold', de: 'kalt', e: '🥶' }, { en: 'foggy', de: 'neblig', e: '🌫️' }, { en: 'icy', de: 'eisig', e: '🧊' }];
+const FEELINGS: Word[] = [{ en: 'happy', de: 'fröhlich', e: '😀' }, { en: 'sad', de: 'traurig', e: '😢' }, { en: 'angry', de: 'wütend', e: '😠' }, { en: 'tired', de: 'müde', e: '😴' }, { en: 'scared', de: 'ängstlich', e: '😱' }, { en: 'hungry', de: 'hungrig', e: '😋' }, { en: 'bored', de: 'gelangweilt', e: '🥱' }, { en: 'surprised', de: 'überrascht', e: '😮' }, { en: 'sick', de: 'krank', e: '🤒' }, { en: 'thirsty', de: 'durstig', e: '🥤' }, { en: 'excited', de: 'aufgeregt', e: '🤩' }, { en: 'worried', de: 'besorgt', e: '😟' }];
 const ACTIONS: Word[] = [
   { en: 'run', de: 'rennen', e: '🏃' }, { en: 'swim', de: 'schwimmen', e: '🏊' }, { en: 'dance', de: 'tanzen', e: '💃' }, { en: 'sing', de: 'singen', e: '🎤' }, { en: 'read', de: 'lesen', e: '📚' },
   { en: 'write', de: 'schreiben', e: '✍️' }, { en: 'sleep', de: 'schlafen', e: '😴' }, { en: 'eat', de: 'essen', e: '🍽️' }, { en: 'play football', de: 'Fußball spielen', e: '⚽' }, { en: 'ride a bike', de: 'Fahrrad fahren', e: '🚴' },
   { en: 'climb', de: 'klettern', e: '🧗' }, { en: 'cook', de: 'kochen', e: '🧑‍🍳' }, { en: 'paint', de: 'malen', e: '🎨' },
+  { en: 'laugh', de: 'lachen', e: '😂' }, { en: 'cry', de: 'weinen', e: '😭' }, { en: 'drink', de: 'trinken', e: '🥛' }, { en: 'listen', de: 'zuhören', e: '👂' },
 ];
-const HOME: Word[] = [{ en: 'kitchen', de: 'Küche', e: '🍳' }, { en: 'bathroom', de: 'Badezimmer', e: '🛁' }, { en: 'bedroom', de: 'Schlafzimmer', e: '🛏️' }, { en: 'living room', de: 'Wohnzimmer', e: '🛋️' }, { en: 'garden', de: 'Garten', e: '🏡' }, { en: 'house', de: 'Haus', e: '🏠' }, { en: 'door', de: 'Tür', e: '🚪' }, { en: 'window', de: 'Fenster', e: '🪟' }, { en: 'chair', de: 'Stuhl', e: '🪑' }, { en: 'lamp', de: 'Lampe', e: '💡' }];
+const HOME: Word[] = [{ en: 'kitchen', de: 'Küche', e: '🍳' }, { en: 'bathroom', de: 'Badezimmer', e: '🛁' }, { en: 'bedroom', de: 'Schlafzimmer', e: '🛏️' }, { en: 'living room', de: 'Wohnzimmer', e: '🛋️' }, { en: 'garden', de: 'Garten', e: '🏡' }, { en: 'house', de: 'Haus', e: '🏠' }, { en: 'door', de: 'Tür', e: '🚪' }, { en: 'window', de: 'Fenster', e: '🪟' }, { en: 'chair', de: 'Stuhl', e: '🪑' }, { en: 'lamp', de: 'Lampe', e: '💡' }, { en: 'toilet', de: 'Toilette', e: '🚽' }, { en: 'mirror', de: 'Spiegel', e: '🪞' }, { en: 'shower', de: 'Dusche', e: '🚿' }, { en: 'key', de: 'Schlüssel', e: '🔑' }];
 
 // Weitere Wortfelder nach den NRW-Themen (Nachtlauf 22.10.2026): Natur, Verkehr, Obst und Gemüse, Stadt, Berufe, Tiere
 const FRUIT: Word[] = [
@@ -116,6 +120,7 @@ const JOBS: Word[] = [
   { en: 'doctor', de: 'Arzt / Ärztin', e: '🧑‍⚕️' }, { en: 'police officer', de: 'Polizist / Polizistin', e: '👮' }, { en: 'firefighter', de: 'Feuerwehrmann / Feuerwehrfrau', e: '🧑‍🚒' }, { en: 'cook', de: 'Koch / Köchin', e: '🧑‍🍳' },
   { en: 'farmer', de: 'Bauer / Bäuerin', e: '🧑‍🌾' }, { en: 'pilot', de: 'Pilot / Pilotin', e: '🧑‍✈️' }, { en: 'astronaut', de: 'Astronaut / Astronautin', e: '🧑‍🚀' }, { en: 'artist', de: 'Künstler / Künstlerin', e: '🧑‍🎨' },
   { en: 'mechanic', de: 'Mechaniker / Mechanikerin', e: '🧑‍🔧' }, { en: 'scientist', de: 'Forscher / Forscherin', e: '🧑‍🔬' }, { en: 'singer', de: 'Sänger / Sängerin', e: '🧑‍🎤' }, { en: 'teacher', de: 'Lehrer / Lehrerin', e: '🧑‍🏫' },
+  { en: 'builder', de: 'Bauarbeiter / Bauarbeiterin', e: '👷' }, { en: 'detective', de: 'Detektiv / Detektivin', e: '🕵️' },
 ];
 const WILD: Word[] = [
   { en: 'shark', de: 'Hai', e: '🦈' }, { en: 'whale', de: 'Wal', e: '🐳' }, { en: 'dolphin', de: 'Delfin', e: '🐬' }, { en: 'octopus', de: 'Krake', e: '🐙' }, { en: 'crab', de: 'Krebs', e: '🦀' },
