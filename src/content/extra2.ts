@@ -113,7 +113,13 @@ function comboTask(r: Rng, s: Stage): Gen {
 }
 
 function scaleTask(r: Rng, s: Stage): Gen {
-  const m = s === 1 ? 10 : pick(r, [10, 100, 1000]);
+  // Maßstab als Verhältnis 1 : 100 (Grundriss) – 1 cm auf dem Plan sind 100 cm = 1 m
+  if (s > 1 && chance(r, 0.25)) {
+    const cm = ri(r, 3, 9);
+    const thing = pick(r, ['Das Kinderzimmer', 'Die Küche', 'Das Klassenzimmer', 'Der Flur']);
+    return { key: `v100-${thing}-${cm}`, prompt: `Ein Grundriss hat den Maßstab 1 : 100.\n${thing} ist auf dem Plan ${cm} cm lang. Wie viele Meter sind das in Wirklichkeit?`, answer: { type: 'number', value: cm, unit: 'm' }, tags: ['massstab'], traps: [{ answer: String(cm * 100), tag: 'massstab', hint: '1 : 100 heißt: 1 cm auf dem Plan sind 100 cm in Wirklichkeit – und 100 cm sind 1 m.' }], solution: ['1 : 100 heißt: 1 cm auf dem Plan sind 100 cm = 1 m in Wirklichkeit.', `${cm} cm auf dem Plan sind ${cm} · 1 m = ${cm} m.`] };
+  }
+  const m = s === 1 ? 10 : pick(r, [10, 20, 50, 100, 200, 500, 1000]);
   const real = m === 1000 ? '1 km' : `${m} m`;
   if (s === 3 && chance(r, 0.5)) {
     const cm = ri(r, 2, 9);
