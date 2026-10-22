@@ -2213,7 +2213,7 @@ html[data-school-font] .prompt.long {
 }
 .trace-wrap {
   position: relative;
-  width: min(300px, 100%);
+  width: min(420px, 100%, 52vh);
 }
 .trace-canvas {
   display: block;
@@ -2242,7 +2242,7 @@ html[data-school-font] .prompt.long {
   cursor: pointer;
 }
 .trace-btns {
-  width: min(300px, 100%);
+  width: min(420px, 100%, 52vh);
 }
 .paper-trace {
   font-family: 'Andika', var(--body);
@@ -2263,7 +2263,7 @@ html[data-school-font] .prompt.long {
   width: 110px !important;
 }
 .trace-tip {
-  width: min(300px, 100%);
+  width: min(420px, 100%, 52vh);
   font-size: 0.95rem;
   background: var(--ok-soft, #e3f6ea);
   border-radius: 12px;
