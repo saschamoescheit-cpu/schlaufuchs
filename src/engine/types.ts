@@ -20,6 +20,7 @@ export type Visual =
   | { kind: 'column'; op: '+' | '−' | '·' | ':'; rows: number[]; result?: number; carries?: number[]; steps?: string[] }
   | { kind: 'array'; rows: number; cols: number; split?: number }
   | { kind: 'shape'; shape: string; rot?: number } // rot: gedreht (Grad)
+  | { kind: 'lines'; a: [number, number, number, number]; b: [number, number, number, number]; right?: boolean } // zwei Strecken (200×160), right: rechten Winkel markieren
   | { kind: 'shapemix'; items: { s: string; rot: number; c: number; big: boolean }[] } // bunte Formen zum Zählen
   | { kind: 'rect'; w: number; h: number; show?: 'umfang' | 'flaeche' }
   | { kind: 'syllables'; parts: string[]; emoji?: string }

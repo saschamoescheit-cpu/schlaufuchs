@@ -410,6 +410,35 @@ function Shape({ shape, rot = 0 }: { shape: string; rot?: number }) {
   );
 }
 
+/** zwei Strecken (z. B. parallel oder senkrecht) auf Kästchenpapier */
+function Lines({ a, b, right }: { a: [number, number, number, number]; b: [number, number, number, number]; right?: boolean }) {
+  // Schnittpunkt für das Winkelzeichen
+  let mark: ReactNode = null;
+  if (right) {
+    const [x1, y1, x2, y2] = a, [x3, y3, x4, y4] = b;
+    const d = (x1 - x2) * (y3 - y4) - (y1 - y2) * (x3 - x4);
+    if (Math.abs(d) > 1e-6) {
+      const t = ((x1 - x3) * (y3 - y4) - (y1 - y3) * (x3 - x4)) / d;
+      const px = x1 + t * (x2 - x1), py = y1 + t * (y2 - y1);
+      const la = Math.hypot(x2 - x1, y2 - y1), lb = Math.hypot(x4 - x3, y4 - y3);
+      // in Richtung der weiter entfernten Enden, damit das Zeichen im Winkel liegt
+      const ua = Math.hypot(x2 - px, y2 - py) > Math.hypot(x1 - px, y1 - py) ? [(x2 - x1) / la, (y2 - y1) / la] : [(x1 - x2) / la, (y1 - y2) / la];
+      const ub = Math.hypot(x4 - px, y4 - py) > Math.hypot(x3 - px, y3 - py) ? [(x4 - x3) / lb, (y4 - y3) / lb] : [(x3 - x4) / lb, (y3 - y4) / lb];
+      const k = 14;
+      mark = <path d={`M${px + ua[0] * k} ${py + ua[1] * k} L${px + (ua[0] + ub[0]) * k} ${py + (ua[1] + ub[1]) * k} L${px + ub[0] * k} ${py + ub[1] * k}`} fill="none" stroke={C.green} strokeWidth={2.5} />;
+    }
+  }
+  return (
+    <Svg w={200} h={160} label="zwei Linien" max={280}>
+      {Array.from({ length: 11 }, (_, i) => <line key={`v${i}`} x1={i * 20} y1={0} x2={i * 20} y2={160} stroke="#E3EBF8" />)}
+      {Array.from({ length: 9 }, (_, i) => <line key={`h${i}`} x1={0} y1={i * 20} x2={200} y2={i * 20} stroke="#E3EBF8" />)}
+      <line x1={a[0]} y1={a[1]} x2={a[2]} y2={a[3]} stroke={C.a} strokeWidth={4} strokeLinecap="round" />
+      <line x1={b[0]} y1={b[1]} x2={b[2]} y2={b[3]} stroke={C.b} strokeWidth={4} strokeLinecap="round" />
+      {mark}
+    </Svg>
+  );
+}
+
 const MIX_COLORS = ['#CFE0FF', '#FFD9B8', '#C9F0D6', '#F6C9E4', '#FFF0A8'];
 /** Mehrere kleine Formen in einer Reihe (bunt, verschieden groß, gedreht) – zum Zählen einer Form */
 function ShapeMix({ items }: { items: { s: string; rot: number; c: number; big: boolean }[] }) {
@@ -712,6 +741,8 @@ export function Visual({ v }: { v: V }) {
       return <ArrayDots {...v} />;
     case 'shape':
       return <Shape shape={v.shape} rot={v.rot} />;
+    case 'lines':
+      return <Lines a={v.a} b={v.b} right={v.right} />;
     case 'shapemix':
       return <ShapeMix items={v.items} />;
     case 'rect':

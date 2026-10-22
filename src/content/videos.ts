@@ -169,6 +169,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'Uug5YFtPRzA', title: 'Rechengeschichten Plus und Minus / Mathematik Klasse 1', channel: 'Lernen mit Lisa', len: '3:22' },
     { id: '8vAJGWM4LIs', title: 'Einführung Subtrahieren mit Hilfe von Rechengeschichten Klasse 1', channel: 'Grundschul-Lernwelt', len: '4:59' },
   ],
+  'm4-parallel-senkrecht': [
+    { id: '7TQxNYQBt8g', title: 'Parallel, Senkrecht, Rechter Winkel – einfache Erklärung', channel: 'Nachhilfe vom Lehrer', len: '5:51' },
+    { id: '8WAx4bGgMTQ', title: 'Mathematik Klasse 4: senkrecht – parallel – rechter Winkel – Geodreieck', channel: 'Eulenkanal - Lernvideos', len: '15:03' },
+  ],
   'm1-ziffern': [
     { id: '6j-tfJ0DGlU', title: 'Ziffern schreiben üben von 0 bis 9', channel: 'Lernen mit Leo', len: '4:59' },
     { id: 'JkGiPohYXYE', title: 'Ziffern schreiben', channel: 'Cornelia Else', len: '7:51' },

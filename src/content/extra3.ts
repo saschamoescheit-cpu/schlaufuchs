@@ -651,7 +651,65 @@ function story1Task(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Senkrecht und parallel (Kl. 4) ----------
+
+type Seg = [number, number, number, number];
+const seg = (cx: number, cy: number, deg: number, len: number): Seg => {
+  const a = (deg * Math.PI) / 180, dx = (Math.cos(a) * len) / 2, dy = (Math.sin(a) * len) / 2;
+  return [cx - dx, cy - dy, cx + dx, cy + dy].map((v) => Math.round(v)) as Seg;
+};
+const inBox = (...ss: Seg[]) => ss.every(([x1, y1, x2, y2]) => [x1, x2].every((x) => x >= 8 && x <= 192) && [y1, y2].every((y) => y >= 8 && y <= 152));
+const LAGE_FACTS: { q: string; a: string | number; opts?: string[]; why: string; st: Stage }[] = [
+  { q: 'Wie viele rechte Winkel hat ein Rechteck?', a: 4, why: 'Ein Rechteck hat 4 Ecken – jede ist ein rechter Winkel.', st: 1 },
+  { q: 'Wie viele Paare paralleler Seiten hat ein Rechteck?', a: 2, why: 'Oben und unten sind parallel, links und rechts auch: 2 Paare.', st: 2 },
+  { q: 'Parallele Linien …', a: 'schneiden sich nie', opts: ['schneiden sich in einem rechten Winkel', 'berühren sich an einem Ende'], why: 'Parallele Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', st: 1 },
+  { q: 'Zwei Linien, die senkrecht zueinander sind, bilden …', a: 'einen rechten Winkel', opts: ['gar keinen Winkel', 'einen Kreis'], why: 'Senkrecht heißt: Sie treffen sich im rechten Winkel – wie die Ecke eines Blatts Papier.', st: 1 },
+  { q: 'Wie viele rechte Winkel kann ein Dreieck höchstens haben?', a: 1, why: 'Ein rechter Winkel hat 90°. Zwei davon wären schon 180° – mehr hat ein Dreieck insgesamt nicht.', st: 3 },
+];
+function lageLinienTask(r: Rng, s: Stage): Gen {
+  if (s > 1 && chance(r, 0.25)) {
+    const f = pick(r, LAGE_FACTS.filter((x) => x.st <= s));
+    const answer = typeof f.a === 'number' ? { type: 'number' as const, value: f.a } : choice(r, f.a, f.opts!);
+    return { key: `f-${f.q}`, prompt: f.q, answer, tags: ['wissen'], solution: [f.why] };
+  }
+  const kind = pick(r, ['parallel', 'senkrecht', 'weder'] as const);
+  const steps = s === 1 ? [0, 90] : s === 2 ? [0, 45, 90, 135] : [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165];
+  for (let tries = 0; ; tries++) {
+    const th = pick(r, steps);
+    let a: Seg, b: Seg;
+    if (kind === 'parallel') {
+      const off = pick(r, [26, 34, 42]);
+      const n = [-Math.sin((th * Math.PI) / 180), Math.cos((th * Math.PI) / 180)];
+      a = seg(100 - n[0] * off, 80 - n[1] * off, th, 130);
+      b = seg(100 + n[0] * off, 80 + n[1] * off, th, pick(r, [100, 130]));
+    } else {
+      const d = kind === 'senkrecht' ? 90 : pick(r, s === 1 ? [35, 50] : [30, 45, 60]);
+      a = seg(100, 80, th, 140);
+      const t = ri(r, -35, 35);
+      const px = 100 + Math.cos((th * Math.PI) / 180) * t, py = 80 + Math.sin((th * Math.PI) / 180) * t;
+      // Kreuz oder T-Form (eine Linie endet an der anderen)
+      if (chance(r, 0.5)) b = seg(px, py, th + d, 110);
+      else {
+        const L = 70, g = ((th + d) * Math.PI) / 180, sg = chance(r, 0.5) ? 1 : -1;
+        b = [px, py, px + sg * Math.cos(g) * L, py + sg * Math.sin(g) * L].map((v) => Math.round(v)) as Seg;
+      }
+    }
+    if (!inBox(a, b) && tries < 30) continue;
+    const word = { parallel: 'parallel', senkrecht: 'senkrecht', weder: 'weder noch' }[kind];
+    return {
+      key: `l-${kind}-${a.join(',')}-${b.join(',')}`,
+      prompt: 'Wie liegen die beiden Linien zueinander?',
+      visual: { kind: 'lines', a, b },
+      answer: fixedChoice(['parallel', 'senkrecht', 'weder noch'], word),
+      tags: [kind],
+      solution: kind === 'parallel' ? ['Die Linien haben überall den gleichen Abstand und treffen sich nie → parallel.'] : kind === 'senkrecht' ? ['Die Linien treffen sich in einem rechten Winkel (wie die Ecke eines Blatts) → senkrecht.', 'Prüfe mit dem Geodreieck: Die Mittellinie liegt genau auf einer Linie.'] : ['Die Linien treffen sich (oder würden sich treffen), aber nicht im rechten Winkel → weder parallel noch senkrecht.'],
+      solutionVisual: { kind: 'lines', a, b, right: kind === 'senkrecht' },
+    };
+  }
+}
+
 export const MATHE_EXTRA3: Skill[] = [
+  M(4, 'm4-parallel-senkrecht', 'Senkrecht und parallel', '📐', { text: ['Parallel: Zwei Linien haben überall den gleichen Abstand – sie treffen sich nie, wie Schienen.', 'Senkrecht: Zwei Linien treffen sich in einem rechten Winkel – wie die Ecke eines Blatts Papier.', 'Prüfen kannst du beides mit dem Geodreieck.'], visual: { kind: 'lines', a: [30, 40, 170, 40], b: [100, 40, 100, 140], right: true }, videoQuery: 'senkrecht und parallel Geodreieck Klasse 4' }, lageLinienTask, { tagLabels: { parallel: 'parallele Linien', senkrecht: 'senkrechte Linien', weder: 'weder parallel noch senkrecht', wissen: 'Begriffe' }, testSeconds: 25 }),
   M(1, 'm1-rechengeschichten', 'Rechengeschichten', '🦆', { text: ['Eine Rechengeschichte erzählt, was passiert – du findest die Rechnung dazu.', 'Kommen welche dazu, wird es mehr: Du rechnest plus.', 'Gehen welche weg, wird es weniger: Du rechnest minus.'], visual: { kind: 'tenframe', a: 4, b: 3 }, videoQuery: 'Rechengeschichten Klasse 1 plus minus' }, story1Task, { tagLabels: { plus: 'Geschichten mit plus', minus: 'Geschichten mit minus', 'rechnung-finden': 'passende Rechnung finden', 'falsche-rechenart': 'plus und minus verwechselt' }, testSeconds: 40 }),
   M(1, 'm1-ziffern', 'Ziffern schreiben', '✏️', { text: ['Jede Ziffer hat ihre feste Form – und eine Richtung, in die man sie schreibt.', 'Fang am grünen Punkt an und fahre die graue Ziffer mit dem Finger nach.', 'Tippe auf ▶, dann zeigt dir der Fuchs, wie es geht.'], visual: { kind: 'word', word: '1 2 3' }, videoQuery: 'Ziffern schreiben lernen Kinder Schreibrichtung' }, zifferTask, { tagLabels: { ziffern: 'Ziffern schreiben' }, testSeconds: 40 }),
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
