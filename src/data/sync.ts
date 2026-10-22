@@ -386,6 +386,8 @@ interface Session {
   refresh_token: string;
   expires_at: number;
   email: string | null;
+  /** der Benutzername der Familie (wenn festgelegt) – damit melden sich die anderen Geräte an */
+  name?: string | null;
 }
 const loadSession = (): Session | null => parse<Session | null>(ls.read(AUTH), null);
 const saveSession = (s: Session | null) => ls.write(AUTH, s ? JSON.stringify(s) : null);
@@ -417,10 +419,115 @@ export async function finishSignIn(): Promise<void> {
   try {
     const u = await fetch(`${SUPABASE_URL}/auth/v1/user`, { headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${access}` } }).then((r) => r.json());
     s.email = u.email ?? null;
+    s.name = await ownName(access);
   } catch {
     /* die Adresse kommt später */
   }
   saveSession(s);
+  changed();
+}
+
+// ---------- Anmelden mit Benutzername (oder E-Mail) und Passwort ----------
+// Sascha 22.10.2026: „eine Anmeldung, wo man sich im Anschluss mit Benutzernamen und Passwort auf verschiedenen Geräten
+// anmelden kann“. Einmal ein Konto anlegen (Benutzername, E-Mail, Passwort), danach überall mit Benutzername + Passwort.
+// Supabase kennt nur E-Mail + Passwort: der Server sucht zum Benutzernamen die E-Mail – nur bei richtigem Passwort
+// (supabase/schlaufuchs.sql). Wer mit Google angemeldet ist, kann Benutzername + Passwort nachträglich festlegen.
+
+export const USERNAME_RULE = /^[a-z0-9][a-z0-9._-]{2,19}$/;
+export const PASSWORD_MIN = 8;
+export const normName = (s: string) => s.trim().toLowerCase();
+
+const authHeaders = (bearer?: string) => ({ apikey: SUPABASE_KEY, 'Content-Type': 'application/json', ...(bearer ? { Authorization: `Bearer ${bearer}` } : {}) });
+
+/** Die Meldungen von Supabase in Elternsprache. */
+async function authProblem(r: Response): Promise<Error> {
+  const j = (await r.json().catch(() => ({}))) as { error_code?: string; code?: string | number; msg?: string; message?: string; error_description?: string };
+  const code = String(j.error_code ?? j.code ?? '');
+  const text = `${j.msg ?? j.message ?? j.error_description ?? ''}`;
+  const say = (t: string) => new Error(t);
+  if (code === 'user_already_exists' || /already registered/i.test(text)) return say('Mit dieser E-Mail gibt es schon ein Konto – bitte anmelden.');
+  if (code === 'invalid_credentials' || /invalid login/i.test(text)) return say('Benutzername oder Passwort stimmt nicht.');
+  if (code === 'weak_password' || /password/i.test(text) && /least|short|weak/i.test(text)) return say(`Das Passwort ist zu kurz – mindestens ${PASSWORD_MIN} Zeichen.`);
+  if (code === 'email_address_invalid' || /email.*invalid/i.test(text)) return say('Diese E-Mail-Adresse funktioniert nicht.');
+  if (code === 'over_request_rate_limit' || r.status === 429) return say('Zu viele Versuche – bitte in ein paar Minuten noch einmal.');
+  if (code === 'email_not_confirmed') return say('Die E-Mail ist noch nicht bestätigt (in Supabase „Confirm email“ ausschalten).');
+  if (code === 'signup_disabled' || code === 'email_provider_disabled') return say('Konten mit E-Mail sind in Supabase noch ausgeschaltet.');
+  if (code === '23505' || /duplicate|unique/i.test(text) || /database error saving new user/i.test(text)) return say('Dieser Benutzername ist schon vergeben.');
+  if (/too_many_attempts/.test(text)) return say('Zu viele falsche Versuche – bitte in 15 Minuten noch einmal.');
+  return say(`Anmeldung fehlgeschlagen (${r.status}${text ? `: ${text.slice(0, 80)}` : ''}).`);
+}
+
+async function rpc<T>(fn: string, args: Record<string, unknown>, bearer?: string): Promise<T> {
+  const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${fn}`, { method: 'POST', headers: authHeaders(bearer), body: JSON.stringify(args) });
+  if (!r.ok) throw await authProblem(r);
+  const text = await r.text();
+  return (text ? JSON.parse(text) : null) as T;
+}
+
+/** Der Benutzername dieses Kontos (null: keiner festgelegt). */
+async function ownName(bearer: string): Promise<string | null> {
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/schlaufuchs_names?select=username`, { headers: authHeaders(bearer) });
+    if (!r.ok) return null;
+    return ((await r.json()) as { username: string }[])[0]?.username ?? null;
+  } catch {
+    return null;
+  }
+}
+
+/** Antwort von Supabase mit Schlüsseln → angemeldet, dann gleich abgleichen. */
+async function startSession(j: { access_token?: string; refresh_token?: string; expires_in?: number; user?: { email?: string } }): Promise<void> {
+  if (!j.access_token || !j.refresh_token) throw new Error('Das Konto ist angelegt, muss aber erst per E-Mail bestätigt werden (in Supabase „Confirm email“ ausschalten).');
+  // ein anderes Konto als zuletzt auf diesem Gerät: neu abgleichen (die Kinder hier kommen dazu)
+  ls.write(META, null);
+  ls.write(BASE, null);
+  saveSession({ access_token: j.access_token, refresh_token: j.refresh_token, expires_at: Math.floor(Date.now() / 1000) + (j.expires_in ?? 3600), email: j.user?.email ?? null, name: await ownName(j.access_token) });
+  noteError(null);
+  changed();
+  void syncNow();
+}
+
+/** Anmelden: Benutzername (oder E-Mail) und Passwort. */
+export async function signInWithPassword(login: string, password: string): Promise<void> {
+  let email = login.trim();
+  if (!email.includes('@')) {
+    const found = await rpc<string | null>('schlaufuchs_login_email', { p_username: normName(login), p_password: password });
+    if (!found) throw new Error('Benutzername oder Passwort stimmt nicht.');
+    email = found;
+  }
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ email, password }) });
+  if (!r.ok) throw await authProblem(r);
+  await startSession(await r.json());
+}
+
+/** Neues Konto: Benutzername, E-Mail, Passwort – danach ist dieses Gerät angemeldet. */
+export async function signUp(username: string, email: string, password: string): Promise<void> {
+  const name = normName(username);
+  if (!USERNAME_RULE.test(name)) throw new Error('Benutzername: 3–20 Zeichen, nur Buchstaben a–z, Ziffern, Punkt, Strich.');
+  if (password.length < PASSWORD_MIN) throw new Error(`Das Passwort ist zu kurz – mindestens ${PASSWORD_MIN} Zeichen.`);
+  if (!(await rpc<boolean>('schlaufuchs_name_free', { p_username: name }))) throw new Error('Dieser Benutzername ist schon vergeben.');
+  const r = await fetch(`${SUPABASE_URL}/auth/v1/signup`, { method: 'POST', headers: authHeaders(), body: JSON.stringify({ email: email.trim(), password, data: { sf_username: name } }) });
+  if (!r.ok) throw await authProblem(r);
+  const j = await r.json();
+  await startSession(j.access_token ? j : { ...j, user: j });
+}
+
+/** Angemeldet (z. B. mit Google): Benutzername und Passwort festlegen oder ändern – für die Anmeldung auf den anderen Geräten. */
+export async function setLogin(username: string | null, password: string | null): Promise<void> {
+  const t = await authToken();
+  if (!t) throw new Error('Bitte zuerst neu anmelden.');
+  if (username != null) {
+    const name = normName(username);
+    if (!USERNAME_RULE.test(name)) throw new Error('Benutzername: 3–20 Zeichen, nur Buchstaben a–z, Ziffern, Punkt, Strich.');
+    if (name !== loadSession()?.name) await rpc('schlaufuchs_set_username', { p_username: name }, t);
+  }
+  if (password != null) {
+    if (password.length < PASSWORD_MIN) throw new Error(`Das Passwort ist zu kurz – mindestens ${PASSWORD_MIN} Zeichen.`);
+    const r = await fetch(`${SUPABASE_URL}/auth/v1/user`, { method: 'PUT', headers: authHeaders(t), body: JSON.stringify({ password }) });
+    if (!r.ok) throw await authProblem(r);
+  }
+  const s = loadSession();
+  if (s) saveSession({ ...s, name: await ownName(t) });
   changed();
 }
 
@@ -521,6 +628,8 @@ const ERROR = 'schlaufuchs:sync.error.v1';
 export interface SyncStatus {
   signedIn: boolean;
   email: string | null;
+  /** Benutzername der Familie (null: nur Google, noch keiner festgelegt) */
+  name: string | null;
   running: boolean;
   last: string | null;
   error: string | null;
@@ -531,7 +640,7 @@ let status: SyncStatus = readStatus();
 const watchers = new Set<() => void>();
 function readStatus(): SyncStatus {
   const s = loadSession();
-  return { signedIn: !!s, email: s?.email ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
+  return { signedIn: !!s, email: s?.email ?? null, name: s?.name ?? null, running: running != null, last: ls.read(LAST), error: parse<{ text: string } | null>(ls.read(ERROR), null)?.text ?? null, removed: parse<unknown[]>(ls.read(REMOVED), []).length };
 }
 function changed() {
   status = readStatus();

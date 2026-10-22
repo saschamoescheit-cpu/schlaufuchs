@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import type { Grade } from '../engine/types';
 import { STATES, stateInfo } from '../content/curriculum';
 import { deleteProfile, duplicateProfiles, mergeProfiles, newProfile, saveProfile, schoolYear, setActive, type AppData, type Profile } from '../data/store';
-import { forgetRemoved, removedList, restoreRemoved, signIn, signOut, syncNow, useSyncStatus } from '../data/sync';
+import { forgetRemoved, PASSWORD_MIN, removedList, restoreRemoved, setLogin, signIn, signInWithPassword, signOut, signUp, syncNow, useSyncStatus } from '../data/sync';
 import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
@@ -15,6 +15,7 @@ const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄',
 
 export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () => void; onParent: () => void }) {
   const sync = useSyncStatus();
+  const [login, setLoginOpen] = useState(false);
   return (
     <div className="app full">
       <div className="stack center" style={{ paddingTop: 48 }}>
@@ -54,9 +55,13 @@ export function Welcome({ data, onNew, onParent }: { data: AppData; onNew: () =>
             </button>
             {sync.signedIn ? (
               <p className="small muted">{sync.running || !sync.last ? 'Kinder von deinen anderen Geräten werden geladen …' : 'Auf deinen anderen Geräten ist noch kein Kind angelegt.'}</p>
+            ) : login ? (
+              <div className="card stack" style={{ gap: 12, width: '100%', textAlign: 'left' }}>
+                <AccountForm />
+              </div>
             ) : (
-              <button className="btn ghost block small" onClick={signIn}>
-                Schon auf einem anderen Gerät? Mit Google anmelden
+              <button className="btn ghost block small" onClick={() => setLoginOpen(true)}>
+                Schon auf einem anderen Gerät? Anmelden
               </button>
             )}
           </>
@@ -72,10 +77,125 @@ const timeOf = (iso: string) => {
   return today ? `heute ${d.toLocaleTimeString('de-DE', { hour: '2-digit', minute: '2-digit' })}` : d.toLocaleString('de-DE', { day: 'numeric', month: 'numeric', hour: '2-digit', minute: '2-digit' });
 };
 
-/** Alle Geräte gleich: ein Elternteil meldet sich einmal je Gerät mit Google an. */
+const typing = { autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false } as const;
+
+/** Anmelden (Benutzername oder E-Mail + Passwort) oder einmal ein Konto anlegen; Google als zweiter Weg. */
+function AccountForm() {
+  const [mode, setMode] = useState<'login' | 'signup'>('login');
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [pw, setPw] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    try {
+      if (mode === 'login') await signInWithPassword(name, pw);
+      else await signUp(name, email, pw);
+    } catch (x) {
+      setErr((x as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const ready = mode === 'login' ? name.trim() && pw : name.trim() && email.includes('@') && pw.length >= PASSWORD_MIN;
+  return (
+    <form className="stack" style={{ gap: 12 }} onSubmit={submit}>
+      <div className="chips" role="tablist">
+        <button type="button" role="tab" aria-selected={mode === 'login'} className={`chip ${mode === 'login' ? 'on' : ''}`} onClick={() => setMode('login')}>
+          Anmelden
+        </button>
+        <button type="button" role="tab" aria-selected={mode === 'signup'} className={`chip ${mode === 'signup' ? 'on' : ''}`} onClick={() => setMode('signup')}>
+          Konto anlegen
+        </button>
+      </div>
+      <div className="field">
+        <label htmlFor="acc-name">{mode === 'login' ? 'Benutzername oder E-Mail' : 'Benutzername'}</label>
+        <input id="acc-name" className="input" value={name} maxLength={mode === 'login' ? 120 : 20} autoComplete="username" {...typing} onChange={(e) => setName(e.target.value)} />
+        {mode === 'signup' && <div className="small muted">3–20 Zeichen: Buchstaben a–z, Ziffern, Punkt oder Strich. Damit meldest du dich auf den anderen Geräten an.</div>}
+      </div>
+      {mode === 'signup' && (
+        <div className="field">
+          <label htmlFor="acc-email">E-Mail</label>
+          <input id="acc-email" className="input" type="email" value={email} autoComplete="email" {...typing} onChange={(e) => setEmail(e.target.value)} />
+        </div>
+      )}
+      <div className="field">
+        <label htmlFor="acc-pw">Passwort</label>
+        <input id="acc-pw" className="input" type="password" value={pw} autoComplete={mode === 'login' ? 'current-password' : 'new-password'} onChange={(e) => setPw(e.target.value)} />
+        {mode === 'signup' && <div className="small muted">Mindestens {PASSWORD_MIN} Zeichen.</div>}
+      </div>
+      {err && (
+        <div className="small" role="alert" style={{ color: 'var(--bad)' }}>
+          {err}
+        </div>
+      )}
+      <button className="btn block" type="submit" disabled={busy || !ready}>
+        {busy ? 'Einen Moment …' : mode === 'login' ? 'Anmelden' : 'Konto anlegen'}
+      </button>
+      <div className="small muted center">oder</div>
+      <button className="btn ghost block small" type="button" onClick={signIn}>
+        Mit Google anmelden
+      </button>
+    </form>
+  );
+}
+
+/** Angemeldet: Benutzername und Passwort festlegen oder ändern (z. B. nach der Anmeldung mit Google). */
+function LoginEditor({ current, onDone }: { current: string | null; onDone: () => void }) {
+  const [name, setName] = useState(current ?? '');
+  const [pw, setPw] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [err, setErr] = useState<string | null>(null);
+  const needPw = !current; // ohne Benutzernamen bisher: das Passwort gehört dazu
+  const submit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBusy(true);
+    setErr(null);
+    try {
+      await setLogin(name, pw ? pw : null);
+      onDone();
+    } catch (x) {
+      setErr((x as Error).message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <form className="stack" style={{ gap: 12 }} onSubmit={submit}>
+      <div className="field">
+        <label htmlFor="ed-name">Benutzername</label>
+        <input id="ed-name" className="input" value={name} maxLength={20} autoComplete="username" {...typing} onChange={(e) => setName(e.target.value)} />
+      </div>
+      <div className="field">
+        <label htmlFor="ed-pw">{current ? 'Neues Passwort (leer lassen = bleibt)' : 'Passwort'}</label>
+        <input id="ed-pw" className="input" type="password" value={pw} autoComplete="new-password" onChange={(e) => setPw(e.target.value)} />
+        <div className="small muted">Mindestens {PASSWORD_MIN} Zeichen.</div>
+      </div>
+      {err && (
+        <div className="small" role="alert" style={{ color: 'var(--bad)' }}>
+          {err}
+        </div>
+      )}
+      <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+        <button className="btn small" type="submit" disabled={busy || !name.trim() || (needPw && pw.length < PASSWORD_MIN)}>
+          {busy ? 'Einen Moment …' : 'Speichern'}
+        </button>
+        <button className="btn ghost small" type="button" onClick={onDone}>
+          Abbrechen
+        </button>
+      </div>
+    </form>
+  );
+}
+
+/** Alle Geräte gleich: ein Elternteil meldet sich auf jedem Gerät mit demselben Konto an. */
 function SyncCard({ data }: { data: AppData }) {
   const sync = useSyncStatus();
   const [ask, setAsk] = useState<[Profile, Profile] | null>(null);
+  const [edit, setEdit] = useState(false);
   const removed = sync.removed ? removedList() : [];
   const dups = duplicateProfiles(data);
   return (
@@ -84,27 +204,43 @@ function SyncCard({ data }: { data: AppData }) {
       {sync.signedIn ? (
         <div className="card stack" style={{ gap: 10 }}>
           <div>
-            <b>☁️ Angemeldet{sync.email ? ` als ${sync.email}` : ''}</b>
+            <b>☁️ Angemeldet{sync.name ? ` als ${sync.name}` : sync.email ? ` als ${sync.email}` : ''}</b>
             <div className="small muted">
               {sync.running ? 'Gleicht gerade ab …' : sync.last ? `Zuletzt abgeglichen ${timeOf(sync.last)}` : 'Noch nicht abgeglichen'} · Kinder und Lernstand sind auf iPad, iPhone und PC gleich.
             </div>
           </div>
           {sync.error && <div className="small" style={{ color: 'var(--bad)' }}>{sync.error}</div>}
-          <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
-            <button className="btn ghost small" disabled={sync.running} onClick={() => void syncNow()}>
-              Jetzt abgleichen
-            </button>
-            <button className="btn ghost small" onClick={signOut}>
-              Abmelden
-            </button>
-          </div>
+          {edit ? (
+            <LoginEditor current={sync.name} onDone={() => setEdit(false)} />
+          ) : (
+            <>
+              <div className="small">
+                {sync.name ? (
+                  <>
+                    Auf einem anderen Gerät anmelden mit dem Benutzernamen <b>{sync.name}</b> und deinem Passwort.
+                  </>
+                ) : (
+                  'Lege einen Benutzernamen und ein Passwort fest – dann geht die Anmeldung auf den anderen Geräten auch ohne Google.'
+                )}
+              </div>
+              <div className="row" style={{ gap: 8, flexWrap: 'wrap' }}>
+                <button className="btn ghost small" disabled={sync.running} onClick={() => void syncNow()}>
+                  Jetzt abgleichen
+                </button>
+                <button className="btn ghost small" onClick={() => setEdit(true)}>
+                  {sync.name ? 'Benutzername & Passwort' : 'Benutzername festlegen'}
+                </button>
+                <button className="btn ghost small" onClick={signOut}>
+                  Abmelden
+                </button>
+              </div>
+            </>
+          )}
         </div>
       ) : (
-        <div className="card stack" style={{ gap: 10 }}>
-          <div className="small">Melde dich einmal mit Google an (als Elternteil) – auf jedem Gerät mit demselben Konto. Dann sind alle Kinder und ihr Lernstand auf iPad, iPhone und PC gleich, auch wenn ein Gerät mal offline geübt hat.</div>
-          <button className="btn block" onClick={signIn}>
-            Mit Google anmelden
-          </button>
+        <div className="card stack" style={{ gap: 12 }}>
+          <div className="small">Melde dich als Elternteil auf jedem Gerät mit demselben Konto an. Dann sind alle Kinder und ihr Lernstand auf iPad, iPhone und PC gleich, auch wenn ein Gerät mal offline geübt hat.</div>
+          <AccountForm />
         </div>
       )}
       {dups.map(([a, b]) => (
