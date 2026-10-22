@@ -164,6 +164,13 @@ const GRUND: [string, string, string[], 'verb' | 'nomen' | 'adjektiv'][] = [
   ['Äpfel', 'Apfel', ['Äpfeln', 'Äpfelchen'], 'nomen'], ['Hände', 'Hand', ['Händen', 'Händchen'], 'nomen'],
   ['größer', 'groß', ['größte', 'am größten'], 'adjektiv'], ['wärmer', 'warm', ['wärmste', 'am wärmsten'], 'adjektiv'],
   ['schneller', 'schnell', ['schnellste', 'am schnellsten'], 'adjektiv'], ['länger', 'lang', ['längste', 'am längsten'], 'adjektiv'],
+  ['trank', 'trinken', ['tranken', 'trinkt'], 'verb'], ['schwamm', 'schwimmen', ['schwammen', 'schwimmt'], 'verb'], ['rief', 'rufen', ['riefen', 'ruft'], 'verb'],
+  ['fiel', 'fallen', ['fielen', 'fällt'], 'verb'], ['gab', 'geben', ['gaben', 'gibt'], 'verb'], ['las', 'lesen', ['lasen', 'liest'], 'verb'],
+  ['kam', 'kommen', ['kamen', 'kommt'], 'verb'], ['sprang', 'springen', ['sprangen', 'springt'], 'verb'],
+  ['Vögel', 'Vogel', ['Vögeln', 'Vögelchen'], 'nomen'], ['Gänse', 'Gans', ['Gänsen', 'Gänschen'], 'nomen'], ['Zähne', 'Zahn', ['Zähnen', 'Zähnchen'], 'nomen'],
+  ['Bälle', 'Ball', ['Bällen', 'Bällchen'], 'nomen'], ['Nüsse', 'Nuss', ['Nüssen', 'Nüsschen'], 'nomen'], ['Wälder', 'Wald', ['Wäldern', 'Wäldchen'], 'nomen'],
+  ['kälter', 'kalt', ['kälteste', 'am kältesten'], 'adjektiv'], ['höher', 'hoch', ['höchste', 'am höchsten'], 'adjektiv'],
+  ['jünger', 'jung', ['jüngste', 'am jüngsten'], 'adjektiv'], ['lauter', 'laut', ['lauteste', 'am lautesten'], 'adjektiv'],
 ];
 const GRUND_WHY = {
   verb: 'Verben stehen im Wörterbuch in der Grundform (Infinitiv): laufen, gehen, essen.',
@@ -174,6 +181,8 @@ const ABC3: string[][] = [
   ['Ball', 'Band', 'Bank', 'Bach'], ['Schaf', 'Schal', 'Schatz', 'Schach'], ['Maus', 'Mann', 'Mais', 'Mantel'], ['Rose', 'Rock', 'Roller', 'Rotkehlchen'],
   ['Tisch', 'Tier', 'Tinte', 'Tiger'], ['Sonne', 'Sofa', 'Socke', 'Sommer'], ['Kuchen', 'Kuh', 'Kugel', 'Kurve'], ['Bett', 'Besen', 'Beere', 'Berg'],
   ['Hase', 'Hand', 'Haus', 'Hafen'], ['Pilz', 'Pinsel', 'Pirat', 'Pizza'], ['Wolke', 'Wolf', 'Wort', 'Woche'],
+  ['Blume', 'Blatt', 'Blitz', 'Block'], ['Fisch', 'Finger', 'Film', 'Fieber'], ['Zahn', 'Zange', 'Zauber', 'Zaun'], ['Garten', 'Gabel', 'Gans', 'Gast'],
+  ['Nase', 'Nacht', 'Nadel', 'Nagel'], ['Licht', 'Liebe', 'Lied', 'Lineal'],
 ];
 
 function woerterbuchTask(r: Rng, s: Stage): Gen {
