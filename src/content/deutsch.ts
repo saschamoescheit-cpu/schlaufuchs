@@ -604,7 +604,10 @@ const dehnung = D(3, 'd3-dehnungs-h', 'Wörter mit Dehnungs-h', '🐔', {
 }, (r, s) => spellTask(r, s, DEHNUNG, (p) => (p[0].includes('h') && !p[1].includes('h') ? 'mit-h' : 'ohne-h'), (p) => (p[0].includes('h') && !p[1].includes('h') ? ['Das ist ein Merkwort mit Dehnungs-h.'] : ['Dieses Wort hat einen langen Selbstlaut, aber kein h.'])), { tagLabels: { 'mit-h': 'Wörter mit Dehnungs-h', 'ohne-h': 'h zu viel geschrieben' }, testSeconds: 12 });
 
 // [Grundstufe, Vergleichsstufe, Höchststufe, passendes Verb]
-const STEIGERUNG: [string, string, string, string][] = [['groß', 'größer', 'am größten', 'ist'], ['klein', 'kleiner', 'am kleinsten', 'ist'], ['schnell', 'schneller', 'am schnellsten', 'läuft'], ['gut', 'besser', 'am besten', 'malt'], ['viel', 'mehr', 'am meisten', 'isst'], ['hoch', 'höher', 'am höchsten', 'springt'], ['alt', 'älter', 'am ältesten', 'ist'], ['weit', 'weiter', 'am weitesten', 'wirft'], ['lang', 'länger', 'am längsten', 'schläft'], ['jung', 'jünger', 'am jüngsten', 'ist'], ['gern', 'lieber', 'am liebsten', 'liest'], ['laut', 'lauter', 'am lautesten', 'singt'], ['stark', 'stärker', 'am stärksten', 'ist']];
+const STEIGERUNG: [string, string, string, string][] = [['groß', 'größer', 'am größten', 'ist'], ['klein', 'kleiner', 'am kleinsten', 'ist'], ['schnell', 'schneller', 'am schnellsten', 'läuft'], ['gut', 'besser', 'am besten', 'malt'], ['viel', 'mehr', 'am meisten', 'isst'], ['hoch', 'höher', 'am höchsten', 'springt'], ['alt', 'älter', 'am ältesten', 'ist'], ['weit', 'weiter', 'am weitesten', 'wirft'], ['lang', 'länger', 'am längsten', 'schläft'], ['jung', 'jünger', 'am jüngsten', 'ist'], ['gern', 'lieber', 'am liebsten', 'liest'], ['laut', 'lauter', 'am lautesten', 'singt'], ['stark', 'stärker', 'am stärksten', 'ist'],
+  // Nachtlauf 22.10.2026: mehr Adjektive
+  ['leise', 'leiser', 'am leisesten', 'spricht'], ['klug', 'klüger', 'am klügsten', 'ist'], ['mutig', 'mutiger', 'am mutigsten', 'ist'], ['langsam', 'langsamer', 'am langsamsten', 'geht'],
+  ['früh', 'früher', 'am frühesten', 'kommt'], ['schön', 'schöner', 'am schönsten', 'singt'], ['kurz', 'kürzer', 'am kürzesten', 'schläft'], ['wild', 'wilder', 'am wildesten', 'tanzt']];
 const IRR = new Set(['gut', 'viel', 'gern', 'hoch']);
 const steigerung = D(3, 'd3-steigerung', 'Adjektive steigern', '📈', {
   text: ['Mit Adjektiven kann man vergleichen.', 'Grundstufe: Tim ist so groß wie Ben.', 'Vergleichsstufe (+er): Lea ist größer als Tim.', 'Höchststufe (am …sten): Opa ist am größten.', 'Manche Adjektive sind ganz anders: gut – besser – am besten, viel – mehr – am meisten, gern – lieber – am liebsten.'],
@@ -614,8 +617,10 @@ const steigerung = D(3, 'd3-steigerung', 'Adjektive steigern', '📈', {
   const [g, k, s, verb] = pick(r, STEIGERUNG);
   const n = pick(r, NAMES), n2 = pick(r, NAMES.filter((x) => x !== n));
   const comp = chance(r, 0.6);
-  const reg = (x: string) => [x + 'er', 'am ' + x + 'sten', 'mehr ' + x, x + 'erer'];
-  const opts = comp ? [k, s, g + 'er', 'mehr ' + g] : [s, k, 'am ' + g + 'sten', 'am ' + g + 'esten'];
+  // Adjektive auf -e (leise): Ablenker ohne doppeltes e (nicht „leiseer“)
+  const st = g.endsWith('e') ? g.slice(0, -1) : g;
+  const reg = (x: string) => [st + 'er', 'am ' + x + 'sten', 'mehr ' + x, st + 'erer'];
+  const opts = comp ? [k, s, st + 'er', 'mehr ' + g] : [s, k, 'am ' + g + 'sten', 'am ' + st + 'esten'];
   const sentence = comp ? `${n} ${verb} ☐ als ${n2}. (${g})` : `Von allen Kindern ${verb} ${n} ☐. (${g})`;
   return { key: `${g}-${comp}`, prompt: `Setze richtig ein:\n${sentence}`, speak: `Setze das Wort ${g} richtig ein. ${sentence.replace('☐', 'Lücke').replace(/\(.*\)/, '')}`, answer: choice(r, comp ? k : s, [...opts, ...reg(g)]), tags: [IRR.has(g) ? 'unregelmäßig' : comp ? 'vergleichsstufe' : 'höchststufe'], solution: [`${g} – ${k} – ${s}`, comp ? `Beim Vergleich mit „als“ nimmst du die Vergleichsstufe: ${k}.` : `Wenn jemand der/die Beste ist, nimmst du die Höchststufe: ${s}.`] };
 }, { tagLabels: { unregelmäßig: 'besondere Steigerung (gut, viel …)', vergleichsstufe: 'Vergleichsstufe', höchststufe: 'Höchststufe' }, testSeconds: 20 });
