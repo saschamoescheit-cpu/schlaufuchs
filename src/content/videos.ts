@@ -177,6 +177,9 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'PuGzuYAw1Pk', title: 'Pronomen (Lernvideo für Deutsch, Klasse 3-4)', channel: 'Grundschulatelier', len: '1:47' },
     { id: 'whuRMee9oKg', title: 'Präpositionen – einfach erklärt', channel: 'Linguistik - einfach einfach', len: '4:00' },
   ],
+  'e2-myday': [
+    { id: '_oEAdz3MAj0', title: 'What Do You Do Every Day? – Daily Routines Song', channel: 'Fun Kids English', len: '3:05' },
+  ],
   'e1-shapes': [
     { id: 'Tq88qy2ycYM', title: 'Shapes Song for Kids – Circle, Square, Triangle & Rectangle', channel: "Mom's little lessons", len: '1:57' },
   ],

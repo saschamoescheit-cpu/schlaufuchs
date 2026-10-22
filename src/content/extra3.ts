@@ -290,6 +290,7 @@ function enReadTask(r: Rng, s: Stage): Gen {
 }
 
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(2, 'e2-myday', 'My day – Tagesablauf', '⏰', { text: ['I get up. = Ich stehe auf. I go to school. = Ich gehe zur Schule.', "Mit Uhrzeit: I get up at seven o'clock.", 'Am Abend: I have dinner. I go to bed.'], visual: { kind: 'clock', h: 7, m: 0 }, videoQuery: 'daily routine song for kids English' }, mydayTask, { tagLabels: { saetze: 'Sätze zum Tagesablauf', uhrzeit: 'mit Uhrzeit', reihenfolge: 'Reihenfolge am Tag' }, testSeconds: 20 }),
   E(1, 'e1-shapes', 'Shapes and colours – Formen', '🔷', { text: ['circle = Kreis, square = Quadrat, triangle = Dreieck, rectangle = Rechteck.', 'Die Farbe steht vor der Form – wie im Deutschen: a red circle = ein roter Kreis.', 'Sprich mit: a blue square, a green triangle!'], visual: { kind: 'shape', shape: 'Kreis', fill: '#F06A6A' }, videoQuery: 'shapes song for kids circle square triangle rectangle' }, shapesTask, { tagLabels: { hoeren: 'Formen hören', uebersetzen: 'Deutsch → Englisch', schreiben: 'Formen schreiben', reihenfolge: 'Farbe und Form vertauscht' }, testSeconds: 20 }),
   E(2, 'e2-reading', 'Read and understand – Texte lesen', '📖', { text: ['Lies den englischen Text in Ruhe – du musst nicht jedes Wort kennen.', 'Suche die Wörter, die du kennst: Zahlen, Farben, Tiere, Namen.', 'Lies dann die Frage und suche die passende Stelle im Text.'], visual: { kind: 'text', text: 'My name is Lucy. I am nine years old.' }, videoQuery: 'English reading for kids short text Grundschule Klasse 4' }, enReadTask, { tagLabels: { lesen: 'englische Texte verstehen' }, testSeconds: 60 }),
   E(1, 'e1-festivals', 'Festivals – Feste im Jahr', '🎃', { text: ['Halloween: pumpkin (Kürbis), witch (Hexe), ghost (Gespenst). Kinder rufen „Trick or treat!“', 'Christmas: Christmas tree, present (Geschenk), candle (Kerze). Man wünscht „Merry Christmas!“', 'Easter: Easter egg, Easter bunny. „Happy Easter!“'], visual: { kind: 'emoji', chars: '🎃🎄🐰' }, videoQuery: 'Halloween Christmas Easter vocabulary for kids English' }, festTask, { tagLabels: { ...VT, wünsche: 'Wünsche zu Festen' }, testSeconds: 15 }),
@@ -811,6 +812,51 @@ function shapesTask(r: Rng, s: Stage): Gen {
   // Bild → Englisch
   const wrong = [`${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${sh.en}`, `${an(col.en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`, `${an(pick(r, COL_EN.filter((x) => x !== col)).en)} ${pick(r, SH_EN.filter((x) => x !== sh)).en}`];
   return { key: `b-${phrase}`, prompt: 'What is it?', visual: { kind: 'shape', shape: sh.s, fill: col.hex }, answer: { ...choice(r, phrase, wrong), speakOptions: 'en' }, tags: [`form-${sh.en}`], solution: [`Das ist ${de}.`, `${de} = ${phrase}`], pronounce: { text: phrase, lang: 'en' } };
+}
+
+// ---------- My day – Tagesablauf (Englisch, 2. Lernjahr) ----------
+
+// in der Reihenfolge eines Schultags; h = typische Uhrzeit
+const MYDAY: { en: string; de: string; e: string; h: number }[] = [
+  { en: 'I get up.', de: 'Ich stehe auf.', e: '⏰', h: 7 },
+  { en: 'I brush my teeth.', de: 'Ich putze mir die Zähne.', e: '🪥', h: 7 },
+  { en: 'I have breakfast.', de: 'Ich frühstücke.', e: '🥣', h: 7 },
+  { en: 'I go to school.', de: 'Ich gehe zur Schule.', e: '🏫', h: 8 },
+  { en: 'I have lunch.', de: 'Ich esse zu Mittag.', e: '🍝', h: 1 },
+  { en: 'I do my homework.', de: 'Ich mache meine Hausaufgaben.', e: '📝', h: 3 },
+  { en: 'I play with my friends.', de: 'Ich spiele mit meinen Freunden.', e: '🤾', h: 4 },
+  { en: 'I have dinner.', de: 'Ich esse zu Abend.', e: '🍲', h: 6 },
+  { en: 'I go to bed.', de: 'Ich gehe ins Bett.', e: '🛏️', h: 8 },
+];
+const HOURS_EN = ['twelve', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
+function mydayTask(r: Rng, s: Stage): Gen {
+  const v = s === 1 ? ri(r, 0, 1) : ri(r, 0, 3);
+  const d = pick(r, MYDAY);
+  // Uhrzeit: „I get up at seven o'clock.“
+  if (v === 2) {
+    const h = d.h;
+    const ok = `at ${HOURS_EN[h]} o'clock`;
+    const wrong = [`at ${HOURS_EN[(h % 12) + 1]} o'clock`, `at half past ${HOURS_EN[h]}`, `at ${HOURS_EN[h === 1 ? 12 : h - 1]} o'clock`];
+    const sent = `${d.en.replace(/\.$/, '')} ${ok}.`;
+    return { key: `t-${d.en}`, prompt: `${d.e} ${d.en.replace(/\.$/, '')} …`, visual: { kind: 'clock', h, m: 0 }, answer: { ...choice(r, ok, wrong), speakOptions: 'en' }, tags: ['uhrzeit'], solution: [sent, `Die Uhr zeigt ${h} Uhr: ${HOURS_EN[h]} o'clock.`], pronounce: { text: sent, lang: 'en' } };
+  }
+  // Was kommt zuerst?
+  if (v === 3) {
+    // nur Paare mit klarem Abstand (Zähneputzen vor oder nach dem Frühstück ist Geschmackssache)
+    let a = pick(r, MYDAY), b = pick(r, MYDAY);
+    while (Math.abs(MYDAY.indexOf(a) - MYDAY.indexOf(b)) < 2) [a, b] = [pick(r, MYDAY), pick(r, MYDAY)];
+    const ia = MYDAY.indexOf(a), ib = MYDAY.indexOf(b);
+    const first = ia < ib ? a : b;
+    return { key: `o-${a.en}-${b.en}`, prompt: 'What do you do first?', answer: { ...fixedChoice([a.en, b.en], first.en), speakOptions: 'en' }, tags: ['reihenfolge'], solution: [`Zuerst: ${first.en} (${first.de})`, `Danach: ${(first === a ? b : a).en}`], pronounce: { text: first.en, lang: 'en' } };
+  }
+  // Deutsch → Englisch
+  if (v === 1) {
+    const wrong = pickN(r, MYDAY.filter((x) => x !== d), 3).map((x) => x.en);
+    return { key: `d-${d.en}`, prompt: `Wie sagt man auf Englisch?\n„${d.de}“`, answer: { ...choice(r, d.en, wrong), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.de} = ${d.en}`], pronounce: { text: d.en, lang: 'en' } };
+  }
+  // Bild → Satz
+  const wrong = pickN(r, MYDAY.filter((x) => x.e !== d.e), 3).map((x) => x.en);
+  return { key: `b-${d.en}`, prompt: 'What do you do?', visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, wrong), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [
