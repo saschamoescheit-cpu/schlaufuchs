@@ -358,12 +358,15 @@ const cktz = D(2, 'd2-ck-tz', 'ck und tz', '🧦', {
 }, (r, s) => spellTask(r, s, CKTZ, (p) => (p[0].includes('ck') ? 'ck' : p[0].includes('tz') ? 'tz' : 'kein-ck-tz'), (p) => (p[0].includes('ck') || p[0].includes('tz') ? ['Der Selbstlaut davor ist kurz – deshalb ck oder tz.'] : ['Davor steht ein langer Selbstlaut, ein Doppellaut oder l, n, r – deshalb nur k oder z.'])), { tagLabels: { ck: 'Wörter mit ck', tz: 'Wörter mit tz', 'kein-ck-tz': 'k/z nach l, n, r oder langem Vokal' }, testSeconds: 12 });
 
 const IE: Pair[] = [['Biene', 'Bine', '🐝'], ['Brief', 'Brif', '✉️'], ['Spiegel', 'Spigel', '🪞'], ['Ziege', 'Zige', '🐐'], ['Fliege', 'Flige', '🪰'], ['Kiefer', 'Kifer', '🌲'], ['Wiese', 'Wise', '🌾'], ['Papier', 'Papir', '📄'], ['Tier', 'Tir', '🐾'], ['vier', 'vir', '4️⃣'], ['Dieb', 'Dib', '🦹'], ['Knie', 'Kni', '🦵'], ['Stiefel', 'Stifel', '🥾'],
-  ['Tiger', 'Tieger', '🐯'], ['Kino', 'Kieno', '🎬'], ['Igel', 'Iegel', '🦔'], ['Krokodil', 'Krokodiel', '🐊'], ['Bibel', 'Biebel', '📕'], ['Fisch', 'Fiesch', '🐟'], ['Kiste', 'Kieste', '📦']];
+  ['Tiger', 'Tieger', '🐯'], ['Kino', 'Kieno', '🎬'], ['Igel', 'Iegel', '🦔'], ['Krokodil', 'Krokodiel', '🐊'], ['Bibel', 'Biebel', '📕'], ['Fisch', 'Fiesch', '🐟'], ['Kiste', 'Kieste', '📦'],
+  // Nachtlauf 22.10.2026: mehr Wörter
+  ['Fieber', 'Fiber', '🤒'], ['Ziel', 'Zil', '🏁'], ['Spiel', 'Spil', '🎲'], ['Lied', 'Lid', '🎵'], ['Riegel', 'Rigel', '🍫'], ['Klavier', 'Klavir', '🎹'], ['Zwiebel', 'Zwibel', '🧅'],
+  ['Kirsche', 'Kiersche', '🍒'], ['Schiff', 'Schieff', '🚢'], ['Ring', 'Rieng', '💍'], ['Wind', 'Wiend', '🌬️'], ['Maschine', 'Maschiene', '⚙️'], ['Benzin', 'Benzien', '⛽']];
 const ie = D(2, 'd2-ie', 'ie oder i', '🐝', {
   text: ['Hörst du ein langes i, schreibst du meistens ie: Biene, Wiese, vier.', 'Hörst du ein kurzes i, schreibst du i: Fisch, Kiste.', 'Ausnahmen musst du dir merken (Merkwörter): Tiger, Igel, Kino, Krokodil, Bibel.'],
   visual: { kind: 'word', word: 'Biene', mark: [[1, 3]] },
   videoQuery: 'Wörter mit ie langes i Klasse 2',
-}, (r, s) => spellTask(r, s, IE, (p) => (p[0].includes('ie') ? 'ie' : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? 'merkwort' : 'kurzes-i'), (p) => (p[0].includes('ie') ? ['Das i ist lang – deshalb ie.'] : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel'].includes(p[0]) ? ['Das ist ein Merkwort: langes i, aber ohne e.'] : ['Das i ist kurz – deshalb nur i.'])), { tagLabels: { ie: 'langes i (ie)', merkwort: 'Merkwörter mit i', 'kurzes-i': 'kurzes i' }, testSeconds: 12 });
+}, (r, s) => spellTask(r, s, IE, (p) => (p[0].includes('ie') ? 'ie' : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel', 'Maschine', 'Benzin'].includes(p[0]) ? 'merkwort' : 'kurzes-i'), (p) => (p[0].includes('ie') ? ['Das i ist lang – deshalb ie.'] : ['Tiger', 'Kino', 'Igel', 'Krokodil', 'Bibel', 'Maschine', 'Benzin'].includes(p[0]) ? ['Das ist ein Merkwort: langes i, aber ohne e.'] : ['Das i ist kurz – deshalb nur i.'])), { tagLabels: { ie: 'langes i (ie)', merkwort: 'Merkwörter mit i', 'kurzes-i': 'kurzes i' }, testSeconds: 12 });
 
 const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Der', 'Hund', 'spielt', 'mit', 'dem', 'Ball'], noun: [1, 5] }, { w: ['Meine', 'Oma', 'backt', 'einen', 'Kuchen'], noun: [1, 4] },
@@ -691,6 +694,9 @@ const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
 const SSZ: [string, 's' | 'ss' | 'ß', string, string?][] = [
   ['Straße', 'ß', 'Das a ist lang – nach langem Selbstlaut schreibt man ß.', '🛣️'], ['Fuß', 'ß', 'Das u ist lang → ß.', '🦶'], ['Gruß', 'ß', 'Das u ist lang → ß.', '👋'], ['groß', 'ß', 'Das o ist lang → ß.', '🐘'], ['heiß', 'ß', 'Nach ei schreibt man ß.', '🔥'], ['Spaß', 'ß', 'Das a ist lang → ß.', '😄'], ['süß', 'ß', 'Das ü ist lang → ß.', '🍭'],
   ['Fluss', 'ss', 'Das u ist kurz → ss.', '🏞️'], ['Kuss', 'ss', 'Das u ist kurz → ss.', '💋'], ['Wasser', 'ss', 'Das a ist kurz → ss.', '💧'], ['Tasse', 'ss', 'Das a ist kurz → ss.', '☕'], ['Schloss', 'ss', 'Das o ist kurz → ss.', '🏰'], ['Nuss', 'ss', 'Das u ist kurz → ss.', '🌰'], ['Klasse', 'ss', 'Das a ist kurz → ss.', '🏫'],
+  ['weiß', 'ß', 'Nach ei schreibt man ß.', '🤍'], ['Strauß', 'ß', 'Nach au schreibt man ß.', '💐'], ['Soße', 'ß', 'Das o ist lang → ß.', '🥫'], ['Floß', 'ß', 'Das o ist lang → ß.', '🛶'],
+  ['Messer', 'ss', 'Das e ist kurz → ss.', '🔪'], ['Kissen', 'ss', 'Das i ist kurz → ss.', '🛏️'], ['Schlüssel', 'ss', 'Das ü ist kurz → ss.', '🔑'], ['Schüssel', 'ss', 'Das ü ist kurz → ss.', '🥣'],
+  ['Nase', 's', 'Man hört ein weiches, summendes s → s.', '👃'], ['Rose', 's', 'Man hört ein weiches, summendes s → s.', '🌹'], ['Preis', 's', 'Verlängere: Preise – weiches s → s.', '🏷️'],
   ['Haus', 's', 'Verlängere: Häuser – man hört ein weiches s → s.', '🏠'], ['Gras', 's', 'Verlängere: Gräser – weiches s → s.', '🌱'], ['Maus', 's', 'Verlängere: Mäuse – weiches s → s.', '🐭'], ['Glas', 's', 'Verlängere: Gläser – weiches s → s.', '🥛'], ['Hose', 's', 'Man hört ein weiches, summendes s → s.', '👖'], ['Bus', 's', 'Merkwort: Bus (die Busse).', '🚌'],
 ];
 const ssz = D(4, 'd4-s-ss-sz', 's, ss oder ß', '🐍', {

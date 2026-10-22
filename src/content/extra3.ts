@@ -1204,6 +1204,15 @@ const MINI: [string, string, string, string[]][] = [
   ['Die Sonne scheint. Jana trägt ihre Sonnenbrille.', 'Was trägt Jana?', '🕶️', ['🧢', '🧣', '👒']],
   ['Ein Flugzeug fliegt hoch über das Haus.', 'Was fliegt über das Haus?', '✈️', ['🚁', '🎈', '🦅']],
   ['Kim hat Durst. Sie trinkt ein Glas Milch.', 'Was trinkt Kim?', '🥛', ['🧃', '☕', '🍵']],
+  // Nachtlauf 22.10.2026: mehr Texte
+  ['Der Frosch sitzt auf einem Stein. Er quakt laut.', 'Wer quakt?', '🐸', ['🦆', '🐶', '🐱']],
+  ['Das Pferd steht im Stall. Es frisst Heu.', 'Wer frisst Heu?', '🐴', ['🐶', '🐷', '🐔']],
+  ['Finn hat kalte Hände. Er zieht Handschuhe an.', 'Was zieht Finn an?', '🧤', ['🧦', '🧢', '👟']],
+  ['Mama kauft Brot beim Bäcker.', 'Was kauft Mama?', '🍞', ['🧀', '🍎', '🥛']],
+  ['Die Katze spielt mit einem Wollknäuel.', 'Womit spielt die Katze?', '🧶', ['⚽', '🧸', '🪀']],
+  ['Leo putzt sich die Zähne. Dann geht er ins Bett.', 'Wohin geht Leo?', '🛏️', ['🛁', '🚪', '🏫']],
+  ['Am Abend leuchten die Sterne.', 'Was leuchtet am Abend?', '⭐', ['☀️', '🌈', '☁️']],
+  ['Ella wirft den Ball. Der Hund holt ihn.', 'Was wirft Ella?', '🎾', ['🦴', '🧸', '🥏']],
 ];
 function miniTask(r: Rng, s: Stage): Gen {
   const [t, q, ok, wrong] = pick(r, MINI);
@@ -1220,7 +1229,7 @@ function miniTask(r: Rng, s: Stage): Gen {
 // ---------- V oder F (Kl. 2) ----------
 
 const VF: [string, string, string][] = [
-  ['Vogel', 'V', '🐦'], ['Vater', 'V', '👨'], ['vier', 'v', '4️⃣'], ['viel', 'v', '➕'], ['Vase', 'V', '🏺'], ['Vulkan', 'V', '🌋'], ['Vampir', 'V', '🧛'],
+  ['Vogel', 'V', '🐦'], ['Vater', 'V', '👨'], ['vier', 'v', '4️⃣'], ['viel', 'v', '➕'], ['Veilchen', 'V', '🌸'], ['verlieren', 'v', '😢'], ['Vorhang', 'V', '🎭'], // nicht Vase/Vulkan/Vampir: dort spricht man „w“
   ['verstecken', 'v', '🙈'], ['vergessen', 'v', '🤔'], ['vorlesen', 'v', '📖'], ['voll', 'v', '🥛'], ['Vorsicht', 'V', '⚠️'],
   ['Feuer', 'F', '🔥'], ['Fuß', 'F', '🦶'], ['Fee', 'F', '🧚'], ['Flasche', 'F', '🍾'], ['Ferien', 'F', '🏖️'], ['finden', 'f', '🔎'],
   ['Fisch', 'F', '🐟'], ['Fuchs', 'F', '🦊'], ['Feder', 'F', '🪶'], ['Fahrrad', 'F', '🚲'], ['fünf', 'f', '5️⃣'], ['Frosch', 'F', '🐸'], ['Fenster', 'F', '🪟'], ['fliegen', 'f', '✈️'],
