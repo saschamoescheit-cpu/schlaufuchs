@@ -92,7 +92,7 @@ export function ColumnWork({ work, value, onChange, onSubmit, reveal, guided }: 
   return (
     <div className="stack" style={{ gap: 12 }}>
       {/* viele Stellen (bis 1 Million): Kästchen kleiner, damit die Einer-Spalte auf dem Handy sichtbar bleibt */}
-      <div className="visual-box cw-box" style={W >= 7 ? ({ '--cw': '34px', '--cwf': '1.5rem' } as React.CSSProperties) : W === 6 ? ({ '--cw': '39px', '--cwf': '1.7rem' } as React.CSSProperties) : undefined}>
+      <div className="visual-box cw-box" style={{ '--cols': W + 1, ...(W >= 7 ? { '--cw': '34px', '--cwf': '1.5rem' } : W === 6 ? { '--cw': '39px', '--cwf': '1.7rem' } : {}) } as React.CSSProperties}>
         {layout.division ? (
           <div className="cw-div">
             <span className="cw-static">
