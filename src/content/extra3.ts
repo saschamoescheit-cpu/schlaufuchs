@@ -292,6 +292,7 @@ function enReadTask(r: Rng, s: Stage): Gen {
 }
 
 export const ENGLISCH_EXTRA3: Skill[] = [
+  E(2, 'e2-health', "What's the matter? – Wie geht's dir?", '🤒', { text: ["What's the matter? = Was ist los?", "I've got a headache. = Ich habe Kopfschmerzen. I've got a cold. = Ich bin erkältet.", "Gute Besserung heißt: Get well soon!"], visual: { kind: 'emoji', chars: '🤕 🤧 🤒' }, videoQuery: "what's the matter song kids I have a headache" }, healthTask, { tagLabels: { hoeren: 'Sätze hören', saetze: 'Sätze verstehen' }, testSeconds: 20 }),
   E(1, 'e1-alphabet', 'The alphabet – ABC auf Englisch', '🔤', { text: ['Die englischen Buchstaben heißen anders als die deutschen.', 'Achtung: E klingt wie „i“, I klingt wie „ai“, A klingt wie „äi“.', 'G („dschii“) und J („dschäi“) verwechselt man leicht. Z heißt in England „zed“.'], visual: { kind: 'word', word: 'A · E · I · G · J', mark: [[4, 5], [8, 9]] }, videoQuery: 'ABC song British English phonics alphabet' }, alphabetTask, { tagLabels: { buchstaben: 'englische Buchstaben hören', buchstabieren: 'buchstabierte Wörter verstehen' }, testSeconds: 20 }),
   E(2, 'e2-myday', 'My day – Tagesablauf', '⏰', { text: ['I get up. = Ich stehe auf. I go to school. = Ich gehe zur Schule.', "Mit Uhrzeit: I get up at seven o'clock.", 'Am Abend: I have dinner. I go to bed.'], visual: { kind: 'clock', h: 7, m: 0 }, videoQuery: 'daily routine song for kids English' }, mydayTask, { tagLabels: { saetze: 'Sätze zum Tagesablauf', uhrzeit: 'mit Uhrzeit', reihenfolge: 'Reihenfolge am Tag' }, testSeconds: 20 }),
   E(1, 'e1-shapes', 'Shapes and colours – Formen', '🔷', { text: ['circle = Kreis, square = Quadrat, triangle = Dreieck, rectangle = Rechteck.', 'Die Farbe steht vor der Form – wie im Deutschen: a red circle = ein roter Kreis.', 'Sprich mit: a blue square, a green triangle!'], visual: { kind: 'shape', shape: 'Kreis', fill: '#F06A6A' }, videoQuery: 'shapes song for kids circle square triangle rectangle' }, shapesTask, { tagLabels: { hoeren: 'Formen hören', uebersetzen: 'Deutsch → Englisch', schreiben: 'Formen schreiben', reihenfolge: 'Farbe und Form vertauscht' }, testSeconds: 20 }),
@@ -981,7 +982,7 @@ function geld3Task(r: Rng, s: Stage): Gen {
 
 // [Wort, Endung, Verlängerung bzw. Merkhilfe, Bild]
 const IGICH: [string, 'ig' | 'ich', string, string][] = [
-  ['König', 'ig', 'die Könige', '👑'], ['Honig', 'ig', 'Merke: Honig schreibt man mit g', '🍯'], ['Käfig', 'ig', 'die Käfige', '🦜'], ['Essig', 'ig', 'Merke: Essig schreibt man mit g', '🫙'],
+  ['König', 'ig', 'die Könige', '👑'], ['Honig', 'ig', 'Merke: Honig schreibt man mit g', '🍯'], ['Käfig', 'ig', 'die Käfige', '🦜'],
   ['lustig', 'ig', 'ein lustiger Clown', '🤡'], ['mutig', 'ig', 'ein mutiger Ritter', '🦸'], ['eilig', 'ig', 'ein eiliger Bote', '🏃'], ['ruhig', 'ig', 'ein ruhiger Abend', '😌'], ['fertig', 'ig', 'eine fertige Burg', '✅'],
   ['Teppich', 'ich', 'die Teppiche', '🧶'], ['Rettich', 'ich', 'die Rettiche', '🥕'], ['Kranich', 'ich', 'die Kraniche', '🦢'], ['Pfirsich', 'ich', 'die Pfirsiche', '🍑'],
   ['freundlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😊'], ['fröhlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '😄'], ['glücklich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🍀'], ['ehrlich', 'ich', 'Merke: -lich schreibt man immer mit ch', '🤝'],
@@ -1019,6 +1020,30 @@ function strahlMio(r: Rng, s: Stage): Gen {
     return strahlTask(t, t + 20000, 10000, 1000, t + k * 1000);
   }
   return strahlTask(0, 1000000, 100000, 50000, ri(r, 0, 9) * 100000 + 50000);
+}
+
+// ---------- What's the matter? (Englisch, 2. Lernjahr) ----------
+
+const ILL: { en: string; de: string; e: string }[] = [
+  { en: "I've got a headache.", de: 'Ich habe Kopfschmerzen.', e: '🤕' },
+  { en: "I've got a cold.", de: 'Ich bin erkältet.', e: '🤧' },
+  { en: "I've got a toothache.", de: 'Ich habe Zahnschmerzen.', e: '🦷' },
+  { en: "I've got a temperature.", de: 'Ich habe Fieber.', e: '🤒' },
+  { en: "I've got an earache.", de: 'Ich habe Ohrenschmerzen.', e: '👂' },
+  { en: "I'm tired.", de: 'Ich bin müde.', e: '🥱' },
+  { en: "I'm fine, thank you.", de: 'Mir geht es gut, danke.', e: '😊' },
+];
+function healthTask(r: Rng, s: Stage): Gen {
+  const d = pick(r, ILL);
+  const others = ILL.filter((x) => x !== d);
+  const v = s === 1 ? ri(r, 0, 1) : ri(r, 0, 2);
+  if (v === 1) {
+    return { key: `h-${d.en}`, prompt: "What's the matter? Hör gut zu! Welches Bild passt?", listen: { text: d.en, lang: 'en' }, answer: { ...choice(r, d.e, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.e)), big: true }, tags: ['hoeren'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
+  }
+  if (v === 2) {
+    return { key: `d-${d.en}`, prompt: `Wie sagt man auf Englisch?\n„${d.de}“`, answer: { ...choice(r, d.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.de} = ${d.en}`], pronounce: { text: d.en, lang: 'en' } };
+  }
+  return { key: `b-${d.en}`, prompt: "What's the matter?", visual: { kind: 'emoji', chars: d.e }, answer: { ...choice(r, d.en, pickN(r, others, s === 1 ? 2 : 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['saetze'], solution: [`${d.en} = ${d.de}`], pronounce: { text: d.en, lang: 'en' } };
 }
 
 export const MATHE_EXTRA3: Skill[] = [

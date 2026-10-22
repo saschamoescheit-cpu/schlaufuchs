@@ -181,6 +181,9 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'XC6wQQHo8uU', title: 'Alphabet Song – ABC Song UK ZED Version', channel: 'Bounce Patrol', len: '2:40' },
     { id: 'XCezxDycD80', title: 'The ABC Alphabet Song (ZED Version)', channel: 'Music Bugs UK', len: '1:51' },
   ],
+  'e2-health': [
+    { id: 'QJHtpAriDp0', title: 'ESL Song – I Have a Headache', channel: 'MichaelSsem', len: '1:58' },
+  ],
   'e2-myday': [
     { id: '_oEAdz3MAj0', title: 'What Do You Do Every Day? – Daily Routines Song', channel: 'Fun Kids English', len: '3:05' },
   ],
