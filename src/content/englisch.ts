@@ -173,6 +173,8 @@ const phrases = E(1, 'e1-phrases', 'Hello! – Begrüßen und Sätze', '👋', {
 }, { tagLabels: { situation: 'passenden Satz wählen', verstehen: 'Sätze verstehen', hören: 'Sätze hören' }, testSeconds: 20 });
 
 // ---------- 2. Lernjahr ----------
+// Zehnerzahlen auch als Vokabelkarten und im Diktat
+registerWords('e2-numbers100', [20, 30, 40, 50, 60, 70, 80, 90, 100].map((n) => ({ en: TENS_EN[n / 10], de: ['zwanzig', 'dreißig', 'vierzig', 'fünfzig', 'sechzig', 'siebzig', 'achtzig', 'neunzig', 'hundert'][n / 10 - 2], txt: String(n) })));
 const numbers100 = E(2, 'e2-numbers100', 'Numbers to 100', '💯', { text: ['Zehner: twenty, thirty, forty, fifty, sixty, seventy, eighty, ninety, one hundred.', 'Achtung: Im Englischen sagt man die Zehner zuerst: 47 = forty-seven (nicht „seven-forty“!).', 'Verwechsle nicht: fourteen (14) und forty (40), fifteen (15) und fifty (50).'], visual: { kind: 'text', text: '47 = forty-seven' }, videoQuery: 'numbers 1 to 100 English for kids' }, (r) => {
   const n = chance(r, 0.25) ? pick(r, [13, 14, 15, 16, 17, 18, 19, 30, 40, 50, 60, 70, 80, 90]) : ri(r, 21, 99);
   const say = { text: numEn(n), lang: 'en' as const };

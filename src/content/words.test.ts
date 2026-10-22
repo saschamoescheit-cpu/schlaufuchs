@@ -8,8 +8,8 @@ import { emptyProgress } from '../engine/learning';
 // sonst zählen sie nicht für den Karteikasten.
 describe('Wortlisten der Englisch-Wortfelder', () => {
   const vocab = ALL_SKILLS.filter(isVocab);
-  it('jedes Vokabel-Wortfeld hat eine Wortliste (außer Zahlen bis 100)', () => {
-    const missing = vocab.filter((s) => !WORDS[s.id]?.length && s.id !== 'e2-numbers100').map((s) => s.id);
+  it('jedes Vokabel-Wortfeld hat eine Wortliste', () => {
+    const missing = vocab.filter((s) => !WORDS[s.id]?.length).map((s) => s.id);
     expect(missing).toEqual([]);
   });
   it('Wörter, Übersetzungen und Bilder sind je Wortfeld eindeutig (sonst wären Aufgaben mehrdeutig)', () => {
@@ -24,7 +24,7 @@ describe('Wortlisten der Englisch-Wortfelder', () => {
   });
   it('Aufgaben der Wortfelder mit Wortliste tragen ihr Wort (zählt für die Karteikarten)', () => {
     const r = mulberry32(5);
-    for (const s of vocab.filter((x) => WORDS[x.id] && !['e1-numbers', 'e1-shapes', 'e1-festivals'].includes(x.id))) {
+    for (const s of vocab.filter((x) => WORDS[x.id] && !['e1-numbers', 'e2-numbers100', 'e1-shapes', 'e1-festivals'].includes(x.id))) {
       let tagged = 0;
       for (let i = 0; i < 30; i++) if (s.generate(r, 2).word) tagged++;
       expect(tagged, s.id).toBeGreaterThan(20);
