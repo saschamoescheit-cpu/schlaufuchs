@@ -215,6 +215,9 @@ const CLASS: [string, string, string][] = [
   ['Be quiet, please.', 'Sei bitte leise.', '🤫'], ['Raise your hand.', 'Melde dich.', '✋'], ['Look at the board.', 'Schau an die Tafel.', '👀'], ['Write your name.', 'Schreib deinen Namen.', '✍️'], ['Draw a picture.', 'Mal ein Bild.', '🖍️'],
   ['Take out your pencil.', 'Nimm deinen Bleistift heraus.', '✏️'], ['Clean the board.', 'Wisch die Tafel.', '🧽'], ['Make a circle.', 'Bildet einen Kreis.', '⭕'], ['Work with a partner.', 'Arbeite mit einem Partner.', '👫'],
   ['Pack your schoolbag.', 'Pack deine Schultasche.', '🎒'], ['Sing a song.', 'Sing ein Lied.', '🎵'], ['Cut it out.', 'Schneide es aus.', '✂️'], ['Count to ten.', 'Zähl bis zehn.', '🔟'],
+  // jedes Bild nur einmal – beim Hören wird das passende Bild gewählt
+  ['Stand in a line.', 'Stellt euch in einer Reihe auf.', '🚶'], ['Turn on the light.', 'Mach das Licht an.', '💡'], ['Read the text.', 'Lies den Text.', '📄'],
+  ['Say it again, please.', 'Sag es bitte noch einmal.', '🔁'], ['Look at the picture.', 'Schau dir das Bild an.', '🖼️'], ['Put your books away.', 'Räum deine Bücher weg.', '📚'],
 ];
 function classTask(r: Rng, s: Stage): Gen {
   const [en, de, e] = pick(r, CLASS);
