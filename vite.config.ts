@@ -37,6 +37,8 @@ export default defineConfig({
         ],
       },
       workbox: {
+        // Mitteilungen: angezeigt und geöffnet von public/push-sw.js (Sascha 23.10.2026, wie bei GolfOS Rounds)
+        importScripts: ['push-sw.js'],
         globPatterns: ['**/*.{js,css,html,png,svg,woff2}'],
         // Homepage-Seiten nicht durch die App ersetzen
         navigateFallbackDenylist: [/\/home\//, /\/datenschutz\//, /\/impressum\//],

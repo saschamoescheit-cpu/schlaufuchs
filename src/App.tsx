@@ -1,9 +1,10 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from 'react';
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { buildMix, buildPattern, buildPractice, buildReview } from './engine/session';
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
-import { hasSaveError, useData, usesSchoolFont } from './data/store';
+import { getData, hasSaveError, setActive, useData, usesSchoolFont } from './data/store';
+import { takePushTarget } from './data/push';
 import { mirrorOk } from './data/mirror';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
@@ -124,10 +125,30 @@ export default function App() {
     );
   };
 
-  // Profil gewechselt oder gelöscht → zurück zum Start
+  // Profil gewechselt oder gelöscht → zurück zum Start (kam der Wechsel von einer Mitteilung „Vokabelkarten fällig“: gleich zu Englisch)
+  const cardsFor = useRef<string | null>(null);
   useEffect(() => {
-    setStack([{ r: 'tab', tab: 'home' }]);
+    const cards = cardsFor.current != null && cardsFor.current === data.activeId;
+    cardsFor.current = null;
+    setStack(cards ? [{ r: 'tab', tab: 'home' }, { r: 'subject', subject: 'englisch' }] : [{ r: 'tab', tab: 'home' }]);
   }, [data.activeId]);
+
+  // Angetippte Mitteilung: …/#kind=<id> (dieses Kind), …/#karten=<id> (seine Vokabelkarten) – beim Start und, wenn die
+  // App schon offen ist, wenn der Service Worker die Adresse wechselt
+  useEffect(() => {
+    const go = () => {
+      const t = takePushTarget();
+      const d = getData();
+      if (!t || !d.profiles.some((p) => p.id === t.kid)) return;
+      if (d.activeId !== t.kid) {
+        cardsFor.current = t.cards ? t.kid : null;
+        setActive(t.kid);
+      } else setStack(t.cards ? [{ r: 'tab', tab: 'home' }, { r: 'subject', subject: 'englisch' }] : [{ r: 'tab', tab: 'home' }]);
+    };
+    go();
+    window.addEventListener('hashchange', go);
+    return () => window.removeEventListener('hashchange', go);
+  }, []);
 
   // Sprungmarken von der Homepage: …/#anmelden (Konto in den Einstellungen), …/#eltern (Eltern-Bereich)
   useEffect(() => {

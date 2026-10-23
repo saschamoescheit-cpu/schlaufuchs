@@ -10,6 +10,7 @@ import { Confirm, Fox, TopBar, Wordmark } from '../ui/common';
 import { GradeKeyEditor } from './Tests';
 import { canSpeak, chooseVoice, chosenVoice, cloudStatus, cloudVoiceOn, onSpeech, onVoicesChanged, setCloudVoice, slog, speak, speechInfo, speechLog, voicesFor } from '../ui/speech';
 import { hasPin } from '../data/parent';
+import { PushCard } from '../ui/PushCard';
 
 const AVATARS = ['🦊', '🐼', '🦁', '🐯', '🐨', '🐸', '🐵', '🦄', '🐶', '🐱', '🐰', '🐻', '🐧', '🦉', '🐢', '🐬', '🦖', '🐝'];
 
@@ -501,6 +502,7 @@ export function Settings({ data, profile, onEdit, onNew, onParent, onBack }: { d
         <SpeechDiagnosis />
 
         <SyncCard data={data} />
+        <PushCard />
 
         {!hasPin() && (
           <button className="btn ghost block small" style={{ marginTop: 16, color: 'var(--bad)' }} onClick={() => setDel(true)}>

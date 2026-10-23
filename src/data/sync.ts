@@ -564,9 +564,10 @@ export async function setLogin(username: string | null, password: string | null)
   changed();
 }
 
-/** Ein gültiger Schlüssel – erneuert, wenn er abläuft (er gilt eine Stunde). Immer nur eine Erneuerung zugleich. */
+/** Ein gültiger Schlüssel – erneuert, wenn er abläuft (er gilt eine Stunde). Immer nur eine Erneuerung zugleich.
+ *  Auch für die Mitteilungen (data/push.ts). */
 let refreshing: Promise<string | null> | null = null;
-async function authToken(): Promise<string | null> {
+export async function authToken(): Promise<string | null> {
   const s = loadSession();
   if (!s) return null;
   if (s.expires_at - 60 > Date.now() / 1000) return s.access_token;

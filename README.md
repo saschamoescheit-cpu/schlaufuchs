@@ -14,6 +14,7 @@ Interaktive Lern-App für Grundschüler: **Mathe, Deutsch und Englisch, Klassen 
 - **Blitzrunde** (60 Sekunden, Rekord je Thema)
 - **Eltern-Bereich** mit PIN: Lernzeit, Lernziele, Tests, Karteikasten, Wochenbericht, Lernstand drucken
 - **Konto (optional):** Abgleich zwischen Geräten über Supabase (EU); ohne Konto bleibt alles auf dem Gerät (localStorage + Kopie in IndexedDB)
+- **Mitteilungen:** Lern-Erinnerung, Klassenarbeit naht, Vokabelkarten fällig (Web Push, je Gerät einschaltbar; Einrichtung: `docs/push.md`)
 - **Vorlesen:** Cloud-Stimme (Supabase-Funktion `tts` → Google Text-to-Speech, auch im Stummmodus von iPhone/iPad), sonst Gerätestimme
 - Web-App zum Installieren („Zum Home-Bildschirm“), funktioniert offline
 

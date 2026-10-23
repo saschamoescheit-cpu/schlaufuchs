@@ -64,13 +64,16 @@
         <h3>6. Erklärvideos</h3>
         <p>Zu vielen Themen gibt es ein Erklärvideo von YouTube. Beim Öffnen einer Erklärung lädt die App das <b>Vorschaubild</b> von YouTube (i.ytimg.com, Google Ireland Ltd.) – dabei wird die IP-Adresse an Google übertragen. Das Video selbst startet erst nach einem Tippen und läuft im erweiterten Datenschutzmodus (youtube-nocookie.com). Ab dann gelten die Datenschutzbestimmungen von Google. <span class="todo">[prüfen: Vorschaubilder erst nach Zustimmung oder selbst ausliefern]</span></p>
 
-        <h3>7. Nachsprechen mit Mikrofon (nur nach Freigabe durch Eltern)</h3>
+        <h3>7. Mitteilungen (nur wenn eingeschaltet)</h3>
+        <p>Mit einem Eltern-Konto lassen sich in den Einstellungen Mitteilungen einschalten (Lern-Erinnerung, Klassenarbeit naht, Vokabelkarten fällig) – auf jedem Gerät einzeln. Dafür speichert Schlaufuchs bei Supabase (EU) je Gerät nur die Adresse beim Mitteilungsdienst des Herstellers (Apple, Google, Microsoft oder Mozilla), die Schlüssel zum Verschlüsseln, die Zeitzone und welche Arten eingeschaltet sind, dazu, welche Erinnerung schon verschickt wurde. Ob eine Erinnerung fällig ist, ergibt sich aus dem ohnehin abgeglichenen Lernstand. Der Inhalt jeder Mitteilung ist Ende-zu-Ende verschlüsselt: Der Dienst des Herstellers stellt sie nur zu und kann den Text nicht lesen. Ausschalten in den Einstellungen löscht die Angaben zu diesem Gerät; mit dem Konto wird alles gelöscht. Rechtsgrundlage: Einwilligung, Art. 6 Abs. 1 lit. a DSGVO (das Gerät fragt beim Einschalten um Erlaubnis).</p>
+
+        <h3>8. Nachsprechen mit Mikrofon (nur nach Freigabe durch Eltern)</h3>
         <p>Im Eltern-Bereich kann das Nachsprechen englischer Wörter eingeschaltet werden. Dann nutzt die App die Spracherkennung des Browsers; die Aufnahme wird dabei vom Hersteller des Browsers (z. B. Apple oder Google) verarbeitet. Schlaufuchs selbst speichert keine Aufnahmen. Rechtsgrundlage: Einwilligung der Eltern, Art. 6 Abs. 1 lit. a DSGVO – jederzeit abschaltbar.</p>
 
-        <h3>8. Kinder</h3>
+        <h3>9. Kinder</h3>
         <p>Schlaufuchs richtet sich an Grundschulkinder. Ein Konto legen ausschließlich Eltern oder andere Erziehungsberechtigte an. Für die Profile genügt ein Vorname oder Spitzname.</p>
 
-        <h3>9. Deine Rechte</h3>
+        <h3>10. Deine Rechte</h3>
         <p>Du hast das Recht auf Auskunft, Berichtigung, Löschung, Einschränkung der Verarbeitung, Datenübertragbarkeit und Widerspruch (Art. 15–21 DSGVO) sowie auf Widerruf einer Einwilligung. Schreib dazu einfach eine E-Mail an die Adresse oben. Außerdem kannst du dich bei einer Datenschutz-Aufsichtsbehörde beschweren, z. B. bei der für deinen Wohnort zuständigen Landesbehörde <span class="todo">[für NRW: Landesbeauftragte für Datenschutz und Informationsfreiheit NRW]</span>.</p>
 
         <h3>Dienste im Überblick</h3>
@@ -81,9 +84,10 @@
             </thead>
             <tbody>
               <tr><td>GitHub Pages</td><td>Website ausliefern</td><td>immer</td></tr>
-              <tr><td>Supabase (EU)</td><td>Konto, Abgleich, Vorlese-Funktion</td><td>mit Konto; Vorlesen mit Internet-Stimme</td></tr>
+              <tr><td>Supabase (EU)</td><td>Konto, Abgleich, Vorlese-Funktion, Mitteilungen</td><td>mit Konto; Vorlesen mit Internet-Stimme</td></tr>
               <tr><td>Google Cloud Text-to-Speech</td><td>Aufgabentext → Audio</td><td>Internet-Stimme an (Standard)</td></tr>
               <tr><td>Google-Anmeldung</td><td>Anmelden</td><td>nur wenn gewählt</td></tr>
+              <tr><td>Mitteilungsdienst des Geräteherstellers (Apple, Google, Microsoft, Mozilla)</td><td>verschlüsselte Mitteilungen zustellen</td><td>nur wenn Mitteilungen eingeschaltet</td></tr>
               <tr><td>YouTube</td><td>Vorschaubilder, Erklärvideos</td><td>beim Öffnen einer Erklärung</td></tr>
             </tbody>
           </table>
