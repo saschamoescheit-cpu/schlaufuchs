@@ -325,6 +325,8 @@ const SAETZE_ZEICHEN: [string, '.' | '?' | '!'][] = [
   // Nachtlauf 22.10.2026: mehr Sätze
   ['Wer hat meinen Stift genommen', '?'], ['Warum weint das Baby', '?'], ['Gehst du morgen schwimmen', '?'], ['Unser Hund heißt Bello', '.'], ['Oma backt einen Apfelkuchen', '.'], ['Im Winter ist es kalt', '.'],
   ['Räum bitte dein Zimmer auf', '!'], ['Gib mir sofort den Ball', '!'], ['Toll, ein Regenbogen', '!'],
+  ['Wo ist meine Mütze', '?'], ['Wie viele Beine hat eine Spinne', '?'], ['Darf ich mitspielen', '?'], ['Der Zug fährt nach Köln', '.'], ['Mein Lieblingsessen ist Pizza', '.'], ['Die Vögel singen im Baum', '.'],
+  ['Hör sofort auf', '!'], ['Achtung, ein Auto', '!'], ['Wie schön das ist', '!'],
 ];
 const SATZART: Record<'.' | '?' | '!', string> = { '.': 'Aussagesatz', '?': 'Fragesatz', '!': 'Ausrufe- oder Aufforderungssatz' };
 const FRAGE_UM: [string, string, string[]][] = [
