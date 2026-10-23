@@ -1,5 +1,5 @@
 // Deutsch, Klassen 1–4 (orientiert am Lehrplan Deutsch Grundschule NRW 2021).
-import { chance, choice, fixedChoice, pick, pickN, ri, type Rng } from '../engine/rng';
+import { chance, choice, fixedChoice, pick, pickN, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { NAMES, skill, type Gen } from './helpers';
 
@@ -300,7 +300,9 @@ const verben = D(2, 'd2-verben', 'Verben erkennen', '🏃', {
   videoQuery: 'Verben Tunwörter erkennen Klasse 2',
 }, (r) => {
   const v = pick(r, VERBEN);
-  const opts = [pick(r, NOMEN).w, pick(r, NOMEN).w, pick(r, ADJ)].map((x) => x.toUpperCase());
+  // Ablenker ähnlich lang wie das Verb – Verben in der Grundform sind sonst fast immer das längste Wort
+  const near = <T,>(xs: T[], len: (x: T) => number, k: number) => shuffle(r, xs).sort((a, b) => Math.abs(len(a) - v.length) - Math.abs(len(b) - v.length)).slice(0, k);
+  const opts = [...pickN(r, near(NOMEN, (n) => n.w.length, 6), 2).map((n) => n.w), pick(r, near(ADJ, (a) => a.length, 4))].map((x) => x.toUpperCase());
   return { key: v, prompt: 'Welches Wort ist ein Verb (Tunwort)?', answer: choice(r, v.toUpperCase(), opts), tags: ['verb'], solution: [`${v} ist ein Verb: ich ${/eln$/.test(v) ? v.replace(/eln$/, 'le') : /ern$/.test(v) ? v.replace(/ern$/, 'ere') : v.replace(/en$/, 'e')}, wir ${v}.`, 'Verben sagen, was jemand tut.'] };
 }, { testSeconds: 15 });
 
@@ -550,24 +552,24 @@ const zusammen = D(3, 'd3-zusammengesetzt', 'Zusammengesetzte Nomen', '🔗', {
 }, { tagLabels: { 'artikel-letztes-wort': 'Artikel bei zusammengesetzten Nomen', 'erstes-wort': 'Artikel vom ersten Wort genommen' }, testSeconds: 15 });
 
 const FAMILIEN: { stamm: string; fam: string[]; out: string[] }[] = [
-  { stamm: 'fahr', fam: ['fahren', 'Fahrrad', 'Fahrer', 'Abfahrt', 'gefahren'], out: ['fallen', 'Farbe', 'Fahne'] },
-  { stamm: 'spiel', fam: ['spielen', 'Spieler', 'Spielplatz', 'verspielt', 'Spielzeug'], out: ['Spiegel', 'spitz', 'Spinne'] },
-  { stamm: 'schreib', fam: ['schreiben', 'Schreibtisch', 'beschreiben', 'Schreibheft'], out: ['schreien', 'Schrank', 'Schreck'] },
-  { stamm: 'les', fam: ['lesen', 'Leser', 'Lesebuch', 'vorlesen'], out: ['Leiter', 'leise', 'Lehrer'] },
-  { stamm: 'back', fam: ['backen', 'Bäcker', 'Backofen', 'gebacken'], out: ['Bach', 'Bagger', 'Ball'] },
-  { stamm: 'wohn', fam: ['wohnen', 'Wohnung', 'Wohnzimmer', 'Bewohner'], out: ['Wolle', 'Wolke', 'wohin'] },
-  { stamm: 'freu', fam: ['Freude', 'freuen', 'erfreut', 'freudig'], out: ['frei', 'Freitag', 'fressen'] },
-  { stamm: 'kauf', fam: ['kaufen', 'Verkäufer', 'Einkauf', 'Kaufhaus'], out: ['kauen', 'Kauz', 'Kaugummi'] },
+  { stamm: 'fahr', fam: ['fahren', 'Fahrrad', 'Fahrer', 'Abfahrt', 'gefahren'], out: ['fallen', 'Farbe', 'Fahne', 'Farbkasten'] },
+  { stamm: 'spiel', fam: ['spielen', 'Spieler', 'Spielplatz', 'verspielt', 'Spielzeug'], out: ['Spiegel', 'spitz', 'Spinne', 'Spinnennetz'] },
+  { stamm: 'schreib', fam: ['schreiben', 'Schreibtisch', 'beschreiben', 'Schreibheft'], out: ['schreien', 'Schrank', 'Schreck', 'Schraubenzieher'] },
+  { stamm: 'les', fam: ['lesen', 'Leser', 'Lesebuch', 'vorlesen'], out: ['Leiter', 'leise', 'Lehrer', 'Lehrerzimmer'] },
+  { stamm: 'back', fam: ['backen', 'Bäcker', 'Backofen', 'gebacken'], out: ['Bach', 'Bagger', 'Ball', 'Baggerschaufel'] },
+  { stamm: 'wohn', fam: ['wohnen', 'Wohnung', 'Wohnzimmer', 'Bewohner'], out: ['Wolle', 'Wolke', 'wohin', 'Wolkenkratzer'] },
+  { stamm: 'freu', fam: ['Freude', 'freuen', 'erfreut', 'freudig'], out: ['frei', 'Freitag', 'fressen', 'Freizeitpark'] },
+  { stamm: 'kauf', fam: ['kaufen', 'Verkäufer', 'Einkauf', 'Kaufhaus'], out: ['kauen', 'Kauz', 'Kaugummi', 'Kaulquappe'] },
   // Nachtlauf 22.10.2026: mehr Wortfamilien
-  { stamm: 'spring', fam: ['springen', 'Springseil', 'Springbrunnen', 'abspringen'], out: ['spritzen', 'Spinne', 'Ring'] },
-  { stamm: 'lern', fam: ['lernen', 'Lernspiel', 'verlernen', 'gelernt'], out: ['Laterne', 'leer', 'Lerche'] },
-  { stamm: 'koch', fam: ['kochen', 'Koch', 'Kochtopf', 'Kochbuch'], out: ['Knochen', 'Kuchen', 'Kopf'] },
-  { stamm: 'mal', fam: ['malen', 'Maler', 'Malkasten', 'bemalt'], out: ['mahlen', 'Mehl', 'Mantel'] },
-  { stamm: 'trink', fam: ['trinken', 'Trinkflasche', 'Trinkhalm', 'austrinken'], out: ['Trick', 'tragen', 'trocken'] },
-  { stamm: 'schlaf', fam: ['schlafen', 'Schlafanzug', 'einschlafen', 'schläfrig'], out: ['Schlange', 'schlau', 'Schaf'] },
-  { stamm: 'fall', fam: ['fallen', 'Unfall', 'Abfall', 'gefallen'], out: ['Falte', 'Falke', 'Faden'] },
-  { stamm: 'sing', fam: ['singen', 'Singvogel', 'vorsingen', 'mitsingen'], out: ['sinken', 'Sieger', 'Sinn'] },
-  { stamm: 'flieg', fam: ['fliegen', 'Fliege', 'Flieger', 'abfliegen'], out: ['fließen', 'Flöte', 'Flasche'] },
+  { stamm: 'spring', fam: ['springen', 'Springseil', 'Springbrunnen', 'abspringen'], out: ['spritzen', 'Spinne', 'Ring', 'Spritzpistole'] },
+  { stamm: 'lern', fam: ['lernen', 'Lernspiel', 'verlernen', 'gelernt'], out: ['Laterne', 'leer', 'Lerche', 'Laternenumzug'] },
+  { stamm: 'koch', fam: ['kochen', 'Koch', 'Kochtopf', 'Kochbuch'], out: ['Knochen', 'Kuchen', 'Kopf', 'Knochenbruch'] },
+  { stamm: 'mal', fam: ['malen', 'Maler', 'Malkasten', 'bemalt'], out: ['mahlen', 'Mehl', 'Mantel', 'Mantelknopf'] },
+  { stamm: 'trink', fam: ['trinken', 'Trinkflasche', 'Trinkhalm', 'austrinken'], out: ['Trick', 'tragen', 'trocken', 'Tragetasche'] },
+  { stamm: 'schlaf', fam: ['schlafen', 'Schlafanzug', 'einschlafen', 'schläfrig'], out: ['Schlange', 'schlau', 'Schaf', 'Schlauchboot'] },
+  { stamm: 'fall', fam: ['fallen', 'Unfall', 'Abfall', 'gefallen'], out: ['Falte', 'Falke', 'Faden', 'Faltblatt'] },
+  { stamm: 'sing', fam: ['singen', 'Singvogel', 'vorsingen', 'mitsingen'], out: ['sinken', 'Sieger', 'Sinn', 'Siegerehrung'] },
+  { stamm: 'flieg', fam: ['fliegen', 'Fliege', 'Flieger', 'abfliegen'], out: ['fließen', 'Flöte', 'Flasche', 'Fließband'] },
 ];
 const wortfamilie = D(3, 'd3-wortfamilie', 'Wortfamilien', '👨‍👩‍👧', {
   text: ['Wörter mit dem gleichen Wortstamm gehören zu einer Wortfamilie: fahren, Fahrer, Fahrrad, Abfahrt.', 'Der Wortstamm wird gleich (oder fast gleich, z. B. a → ä) geschrieben.', 'Achtung: Nicht jedes Wort, das ähnlich anfängt, gehört dazu – „fallen“ hat nichts mit „fahren“ zu tun.'],
@@ -576,7 +578,9 @@ const wortfamilie = D(3, 'd3-wortfamilie', 'Wortfamilien', '👨‍👩‍👧',
 }, (r) => {
   const f = pick(r, FAMILIEN);
   const out = pick(r, f.out);
-  const opts = [...pickN(r, f.fam, 3), out];
+  // Familienwörter ähnlich lang wie das fremde Wort – sonst wäre das kürzeste Wort fast immer die Lösung
+  const near = shuffle(r, f.fam).sort((a, b) => Math.abs(a.length - out.length) - Math.abs(b.length - out.length));
+  const opts = [...near.slice(0, 3), out];
   return { key: `${f.stamm}-${out}`, prompt: 'Welches Wort gehört NICHT zur Wortfamilie?', answer: choice(r, out, opts.slice(0, 3)), tags: ['wortfamilie'], solution: [`Der Wortstamm ist „${f.stamm}“.`, `„${out}“ hat einen anderen Wortstamm und gehört nicht dazu.`] };
 }, { testSeconds: 20 });
 
