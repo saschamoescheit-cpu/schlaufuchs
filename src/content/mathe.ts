@@ -70,9 +70,9 @@ const vergleichen = M(1, 'm1-vergleichen', 'Größer, kleiner, gleich', '🐊', 
       solution: [`Rechne zuerst: ${x} + ${y} = ${sum}`, `Vergleiche dann ${left ? `${sum} und ${b}` : `${b} und ${sum}`}.`, `Also: ${l} ${sg} ${rt}`],
     };
   }
-  const a = ri(r, 0, max);
-  // schwer: nah beieinander liegende Zahlen
-  const b = chance(r, 0.2) ? a : s === 3 ? Math.max(0, Math.min(20, a + pick(r, [-2, -1, 1, 2]))) : ri(r, 0, max);
+  const a = s === 3 ? ri(r, 3, max) : ri(r, 0, max);
+  // schwer: nah beieinander liegende Zahlen (Stufe 3 seltener gleich)
+  const b = chance(r, s === 3 ? 0.12 : 0.2) ? a : s === 3 ? Math.max(0, Math.min(20, a + pick(r, [-2, -1, 1, 2]))) : ri(r, 0, max);
   const sign = a < b ? '<' : a > b ? '>' : '=';
   const word = { '<': 'kleiner als', '>': 'größer als', '=': 'gleich' }[sign];
   return {
@@ -118,7 +118,8 @@ const zerlegen = M(1, 'm1-zerlegen', 'Zahlen zerlegen', '🏠', {
   videoQuery: 'Zahlen zerlegen Zahlenhaus Klasse 1',
 }, (r, s) => {
   const total = s === 1 ? ri(r, 3, 6) : s === 3 ? (chance(r, 0.6) ? 10 : ri(r, 7, 10)) : chance(r, 0.35) ? 10 : ri(r, 3, 10);
-  const a = ri(r, 0, total);
+  // Stufe 3: keine Zerlegung mit 0 (8 = 8 + ☐ ist zu leicht für die höchste Stufe)
+  const a = s === 3 ? ri(r, 1, total - 1) : ri(r, 0, total);
   const b = total - a;
   return {
     key: `${total}-${a}`,
@@ -157,7 +158,8 @@ const minus10 = M(1, 'm1-minus10', 'Minus bis 10', '➖', {
   videoQuery: 'Subtraktion bis 10 Klasse 1 erklärt',
 }, (r, s) => {
   const a = s === 1 ? ri(r, 2, 6) : s === 2 ? ri(r, 4, 10) : ri(r, 7, 10);
-  const b = ri(r, 1, a);
+  // Stufe 3: kein „8 − 8“ und kein „− 1“
+  const b = s === 3 ? ri(r, 2, a - 1) : ri(r, 1, a);
   return {
     key: `${a}-${b}`,
     prompt: `${a} − ${b} = ☐`,
@@ -452,7 +454,8 @@ const geteilt = M(2, 'm2-geteilt', 'Geteilt durch', '➗', {
   videoQuery: 'Division geteilt Umkehraufgabe Einmaleins Klasse 2',
 }, (r, s) => {
   const d = pick(r, ROWS[s]);
-  const q = ri(r, 1, 10);
+  // Stufe 3: kein „7 : 7“ (Ergebnis mindestens 2)
+  const q = s === 3 ? ri(r, 2, 10) : ri(r, 1, 10);
   const n = d * q;
   return {
     key: `${n}:${d}`,
