@@ -461,6 +461,14 @@ const LISTEN: [string, string, string[]][] = [
   ['We go to the beach in summer.', 'Im Sommer fahren wir an den Strand.', ['Im Winter fahren wir an den Strand.', 'Im Sommer fahren wir in die Berge.', 'Im Sommer gehen wir ins Schwimmbad.']],
   ['Can I have two pears, please?', 'Kann ich bitte zwei Birnen haben?', ['Kann ich bitte zwei Äpfel haben?', 'Kann ich bitte drei Birnen haben?', 'Ich mag keine Birnen.']],
   ['The owl sleeps in the day.', 'Die Eule schläft am Tag.', ['Die Eule schläft in der Nacht.', 'Die Katze schläft am Tag.', 'Die Eule fliegt am Tag.']],
+  // Nachtlauf 24.10.2026: mehr Sätze
+  ['The book is on the chair.', 'Das Buch liegt auf dem Stuhl.', ['Das Buch liegt unter dem Stuhl.', 'Das Heft liegt auf dem Stuhl.', 'Das Buch liegt auf dem Tisch.']],
+  ['The sun is hot today.', 'Heute ist die Sonne heiß.', ['Heute ist der Mond hell.', 'Gestern war die Sonne heiß.', 'Heute ist es kalt.']],
+  ['I can ride a bike.', 'Ich kann Fahrrad fahren.', ['Ich kann nicht Fahrrad fahren.', 'Ich kann reiten.', 'Er kann Fahrrad fahren.']],
+  ['There are two cats in the garden.', 'Im Garten sind zwei Katzen.', ['Im Garten sind drei Katzen.', 'Im Haus sind zwei Katzen.', 'Im Garten sind zwei Hunde.']],
+  ['Can I have a glass of water, please?', 'Kann ich bitte ein Glas Wasser haben?', ['Kann ich bitte ein Glas Milch haben?', 'Ich möchte kein Wasser.', 'Kann ich bitte einen Apfel haben?']],
+  ['The shop opens at nine o’clock.', 'Der Laden öffnet um neun Uhr.', ['Der Laden schließt um neun Uhr.', 'Der Laden öffnet um zehn Uhr.', 'Die Schule beginnt um neun Uhr.']],
+  ['My brother is taller than me.', 'Mein Bruder ist größer als ich.', ['Meine Schwester ist größer als ich.', 'Mein Bruder ist kleiner als ich.', 'Mein Bruder ist so groß wie ich.']],
 ];
 function listenTask(r: Rng, s: Stage): Gen {
   const [en, de, w] = pick(r, LISTEN);

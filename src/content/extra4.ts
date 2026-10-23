@@ -285,6 +285,15 @@ const UK: { q: string; a: string; w: string[]; e: string; info: string }[] = [
   { q: 'Wie sagt man in Großbritannien zur Wohnung?', a: 'flat', w: ['apartment', 'house', 'garden'], e: '🏢', info: 'In Großbritannien sagt man flat, in Amerika apartment.' },
   { q: 'Wer ist ein „Bobby“ in Großbritannien?', a: 'ein Polizist', w: ['ein Busfahrer', 'ein Bäcker', 'ein Lehrer'], e: '👮', info: 'Britische Polizisten werden oft „Bobbies“ genannt.' },
   { q: 'Wie heißt das Ungeheuer, das in einem See in Schottland leben soll?', a: 'Nessie', w: ['Godzilla', 'King Kong', 'Yeti'], e: '🦕', info: 'Im See Loch Ness soll Nessie leben – gesehen hat sie aber noch niemand sicher.' },
+  // Nachtlauf 24.10.2026: mehr Fragen
+  { q: 'Wie heißt der höchste Berg in Großbritannien?', a: 'Ben Nevis', w: ['Zugspitze', 'Mount Everest', 'Matterhorn'], e: '⛰️', info: 'Der Ben Nevis in Schottland ist mit 1345 Metern der höchste Berg Großbritanniens.' },
+  { q: 'Welches Instrument hört man in Schottland oft bei Festen?', a: 'den Dudelsack (bagpipes)', w: ['das Alphorn', 'die Ukulele', 'die Panflöte'], e: '🎶', info: 'Der Dudelsack (bagpipes) klingt laut und ein bisschen schnarrend.' },
+  { q: 'Welche Farbe haben die typischen Taxis in London?', a: 'schwarz', w: ['gelb', 'rot', 'weiß'], e: '🚕', info: 'Die Londoner Taxis heißen „black cabs“ – schwarze Taxis.' },
+  { q: 'Wer hat die Bücher über Harry Potter geschrieben?', a: 'J. K. Rowling', w: ['Astrid Lindgren', 'Michael Ende', 'Cornelia Funke'], e: '📚', info: 'Joanne K. Rowling ist Britin. Harry Potter geht in Hogwarts zur Zauberschule.' },
+  { q: 'Wie viele Länder bilden zusammen das Vereinigte Königreich (United Kingdom)?', a: 'vier', w: ['zwei', 'drei', 'sechs'], e: '4️⃣', info: 'England, Schottland, Wales und Nordirland bilden zusammen das Vereinigte Königreich.' },
+  { q: 'Was ist ein „double-decker“?', a: 'ein Bus mit zwei Stockwerken', w: ['ein Doppelbett', 'ein Sandwich', 'ein Kartenspiel'], e: '🚍', info: 'Double-decker heißt: zwei Decks – oben sitzt man besonders gut.' },
+  { q: 'Wann ist in Großbritannien „Pancake Day“?', a: 'am Faschingsdienstag', w: ['an Weihnachten', 'am 1. Mai', 'am Ostermontag'], e: '🥞', info: 'Am Pancake Day (Faschingsdienstag) gibt es Pfannkuchen – manchmal sogar Pfannkuchen-Wettrennen!' },
+  { q: 'Wie heißt der berühmte Held aus dem Sherwood Forest, der den Armen half?', a: 'Robin Hood', w: ['Peter Pan', 'Asterix', 'Pippi Langstrumpf'], e: '🏹', info: 'Robin Hood lebte der Sage nach mit seinen Freunden im Sherwood Forest.' },
 ];
 function ukTask(r: Rng, s: Stage): Gen {
   const x = pick(r, UK);
