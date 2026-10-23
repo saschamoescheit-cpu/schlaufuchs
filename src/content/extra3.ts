@@ -602,6 +602,7 @@ const SPST: [string, string][] = [
   ['Stift', '✏️'], ['Strumpf', '🧦'], ['Strauß', '💐'], ['Stunde', '⏳'], ['Sport', '⚽'], ['Spielzeug', '🧸'], ['Sprechblase', '💬'], ['Spatz', '🐦'],
   // Nachtlauf 22.10.2026: mehr Wörter
   ['Strohhalm', '🥤'], ['Steckdose', '🔌'], ['Stoppschild', '🛑'], ['Speck', '🥓'], ['spritzen', '💦'],
+  ['Stempel', '📮'], ['Stall', '🐄'], ['Sprung', '🤾'], ['Spaten', '🌱'], ['Stachel', '🌵'], ['Sprache', '🗣️'],
 ];
 function spstTask(r: Rng, s: Stage): Gen {
   const [w, e] = pick(r, SPST);
@@ -636,6 +637,7 @@ const EIIE: [string, string][] = [
   // Nachtlauf 22.10.2026: mehr Wörter
   ['Reis', '🍚'], ['Leiter', '🪜'], ['Geige', '🎻'], ['Seife', '🧼'], ['Zeitung', '📰'], ['Stein', '🪨'], ['Schleife', '🎀'],
   ['Stiefel', '👢'], ['Ziel', '🏁'], ['Papier', '📄'], ['Fieber', '🤒'], ['Spiel', '🎲'], ['Klavier', '🎹'], ['Zwiebel', '🧅'],
+  ['Brei', '🥣'], ['Feier', '🎉'], ['Kies', '🪨'], ['Tier', '🐾'], ['Knie', '🦵'],
 ];
 function eiieTask(r: Rng, s: Stage): Gen {
 
