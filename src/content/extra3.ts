@@ -222,6 +222,7 @@ const FESTE: W[] = [
   { en: 'Christmas tree', de: 'Weihnachtsbaum', e: '🎄' }, { en: 'present', de: 'Geschenk', e: '🎁' }, { en: 'candle', de: 'Kerze', e: '🕯️' }, { en: 'star', de: 'Stern', e: '⭐' },
   { en: 'snowman', de: 'Schneemann', e: '⛄' }, { en: 'Father Christmas', de: 'Weihnachtsmann', e: '🎅' }, { en: 'Easter egg', de: 'Osterei', e: '🥚' }, { en: 'Easter bunny', de: 'Osterhase', e: '🐰' },
   { en: 'birthday cake', de: 'Geburtstagskuchen', e: '🎂' }, { en: 'balloon', de: 'Luftballon', e: '🎈' },
+  { en: 'reindeer', de: 'Rentier', e: '🦌' }, { en: 'fireworks', de: 'Feuerwerk', e: '🎆' }, { en: 'chick', de: 'Küken', e: '🐣' }, { en: 'party hat', de: 'Partyhut', e: '🥳' }, { en: 'bell', de: 'Glocke', e: '🔔' },
 ];
 const WISHES: [string, string, string][] = [
   ['Merry Christmas!', 'Frohe Weihnachten!', '🎄'], ['Happy Easter!', 'Frohe Ostern!', '🐰'], ['Happy birthday!', 'Alles Gute zum Geburtstag!', '🎂'],
