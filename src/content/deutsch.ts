@@ -515,6 +515,11 @@ const VERB_TAB: [string, string, string, string, 'hat' | 'ist', string, string[]
   ['rennen', 'rennt', 'rannte', 'gerannt', 'ist', 'zum Bus', ['rennte', 'rann', 'ranntete']],
   ['lachen', 'lacht', 'lachte', 'gelacht', 'hat', 'laut', ['lach', 'lucht', 'lachten']],
   ['kochen', 'kocht', 'kochte', 'gekocht', 'hat', 'Suppe', ['koch', 'kuchte', 'kochten']],
+  ['schneiden', 'schneidet', 'schnitt', 'geschnitten', 'hat', 'das Papier', ['schneidete', 'schneid', 'schnittete']],
+  ['fallen', 'fällt', 'fiel', 'gefallen', 'ist', 'vom Baum', ['fallte', 'fall', 'fielte']],
+  ['geben', 'gibt', 'gab', 'gegeben', 'hat', 'mir den Ball', ['gebte', 'gib', 'gabte']],
+  ['sitzen', 'sitzt', 'saß', 'gesessen', 'hat', 'auf dem Stuhl', ['sitzte', 'sitz', 'saßte']],
+  ['steigen', 'steigt', 'stieg', 'gestiegen', 'ist', 'auf den Berg', ['steigte', 'steig', 'stiegte']],
 ];
 const REGULAR = new Set(['spielen', 'malen', 'bauen', 'tanzen', 'lachen', 'kochen']);
 const zeit3 = D(3, 'd3-zeitformen', 'Gegenwart und Vergangenheit', '⏳', {
