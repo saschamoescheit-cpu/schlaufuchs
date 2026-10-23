@@ -195,8 +195,8 @@ function woerterbuchTask(r: Rng, s: Stage): Gen {
     const pos = same.length + 1;
     return {
       key: `abc-${sorted.join('-')}-${last}`,
-      prompt: `Welches Wort steht im Wörterbuch **${last ? 'ganz hinten' : 'ganz vorne'}**?`,
-      speak: `Welches Wort steht im Wörterbuch ${last ? 'ganz hinten' : 'ganz vorne'}?`,
+      prompt: `Welches dieser Wörter steht im Wörterbuch **${last ? 'ganz hinten' : 'ganz vorne'}**?`,
+      speak: `Welches dieser Wörter steht im Wörterbuch ${last ? 'ganz hinten' : 'ganz vorne'}?`,
       answer: { ...choice(r, ok, words.filter((w) => w !== ok)), speakOptions: 'de' },
       tags: ['abc'],
       solution: [`Die Wörter beginnen alle mit „${same}“ – schau auf den ${pos}. Buchstaben. Ist der auch gleich, auf den nächsten.`, `Nach dem ABC: ${sorted.join(', ')}`],
@@ -469,6 +469,8 @@ function geldKommaTask(r: Rng, s: Stage): Gen {
     const sum = prices.reduce((a, b) => a + b, 0);
     const paid = sum <= 1000 ? 1000 : sum <= 2000 ? 2000 : 5000;
     const back = paid - sum;
+    // Rückgeld zufällig gleich einem Preis (8,30 € + 0,85 € von 10 €): verwirrt – neu würfeln
+    if (prices.includes(back)) return geldKommaTask(r, s);
     const wrongCents = back % 100 ? back + (100 - 2 * (back % 100)) : back + 50; // typischer Fehler beim Cent-Ergänzen
     const ok = eur(back);
     const wrong = [...new Set([eur(wrongCents), eur(back + 100), eur(Math.max(5, back - 100)), eur(sum)])].filter((x) => x !== ok).slice(0, 3);

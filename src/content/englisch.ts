@@ -32,7 +32,7 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2, stage: Stage = 2): Gen {
     if (w.hex) return { key: `h-${w.en}`, prompt: 'Hör gut zu! Welche Farbe ist es?', speak: 'Hör gut zu!', listen: say, answer: choice(r, w.de, opts.map((x) => x.de)), tags: ['hören'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
     return { key: `h-${w.en}`, prompt: 'Hör gut zu! Welches Bild passt?', speak: 'Hör gut zu!', listen: say, answer: { ...choice(r, w.e!, opts.map((x) => x.e!)), big: true }, tags: ['hören'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
   }
-  if (mode === 'en-de') return { key: `v-${w.en}`, prompt: `Was heißt „${w.en}“ auf Deutsch?`, speak: 'Was heißt das auf Deutsch?', listen: say, answer: choice(r, w.de, pickN(r, others, 3).map((x) => x.de)), tags: ['verstehen'], solution: [`${w.en} heißt auf Deutsch: ${w.de}`], solutionVisual: visualOf(w), pronounce: say };
+  if (mode === 'en-de') return { key: `v-${w.en}`, prompt: /Deutsch/.test(w.de) ? `Was bedeutet „${w.en}“?` : `Was heißt „${w.en}“ auf Deutsch?`, speak: /Deutsch/.test(w.de) ? 'Was bedeutet das?' : 'Was heißt das auf Deutsch?', listen: say, answer: choice(r, w.de, pickN(r, others, 3).map((x) => x.de)), tags: ['verstehen'], solution: [`${w.en} heißt auf Deutsch: ${w.de}`], solutionVisual: visualOf(w), pronounce: say };
   return { key: `u-${w.en}`, prompt: `Was heißt „${w.de}“ auf Englisch?`, answer: { ...choice(r, w.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['übersetzen'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
 }
 
