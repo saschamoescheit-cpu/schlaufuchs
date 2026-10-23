@@ -24,7 +24,7 @@ schadet nicht.
    nicht eingerichtet.“).
 
 ## Für die ganze Familie
-An/aus und die drei Arten gelten für alle Geräte der Familie: Sie stehen im Eltern-Datensatz () und werden
+An/aus und die drei Arten gelten für alle Geräte der Familie: Sie stehen im Eltern-Datensatz (`parent.push`) und werden
 mit abgeglichen.
 - **Auf einem Gerät eingeschaltet:** Jedes andere Gerät, das Mitteilungen schon einmal erlaubt hat, meldet sich beim
   nächsten Öffnen von selbst an (ohne Gruß). Hat ein Gerät noch nie erlaubt, steht in den Einstellungen „In der Familie
