@@ -58,3 +58,15 @@ describe('Länge verrät die Lösung nicht', () => {
     expect(bad).toEqual([]);
   });
 });
+
+// Ablenker dürfen keine unpassenden Wörter ergeben (z. B. Mehrzahl-Fehlform „busen“)
+describe('Keine unpassenden Ablenker', () => {
+  it('kein „busen“ bei one bus – two ☐', () => {
+    const skill = ALL_SKILLS.find((s) => s.id === 'e2-a-an-plural')!;
+    const r = mulberry32(3);
+    for (let i = 0; i < 1500; i++) {
+      const t = skill.generate(r, 2);
+      if (t.answer.type === 'choice') expect(t.answer.options.map((o) => o.toLowerCase())).not.toContain('busen');
+    }
+  });
+});
