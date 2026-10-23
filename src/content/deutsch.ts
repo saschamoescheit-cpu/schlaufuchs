@@ -379,7 +379,8 @@ const satzzeichen = D(2, 'd2-satzzeichen', 'Satzzeichen . ? !', '❓', {
 }, { tagLabels: { punkt: 'Punkt', fragezeichen: 'Fragezeichen', ausrufezeichen: 'Ausrufezeichen' }, testSeconds: 15 });
 
 const DOPPEL: Pair[] = [['Sonne', 'Sone', '☀️'], ['Kamm', 'Kam', '💇'], ['Ball', 'Bal', '⚽'], ['Puppe', 'Pupe', '🪆'], ['Tasse', 'Tase', '☕'], ['Butter', 'Buter', '🧈'], ['Wasser', 'Waser', '💧'], ['Teller', 'Teler', '🍽️'], ['Schiff', 'Schif', '🚢'], ['Himmel', 'Himel', '🌌'], ['Brille', 'Brile', '👓'], ['Koffer', 'Kofer', '🧳'], ['Tanne', 'Tane', '🌲'], ['Hammer', 'Hamer', '🔨'], ['Suppe', 'Supe', '🍲'], ['Mutter', 'Muter', '👩'], ['Bett', 'Bet', '🛏️'], ['Ritter', 'Riter', '🛡️'], ['Wanne', 'Wane', '🛁'], ['Pfeffer', 'Pfefer', '🌶️'],
-  ['Hose', 'Hosse', '👖'], ['Nase', 'Nasse', '👃'], ['Rose', 'Rosse', '🌹'], ['Hut', 'Hutt', '🎩'], ['Tomate', 'Tommate', '🍅']];
+  ['Hose', 'Hosse', '👖'], ['Nase', 'Nasse', '👃'], ['Rose', 'Rosse', '🌹'], ['Hut', 'Hutt', '🎩'], ['Tomate', 'Tommate', '🍅'],
+  ['Kissen', 'Kisen', '🛏️'], ['Hummel', 'Humel', '🐝'], ['Gewitter', 'Gewiter', '⛈️'], ['Sessel', 'Sesel', '🛋️'], ['Robbe', 'Robe', '🦭'], ['Affe', 'Afe', '🐒']];
 const doppel = D(2, 'd2-doppelkonsonant', 'Doppelte Mitlaute', '👯‍♀️', {
   text: ['Nach einem kurzen, betonten Selbstlaut folgt oft ein doppelter Mitlaut: Sonne, Ball, Kamm.', 'Sprich das Wort und achte auf den Selbstlaut: Ist er kurz (Sonne) oder lang (Hose)?', 'Kurz → doppelt: Puppe, Tasse. Lang → einfach: Hose, Nase.', 'Tipp: Klatsche die Silben – bei Son-ne hörst du das n am Ende der ersten und am Anfang der zweiten Silbe.'],
   visual: { kind: 'syllables', parts: ['Son', 'ne'], emoji: '☀️' },
@@ -391,7 +392,8 @@ const CKTZ: Pair[] = [['Zucker', 'Zuker', '🍬'], ['Decke', 'Deke', '🛏️'],
   ['Brezel', 'Bretzel', '🥨'], ['Kerze', 'Kertze', '🕯️'], ['Pilz', 'Piltz', '🍄'], ['Kreuz', 'Kreutz', '✝️'], ['Onkel', 'Onckel', '👨'], ['Bank', 'Banck', '🪑'], ['Haken', 'Hacken', '🪝'],
   // Nachtlauf 22.10.2026: mehr Aufgaben
   ['Wecker', 'Weker', '⏰'], ['Bäcker', 'Bäker', '🥖'], ['Rock', 'Rok', '👗'], ['Mücke', 'Müke', '🦟'], ['Hitze', 'Hize', '🥵'], ['Witz', 'Wiz', '😂'], ['Netz', 'Nez', '🥅'], ['Schatz', 'Schaz', '💰'],
-  ['Herz', 'Hertz', '❤️'], ['Salz', 'Saltz', '🧂'], ['Park', 'Parck', '🏞️']];
+  ['Herz', 'Hertz', '❤️'], ['Salz', 'Saltz', '🧂'], ['Park', 'Parck', '🏞️'],
+  ['Hecke', 'Heke', '🌳'], ['Ecke', 'Eke', '📐'], ['Lücke', 'Lüke', '🦷'], ['Matratze', 'Matraze', '🛏️'], ['Spritze', 'Sprize', '💉']];
 const cktz = D(2, 'd2-ck-tz', 'ck und tz', '🧦', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ck statt kk und tz statt zz: Socke, Katze.', 'Nach einem langen Selbstlaut, nach au/ei/eu oder nach einem Mitlaut (l, n, r) steht nur k oder z: Haken, Kreuz, Kerze, Onkel.', 'Merkspruch: Nach l, n, r – das merke ja – steht nie tz und nie ck!'],
   visual: { kind: 'word', word: 'Socke', mark: [[2, 4]] },
@@ -402,7 +404,8 @@ const IE: Pair[] = [['Biene', 'Bine', '🐝'], ['Brief', 'Brif', '✉️'], ['Sp
   ['Tiger', 'Tieger', '🐯'], ['Kino', 'Kieno', '🎬'], ['Igel', 'Iegel', '🦔'], ['Krokodil', 'Krokodiel', '🐊'], ['Bibel', 'Biebel', '📕'], ['Fisch', 'Fiesch', '🐟'], ['Kiste', 'Kieste', '📦'],
   // Nachtlauf 22.10.2026: mehr Wörter
   ['Fieber', 'Fiber', '🤒'], ['Ziel', 'Zil', '🏁'], ['Spiel', 'Spil', '🎲'], ['Lied', 'Lid', '🎵'], ['Riegel', 'Rigel', '🍫'], ['Klavier', 'Klavir', '🎹'], ['Zwiebel', 'Zwibel', '🧅'],
-  ['Kirsche', 'Kiersche', '🍒'], ['Schiff', 'Schieff', '🚢'], ['Ring', 'Rieng', '💍'], ['Wind', 'Wiend', '🌬️'], ['Maschine', 'Maschiene', '⚙️'], ['Benzin', 'Benzien', '⛽']];
+  ['Kirsche', 'Kiersche', '🍒'], ['Schiff', 'Schieff', '🚢'], ['Ring', 'Rieng', '💍'], ['Wind', 'Wiend', '🌬️'], ['Maschine', 'Maschiene', '⚙️'], ['Benzin', 'Benzien', '⛽'],
+  ['Schiene', 'Schine', '🛤️'], ['Liebe', 'Libe', '❤️'], ['Biber', 'Bieber', '🦫'], ['Pirat', 'Pierat', '🏴‍☠️']];
 const ie = D(2, 'd2-ie', 'ie oder i', '🐝', {
   text: ['Hörst du ein langes i, schreibst du meistens ie: Biene, Wiese, vier.', 'Hörst du ein kurzes i, schreibst du i: Fisch, Kiste.', 'Ausnahmen musst du dir merken (Merkwörter): Tiger, Igel, Kino, Krokodil, Bibel.'],
   visual: { kind: 'word', word: 'Biene', mark: [[1, 3]] },
