@@ -16,8 +16,8 @@ export const vocabUpTo = (lv: Grade): { label: string; skills: Skill[] }[] =>
     .filter((g) => g.skills.length);
 
 export type VocabKind = 'mix' | 'karten' | 'diktat';
-/** Karten: Englisch vorne, Deutsch vorne – oder Deutsch vorne und das englische Wort selbst schreiben (die App prüft) */
-export type CardDir = 'de-en' | 'en-de' | 'write';
+/** Karten: Englisch vorne, Deutsch vorne, Deutsch vorne und das englische Wort selbst schreiben (die App prüft) – oder vorne nur der Ton (hear) */
+export type CardDir = 'de-en' | 'en-de' | 'write' | 'hear';
 export interface VocabStart {
   skills: Skill[];
   n: number;
@@ -145,6 +145,9 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
               </button>
               <button role="radio" aria-checked={dir === 'write'} className={`chip ${dir === 'write' ? 'on' : ''}`} onClick={() => setDir('write')}>
                 ✍️ Englisch schreiben
+              </button>
+              <button role="radio" aria-checked={dir === 'hear'} className={`chip ${dir === 'hear' ? 'on' : ''}`} onClick={() => setDir('hear')}>
+                👂 Nur hören
               </button>
             </div>
           </div>

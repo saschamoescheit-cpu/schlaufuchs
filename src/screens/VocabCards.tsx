@@ -32,6 +32,8 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const [flipped, setFlipped] = useState(false);
   // Schreib-Karten: getippte Antwort und ob sie stimmt (die App bewertet selbst)
   const write = dir === 'write';
+  // Hör-Karten: vorne nur der Ton – das Kind überlegt, was das Wort bedeutet; hinten Bild, Englisch und Deutsch
+  const hear = dir === 'hear';
   const [typed, setTyped] = useState('');
   const [checked, setChecked] = useState<boolean | null>(null);
   const [known, setKnown] = useState(0);
@@ -40,11 +42,11 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const card = queue[idx];
   const done = idx >= queue.length;
 
-  // Englisch vorne: Wort gleich vorlesen; Deutsch vorne: beim Umdrehen
+  // Englisch vorne (und Hör-Karten): Wort gleich vorlesen; Deutsch vorne: beim Umdrehen
   useEffect(() => {
     if (!card) return;
     prefetchSpeech(card.en, 'en');
-    if (dir === 'en-de') speak(card.en, 'en');
+    if (dir === 'en-de' || dir === 'hear') speak(card.en, 'en');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx, dir]);
   useEffect(() => () => stopSpeaking(), []);
@@ -55,7 +57,7 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   const flip = () => {
     if (flipped) return;
     setFlipped(true);
-    if (dir !== 'en-de') speak(card.en, 'en');
+    if (dir === 'de-en') speak(card.en, 'en');
   };
   const submit = () => {
     if (!card || flipped || !typed.trim()) return;
@@ -147,8 +149,9 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
   }
 
   const skill = skillById(card.skillId);
-  const front = dir === 'en-de' ? card.en : card.de;
-  const back = dir === 'en-de' ? card.de : card.en;
+  const enFront = dir === 'en-de' || hear;
+  const front = enFront ? card.en : card.de;
+  const back = enFront ? card.de : card.en;
   const box = stateOf(cardStates(progress.log), card);
   return (
     <div role="main" className="app full narrow">
@@ -169,28 +172,34 @@ export function VocabCards({ profile, progress, skillIds, n, dir, onExit, onRest
           </span>
           <span>{box.seen ? `Fach ${Math.max(1, box.box)}` : 'neue Karte'}</span>
         </div>
-        <button type="button" className={`vcard ${flipped ? 'flipped' : ''}`} onClick={write ? undefined : flip} aria-label={flipped ? `${front} – ${back}` : write ? `${front}. Schreibe das englische Wort.` : `${front}. Tippe zum Umdrehen.`} aria-live="polite">
+        <button type="button" className={`vcard ${flipped ? 'flipped' : ''}`} onClick={write ? undefined : flip} aria-label={flipped ? `${front} – ${back}` : write ? `${front}. Schreibe das englische Wort.` : hear ? 'Hör dir das englische Wort an. Was bedeutet es? Tippe zum Umdrehen.' : `${front}. Tippe zum Umdrehen.`} aria-live="polite">
           <span className="vcard-face">
-            {(dir !== 'en-de' || flipped) && (
+            {((!enFront && !hear) || flipped) && (
               <span className="vcard-vis" aria-hidden>
                 <Visual v={visualOf(card)} />
               </span>
             )}
-            <span className="vcard-word" lang={dir === 'en-de' ? 'en' : 'de'}>
-              {front}
-            </span>
+            {hear && !flipped ? (
+              <span className="vcard-word" aria-hidden>
+                👂
+              </span>
+            ) : (
+              <span className="vcard-word" lang={enFront ? 'en' : 'de'}>
+                {front}
+              </span>
+            )}
             {flipped ? (
-              <span className="vcard-back" lang={dir === 'en-de' ? 'de' : 'en'}>
+              <span className="vcard-back" lang={enFront ? 'de' : 'en'}>
                 {back}
               </span>
             ) : write ? null : (
-              <span className="small muted">Tippe zum Umdrehen</span>
+              <span className="small muted">{hear ? 'Was bedeutet das Wort? Dann umdrehen.' : 'Tippe zum Umdrehen'}</span>
             )}
           </span>
         </button>
         {(!write || flipped) && (
           <div className="center">
-            <Speak text={card.en} lang="en" label="Englisch anhören" />
+            <Speak text={card.en} lang="en" label={hear && !flipped ? 'Nochmal anhören' : 'Englisch anhören'} big={hear && !flipped} />
           </div>
         )}
         {write && !flipped ? (
