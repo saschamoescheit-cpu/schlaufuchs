@@ -872,6 +872,7 @@ function shapesTask(r: Rng, s: Stage): Gen {
 // in der Reihenfolge eines Schultags; h = typische Uhrzeit
 const MYDAY: { en: string; de: string; e: string; h: number }[] = [
   { en: 'I get up.', de: 'Ich stehe auf.', e: '⏰', h: 7 },
+  { en: 'I get dressed.', de: 'Ich ziehe mich an.', e: '👕', h: 7 },
   { en: 'I brush my teeth.', de: 'Ich putze mir die Zähne.', e: '🪥', h: 7 },
   { en: 'I have breakfast.', de: 'Ich frühstücke.', e: '🥣', h: 7 },
   { en: 'I go to school.', de: 'Ich gehe zur Schule.', e: '🏫', h: 8 },
@@ -879,6 +880,8 @@ const MYDAY: { en: string; de: string; e: string; h: number }[] = [
   { en: 'I do my homework.', de: 'Ich mache meine Hausaufgaben.', e: '📝', h: 3 },
   { en: 'I play with my friends.', de: 'Ich spiele mit meinen Freunden.', e: '🤾', h: 4 },
   { en: 'I have dinner.', de: 'Ich esse zu Abend.', e: '🍲', h: 6 },
+  { en: 'I have a shower.', de: 'Ich dusche.', e: '🚿', h: 7 },
+  { en: 'I read a book.', de: 'Ich lese ein Buch.', e: '📖', h: 7 },
   { en: 'I go to bed.', de: 'Ich gehe ins Bett.', e: '🛏️', h: 8 },
 ];
 const HOURS_EN = ['twelve', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten', 'eleven', 'twelve'];
@@ -1101,6 +1104,8 @@ const ILL: { en: string; de: string; e: string }[] = [
   { en: "I'm cold.", de: 'Mir ist kalt.', e: '🥶' },
   { en: "I'm hot.", de: 'Mir ist heiß.', e: '🥵' },
   { en: "I'm sad.", de: 'Ich bin traurig.', e: '😢' },
+  { en: "I'm hungry.", de: 'Ich habe Hunger.', e: '😋' },
+  { en: "I'm thirsty.", de: 'Ich habe Durst.', e: '🥤' },
 ];
 function healthTask(r: Rng, s: Stage): Gen {
   const d = pick(r, ILL);
