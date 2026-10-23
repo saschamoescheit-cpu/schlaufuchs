@@ -109,6 +109,8 @@ const REIME: string[][] = [
   ['Maus', 'Haus', 'Laus'], ['Hund', 'Mund', 'rund'], ['Baum', 'Traum', 'Schaum'], ['Hose', 'Rose', 'Dose'], ['Hase', 'Nase', 'Vase'],
   ['Katze', 'Tatze', 'Glatze'], ['Tisch', 'Fisch', 'frisch'], ['Bein', 'Stein', 'Schwein'], ['Sonne', 'Tonne', 'Wonne'], ['Ball', 'Stall', 'Knall'],
   ['Hand', 'Sand', 'Wand'], ['Kanne', 'Tanne', 'Wanne'], ['Hut', 'Mut', 'gut'], ['Bett', 'nett', 'Brett'], ['Wal', 'Schal', 'Zahl'], ['Kuchen', 'suchen', 'buchen'],
+  ['Kopf', 'Topf', 'Zopf'], ['Nacht', 'lacht', 'acht'], ['Ring', 'Ding', 'sing'], ['Igel', 'Spiegel', 'Ziegel'], ['Biene', 'Schiene', 'Maschine'],
+  ['Zug', 'Krug', 'klug'], ['Fliege', 'Ziege', 'Wiege'], ['Glocke', 'Socke', 'Locke'],
 ];
 const reime = D(1, 'd1-reime', 'Reimwörter', '🎵', {
   text: ['Wörter reimen sich, wenn sie hinten gleich klingen.', 'Maus – Haus – Laus: Alle enden auf „aus“.', 'Sprich die Wörter laut – dann hörst du den Reim.'],
