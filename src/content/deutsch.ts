@@ -892,6 +892,8 @@ const SG4: { s: string; mark: string; was: 'Subjekt' | 'Prädikat' | 'Dativobjek
   { s: 'Die Lehrerin erklärt **den Kindern** die Aufgabe.', mark: 'den Kindern', was: 'Dativobjekt' }, { s: 'Die Lehrerin erklärt den Kindern **die Aufgabe**.', mark: 'die Aufgabe', was: 'Akkusativobjekt' }, { s: 'Die Lehrerin **erklärt** den Kindern die Aufgabe.', mark: 'erklärt', was: 'Prädikat' },
   { s: 'Das Fahrrad gehört **meinem Bruder**.', mark: 'meinem Bruder', was: 'Dativobjekt' }, { s: '**Das Fahrrad** gehört meinem Bruder.', mark: 'Das Fahrrad', was: 'Subjekt' },
   { s: 'Am Abend **liest** Papa ein Buch.', mark: 'liest', was: 'Prädikat' }, { s: 'Am Abend liest Papa **ein Buch**.', mark: 'ein Buch', was: 'Akkusativobjekt' },
+  { s: '**Die Ärztin** untersucht das Kind.', mark: 'Die Ärztin', was: 'Subjekt' }, { s: 'Die Ärztin **untersucht** das Kind.', mark: 'untersucht', was: 'Prädikat' }, { s: 'Die Ärztin untersucht **das Kind**.', mark: 'das Kind', was: 'Akkusativobjekt' },
+  { s: 'Ich schreibe **meiner Oma** eine Karte.', mark: 'meiner Oma', was: 'Dativobjekt' }, { s: 'Ich schreibe meiner Oma **eine Karte**.', mark: 'eine Karte', was: 'Akkusativobjekt' }, { s: 'Der Ball gehört **dem Jungen**.', mark: 'dem Jungen', was: 'Dativobjekt' },
 ];
 /** Satzanfang mitten im Satz: Begleiter und Pronomen klein ("Meine Schwester" → "meine Schwester"), Nomen bleiben groß */
 function midSentence(w: string): string {
