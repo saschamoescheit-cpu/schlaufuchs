@@ -29,6 +29,8 @@ const G2: Item[] = [
   ['schwimmen', '🏊', 'Ich kann schwimmen.'], ['schnell', '🏃', 'Das Auto ist schnell.'], ['Fisch', '🐟', 'Der Fisch schwimmt.'], ['Teller', '🍽️', 'Der Teller ist leer.'], ['Mutter', '👩', 'Meine Mutter lacht.'],
   ['Schaf', '🐑', 'Das Schaf ist weiß.'], ['Wolke', '☁️', 'Die Wolke ist grau.'], ['Mund', '👄', 'Der Mund lacht.'], ['Blume', '🌷', 'Die Blume duftet.'], ['Kiste', '📦', 'Die Kiste ist schwer.'],
   ['Löffel', '🥄', 'Der Löffel ist aus Holz.'], ['Blatt', '🍃', 'Das Blatt ist grün.'], ['Kerze', '🕯️', 'Die Kerze brennt.'], ['singen', '🎤', 'Wir singen ein Lied.'], ['Tiger', '🐯', 'Der Tiger brüllt.'],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Bett', '🛏️', 'Das Bett ist weich.'], ['Hexe', '🧙‍♀️', 'Die Hexe fliegt.'], ['Wurst', '🌭', 'Die Wurst ist heiß.'], ['Milch', '🥛', 'Die Milch ist kalt.'], ['Schnee', '❄️', 'Der Schnee ist weiß.'], ['Regen', '🌧️', 'Der Regen ist nass.'], ['Winter', '⛄', 'Im Winter ist es kalt.'], ['Sommer', '🏖️', 'Im Sommer ist es heiß.'], ['Messer', '🔪', 'Das Messer ist scharf.'], ['Hand', '✋', 'Ich gebe dir die Hand.'], ['Schwein', '🐷', 'Das Schwein ist rosa.'], ['Tante', '👩‍🦰', 'Meine Tante kommt zu Besuch.'], ['malen', '🎨', 'Wir malen ein Bild.'], ['Insel', '🏝️', 'Die Insel liegt im Meer.'], ['Nest', '🐣', 'Im Nest sitzt ein Küken.'], ['Kopf', '🙂', 'Ich nicke mit dem Kopf.'],
 ];
 const G3: Item[] = [
   ['Fahrrad', '🚲', 'Ich fahre mit dem Fahrrad.'], ['Fenster', '🪟', 'Das Fenster ist offen.'], ['Wiese', '🌾', 'Auf der Wiese blühen Blumen.'], ['Brücke', '🌉', 'Die Brücke ist lang.'], ['Mütze', '🧢', 'Die Mütze ist warm.'],
@@ -39,6 +41,8 @@ const G3: Item[] = [
   ['Stiefel', '🥾', 'Die Stiefel sind nass.'], ['Glocke', '🔔', 'Die Glocke läutet.'], ['Platz', '🏟️', 'Der Platz ist frei.'], ['viel', '💯', 'Ich habe viel Zeit.'], ['Spinne', '🕷️', 'Die Spinne baut ein Netz.'],
   ['Zwiebel', '🧅', 'Die Zwiebel ist scharf.'], ['Käfer', '🐞', 'Der Käfer krabbelt.'], ['Fuchs', '🦊', 'Der Fuchs ist schlau.'], ['Mäuse', '🐭', 'Die Mäuse sind klein.'], ['Zug', '🚆', 'Der Zug ist pünktlich.'],
   ['Pilz', '🍄', 'Der Pilz ist giftig.'], ['Schiff', '🚢', 'Das Schiff fährt aufs Meer.'], ['Pflaster', '🩹', 'Ich brauche ein Pflaster.'], ['Hütte', '🛖', 'Die Hütte ist aus Holz.'], ['Fahne', '🚩', 'Die Fahne weht im Wind.'],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Königin', '👸', 'Die Königin trägt eine Krone.'], ['Rätsel', '🧩', 'Das Rätsel ist schwer.'], ['Strand', '🐚', 'Am Strand finden wir Muscheln.'], ['Gewitter', '⛈️', 'Das Gewitter ist laut.'], ['Schlüssel', '🔑', 'Der Schlüssel passt.'], ['Fußball', '⚽', 'Wir spielen Fußball.'], ['Geburtstag', '🎂', 'Heute ist mein Geburtstag.'], ['Frühling', '🌸', 'Im Frühling blühen die Blumen.'], ['Erdbeere', '🍓', 'Die Erdbeere ist süß.'], ['Schmetterling', '🦋', 'Der Schmetterling fliegt.'], ['Eichhörnchen', '🐿️', 'Das Eichhörnchen sammelt Nüsse.'], ['Krankenhaus', '🏥', 'Das Krankenhaus ist groß.'], ['Zeitung', '📰', 'Opa liest die Zeitung.'], ['träumen', '💭', 'Nachts träumen wir oft.'], ['Fehler', '❌', 'Ich finde den Fehler.'],
 ];
 const G4: string[] = [
   'Im Sommer fahren wir ans Meer.', 'Der Hund läuft über die Straße.', 'Ich weiß, dass du kommst.', 'Das Fahrrad steht im Keller.', 'Am Fluss wachsen hohe Bäume.',
