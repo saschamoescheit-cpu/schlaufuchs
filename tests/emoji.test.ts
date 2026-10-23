@@ -22,5 +22,11 @@ describe('Emojis', () => {
         const seq = NEW_SEQUENCES.filter((x) => text.includes(x));
         expect(seq, seq.join(' ')).toEqual([]);
       });
+      // Flaggen (🇬🇧) zeigt Windows nur als zwei Buchstaben an
+      it(`${d}/${f}: keine Flaggen-Emojis`, () => {
+        const text = readFileSync(join(d, f), 'utf8');
+        const flags = [...text].filter((ch) => ch.codePointAt(0)! >= 0x1f1e6 && ch.codePointAt(0)! <= 0x1f1ff);
+        expect(flags.join(''), f).toBe('');
+      });
     }
 });
