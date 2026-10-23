@@ -2547,3 +2547,12 @@ html[data-school-font] .prompt.long {
   background: var(--bad-soft);
   color: var(--bad);
 }
+
+/* Wortfeld-Auswahl: Stand (Punkte + Wort) rechts übereinander */
+.list-row-level {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+  flex-shrink: 0;
+}

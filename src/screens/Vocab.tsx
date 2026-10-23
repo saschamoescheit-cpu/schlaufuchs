@@ -115,9 +115,10 @@ export function VocabPicker({ lv, progress, onClose, onStart }: { lv: Grade; pro
                       {s.icon}
                     </span>
                     <span className="grow">{s.title}</span>
-                    <LevelDots level={lvS} />
-                    <span className="small muted" style={{ minWidth: 60, textAlign: 'right' }}>
-                      {LEVEL_NAMES[lvS]}
+                    {/* Punkte und Stand übereinander – nebeneinander bleibt auf schmalen Handys kaum Platz für den Titel */}
+                    <span className="list-row-level">
+                      <LevelDots level={lvS} />
+                      <span className="small muted">{LEVEL_NAMES[lvS]}</span>
                     </span>
                   </label>
                 );
