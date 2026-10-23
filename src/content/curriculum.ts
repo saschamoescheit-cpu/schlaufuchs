@@ -102,7 +102,7 @@ export const isVocab = (s: Skill) => s.subject === 'englisch' && VOCAB_RE.test(s
 /** Bereiche je Fach – gliedern die Themenliste (erste passende Regel gewinnt, Reihenfolge = Anzeige) */
 const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   mathe: [
-    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen|ziffern/ },
+    { name: 'Zahlen', re: /zaehlen|vergleichen|nachbarn|gerade|zerlegen|stellenwert|runden|zahlenstrahl|zahlenfolgen|zahlwoerter|ordnen|ziffern/ },
     { name: 'Rechnen', re: /plus|minus|ergaenzen|tausch|einmaleins|geteilt|verdoppeln|kopfrechnen|schriftlich|mal-gross|division|zahlenmauer|rechendreieck|punkt-vor-strich|zahlenraetsel|ueberschlag/ },
     { name: 'Größen und Sachrechnen', re: /uhr|geld|laengen|gewichte|groessen|kalender|sachaufgaben|rechengeschichten|fahrplan|massstab/ },
     { name: 'Geometrie und Daten', re: /formen|lage|parallel|muster|symmetrie|koerper|wuerfel|flaeche|diagramme|wahrscheinlichkeit|kombinatorik|zufall|daten/ },

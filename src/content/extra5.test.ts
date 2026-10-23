@@ -230,6 +230,30 @@ describe('Zusammengesetzte Adjektive (d4-adjektive-zusammengesetzt)', () => {
   });
 });
 
+describe('Gerade und ungerade (m2-gerade-ungerade)', () => {
+  it('Antwort passt zur Zahl, Socken zur Anzahl, Summenregel zur Rechnung', () => {
+    const s = MATHE_EXTRA5.find((x) => x.id === 'm2-gerade-ungerade')!;
+    const r = mulberry32(17);
+    const par = (n: number) => (n % 2 ? 'ungerade' : 'gerade');
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, stage);
+        if (t.answer.type !== 'choice') throw new Error(t.key);
+        const ok = t.answer.options[t.answer.correct];
+        const sum = /\n(\d+) \+ (\d+)$/.exec(t.prompt);
+        const one = /^Ist (\d+) gerade/.exec(t.prompt) ?? /Ist (\d+) gerade oder ungerade\?$/.exec(t.prompt);
+        const which = /^Welche Zahl ist (gerade|ungerade)\?$/.exec(t.prompt);
+        if (sum) expect(ok, t.prompt).toBe(par(Number(sum[1]) + Number(sum[2])));
+        else if (which) {
+          expect(par(Number(ok)), t.prompt).toBe(which[1]);
+          expect(t.answer.options.filter((o) => par(Number(o)) === which[1]), t.prompt).toEqual([ok]);
+        } else if (one) expect(ok, t.prompt).toBe(par(Number(one[1])));
+        else throw new Error(t.prompt);
+        if (t.visual?.kind === 'text') expect([...t.visual.text.matchAll(/👟/gu)].length, t.prompt).toBe(Number(one![1]));
+      }
+  });
+});
+
 describe('Oberbegriffe (d2-oberbegriffe)', () => {
   it('genau eine Antwort passt; „passt nicht“ hat drei Wörter einer Gruppe', () => {
     const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd2-oberbegriffe')!;

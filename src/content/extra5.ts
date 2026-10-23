@@ -1,6 +1,6 @@
 // Weitere Themen (Nachtlauf 23./24.10.2026) nach Abgleich mit dem Lehrplan Englisch, 2. Lernjahr:
 // Ordnungszahlen und Datum – „When's your birthday? – It's on the 3rd of May.“
-import { chance, choice, pick, ri, shuffle, type Rng } from '../engine/rng';
+import { chance, choice, fixedChoice, pick, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
 import { spellTask, type Pair } from './deutsch';
@@ -549,6 +549,74 @@ function riddleTask(r: Rng, s: Stage): Gen {
   }
 }
 
+// ---------- Gerade und ungerade Zahlen (Kl. 2) ----------
+
+const even = (n: number) => n % 2 === 0;
+const parity = (n: number) => (even(n) ? 'gerade' : 'ungerade');
+/** Schuhe in Paaren: 7 → „👟👟 👟👟 👟👟 👟“ (👟 ist ein einzelner Schuh – 🧦 zeigt schon zwei Socken) */
+const shoes = (n: number) => [...Array.from({ length: Math.floor(n / 2) }, () => '👟👟'), ...(n % 2 ? ['👟'] : [])].join(' ');
+
+function parityTask(r: Rng, s: Stage): Gen {
+  // Stufe 1: Schuhe in Paaren – bleibt einer übrig?
+  if (s === 1) {
+    const n = ri(r, 2, 10);
+    return {
+      key: `s-${n}`,
+      prompt: `Hier sind ${n} Schuhe. Ist ${n} gerade oder ungerade?`,
+      visual: { kind: 'text', text: shoes(n) },
+      answer: fixedChoice(['gerade', 'ungerade'], parity(n)),
+      tags: ['paare'],
+      solution: [even(n) ? `${n} Schuhe sind ${n / 2} Paare – keiner bleibt übrig.` : `${n} Schuhe sind ${(n - 1) / 2} Paare und 1 bleibt übrig.`, `Also ist ${n} ${parity(n)}.`],
+    };
+  }
+  const roll = r();
+  // Stufe 3: Summe – gerade + gerade, ungerade + ungerade, gemischt
+  if (s === 3 && roll < 0.4) {
+    const a = ri(r, 3, 49);
+    const b = ri(r, 3, 49);
+    const sum = a + b;
+    const rule = even(a) === even(b) ? (even(a) ? 'gerade + gerade = gerade' : 'ungerade + ungerade = gerade') : 'gerade + ungerade = ungerade';
+    return {
+      key: `p-${a}+${b}`,
+      prompt: `Ist das Ergebnis gerade oder ungerade?\n${a} + ${b}`,
+      speak: `Ist das Ergebnis von ${a} plus ${b} gerade oder ungerade?`,
+      answer: fixedChoice(['gerade', 'ungerade'], parity(sum)),
+      tags: ['summe'],
+      solution: [`${a} ist ${parity(a)}, ${b} ist ${parity(b)}.`, `Regel: ${rule}.`, `Probe: ${a} + ${b} = ${sum} – ${parity(sum)}.`],
+    };
+  }
+  // Stufe 3: Welche Zahl ist gerade/ungerade?
+  if (s === 3 && roll < 0.75) {
+    const want = pick(r, ['gerade', 'ungerade'] as const);
+    const make = (p: boolean) => {
+      const x = ri(r, 11, 99);
+      return even(x) === p ? x : x + 1 > 99 ? x - 1 : x + 1;
+    };
+    const ok = make(want === 'gerade');
+    const others = new Set<number>();
+    while (others.size < 3) {
+      const x = make(want !== 'gerade');
+      if (x !== ok) others.add(x);
+    }
+    return {
+      key: `w-${want}-${ok}-${[...others].join('-')}`,
+      prompt: `Welche Zahl ist ${want}?`,
+      answer: choice(r, String(ok), [...others].map(String)),
+      tags: ['einer'],
+      solution: [`Schau auf den Einer: ${ok} endet auf ${ok % 10}.`, `${ok % 10} ist ${parity(ok % 10)} – also ist ${ok} ${want}.`],
+    };
+  }
+  // Stufe 2 (und 3): auf den Einer schauen
+  const n = s === 2 ? ri(r, 11, 40) : ri(r, 41, 99);
+  return {
+    key: `e-${n}`,
+    prompt: `Ist ${n} gerade oder ungerade?`,
+    answer: fixedChoice(['gerade', 'ungerade'], parity(n)),
+    tags: ['einer'],
+    solution: [`Schau auf den Einer: ${n} endet auf ${n % 10}.`, `Gerade Einer sind 0, 2, 4, 6, 8. ${n % 10} ist ${parity(n % 10)} – also ist ${n} ${parity(n)}.`],
+  };
+}
+
 // ---------- Punkt vor Strich und Klammern (Kl. 4) ----------
 
 /** Rechnung als Text (· und :, Minus als −) und ihr Wert; bad = Ergebnis „einfach von links nach rechts“ */
@@ -636,6 +704,19 @@ function pvsTask(r: Rng, s: Stage): Gen {
 }
 
 export const MATHE_EXTRA5: Skill[] = [
+  M(
+    2,
+    'm2-gerade-ungerade',
+    'Gerade und ungerade Zahlen',
+    '👟',
+    {
+      text: ['Gerade Zahlen kann man in Zweierpäckchen aufteilen – es bleibt keiner übrig: 6 sind 3 Paare.', 'Bei ungeraden Zahlen bleibt einer übrig: 7 sind 3 Paare und 1.', 'Trick: Schau auf den Einer. Endet die Zahl auf 0, 2, 4, 6 oder 8, ist sie gerade – sonst ungerade.'],
+      visual: { kind: 'text', text: '👟👟 👟👟 👟👟 👟' },
+      videoQuery: 'gerade und ungerade Zahlen Grundschule',
+    },
+    parityTask,
+    { tagLabels: { paare: 'Paare bilden', einer: 'auf den Einer schauen', summe: 'gerade + ungerade' }, testSeconds: 15 },
+  ),
   M(
     3,
     'm3-zahlenraetsel',
