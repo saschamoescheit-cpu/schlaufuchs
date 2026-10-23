@@ -35,3 +35,26 @@ describe('Keine Lösung im Aufgabentext', () => {
     }
   });
 });
+
+// Auswahlaufgaben: Die Lösung darf nicht auffällig oft die längste oder kürzeste Antwort sein (sonst rät man ohne zu lesen)
+describe('Länge verrät die Lösung nicht', () => {
+  it('in keinem Thema ist die Lösung in mehr als 55 % der Fälle die längste oder kürzeste Antwort', () => {
+    const r = mulberry32(8);
+    const bad: string[] = [];
+    for (const s of ALL_SKILLS) {
+      let n = 0, longest = 0, shortest = 0;
+      for (let i = 0; i < 160; i++) {
+        const t = s.generate(r, i % 2 ? 2 : 3);
+        const a = t.answer;
+        if (a.type !== 'choice' || a.options.length < 3) continue;
+        const len = a.options.map((o) => o.length);
+        const others = len.filter((_, k) => k !== a.correct);
+        n++;
+        if (len[a.correct] > Math.max(...others)) longest++;
+        if (len[a.correct] < Math.min(...others)) shortest++;
+      }
+      if (n >= 40 && Math.max(longest, shortest) / n > 0.55) bad.push(`${s.id}: ${Math.round((100 * Math.max(longest, shortest)) / n)} %`);
+    }
+    expect(bad).toEqual([]);
+  });
+});

@@ -694,7 +694,7 @@ const satzglieder3 = D(3, 'd3-satzglieder', 'Subjekt und Prädikat', '🧱', {
     const wrongs = [t.s.slice(0, 2).join(' '), t.s.slice(-2).join(' '), t.s[t.s.length - 1], t.s.slice(0, 1).join(' ')].filter((x) => x !== subj);
     return { key: `s${sent}`, prompt: `Was ist das Subjekt?\n${sent}`, answer: choice(r, subj, wrongs), tags: ['subjekt'], solution: ['Frage: Wer oder was tut hier etwas?', `→ ${subj}. Das ist das Subjekt.`] };
   }
-  return { key: `p${sent}`, prompt: `Was ist das Prädikat?\n${sent}`, answer: choice(r, pred, t.s.filter((x, i) => i !== t.pred && x.length > 2)), tags: ['prädikat'], solution: [`Frage: Was ${/(en|sind)$/.test(pred) ? 'tun' : 'tut'} ${midSentence(subj)}? / Was geschieht?`, `→ ${pred}. Das ist das Prädikat (das Verb).`] };
+  return { key: `p${sent}`, prompt: `Was ist das Prädikat?\n${sent}`, answer: choice(r, pred, [subj, ...pickN(r, t.s.filter((x, i) => i !== t.pred && x.length > 2 && x !== subj), 2)]), tags: ['prädikat'], solution: [`Frage: Was ${/(en|sind)$/.test(pred) ? 'tun' : 'tut'} ${midSentence(subj)}? / Was geschieht?`, `→ ${pred}. Das ist das Prädikat (das Verb).`] };
 }, { tagLabels: { subjekt: 'Subjekt finden', prädikat: 'Prädikat finden' }, testSeconds: 20 });
 
 // Lesetexte aus Bausteinen
