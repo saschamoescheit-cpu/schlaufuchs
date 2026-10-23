@@ -106,7 +106,7 @@ const DAYS: Word[] = [
 const MONTHS: Word[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'].map((en, i) => ({ en, de: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'][i], txt: String(i + 1) + '.' }));
 const SEASONS: Word[] = [{ en: 'spring', de: 'Frühling', e: '🌷' }, { en: 'summer', de: 'Sommer', e: '🏖️' }, { en: 'autumn', de: 'Herbst', e: '🍂' }, { en: 'winter', de: 'Winter', e: '⛄' }];
 const WEATHER: Word[] = [{ en: 'sunny', de: 'sonnig', e: '☀️' }, { en: 'rainy', de: 'regnerisch', e: '🌧️' }, { en: 'cloudy', de: 'bewölkt', e: '☁️' }, { en: 'windy', de: 'windig', e: '🌬️' }, { en: 'snowy', de: 'verschneit', e: '❄️' }, { en: 'stormy', de: 'stürmisch', e: '⛈️' }, { en: 'hot', de: 'heiß', e: '🥵' }, { en: 'cold', de: 'kalt', e: '🥶' }, { en: 'foggy', de: 'neblig', e: '🌫️' }, { en: 'icy', de: 'eisig', e: '🧊' }];
-const FEELINGS: Word[] = [{ en: 'happy', de: 'fröhlich', e: '😀' }, { en: 'sad', de: 'traurig', e: '😢' }, { en: 'angry', de: 'wütend', e: '😠' }, { en: 'tired', de: 'müde', e: '😴' }, { en: 'scared', de: 'ängstlich', e: '😱' }, { en: 'hungry', de: 'hungrig', e: '😋' }, { en: 'bored', de: 'gelangweilt', e: '🥱' }, { en: 'surprised', de: 'überrascht', e: '😮' }, { en: 'sick', de: 'krank', e: '🤒' }, { en: 'thirsty', de: 'durstig', e: '🥤' }, { en: 'excited', de: 'aufgeregt', e: '🤩' }, { en: 'worried', de: 'besorgt', e: '😟' }];
+const FEELINGS: Word[] = [{ en: 'happy', de: 'fröhlich', e: '😀' }, { en: 'sad', de: 'traurig', e: '😢' }, { en: 'angry', de: 'wütend', e: '😠' }, { en: 'tired', de: 'müde', e: '😴' }, { en: 'scared', de: 'ängstlich', e: '😱' }, { en: 'hungry', de: 'hungrig', e: '😋' }, { en: 'bored', de: 'gelangweilt', e: '😑' }, { en: 'surprised', de: 'überrascht', e: '😮' }, { en: 'sick', de: 'krank', e: '🤒' }, { en: 'thirsty', de: 'durstig', e: '🥤' }, { en: 'excited', de: 'aufgeregt', e: '🤩' }, { en: 'worried', de: 'besorgt', e: '😟' }];
 const ACTIONS: Word[] = [
   { en: 'run', de: 'rennen', e: '🏃' }, { en: 'swim', de: 'schwimmen', e: '🏊' }, { en: 'dance', de: 'tanzen', e: '💃' }, { en: 'sing', de: 'singen', e: '🎤' }, { en: 'read', de: 'lesen', e: '📚' },
   { en: 'write', de: 'schreiben', e: '✍️' }, { en: 'sleep', de: 'schlafen', e: '😴' }, { en: 'eat', de: 'essen', e: '🍽️' }, { en: 'play football', de: 'Fußball spielen', e: '⚽' }, { en: 'ride a bike', de: 'Fahrrad fahren', e: '🚴' },
@@ -128,7 +128,7 @@ const TRANSPORT: Word[] = [
 ];
 const NATURE: Word[] = [
   { en: 'tree', de: 'Baum', e: '🌳' }, { en: 'flower', de: 'Blume', e: '🌼' }, { en: 'sun', de: 'Sonne', e: '☀️' }, { en: 'moon', de: 'Mond', e: '🌙' }, { en: 'star', de: 'Stern', e: '⭐' },
-  { en: 'mountain', de: 'Berg', e: '⛰️' }, { en: 'sea', de: 'Meer', e: '🌊' }, { en: 'rainbow', de: 'Regenbogen', e: '🌈' }, { en: 'leaf', de: 'Blatt', e: '🍃' }, { en: 'forest', de: 'Wald', e: '🌲' },
+  { en: 'mountain', de: 'Berg', e: '⛰️' }, { en: 'sea', de: 'Meer', e: '🌊' }, { en: 'rainbow', de: 'Regenbogen', e: '🌈' }, { en: 'leaf', de: 'Blatt', e: '🍃' }, { en: 'forest', de: 'Wald', e: '🌲🌲🌲' },
   { en: 'beach', de: 'Strand', e: '🏖️' }, { en: 'cloud', de: 'Wolke', e: '☁️' }, { en: 'stone', de: 'Stein', e: '🪨' }, { en: 'fire', de: 'Feuer', e: '🔥' },
 ];
 const TOWN: Word[] = [
