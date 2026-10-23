@@ -668,6 +668,11 @@ a {
   cursor: default;
   color: var(--ink);
 }
+/* mit Lautsprecher in der Ecke: Text auf beiden Seiten freihalten (sonst läuft „knife and fork“ darunter) */
+.choice.has-say {
+  padding-left: 38px;
+  padding-right: 38px;
+}
 .choice .opt-say {
   position: absolute;
   right: 4px;

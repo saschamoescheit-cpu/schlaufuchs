@@ -4,6 +4,8 @@ import { chance, choice, fixedChoice, pick, ri, shuffle, type Rng } from '../eng
 import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
 import { spellTask, type Pair } from './deutsch';
+import { wordTask, type W } from './extra';
+import { registerWords, withWord } from './words';
 
 const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
@@ -865,6 +867,52 @@ function birthdayTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Breakfast – Frühstück (2. Lernjahr, Wortfeld) ----------
+// Bilder eindeutig: kein Toast (🍞 ist schon „bread“), keine Milch (🥛 ist „milk“ im Wortfeld Food), keine Tasse (☕ sieht aus wie 🍵 tea)
+
+const BREAKFAST: W[] = [
+  { en: 'breakfast', de: 'Frühstück', e: '🍳' },
+  { en: 'cereal', de: 'Müsli', e: '🥣' },
+  { en: 'honey', de: 'Honig', e: '🍯' },
+  { en: 'orange juice', de: 'Orangensaft', e: '🧃' },
+  { en: 'tea', de: 'Tee', e: '🍵' },
+  { en: 'butter', de: 'Butter', e: '🧈' },
+  { en: 'pancakes', de: 'Pfannkuchen', e: '🥞' },
+  { en: 'bacon', de: 'Speck', e: '🥓' },
+  { en: 'sausage', de: 'Würstchen', e: '🌭' },
+  { en: 'sandwich', de: 'Sandwich', e: '🥪' },
+  { en: 'croissant', de: 'Croissant', e: '🥐' },
+  { en: 'plate', de: 'Teller', e: '🍽️' },
+  { en: 'spoon', de: 'Löffel', e: '🥄' },
+  { en: 'knife and fork', de: 'Messer und Gabel', e: '🍴' },
+];
+registerWords('e2-breakfast', BREAKFAST);
+const EATS = BREAKFAST.filter((w) => !['breakfast', 'plate', 'spoon', 'knife and fork'].includes(w.en));
+
+function breakfastTask(r: Rng, s: Stage): Gen {
+  // ab Stufe 2 manchmal: Was isst das Kind zum Frühstück? (zwei Dinge hören)
+  if (s > 1 && chance(r, 0.3)) {
+    const [a, b] = shuffle(r, EATS).slice(0, 2);
+    const kid = pick(r, KIDS);
+    const sentence = `I have ${a.en} and ${b.en} for breakfast.`;
+    const wrong = [0, 1, 2].map(() => shuffle(r, EATS.filter((x) => x !== a && x !== b)).slice(0, 2));
+    const opts = [`${a.e} ${b.e}`, `${a.e} ${wrong[0][0].e}`, `${wrong[1][0].e} ${b.e}`, `${wrong[2][0].e} ${wrong[2][1].e}`];
+    return {
+      key: `f-${a.en}-${b.en}`,
+      prompt: `Hör gut zu! Was isst ${kid} zum Frühstück?`,
+      speak: `Hör gut zu! Was isst ${kid} zum Frühstück?`,
+      listen: { text: sentence, lang: 'en' },
+      answer: { ...choice(r, opts[0], opts.slice(1)), big: true },
+      tags: ['frühstück'],
+      // zählt für die Vokabelkarte des ersten Worts (es muss erkannt werden, um richtig zu antworten)
+      word: a.en,
+      solution: [`„${sentence}“`, `${a.en} = ${a.de}, ${b.en} = ${b.de}`],
+      pronounce: { text: sentence, lang: 'en' },
+    };
+  }
+  return withWord(wordTask(r, BREAKFAST, s), BREAKFAST);
+}
+
 // ---------- There is / There are (2. Lernjahr) ----------
 
 const THINGS: { e: string; one: string; many: string }[] = [
@@ -932,6 +980,19 @@ function thereTask(r: Rng, s: Stage): Gen {
 const fixedChoiceEn = (options: string[], ok: string) => ({ type: 'choice' as const, options, correct: options.indexOf(ok), speakOptions: 'en' as const });
 
 export const ENGLISCH_EXTRA5: Skill[] = [
+  E(
+    2,
+    'e2-breakfast',
+    'Breakfast – Frühstück',
+    '🥣',
+    {
+      text: ['cereal = Müsli, honey = Honig, orange juice = Orangensaft, tea = Tee, pancakes = Pfannkuchen.', 'Auf dem Tisch: plate = Teller, spoon = Löffel, knife and fork = Messer und Gabel.', "What do you have for breakfast? – I have cereal and orange juice.", 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'],
+      visual: { kind: 'emoji', chars: '🥣🧃🥞' },
+      videoQuery: 'breakfast vocabulary for kids English',
+    },
+    breakfastTask,
+    { tagLabels: { 'bild-wort': 'Bild → englisches Wort', hören: 'Hörverstehen', übersetzen: 'Deutsch → Englisch', schreiben: 'Wörter schreiben', frühstück: 'Frühstück verstehen' }, testSeconds: 15 },
+  ),
   E(
     2,
     'e2-there-is-are',

@@ -314,6 +314,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'M0_9VgZc41g', title: 'Kannst du dieses Zahlenrätsel lösen? (Teil 2, Rechenketten)', channel: 'Mathe mit MO & Ni', len: '4:03' },
     { id: 'lTwdzkDvZFI', title: 'Zahlenrätsel || Mathematik (3. - 6. Klasse)', channel: 'Expresslehrer', len: '7:24' },
   ],
+  'e2-breakfast': [
+    { id: 'kWnrd8wG5tk', title: 'Breakfast Vocabulary for Kids! | English Vocabulary | Breakfast Flashcards', channel: 'Twinkl Educational Publishing', len: '4:15' },
+    { id: 'EIVIRgueIiA', title: "Breakfast lunch dinner I'm hungry - English songs for beginners", channel: 'ZooZooSong - ABC Kids Song', len: '2:06' },
+  ],
   'e2-there-is-are': [
     { id: '4MfR976s6dk', title: 'How To Teach There Is There Are -- There Is There Are Song', channel: 'English Learning Goldmine', len: '2:15' },
     { id: 'ry9LKYdjeUU', title: 'There Is / There Are Song | Rooms and Furniture Vocabulary for Kids', channel: 'Toca story time', len: '1:41' },
