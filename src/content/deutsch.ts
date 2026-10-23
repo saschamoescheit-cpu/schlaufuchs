@@ -83,6 +83,8 @@ const SILBEN: [string, string][] = [
   ['Ba-na-ne', '🍌'], ['To-ma-te', '🍅'], ['Gi-raf-fe', '🦒'], ['Ra-ke-te', '🚀'], ['Me-lo-ne', '🍉'], ['Ka-rot-te', '🥕'], ['Zi-tro-ne', '🍋'], ['Te-le-fon', '☎️'],
   ['Schmet-ter-ling', '🦋'], ['E-le-fant', '🐘'], ['Kro-ko-dil', '🐊'], ['Pa-pa-gei', '🦜'], ['Re-gen-schirm', '☂️'], ['Tan-nen-baum', '🎄'], ['A-na-nas', '🍍'],
   ['A-vo-ca-do', '🥑'], ['Ma-ri-en-kä-fer', '🐞'], ['Was-ser-me-lo-ne', '🍉'],
+  ['Zug', '🚆'], ['Ball', '⚽'], ['Rad', '🚲'], ['Ku-chen', '🍰'], ['Bril-le', '👓'], ['Pin-sel', '🖌️'], ['Ka-mel', '🐫'], ['Ein-horn', '🦄'],
+  ['Pin-gu-in', '🐧'], ['Hub-schrau-ber', '🚁'], ['Scho-ko-la-de', '🍫'], ['Feu-er-wehr-au-to', '🚒'],
 ];
 const silben = D(1, 'd1-silben', 'Silben klatschen', '👏', {
   text: ['Wörter bestehen aus Silben – das sind Sprechteile.', 'Sprich das Wort langsam und klatsche bei jeder Silbe: Ba – na – ne. Das sind 3 Silben.', 'Jede Silbe hat einen Selbstlaut (a, e, i, o, u, ä, ö, ü) oder Doppellaut (au, ei, eu).'],
