@@ -11,20 +11,7 @@ import { correctText } from '../engine/check';
 import { Visual } from './Visual';
 import { WORDS } from '../content/words';
 import { speak } from './speech';
-import { addWords, hasEnglish, splitLangs, titleParts, type LangPart } from './langsplit';
-
-// Wortlisten fürs gemischte Vorlesen einmal übernehmen (die Wortfelder tragen sich beim Laden der Inhalte ein)
-let wordsIn = 0;
-function mixedParts(skill: Skill): LangPart[] | undefined {
-  if (skill.subject !== 'englisch') return undefined;
-  const n = Object.keys(WORDS).length;
-  if (n !== wordsIn) {
-    addWords(Object.values(WORDS).flat());
-    wordsIn = n;
-  }
-  const parts = [...titleParts(skill.title), ...splitLangs(skill.explain.text.join(' '))];
-  return hasEnglish(parts) ? parts : undefined;
-}
+import { mixedParts } from './mixed';
 
 export function VideoCard({ v, onPlay }: { v: VideoRef; onPlay: () => void }) {
   return (
@@ -96,7 +83,7 @@ export function Videos({ skill }: { skill: Skill }) {
 export function ExplainBody({ skill }: { skill: Skill }) {
   const text = skill.explain.text.join(' ');
   // Englisch-Themen: Deutsch mit deutscher, Englisch mit englischer Stimme (Nachtlauf 23.10.2026)
-  const parts = useMemo(() => mixedParts(skill), [skill]);
+  const parts = useMemo(() => mixedParts(skill.subject, text, skill.title), [skill, text]);
   return (
     <div className="stack">
       <div className="row">

@@ -90,8 +90,18 @@ export function splitLangs(text: string): LangPart[] {
   }
   if (last < text.length) toks.push({ s: text.slice(last), word: false, lang: null });
 
-  // unklare Wörter: die Sprache des vorigen Worts – am Satzanfang die des nächsten
   const words = toks.filter((t) => t.word);
+  // feste Lösungssätze der App: „Orange heißt auf Englisch: orange“ / „orange heißt auf Deutsch: Orange“ – was vor
+  // „heißt auf …“ steht, ist die andere Sprache (wichtig bei gleich geschriebenen Wörtern)
+  for (let i = 1; i + 2 < words.length; i++) {
+    if (words[i].s !== 'heißt' || words[i + 1].s !== 'auf' || !/^(Englisch|Deutsch)$/.test(words[i + 2].s)) continue;
+    const before: Lang = words[i + 2].s === 'Englisch' ? 'de' : 'en';
+    for (let j = i - 1; j >= 0; j--) {
+      words[j].lang = before;
+      if (words[j].start) break;
+    }
+  }
+  // unklare Wörter: die Sprache des vorigen Worts – am Satzanfang die des nächsten
   for (let i = 0; i < words.length; i++) {
     if (words[i].lang) continue;
     let p = i - 1;
@@ -104,6 +114,15 @@ export function splitLangs(text: string): LangPart[] {
   }
   // eine Zahl oder ein Name zwischen zwei Sprachen gehört zum Deutschen (Ansagen wie „twenty = 20“)
   for (let i = 0; i < toks.length; i++) if (!toks[i].word && /\d/.test(toks[i].s)) toks[i].lang = 'de';
+  // buchstabierte Wörter („R – A – B – B – I – T“): am Stück, mit den englischen Buchstabennamen
+  const letter = (t: Tok | undefined) => !!t && t.word && /^[A-Z]$/.test(t.s);
+  const dash = (t: Tok | undefined) => !!t && !t.word && /^\s*–\s*$/.test(t.s);
+  for (let i = 0; i < toks.length; i++) {
+    if (!letter(toks[i]) || (dash(toks[i - 1]) && letter(toks[i - 2]))) continue;
+    let j = i;
+    while (dash(toks[j + 1]) && letter(toks[j + 2])) j += 2;
+    if (j > i) for (let k = i; k <= j; k += 2) toks[k].lang = 'en';
+  }
 
   // zu Abschnitten zusammenfassen: Satzzeichen am Ende bleiben beim vorigen, Zeichen wie „=“ „–“ gehen zum nächsten
   const parts: LangPart[] = [];
@@ -132,6 +151,12 @@ export function splitLangs(text: string): LangPart[] {
   if (cur) cur.text += pendingGap;
   else if (pendingGap.trim()) parts.push({ text: pendingGap, lang: 'de' });
 
+  // „Puppe = doll“ (deutsch vorne): „heißt“ gehört zum Deutschen, die englische Stimme sagt kein „equals“
+  for (let i = 1; i < parts.length; i++)
+    if (parts[i].lang === 'en' && /^\s*=/.test(parts[i].text) && parts[i - 1].lang === 'de') {
+      parts[i - 1].text = `${parts[i - 1].text.trimEnd()} heißt`;
+      parts[i].text = parts[i].text.replace(/^\s*=\s*/, '');
+    }
   // kleine Reste glätten: ein einzelnes Wort ohne Buchstaben-Inhalt nicht eigens vorlesen
   return parts
     .map((p) => ({ ...p, text: p.lang === 'de' ? p.text.replace(/^\s*=\s*/, 'heißt ').replace(/\s=\s/g, ' heißt ') : p.text.replace(/\s*[=–—→]\s*$/, '') }))

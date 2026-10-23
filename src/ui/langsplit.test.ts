@@ -22,6 +22,13 @@ describe('gemischtes Vorlesen: Deutsch und Englisch auseinanderhalten', () => {
     expect(show('47 heißt forty-seven.')).toEqual(['de:47 heißt', 'en:forty-seven.']);
     expect(show('twenty = 20.')).toEqual(['en:twenty', 'de:heißt 20.']);
   });
+  it('Lösungswege: buchstabierte Wörter englisch am Stück, „Puppe = doll“ ohne „equals“', () => {
+    expect(show('Hase heißt auf Englisch: rabbit Buchstabiert: R – A – B – B – I – T')).toEqual(['de:Hase heißt auf Englisch:', 'en:rabbit', 'de:Buchstabiert:', 'en:R – A – B – B – I – T']);
+    expect(show('Puppe = doll')).toEqual(['de:Puppe heißt', 'en:doll']);
+    expect(show('orange heißt auf Englisch: orange')).toEqual(['de:orange heißt auf Englisch:', 'en:orange']);
+    expect(show('Bus heißt auf Englisch: bus')).toEqual(['de:Bus heißt auf Englisch:', 'en:bus']);
+    expect(show('park heißt auf Deutsch: Park')).toEqual(['en:park', 'de:heißt auf Deutsch: Park']);
+  });
   it('Satzanfang: unbekanntes Wort geht mit dem nächsten (Steh auf / Stand up)', () => {
     expect(show('Stand up. – Steh auf. Open your book. – Öffne dein Buch.')).toEqual(['en:Stand up.', 'de:– Steh auf.', 'en:Open your book.', 'de:– Öffne dein Buch.']);
   });

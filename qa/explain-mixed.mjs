@@ -82,6 +82,31 @@ await p.waitForTimeout(2500);
 check((await said()).length === n && n >= 1 && n < s1.length, `Stopp: nach ${n} Abschnitt(en) Schluss`);
 await p.keyboard.press('Escape');
 
+// Üben: der Lösungsweg nach einer falschen Antwort (Englisch-Thema) – Englisch mit englischer Stimme
+await p.goto(url);
+await p.getByRole('button', { name: 'Englisch' }).first().click();
+await p.getByRole('tab', { name: /^1\. Lernjahr/ }).first().click().catch(() => {});
+await p.locator('.topic-main', { hasText: 'Colours' }).first().click();
+let solved = null;
+for (let i = 0; i < 8 && !solved; i++) {
+  await p.waitForTimeout(400);
+  const choices = p.locator('.choice');
+  if (await choices.count()) await choices.last().click();
+  else {
+    await p.keyboard.type('xyz');
+    await p.keyboard.press('Enter');
+  }
+  await p.waitForTimeout(500);
+  const read = p.getByRole('button', { name: 'Lösungsweg vorlesen' });
+  if (await read.isVisible().catch(() => false)) {
+    await reset();
+    await read.click();
+    await p.waitForTimeout(2500);
+    solved = await said();
+  } else await p.getByRole('button', { name: 'Weiter' }).first().click().catch(() => {});
+}
+check(!!solved && solved.some((x) => x.lang === 'en-GB') && solved.some((x) => x.lang === 'de-DE'), `Lösungsweg gemischt: ${(solved ?? []).map((x) => `${x.lang.slice(0, 2)}:${x.text}`).join(' | ')}`);
+
 // Mathe: wie bisher in einem Stück, deutsch
 await p.goto(url);
 await p.getByRole('button', { name: 'Mathe' }).first().click();

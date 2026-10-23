@@ -16,6 +16,7 @@ import { sounds } from '../ui/sound';
 import { stopSpeaking } from '../ui/speech';
 import { OUTFITS } from '../ui/outfitArt';
 import { SayIt } from '../ui/SayIt';
+import { mixedParts } from '../ui/mixed';
 
 const PRAISE = ['Super!', 'Klasse!', 'Richtig!', 'Toll gemacht!', 'Spitze!', 'Genau!', 'Prima!', 'Stark!'];
 
@@ -249,7 +250,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
                 )}
                 <div className="row" style={{ marginTop: 12 }}>
                   <h3 className="grow">So geht&apos;s:</h3>
-                  <Speak text={[result.trap?.hint, ...item.task.solution].filter(Boolean).join(' ')} label="Lösungsweg vorlesen" />
+                  <Speak text={[result.trap?.hint, ...item.task.solution].filter(Boolean).join(' ')} parts={mixedParts(skill?.subject, [result.trap?.hint, ...item.task.solution].filter(Boolean).join(' '))} label="Lösungsweg vorlesen" />
                 </div>
                 <ol className="steps">
                   {item.task.solution.map((s, i) => (
