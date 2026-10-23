@@ -70,3 +70,18 @@ describe('Keine unpassenden Ablenker', () => {
     }
   });
 });
+
+describe('Mehrzahl-Ablenker (Deutsch)', () => {
+  it('höchstens ein Umlaut je Ablenker und kein „Hass“', () => {
+    const skill = ALL_SKILLS.find((s) => s.id === 'd2-mehrzahl')!;
+    const r = mulberry32(4);
+    for (let i = 0; i < 1500; i++) {
+      const t = skill.generate(r, 2);
+      if (t.answer.type !== 'choice') continue;
+      for (const o of t.answer.options) {
+        expect((o.match(/[äöü]/g) ?? []).length, o).toBeLessThanOrEqual(1);
+        expect(o).not.toBe('Hass');
+      }
+    }
+  });
+});
