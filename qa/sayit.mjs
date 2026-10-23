@@ -24,6 +24,13 @@ for (const allowed of [false, true]) {
   await p.waitForTimeout(400);
   await p.locator('.choice').first().click();
   await p.waitForTimeout(400);
+  // Zufallsaufgabe ohne fettes Zielwort in der Rückmeldung (z. B. Bildauswahl): weiterblättern
+  for (let k = 0; k < 6 && allowed && !(await p.evaluate(() => [...document.querySelectorAll('.feedback span b')].some((b) => /^[a-z ]+$/i.test(b.textContent ?? '')))); k++) {
+    await p.getByRole('button', { name: 'Weiter' }).click().catch(() => {});
+    await p.waitForTimeout(400);
+    await p.locator('.choice').first().click().catch(() => {});
+    await p.waitForTimeout(400);
+  }
   const btn = p.getByRole('button', { name: /Sprich nach/ }).first();
   const visible = await btn.isVisible().catch(() => false);
   if (!allowed) {
