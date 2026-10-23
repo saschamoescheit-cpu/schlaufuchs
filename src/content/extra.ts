@@ -503,6 +503,9 @@ const QA: [string, string, string[]][] = [
   ['Where are you from?', 'I’m from Germany.', ['I’m nine years old.', 'I’m fine, thank you.', 'Yes, I am from here.']], ['Can you sing?', 'Yes, I can.', ['Yes, I do.', 'Yes, I am.', 'I like songs.']],
   ['Is your dog big?', 'No, it isn’t.', ['No, I don’t.', 'No, I can’t.', 'No, I haven’t.']], ['How do you get to school?', 'I go by bus.', ['I like school.', 'It is big.', 'Yes, I do.']],
   ['Are you tired?', 'No, I’m not.', ['No, I don’t.', 'No, it isn’t.', 'No, I can’t.']], ['What’s your teacher’s name?', 'Her name is Mrs Smith.', ['I am a good teacher.', 'Yes, she is very nice.', 'I like my teacher a lot.']],
+  ['Can you dance?', 'Yes, I can.', ['Yes, I do.', 'Yes, I am.', 'I like music.']],
+  ['What’s your favourite sport?', 'My favourite sport is tennis.', ['I am good at sports.', 'Yes, I play every day.', 'It is a green ball.']],
+  ['Is your bag heavy?', 'Yes, it is.', ['Yes, I am.', 'Yes, I can.', 'Yes, I have.']],
 ];
 function qaTask(r: Rng, s: Stage): Gen {
   const [q, a, w] = pick(r, QA);
