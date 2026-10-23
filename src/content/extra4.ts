@@ -277,6 +277,12 @@ const UK: { q: string; a: string; w: string[]; e: string; info: string }[] = [
   { q: 'Was ist „Boxing Day“?', a: 'der 26. Dezember', w: ['ein Boxkampf', 'der 1. Januar', 'der Ostermontag'], e: '🎁', info: 'Boxing Day ist der zweite Weihnachtstag – der 26. Dezember.' },
   { q: 'Wie heißt der berühmte Detektiv aus London?', a: 'Sherlock Holmes', w: ['Harry Potter', 'Peter Pan', 'Mr Bean'], e: '🔍', info: 'Sherlock Holmes wohnt in den Geschichten in der Baker Street 221b.' },
   { q: 'Wie sagt man in Großbritannien zum Aufzug?', a: 'lift', w: ['elevator', 'escalator', 'stairs'], e: '⬆️', info: 'In Großbritannien sagt man lift, in Amerika elevator.' },
+  { q: 'Was isst man in Großbritannien gern zum Tee am Nachmittag?', a: 'Scones mit Marmelade und Sahne', w: ['Brezeln mit Butter und Salz', 'Pizza mit Salami und Käse', 'Bratwurst mit Senf und Brot'], e: '☕', info: 'Zur „afternoon tea“ gibt es oft Scones – kleine Brötchen mit Marmelade und dicker Sahne.' },
+  { q: 'Welche Sportart mit einem eiförmigen Ball wurde in England erfunden?', a: 'Rugby', w: ['Basketball', 'Handball', 'Volleyball'], e: '🏉', info: 'Rugby ist nach der englischen Stadt Rugby benannt, wo es erfunden wurde.' },
+  { q: 'Wie heißt der berühmte Steinkreis in England?', a: 'Stonehenge', w: ['Big Ben', 'Tower Bridge', 'London Eye'], e: '🪨', info: 'Stonehenge ist über 4000 Jahre alt – riesige Steine stehen dort im Kreis.' },
+  { q: 'Wie sagt man in Großbritannien zur Wohnung?', a: 'flat', w: ['apartment', 'house', 'garden'], e: '🏢', info: 'In Großbritannien sagt man flat, in Amerika apartment.' },
+  { q: 'Wer ist ein „Bobby“ in Großbritannien?', a: 'ein Polizist', w: ['ein Busfahrer', 'ein Bäcker', 'ein Lehrer'], e: '👮', info: 'Britische Polizisten werden oft „Bobbies“ genannt.' },
+  { q: 'Wie heißt das Ungeheuer, das in einem See in Schottland leben soll?', a: 'Nessie', w: ['Godzilla', 'King Kong', 'Yeti'], e: '🦕', info: 'Im See Loch Ness soll Nessie leben – gesehen hat sie aber noch niemand sicher.' },
 ];
 function ukTask(r: Rng, s: Stage): Gen {
   const x = pick(r, UK);
