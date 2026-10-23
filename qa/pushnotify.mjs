@@ -2,6 +2,7 @@
 // WebKit hat unter Windows keinen Service Worker). Die Einstellungen schalten Mitteilungen für dieses Gerät ein und
 // schicken das Abo an die Funktion schlaufuchs-push (hier beantwortet); jede Art an und aus; eine an den Service Worker
 // zugestellte Mitteilung wird angezeigt; ihre Sprungziele öffnen das richtige Kind bzw. seine Vokabeln; wieder aus.
+// Für die Familie: an/aus und Arten im Eltern-Datensatz; ein zweites Gerät zieht still nach, ohne Erlaubnis sagt es das.
 // iPhone im Browser: Hinweis auf den Home-Bildschirm; ohne Konto: Hinweis aufs Anmelden; Funktion fehlt: gesagt.
 // Aufruf: node qa/pushnotify.mjs [Adresse der gebauten App, Standard die Vorschau :5193] (vorher npm run build)
 import { chromium, devices } from 'playwright';
@@ -25,9 +26,9 @@ const APP = { schema: 1, profiles: [kid('k1', 'Mia'), kid('k2', 'Ben')], progres
 const SESSION = { access_token: 'test-token', refresh_token: 'r', expires_at: Math.floor(Date.now() / 1000) + 3 * 3600, email: 'eltern@example.com', name: 'familie', url: 'https://gypgaepmlftnqwywupeq.supabase.co' };
 const seen = JSON.stringify(['aufgaben', 'sterne', 'serie', 'lernziele', 'fehlerjaeger', 'tests', 'bestnote', 'stufe3', 'tagesziel', 'blitz', 'meister', 'vokabeln'].flatMap((x) => [1, 2, 3].map((t) => `${x}:${t}`)));
 
-async function context(device, { signedIn = true, fakePush = true } = {}) {
+async function context(device, { signedIn = true, fakePush = true, family = null, grant = true } = {}) {
   const ctx = await b.newContext({ ...device, locale: 'de-DE', serviceWorkers: 'allow' });
-  await ctx.grantPermissions(['notifications'], { origin });
+  if (grant) await ctx.grantPermissions(['notifications'], { origin });
   const calls = [];
   const cors = { 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': '*', 'Access-Control-Allow-Methods': '*' };
   await ctx.route(/supabase\.co\/functions\/v1\/schlaufuchs-push/, async (r) => {
@@ -68,6 +69,7 @@ async function context(device, { signedIn = true, fakePush = true } = {}) {
   const errs = [];
   p.on('pageerror', (e) => errs.push(e.message));
   await p.goto(url);
+  const app = family ? { ...APP, parent: { pin: null, push: family } } : APP;
   await p.evaluate(
     ({ APP, SESSION, signedIn, seen }) => {
       localStorage.clear();
@@ -76,7 +78,7 @@ async function context(device, { signedIn = true, fakePush = true } = {}) {
       for (const id of ['k1', 'k2']) localStorage.setItem(`schlaufuchs:badges-seen:${id}`, seen);
       if (signedIn) localStorage.setItem('schlaufuchs:auth.v1', JSON.stringify(SESSION));
     },
-    { APP, SESSION, signedIn, seen },
+    { APP: app, SESSION, signedIn, seen },
   );
   return { ctx, p, calls, errs };
 }
@@ -87,7 +89,7 @@ const openSettings = async (p) => {
   await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
   await p.waitForTimeout(400);
   const card = p.locator('details.push-card');
-  if (!(await card.getAttribute('open').catch(() => null))) await card.locator('summary').click();
+  if ((await card.getAttribute('open').catch(() => null)) === null) await card.locator('summary').click(); // offen: open=""
   await p.waitForTimeout(300);
   return card;
 };
@@ -111,6 +113,9 @@ const main = (card) => card.getByRole('checkbox', { name: 'Mitteilungen auf dies
   ok(sub?.kinds?.learn && sub?.kinds?.tests && sub?.kinds?.cards, 'alle drei Arten zuerst an');
   ok(await card.getByRole('status').filter({ hasText: 'Mitteilungen sind an' }).isVisible(), 'gesagt: an – eine erste ist unterwegs');
   ok(await main(card).isChecked(), 'Schalter an');
+  const fam = async () => p.evaluate(() => JSON.parse(localStorage.getItem('schlaufuchs:v1')).parent?.push ?? null);
+  ok((await fam())?.on === true, 'für die Familie an (Eltern-Datensatz, wird abgeglichen)');
+  ok(sub?.quiet !== true, 'selbst eingeschaltet: mit Gruß');
   if (process.env.SHOTS) await card.screenshot({ path: `${process.env.SHOTS}/push-card.png` });
   const cards = card.getByRole('checkbox', { name: 'Vokabelkarten fällig' });
   ok((await card.getByRole('checkbox').count()) === 4, 'je Art ein Schalter: Lern-Erinnerung, Klassenarbeit, Vokabelkarten');
@@ -121,6 +126,11 @@ const main = (card) => card.getByRole('checkbox', { name: 'Mitteilungen auf dies
   await cards.click();
   await p.waitForTimeout(600);
   ok(calls.filter((c) => c.action === 'settings').pop()?.kinds?.cards === true, 'und wieder an');
+  await card.getByRole('checkbox', { name: 'Klassenarbeit naht' }).click();
+  await p.waitForTimeout(600);
+  ok((await fam())?.kinds?.tests === false && (await fam())?.on === true, 'Klassenarbeit aus: auch für die Familie');
+  await card.getByRole('checkbox', { name: 'Klassenarbeit naht' }).click();
+  await p.waitForTimeout(600);
   const again = await openSettings(p);
   ok(await main(again).isChecked(), 'nach Neuladen: weiter an');
 
@@ -162,7 +172,54 @@ const main = (card) => card.getByRole('checkbox', { name: 'Mitteilungen auf dies
   ok(calls.some((c) => c.action === 'unsubscribe' && c.endpoint === sub?.subscription?.endpoint), 'ausgeschaltet: die Funktion vergisst das Gerät');
   ok(Number(await p.evaluate(() => localStorage.getItem('qa.unsubscribed'))) >= 1, 'und das Gerät meldet sich ab');
   ok(!(await main(off).isChecked()) && (await off.getByRole('checkbox').count()) === 1, 'Schalter aus, Arten ausgeblendet');
+  ok((await p.evaluate(() => JSON.parse(localStorage.getItem('schlaufuchs:v1')).parent?.push?.on)) === false, 'für die ganze Familie aus');
   ok(errs.length === 0, `keine Seitenfehler ${errs.slice(0, 2).join(' | ')}`);
+  await ctx.close();
+}
+
+// ---------- das zweite Gerät (z. B. das iPad): zieht der Familie nach ----------
+{
+  const family = { on: true, kinds: { learn: true, tests: false, cards: true } };
+  const { ctx, p, calls, errs } = await context(devices['Pixel 7'], { family });
+  await p.waitForFunction(() => navigator.serviceWorker?.ready, null, { timeout: 15000 }).catch(() => {});
+  const card = await openSettings(p);
+  await p.waitForTimeout(1200);
+  const sub = calls.find((c) => c.action === 'subscribe');
+  ok(!!sub && sub.quiet === true, 'auf einem anderen Gerät eingeschaltet, hier schon erlaubt: still selbst abonniert (ohne Gruß)');
+  ok(sub?.kinds?.learn === true && sub?.kinds?.tests === false && sub?.kinds?.cards === true, 'mit den Arten der Familie');
+  ok(await main(card).isChecked(), 'Schalter hier an');
+  ok(!(await card.getByRole('checkbox', { name: 'Klassenarbeit naht' }).isChecked()) && (await card.getByRole('checkbox', { name: 'Lern-Erinnerung' }).isChecked()), 'Arten wie in der Familie');
+  // ein anderes Gerät ändert eine Art, dann schaltet es aus (kommt per Abgleich in den Eltern-Datensatz)
+  const remote = (push) =>
+    p.evaluate((push) => {
+      const d = JSON.parse(localStorage.getItem('schlaufuchs:v1'));
+      d.parent = { ...d.parent, push };
+      localStorage.setItem('schlaufuchs:v1', JSON.stringify(d));
+      localStorage.setItem('schlaufuchs:v1:at', String(Date.now() + 1000));
+    }, push);
+  await remote({ on: true, kinds: { learn: false, tests: false, cards: true } });
+  const c2 = await openSettings(p);
+  await p.waitForTimeout(800);
+  ok(calls.filter((c) => c.action === 'settings').pop()?.kinds?.learn === false, 'Art auf dem anderen Gerät geändert: hier übernommen und der Funktion gesagt');
+  ok(!(await c2.getByRole('checkbox', { name: 'Lern-Erinnerung' }).isChecked()), 'und hier angezeigt');
+  await remote({ on: false, kinds: { learn: false, tests: false, cards: true } });
+  const c3 = await openSettings(p);
+  await p.waitForTimeout(800);
+  ok(calls.some((c) => c.action === 'unsubscribe' && c.endpoint === sub?.subscription?.endpoint), 'auf dem anderen Gerät ausgeschaltet: hier abgemeldet');
+  ok(!(await main(c3).isChecked()) && (await c3.getByRole('checkbox').count()) === 1, 'Schalter hier aus');
+  ok(errs.length === 0, `keine Seitenfehler ${errs.slice(0, 2).join(' | ')}`);
+  await ctx.close();
+}
+
+// ---------- ein Gerät, das Mitteilungen noch nie erlaubt hat: fragt nicht selbst, sagt es ----------
+{
+  const { ctx, p, calls } = await context(devices['Pixel 7'], { family: { on: true, kinds: { learn: true, tests: true, cards: true } }, grant: false });
+  const card = await openSettings(p);
+  await p.waitForTimeout(800);
+  ok(!calls.some((c) => c.action === 'subscribe'), 'ohne Erlaubnis: nicht abonniert, nicht von selbst gefragt');
+  ok((await card.getAttribute('open')) !== null && (await card.locator('.push-wait').isVisible()), 'Bereich offen mit „In der Familie eingeschaltet – auf diesem Gerät noch nicht“');
+  ok(await card.locator('summary').filter({ hasText: 'auf diesem Gerät noch erlauben' }).isVisible(), 'Überschrift sagt: hier noch erlauben');
+  ok(!(await main(card).isChecked()), 'Schalter hier aus – ein Tippen genügt');
   await ctx.close();
 }
 

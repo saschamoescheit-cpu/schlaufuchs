@@ -23,6 +23,17 @@ schadet nicht.
 3. Sofort kommt „Mitteilungen sind an ✓“. Kommt sie nicht, zeigt die Karte den Grund an (z. B. „Auf dem Server noch
    nicht eingerichtet.“).
 
+## Für die ganze Familie
+An/aus und die drei Arten gelten für alle Geräte der Familie: Sie stehen im Eltern-Datensatz () und werden
+mit abgeglichen.
+- **Auf einem Gerät eingeschaltet:** Jedes andere Gerät, das Mitteilungen schon einmal erlaubt hat, meldet sich beim
+  nächsten Öffnen von selbst an (ohne Gruß). Hat ein Gerät noch nie erlaubt, steht in den Einstellungen „In der Familie
+  eingeschaltet – auf diesem Gerät noch nicht“ – dort einmal einschalten und erlauben. Das verlangen Apple und die
+  Browser; ein Gerät kann das nicht für ein anderes tun.
+- **Auf einem Gerät ausgeschaltet:** Die Funktion schickt ab sofort an kein Gerät der Familie mehr etwas – auch an
+  Geräte, die seitdem nicht offen waren. Beim nächsten Öffnen melden sie sich ab.
+- **Eine Art geändert:** gilt sofort für alle Geräte (die Funktion liest die Arten der Familie).
+
 ## Was wann kommt (Uhrzeit des Geräts)
 | Art | Wann | Antippen öffnet |
 |---|---|---|

@@ -59,7 +59,14 @@ export interface AppData {
   progress: Record<string, Progress>;
   activeId: string | null;
   /** für den späteren Eltern-Bereich */
-  parent: { pin: string | null };
+  parent: { pin: string | null; push?: FamilyPush };
+}
+
+/** Mitteilungen für die ganze Familie (wird mit dem Eltern-Datensatz zwischen den Geräten abgeglichen, Sascha 23.10.2026):
+ *  an/aus und welche Arten. Jedes Gerät muss sie trotzdem einmal selbst erlauben (Apple/Browser). */
+export interface FamilyPush {
+  on: boolean;
+  kinds: { learn: boolean; tests: boolean; cards: boolean };
 }
 
 const KEY = 'schlaufuchs:v1';

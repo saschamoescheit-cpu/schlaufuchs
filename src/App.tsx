@@ -4,7 +4,8 @@ import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
 import { getData, hasSaveError, setActive, useData, usesSchoolFont } from './data/store';
-import { takePushTarget } from './data/push';
+import { followFamily, takePushTarget } from './data/push';
+import { useSyncStatus } from './data/sync';
 import { mirrorOk } from './data/mirror';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
@@ -132,6 +133,13 @@ export default function App() {
     cardsFor.current = null;
     setStack(cards ? [{ r: 'tab', tab: 'home' }, { r: 'subject', subject: 'englisch' }] : [{ r: 'tab', tab: 'home' }]);
   }, [data.activeId]);
+
+  // Mitteilungen für die ganze Familie: kommt per Abgleich „an“, „aus“ oder eine andere Art, zieht dieses Gerät nach
+  const sync = useSyncStatus();
+  const familyPushKey = JSON.stringify(data.parent?.push ?? null);
+  useEffect(() => {
+    void followFamily(sync.signedIn);
+  }, [familyPushKey, sync.signedIn]);
 
   // Angetippte Mitteilung: …/#kind=<id> (dieses Kind), …/#karten=<id> (seine Vokabelkarten) – beim Start und, wenn die
   // App schon offen ist, wenn der Service Worker die Adresse wechselt

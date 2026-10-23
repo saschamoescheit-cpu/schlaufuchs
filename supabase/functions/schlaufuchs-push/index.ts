@@ -2,7 +2,7 @@
 // Datei – einmal im Dashboard einfügen (Edge Functions → Deploy a new function → Via editor, Name „schlaufuchs-push“,
 // dann „Verify JWT“ aus: die Funktion prüft die Anmeldung der Eltern selbst).
 //
-// Was sie schickt (jedes Gerät schaltet für sich ein, jede Art einzeln):
+// Was sie schickt (an/aus und die Arten gelten für die Familie – Eltern-Datensatz parent.push –, jedes Gerät abonniert für sich):
 // - Lern-Erinnerung: ein Kind hat heute noch nicht geübt (17–19 Uhr auf der Uhr des Geräts, einmal am Tag)
 // - Klassenarbeit naht: eine eingetragene Arbeit in 3 Tagen und morgen (16–19 Uhr)
 // - Vokabelkarten fällig: mindestens 5 Karten im Karteikasten sind dran (15–19 Uhr, einmal am Tag)
@@ -309,7 +309,12 @@ async function caller(req: Request): Promise<string | null> {
 }
 
 const SUB_FIELDS = 'endpoint,user_id,p256dh,auth,kinds,tz';
-const on = (s: Sub, k: PushKind) => s.kinds?.[k] !== false;
+/** Mitteilungen der Familie (Eltern-Datensatz, zwischen den Geräten abgeglichen) – gilt vor der Einstellung des Geräts */
+export interface FamilyPush {
+  on: boolean;
+  kinds?: Partial<Record<PushKind, boolean>>;
+}
+export const kindOn = (s: Pick<Sub, 'kinds'>, k: PushKind, family?: FamilyPush | null): boolean => (family?.kinds?.[k] ?? s.kinds?.[k]) !== false;
 
 interface Kid {
   id: string;
@@ -325,12 +330,17 @@ async function tick(now = new Date()): Promise<{ learn: number; tests: number; c
   for (const s of subs) byUser.set(s.user_id, [...(byUser.get(s.user_id) ?? []), s]);
   for (const [user, mine] of byUser) {
     const { hour, day: today } = clockIn(mine[0].tz, now);
+    if (hour < 15 || hour > 19) continue; // alle Erinnerungen liegen zwischen 15 und 20 Uhr
+    const items = await d.get<{ kind: string; id: string; data: unknown }[]>(`schlaufuchs_items?select=kind,id,data&user_id=eq.${user}&deleted=eq.false&kind=in.(profile,progress,parent)`);
+    // die Familie hat Mitteilungen ausgeschaltet: auch Geräte, die das noch nicht mitbekommen haben, bekommen nichts
+    const family = (items.find((x) => x.kind === 'parent')?.data as { push?: FamilyPush } | undefined)?.push ?? null;
+    if (family && family.on === false) continue;
+    const on = (s: Sub, k: PushKind) => kindOn(s, k, family);
     const want = (k: PushKind, from: number, to: number) => hour >= from && hour <= to && mine.some((s) => on(s, k));
     const wantLearn = want('learn', 17, 19);
     const wantTests = want('tests', 16, 19);
     const wantCards = want('cards', 15, 19);
     if (!wantLearn && !wantTests && !wantCards) continue;
-    const items = await d.get<{ kind: string; id: string; data: unknown }[]>(`schlaufuchs_items?select=kind,id,data&user_id=eq.${user}&deleted=eq.false&kind=in.(profile,progress)`);
     const kids = items.filter((x) => x.kind === 'profile').map((x) => x.data as Kid);
     if (!kids.length) continue;
     const days = new Map(items.filter((x) => x.kind === 'progress').map((x) => [x.id, ((x.data as { days?: Record<string, number> }).days ?? {})]));
@@ -400,6 +410,8 @@ export async function handle(req: Request): Promise<Response> {
       const row = { endpoint: s.endpoint, user_id: user, p256dh: s.keys.p256dh, auth: s.keys.auth, kinds: body.kinds ?? null, tz: String(body.tz ?? '').slice(0, 60) || null, updated_at: new Date().toISOString() };
       await d.del(`schlaufuchs_push?endpoint=eq.${encodeURIComponent(s.endpoint)}&user_id=neq.${user}`); // das Gerät gehörte vorher zu einem anderen Konto
       await d.upsert('schlaufuchs_push', row, 'endpoint');
+      // still (quiet): ein Gerät zieht nach, weil ein anderes der Familie eingeschaltet hat – dann ohne Gruß
+      if (body.quiet === true) return json({ ok: true, sent: false });
       const [mine] = await d.get<Sub[]>(`schlaufuchs_push?select=${SUB_FIELDS}&endpoint=eq.${encodeURIComponent(s.endpoint)}`);
       const ok = mine ? await send(mine, helloNote()) : false;
       return json({ ok, sent: ok });

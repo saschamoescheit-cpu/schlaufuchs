@@ -3,7 +3,13 @@
 // supabase/schlaufuchs-push.sql); dieses Gerät abonniert mit dem Schlüssel der Funktion, der Service Worker
 // (public/push-sw.js) zeigt an, was ankommt, und öffnet beim Antippen die App beim richtigen Kind.
 // Auf iPhone und iPad geht das nur für die App auf dem Home-Bildschirm (ab iOS 16.4) – die Einstellungen sagen das.
+//
+// Für die ganze Familie (Sascha 23.10.2026: „auf dem iPhone eingeschaltet – auch auf dem iPad, und umgekehrt“):
+// an/aus und die Arten stehen im Eltern-Datensatz (parent.push) und werden abgeglichen. Jedes Gerät zieht nach
+// (followFamily): aus → abmelden, Arten → übernehmen, an → selbst abonnieren, wenn es Mitteilungen schon erlaubt hat.
+// Erlauben muss jedes Gerät einmal selbst (ein Tippen) – das verlangen Apple und die Browser.
 import { authToken, SUPABASE_KEY, SUPABASE_URL, syncConfigured } from './sync';
+import { getData, update, type FamilyPush } from './store';
 
 export type PushKind = 'learn' | 'tests' | 'cards';
 export type PushKinds = Record<PushKind, boolean>;
@@ -32,6 +38,15 @@ function savePush(s: PushState): void {
     /* Speicher voll – der Schalter steht beim nächsten Mal wieder auf aus */
   }
 }
+
+/** die Einstellung der Familie (abgeglichen) – undefined, solange noch kein Gerät sie gesetzt hat */
+export const familyPush = (): FamilyPush | undefined => getData().parent?.push;
+function setFamily(p: FamilyPush): void {
+  const f = familyPush();
+  if (f && f.on === p.on && sameKinds(f.kinds, p.kinds)) return;
+  update((d) => void (d.parent = { ...d.parent, push: { on: p.on, kinds: { ...p.kinds } } }));
+}
+const sameKinds = (a: PushKinds, b: PushKinds) => a.learn === b.learn && a.tests === b.tests && a.cards === b.cards;
 
 /** Kann dieser Browser überhaupt Mitteilungen empfangen? (Service Worker, Push, Notifications) */
 export const pushSupported = (): boolean => typeof window !== 'undefined' && 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -69,10 +84,8 @@ export class PushError extends Error {
   }
 }
 
-/** Mitteilungen auf diesem Gerät einschalten: um Erlaubnis fragen, abonnieren, dem Server sagen (der grüßt zurück). */
-export async function enablePush(): Promise<PushState> {
-  const permission = await Notification.requestPermission();
-  if (permission !== 'granted') throw new PushError('denied', 'denied');
+/** Dieses Gerät abonnieren (Erlaubnis muss schon da sein oder hier erfragt werden). quiet: ohne Gruß (beim Nachziehen). */
+async function subscribeHere(kinds: PushKinds, quiet: boolean): Promise<PushState> {
   let publicKey: string;
   try {
     const r = await call({ action: 'key' });
@@ -85,8 +98,8 @@ export async function enablePush(): Promise<PushState> {
   const old = await reg.pushManager.getSubscription();
   if (old) await old.unsubscribe().catch(() => false); // mit einem anderen Schlüssel (oder für ein anderes Konto) gemacht: neu
   const sub = await reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: toBytes(publicKey) as BufferSource });
-  const state: PushState = { on: true, endpoint: sub.endpoint, kinds: loadPush().kinds };
-  const r = await call({ action: 'subscribe', subscription: sub.toJSON(), kinds: state.kinds, tz: Intl.DateTimeFormat().resolvedOptions().timeZone });
+  const state: PushState = { on: true, endpoint: sub.endpoint, kinds };
+  const r = await call({ action: 'subscribe', subscription: sub.toJSON(), kinds, tz: Intl.DateTimeFormat().resolvedOptions().timeZone, ...(quiet ? { quiet: true } : {}) });
   if (!r.ok) {
     await sub.unsubscribe().catch(() => false);
     throw new PushError(r.status === 404 ? 'setup' : 'failed', String(r.status));
@@ -95,8 +108,18 @@ export async function enablePush(): Promise<PushState> {
   return state;
 }
 
-/** Auf diesem Gerät ausschalten. */
-export async function disablePush(): Promise<PushState> {
+/** Mitteilungen einschalten (Tippen auf den Schalter): um Erlaubnis fragen, abonnieren, für die Familie an. */
+export async function enablePush(): Promise<PushState> {
+  const permission = await Notification.requestPermission();
+  if (permission !== 'granted') throw new PushError('denied', 'denied');
+  const kinds = familyPush()?.kinds ?? loadPush().kinds;
+  const state = await subscribeHere(kinds, false);
+  setFamily({ on: true, kinds });
+  return state;
+}
+
+/** Nur dieses Gerät abmelden (die Familien-Einstellung bleibt). */
+async function unsubscribeHere(): Promise<PushState> {
   const s = loadPush();
   try {
     const reg = await navigator.serviceWorker.ready;
@@ -110,13 +133,55 @@ export async function disablePush(): Promise<PushState> {
   return next;
 }
 
-/** Eine Art an oder aus. */
+/** Ausschalten (Tippen auf den Schalter): dieses Gerät abmelden und für die ganze Familie aus – die anderen ziehen nach. */
+export async function disablePush(): Promise<PushState> {
+  const next = await unsubscribeHere();
+  setFamily({ on: false, kinds: familyPush()?.kinds ?? next.kinds });
+  return next;
+}
+
+/** Eine Art an oder aus – für die ganze Familie. */
 export async function setPushKind(kind: PushKind, on: boolean): Promise<PushState> {
   const s = loadPush();
-  const next = { ...s, kinds: { ...s.kinds, [kind]: on } };
+  const kinds = { ...(familyPush()?.kinds ?? s.kinds), [kind]: on };
+  const next = { ...s, kinds };
   savePush(next);
-  if (s.on && s.endpoint) await call({ action: 'settings', endpoint: s.endpoint, kinds: next.kinds }).catch(() => null);
+  setFamily({ on: familyPush()?.on ?? s.on, kinds });
+  if (s.on && s.endpoint) await call({ action: 'settings', endpoint: s.endpoint, kinds }).catch(() => null);
   return next;
+}
+
+let following: Promise<void> = Promise.resolve();
+/** Dieses Gerät der Familien-Einstellung anpassen – beim Start und nach jedem Abgleich. Fragt nie selbst um Erlaubnis.
+ *  Aufrufe laufen nacheinander (nie zwei Abos zugleich), jeder mit dem Stand von dann. */
+export function followFamily(signedIn: boolean): Promise<void> {
+  following = following
+    .then(async () => {
+      const f = familyPush();
+      const s = loadPush();
+      if (!signedIn) return;
+      // noch keine Familien-Einstellung (vor dem Abgleich eingeschaltet): dieses Gerät gibt sie vor
+      if (!f) {
+        if (s.on) setFamily({ on: true, kinds: s.kinds });
+        return;
+      }
+      if (!f.on) {
+        if (s.on) await unsubscribeHere();
+        else if (!sameKinds(s.kinds, f.kinds)) savePush({ ...s, kinds: { ...f.kinds } });
+        return;
+      }
+      if (s.on) {
+        if (!sameKinds(s.kinds, f.kinds)) {
+          savePush({ ...s, kinds: { ...f.kinds } });
+          if (s.endpoint) await call({ action: 'settings', endpoint: s.endpoint, kinds: f.kinds }).catch(() => null);
+        }
+        return;
+      }
+      // an in der Familie, hier noch nicht: selbst abonnieren, wenn dieses Gerät Mitteilungen schon erlaubt hat
+      if (pushAvailability(signedIn) === 'ok' && Notification.permission === 'granted') await subscribeHere({ ...f.kinds }, true).catch(() => null);
+    })
+    .catch(() => undefined);
+  return following;
 }
 
 /** Wohin eine angetippte Mitteilung führt: „#kind=<id>“ (dieses Kind), „#karten=<id>“ (seine Vokabelkarten).

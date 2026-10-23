@@ -2556,3 +2556,11 @@ html[data-school-font] .prompt.long {
   gap: 2px;
   flex-shrink: 0;
 }
+
+/* Mitteilungen: in der Familie an, auf diesem Gerät noch nicht erlaubt */
+.push-wait {
+  background: var(--ok-soft);
+  color: var(--ok-dark);
+  border-radius: 12px;
+  padding: 10px 12px;
+}

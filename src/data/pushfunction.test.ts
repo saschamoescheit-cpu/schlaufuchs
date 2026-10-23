@@ -207,4 +207,21 @@ describe('die Mitteilungs-Funktion, von vorne bis hinten gegen eine Nachbildung 
     expect((await post({ action: 'unsinn' }, 'token-familie')).status).toBe(400);
     expect(DAY).toBeGreaterThan(0);
   });
+
+  it('die Familie entscheidet: still nachgezogene Geräte ohne Gruß, aus heißt für alle aus, die Arten der Familie gelten', async () => {
+    const zweites = await device('https://web.push.apple.com/zweites-ipad');
+    const r = await post({ action: 'subscribe', subscription: zweites.subscription, kinds: { learn: true, tests: true, cards: true }, tz: 'Europe/Berlin', quiet: true }, 'token-familie');
+    expect(await r.json()).toEqual({ ok: true, sent: false });
+    expect(await zweites.inbox()).toEqual([]);
+    // auf dem iPhone ausgeschaltet – das iPad war seitdem nicht offen und ist noch angemeldet: trotzdem nichts
+    tables.schlaufuchs_items.push(item('parent', 'parent', { pin: null, push: { on: false, kinds: { learn: true, tests: true, cards: true } } }));
+    at('2026-10-25T15:30:00Z');
+    expect(await tick()).toEqual({ learn: 0, tests: 0, cards: 0 });
+    // wieder an, aber nur Vokabelkarten – gilt auch für die Geräte, die selbst noch alles an haben
+    tables.schlaufuchs_items.find((x) => x.kind === 'parent')!.data = { pin: null, push: { on: true, kinds: { learn: false, tests: false, cards: true } } };
+    at('2026-10-25T15:45:00Z');
+    expect(await tick()).toEqual({ learn: 0, tests: 0, cards: 1 });
+    expect((await zweites.inbox()).map((n) => n.title)).toEqual(['Vokabelkarten fällig 🗂️']);
+    expect((await ipad.inbox()).at(-1)!.title).toBe('Vokabelkarten fällig 🗂️');
+  });
 });
