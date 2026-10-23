@@ -139,12 +139,8 @@ function persist() {
   const at = Date.now();
   const r = ++rev;
   if (movedOut) {
-    // Hauptspeicher ist IndexedDB; localStorage bekommt nur den Zeitpunkt
-    try {
-      localStorage.setItem(AT_KEY, String(at));
-    } catch {
-      /* egal – der Verweis genügt */
-    }
+    // Hauptspeicher ist IndexedDB. Den Zeitpunkt in localStorage NICHT erneuern: Schreibt ein alter, noch offener Tab
+    // dort einen vollen (älteren) Stand hinein, soll der beim Start älter aussehen als die Kopie – dann gilt die Kopie.
     writeMirror({ json, at }, (ok) => {
       if (ok) return void (saveError = false);
       if (r !== rev) return; // inzwischen gibt es einen neueren Stand – der schreibt selbst

@@ -121,6 +121,31 @@ describe('Lernstand: localStorage, ab 1 Mio. Zeichen oder bei vollem Speicher in
     expect(s.storageUsage().used).toBeGreaterThan(1_000_000);
   });
 
+  it('ein alter, noch offener Tab schreibt nach dem Umzug einen älteren Stand zurück: beim Start gilt der neuere', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] });
+    try {
+      vi.setSystemTime(new Date('2026-10-24T08:00:00Z'));
+      const s = await start();
+      s.saveProfile(s.newProfile({ name: 'Mia' }));
+      s.update((d) => void ((d as unknown as { pad: string }).pad = big));
+      await settle();
+      expect(s.isMovedOut()).toBe(true);
+      const old = JSON.stringify({ ...s.getData(), profiles: s.getData().profiles.map((p) => ({ ...p, name: 'Mia (alt)' })) });
+      // eine Minute später weiter geübt (nur IndexedDB) …
+      vi.setSystemTime(new Date('2026-10-24T08:01:00Z'));
+      s.update((d) => void (d.profiles[0].name = 'Mia neu'));
+      await settle();
+      // … dann schreibt der alte Tab seinen vollen Stand in localStorage (mit seinem alten Zeitpunkt)
+      ls.m.set('schlaufuchs:v1', old);
+      vi.setSystemTime(new Date('2026-10-24T08:02:00Z'));
+      const s2 = await start();
+      expect(await s2.checkMirror()).toBe('mirror');
+      expect(s2.getData().profiles[0].name).toBe('Mia neu');
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('localStorage voll (auch klein): zieht um, statt den Stand zu verlieren', async () => {
     ls = fakeStorage(400);
     vi.stubGlobal('localStorage', ls);
