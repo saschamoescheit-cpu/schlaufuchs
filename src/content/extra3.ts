@@ -1286,6 +1286,9 @@ const MINI: [string, string, string, string[]][] = [
   ['Die Biene fliegt zur Blume. Sie sammelt Nektar.', 'Wer fliegt zur Blume?', '🐝', ['🦋', '🐞', '🐦']],
   ['Anna setzt ihre Mütze auf. Es ist kalt.', 'Was setzt Anna auf?', '🧢', ['👒', '🎩', '👑']],
   ['Der Affe klettert auf den Baum. Er sucht Bananen.', 'Wer klettert auf den Baum?', '🐒', ['🐻', '🐱', '🐿️']],
+  ['Opa hat einen Hut. Der Hut ist braun.', 'Was hat Opa?', '🎩', ['🧢', '👓', '🧣']], ['Ben spielt Trommel. Das ist laut!', 'Was spielt Ben?', '🥁', ['🎻', '🎺', '🎹']],
+  ['Im Wald wohnt ein Fuchs. Er ist rot.', 'Wer wohnt im Wald?', '🦊', ['🐻', '🐰', '🐿️']], ['Lina isst eine Birne. Sie ist süß.', 'Was isst Lina?', '🍐', ['🍎', '🍌', '🍇']],
+  ['Der Zug fährt schnell. Er ist sehr lang.', 'Was fährt schnell?', '🚂', ['🚗', '🚌', '🚲']], ['Papa liest ein Buch. Es ist spannend.', 'Was liest Papa?', '📖', ['📰', '✉️', '🗺️']],
 ];
 function miniTask(r: Rng, s: Stage): Gen {
   const [t, q, ok, wrong] = pick(r, MINI);

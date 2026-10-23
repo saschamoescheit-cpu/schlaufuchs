@@ -218,6 +218,12 @@ const SATZBILD: [string, string, string[]][] = [
   ['🧒🛁', 'Das Kind badet in der Wanne.', ['Das Kind schläft im Bett.', 'Die Katze badet in der Wanne.', 'Das Kind spielt im Garten.']],
   ['🎅🎁', 'Der Weihnachtsmann bringt Geschenke.', ['Der Osterhase bringt Geschenke.', 'Der Weihnachtsmann backt Plätzchen.', 'Der Weihnachtsmann schläft.']],
   ['🚂🌉', 'Der Zug fährt über die Brücke.', ['Das Auto fährt über die Brücke.', 'Der Zug steht im Bahnhof.', 'Das Schiff fährt unter der Brücke.']],
+  ['🐱🧶', 'Die Katze spielt mit der Wolle.', ['Die Katze trinkt ihre Milch.', 'Der Hund spielt mit der Wolle.', 'Die Katze schläft im Korb.']],
+  ['🐶🛁', 'Der Hund sitzt in der Wanne.', ['Die Katze sitzt in der Wanne.', 'Der Hund sitzt im Garten.', 'Der Hund frisst sein Futter.']],
+  ['🧒🪁', 'Das Kind lässt einen Drachen steigen.', ['Das Kind wirft einen großen Ball.', 'Opa lässt einen Drachen steigen.', 'Das Kind schläft im Bett.']],
+  ['🦉🌙', 'Die Eule ist in der Nacht wach.', ['Die Eule schläft in der Nacht.', 'Der Hahn ist in der Nacht wach.', 'Die Eule frisst Körner.']],
+  ['👧🍓', 'Das Mädchen isst eine Erdbeere.', ['Das Mädchen isst eine Kirsche.', 'Der Junge isst eine Erdbeere.', 'Das Mädchen pflückt Blumen.']],
+  ['👨‍🍳🍳', 'Der Koch brät ein Ei.', ['Der Koch backt ein Brot.', 'Die Oma brät ein Ei.', 'Der Koch kocht Suppe.']],
 ];
 function satzBild(r: Rng, s: Stage): Gen {
   const [e, ok, wrong] = pick(r, SATZBILD);
