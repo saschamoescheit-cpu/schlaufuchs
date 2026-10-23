@@ -362,26 +362,26 @@ function verbTask(r: Rng, s: Stage): Gen {
 }
 
 const BAUSTEINE: [string, string, string[]][] = [
-  ['Ich ☐schreibe die Sätze von der Tafel.', 'ab', ['ver', 'vor', 'zer']], ['Der Zauberer kann sich in einen Frosch ☐wandeln.', 'ver', ['ab', 'an', 'mit']], ['Kannst du uns die Geschichte ☐lesen?', 'vor', ['ab', 'zer', 'an']],
+  ['Ich schreibe die Sätze von der Tafel ☐.', 'ab', ['ver', 'vor', 'zer']], ['Der Zauberer kann sich in einen Frosch ☐wandeln.', 'ver', ['ab', 'an', 'mit']], ['Kannst du uns die Geschichte ☐lesen?', 'vor', ['ab', 'zer', 'an']],
   ['Das Glas ist auf den Boden gefallen und ☐brochen.', 'zer', ['ab', 'vor', 'an']], ['Kommst du heute ☐? Wir fahren ins Schwimmbad.', 'mit', ['ver', 'zer', 'ab']], ['Mach bitte das Licht ☐, es ist dunkel.', 'an', ['zer', 'ver', 'vor']],
-  ['Ich habe meinen Schlüssel ☐loren.', 'ver', ['zer', 'ab', 'mit']], ['Der Zug ☐fährt um acht Uhr.', 'ab', ['ver', 'zer', 'mit']], ['Am Ende des Spiels ☐teilen wir die Preise.', 'ver', ['zer', 'an', 'mit']],
+  ['Ich habe meinen Schlüssel ☐loren.', 'ver', ['zer', 'ab', 'mit']], ['Der Zug fährt um acht Uhr ☐.', 'ab', ['ver', 'zer', 'mit']], ['Am Ende des Spiels ☐teilen wir die Preise.', 'ver', ['zer', 'an', 'mit']],
   ['Der Hund hat meinen Hausschuh ☐bissen.', 'zer', ['an', 'mit', 'vor']], ['Papa will mich heute von der Schule ☐holen.', 'ab', ['zer', 'ver', 'mit']], ['Die Sonne geht am Morgen ☐.', 'auf', ['zer', 'ver', 'mit']],
   ['Kannst du bitte das Fenster ☐machen? Es zieht.', 'zu', ['zer', 'vor', 'ver']], ['Wir ☐stecken uns hinter dem Baum.', 'ver', ['ab', 'an', 'mit']], ['Der Teller fällt herunter und ☐bricht in viele Stücke.', 'zer', ['an', 'mit', 'vor']],
   ['Kannst du mir das Spiel ☐klären?', 'er', ['ab', 'zer', 'mit']], ['Ich habe mir die Hände ☐getrocknet.', 'ab', ['zer', 'ver', 'vor']], ['Wann fängt der Film ☐?', 'an', ['ver', 'zer', 'er']],
   // Nachtlauf 22.10.2026: mehr Sätze
   ['Iss bitte alles ☐!', 'auf', ['zer', 'ver', 'vor']], ['Ich ☐gesse oft meine Hausaufgaben.', 'ver', ['ab', 'an', 'zer']], ['Der Kuchen ist ☐brannt – er ist ganz schwarz.', 'ver', ['zer', 'vor', 'mit']],
   ['Räum bitte dein Zimmer ☐!', 'auf', ['zer', 'ver', 'vor']], ['Die Kinder ☐schneiden das Papier in kleine Stücke.', 'zer', ['an', 'auf', 'mit']], ['Ich möchte dir etwas ☐zählen.', 'er', ['zer', 'ver', 'an']],
-  ['Nach den Ferien ☐kennen wir unsere Lehrerin kaum wieder.', 'er', ['zer', 'mit', 'an']], ['Morgen ☐reisen wir in den Urlaub.', 'ab', ['zer', 'vor', 'er']],
+  ['Nach den Ferien ☐kennen wir unsere Lehrerin kaum wieder.', 'er', ['zer', 'mit', 'an']], ['Morgen reisen wir in den Urlaub ☐.', 'ab', ['zer', 'vor', 'er']],
   ['Zieh dir die Jacke ☐, es ist kalt!', 'an', ['zer', 'ver', 'er']], ['Mach bitte den Fernseher ☐, wir gehen schlafen.', 'aus', ['zer', 'ver', 'er']],
   ['Ich ☐danke mich für das Geschenk.', 'be', ['zer', 'ab', 'vor']], ['Der Arzt ☐sucht das kranke Kind.', 'unter', ['zer', 'ab', 'vor']],
   ['Kannst du mir beim Tragen ☐helfen?', 'mit', ['zer', 'ver', 'er']], ['Die Blumen in der Vase sind ☐welkt.', 'ver', ['zer', 'ab', 'mit']],
-  ['Der Bäcker ☐kauft frische Brötchen.', 'ver', ['zer', 'ab', 'er']], ['Ich ☐schreibe die Wörter ins Heft.', 'ab', ['zer', 'er', 'an']],
+  ['Der Bäcker ☐kauft frische Brötchen.', 'ver', ['zer', 'ab', 'er']], ['Ich schreibe die Wörter ins Heft ☐.', 'ab', ['zer', 'er', 'an']],
   ['Der Wind hat den Drachen ☐rissen.', 'zer', ['ab', 'an', 'mit']], ['Am Abend ☐zählt Opa eine Geschichte.', 'er', ['zer', 'ab', 'mit']],
   ['Wir ☐teilen die Bonbons unter allen Kindern.', 'ver', ['er', 'an', 'mit']], ['Zum Schwimmen ziehen wir den Badeanzug ☐.', 'an', ['zer', 'ver', 'er']],
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
-  return { key: s, prompt: `Welcher Wortbaustein passt?\n${s}`, speak: s.replace('☐', 'Lücke '), answer: { ...choice(r, ok, w), big: true }, tags: ['vorsilben'], solution: [s.replace('☐', ok), 'Vorsilben wie ab-, an-, ver-, vor-, zer-, mit- verändern die Bedeutung eines Verbs: schreiben → abschreiben.'] };
+  return { key: s, prompt: `Welcher Wortbaustein passt?\n${s}`, speak: s.replace('☐', 'Lücke '), answer: { ...choice(r, ok, w), big: true }, tags: ['vorsilben'], solution: [s.replace('☐', ok), 'Vorsilben wie ab-, an-, ver-, vor-, zer-, mit- verändern die Bedeutung eines Verbs: schreiben → abschreiben.', ...(/☐[.!?]$/.test(s) ? [`Hier steht die Vorsilbe am Satzende – sie gehört zum Verb davor.`] : [])] };
 }
 
 export const DEUTSCH_EXTRA: Skill[] = [
@@ -392,7 +392,7 @@ export const DEUTSCH_EXTRA: Skill[] = [
   D(2, 'd2-lesen', 'Lesen und verstehen', '📗', { text: ['Lies den kurzen Text in Ruhe.', 'Lies dann die Frage und suche die Antwort im Text.', 'Bei „Warum“-Fragen musst du ein bisschen nachdenken.'], videoQuery: 'Leseverständnis Klasse 2 üben' }, (r) => readTask(r, STORIES2), { tagLabels: { schlussfolgern: 'Schlussfolgern (Warum?)', 'informationen-finden': 'Informationen im Text finden' }, testSeconds: 45 }),
   D(3, 'd3-pronomen', 'Pronomen (Fürwörter)', '👉', { text: ['Pronomen ersetzen Nomen, damit sich nichts wiederholt.', 'der Hund → er, die Katze → sie, das Kind → es.', 'Mehrere Personen oder Dinge → sie. Ich und andere → wir. Du und andere → ihr.'], visual: { kind: 'text', text: 'Tim spielt. Er lacht.' }, videoQuery: 'Personalpronomen Grundschule erklärt' }, pronTask, { tagLabels: { 'pronomen-er': 'er', 'pronomen-sie': 'sie', 'pronomen-es': 'es', 'pronomen-wir': 'wir', 'pronomen-ihr': 'ihr' }, testSeconds: 20 }),
   D(3, 'd3-personalformen', 'Verben beugen', '🔧', { text: ['Das Verb verändert sich je nach Person: ich spiele, du spielst, er spielt.', 'Endungen: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie -en.', 'Manche Verben ändern auch den Stamm: ich lese – du liest, ich fahre – du fährst.', 'Ganz besonders: sein – ich bin, du bist, er ist, wir sind.'], visual: { kind: 'text', text: 'ich spiele · du spielst · er spielt' }, videoQuery: 'Personalformen Verben konjugieren Grundschule' }, verbTask, { tagLabels: { regelmaessig: 'regelmäßige Verben', unregelmaessig: 'besondere Verben (lesen, fahren, sein …)', 'person-du': 'du-Form', 'person-er': 'er/sie/es-Form', 'person-ihr': 'ihr-Form' }, testSeconds: 20 }),
-  D(3, 'd3-wortbausteine', 'Vorsilben und Wortbausteine', '🧩', { text: ['Aus einem Verb werden mit Vorsilben neue Wörter: schreiben → abschreiben, verschreiben, vorschreiben.', 'Häufige Vorsilben: ab-, an-, auf-, aus-, mit-, ver-, vor-, zer-.', 'Die Vorsilbe verändert die Bedeutung – lies den ganzen Satz!'], visual: { kind: 'text', text: 'ab + schreiben = abschreiben' }, videoQuery: 'Vorsilben Wortbausteine Grundschule' }, bausteinTask, { tagLabels: { vorsilben: 'Vorsilben' }, testSeconds: 20 }),
+  D(3, 'd3-wortbausteine', 'Vorsilben und Wortbausteine', '🧩', { text: ['Aus einem Verb werden mit Vorsilben neue Wörter: schreiben → abschreiben, verschreiben, vorschreiben.', 'Häufige Vorsilben: ab-, an-, auf-, aus-, mit-, ver-, vor-, zer-.', 'Die Vorsilbe verändert die Bedeutung – lies den ganzen Satz!', 'Achtung: ab-, an-, auf-, aus-, mit-, vor-, zu- wandern im Satz oft ans Ende: Ich schreibe ab. Der Zug fährt ab. ver-, zer-, er-, be- bleiben immer vorne: Ich verstecke mich.'], visual: { kind: 'text', text: 'ab + schreiben = abschreiben' }, videoQuery: 'Vorsilben Wortbausteine Grundschule' }, bausteinTask, { tagLabels: { vorsilben: 'Vorsilben' }, testSeconds: 20 }),
   D(3, 'd3-lesen-lang', 'Lesen: längere Texte', '📘', { text: ['Lies den ganzen Text, bevor du die Frage liest.', 'Achte auf die Reihenfolge: zuerst, dann, danach, am Ende.', 'Manche Antworten stehen nicht wörtlich im Text – überlege, was passt.'], videoQuery: 'Leseverständnis Klasse 3 Texte verstehen' }, (r) => readTask(r, STORIES3), { tagLabels: { schlussfolgern: 'Schlussfolgern', 'informationen-finden': 'Informationen finden' }, testSeconds: 60 }),
 ];
 

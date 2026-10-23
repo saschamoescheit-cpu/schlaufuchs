@@ -1218,6 +1218,16 @@ export function zahlwort(n: number): string {
   const rest = n % 100;
   return `${h === 1 ? 'ein' : EINS[h]}hundert${rest ? zahlwort(rest) : ''}`;
 }
+/** Zahlwort in Sprechteilen zum Mitlesen: 354 → „drei-hundert-vier-und-fünfzig“, 240 → „zwei-hundert-vierzig“ */
+export function zahlwortTeile(n: number): string {
+  const parts: string[] = [];
+  const h = Math.floor(n / 100);
+  const rest = n % 100;
+  if (h) parts.push(h === 1 ? 'ein' : EINS[h], 'hundert');
+  if (rest >= 20 && rest % 10) parts.push(rest % 10 === 1 ? 'ein' : EINS[rest % 10], 'und', ZEHN[Math.floor(rest / 10)]);
+  else if (rest) parts.push(rest < 20 ? EINS[rest] : ZEHN[rest / 10]);
+  return parts.join('-');
+}
 function zahlwortTask(r: Rng, s: Stage): Gen {
   const n = s === 1 ? ri(r, 21, 99) : s === 2 ? ri(r, 101, 999) : pick(r, [ri(r, 101, 999), ri(r, 1, 9) * 100 + ri(r, 11, 19), ri(r, 1, 9) * 100 + ri(r, 1, 9)]);
   const w = zahlwort(n);
@@ -1244,7 +1254,7 @@ function zahlwortTask(r: Rng, s: Stage): Gen {
     answer: choice(r, w, wrong), // ohne Vorlesen der Antworten – das würde die Lösung verraten
     tags: [n < 100 ? 'bis-100' : 'bis-1000'],
     traps: dreher !== n ? [{ answer: zahlwort(dreher), tag: 'zahlendreher', hint: 'Achtung Zahlendreher: Im Zahlwort kommen die Einer vor den Zehnern.' }] : [],
-    solution: [`${n} = ${w}`, 'Lies Stück für Stück: erst die Hunderter, dann die Einer, dann die Zehner – „…hundert-vier-und-fünfzig“.'],
+    solution: [`${n} = ${w}`, n % 100 >= 20 && n % 10 ? `Lies Stück für Stück – ${n >= 100 ? 'erst die Hunderter, dann die Einer, dann die Zehner' : 'erst die Einer, dann die Zehner'}: „${zahlwortTeile(n)}“.` : `Lies Stück für Stück: „${zahlwortTeile(n)}“.`],
   };
 }
 

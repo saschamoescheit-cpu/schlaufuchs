@@ -231,7 +231,7 @@ function categoryTask(r: Rng, s: Stage): Gen {
       prompt: `Wie heißt der Oberbegriff?\n${three.join(', ')}`,
       answer: choice(r, g.name, shuffle(r, others).slice(0, 3).map((x) => x.name)),
       tags: ['oberbegriff'],
-      solution: [`${three.join(', ')} – das ist alles ${g.name}.`, `„${g.name}“ ist der Oberbegriff, die einzelnen Wörter sind Unterbegriffe.`],
+      solution: [`${three.join(', ')} gehören alle zum Oberbegriff „${g.name}“.`, 'Die einzelnen Wörter sind Unterbegriffe.'],
     };
   }
   // Stufe 3 (und manchmal 2): Welches Wort gehört dazu?
@@ -245,7 +245,7 @@ function categoryTask(r: Rng, s: Stage): Gen {
       prompt: `Welches Wort gehört zum Oberbegriff „${g.name}“?`,
       answer: choice(r, ok, wrong),
       tags: ['unterbegriff'],
-      solution: [`${ok} gehört zu ${g.name}.`, ...wrong.map((w) => `${w} gehört zu ${GROUPS.find((x) => x.words.includes(w))!.name}.`)],
+      solution: [`${ok} gehört zum Oberbegriff „${g.name}“.`, ...wrong.map((w) => `${w} gehört zum Oberbegriff „${GROUPS.find((x) => x.words.includes(w))!.name}“.`)],
     };
   }
   // Was passt nicht dazu?
@@ -256,7 +256,7 @@ function categoryTask(r: Rng, s: Stage): Gen {
     prompt: 'Welches Wort passt nicht dazu?',
     answer: choice(r, odd, three),
     tags: ['passt-nicht'],
-    solution: [`${three.join(', ')} gehören zum Oberbegriff ${g.name}.`, `${odd} gehört zu ${other.name} – es passt nicht dazu.`],
+    solution: [`${three.join(', ')} gehören zum Oberbegriff „${g.name}“.`, `${odd} gehört zum Oberbegriff „${other.name}“ – es passt nicht dazu.`],
   };
 }
 
