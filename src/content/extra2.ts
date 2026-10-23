@@ -145,6 +145,8 @@ const END: [string, string, string][] = [
   // Nachtlauf 22.10.2026: mehr Wörter
   ['Kran', '🏗️', 'n'], ['Brot', '🍞', 't'], ['Schaf', '🐑', 'f'], ['Oma', '👵', 'a'], ['Kino', '🎬', 'o'], ['Stern', '⭐', 'n'], ['Pinsel', '🖌️', 'l'],
   ['Tomate', '🍅', 'e'], ['Radio', '📻', 'o'], ['Pizza', '🍕', 'a'], ['Elefant', '🐘', 't'], ['Hammer', '🔨', 'r'], ['Kerze', '🕯️', 'e'],
+  // ohne Wörter auf -d/-g/-b (Hund): dort hört man t/k/p
+  ['Baum', '🌳', 'm'], ['Turm', '🗼', 'm'], ['Salat', '🥗', 't'], ['Zebra', '🦓', 'a'], ['Melone', '🍉', 'e'], ['Teller', '🍽️', 'r'], ['Mais', '🌽', 's'], ['Delfin', '🐬', 'n'], ['Kanu', '🛶', 'u'],
 ];
 function endTask(r: Rng): Gen {
   const [w, e, l] = pick(r, END);
@@ -152,7 +154,8 @@ function endTask(r: Rng): Gen {
 }
 const COUNT_W: [string, string][] = [['Ei', '🥚'], ['Hut', '🎩'], ['Bus', '🚌'], ['Maus', '🐭'], ['Igel', '🦔'], ['Sofa', '🛋️'], ['Ente', '🦆'], ['Kamel', '🐫'], ['Tiger', '🐯'], ['Apfel', '🍎'], ['Banane', '🍌'], ['Tomate', '🍅'], ['Fisch', '🐟'], ['Schaf', '🐑'], ['Oma', '👵'], ['Auto', '🚗'], ['Hund', '🐶'], ['Katze', '🐱'], ['Mond', '🌙'], ['Sonne', '☀️'], ['Rose', '🌹'], ['Uhr', '⏰'], ['Schuh', '👟'], ['Pinsel', '🖌️'],
   // Nachtlauf 22.10.2026: mehr Wörter
-  ['Nase', '👃'], ['Brot', '🍞'], ['Stern', '⭐'], ['Zebra', '🦓'], ['Eule', '🦉'], ['Schule', '🏫'], ['Kerze', '🕯️'], ['Wolke', '☁️']];
+  ['Nase', '👃'], ['Brot', '🍞'], ['Stern', '⭐'], ['Zebra', '🦓'], ['Eule', '🦉'], ['Schule', '🏫'], ['Kerze', '🕯️'], ['Wolke', '☁️'],
+  ['Zug', '🚆'], ['Hase', '🐰'], ['Blume', '🌷'], ['Kuchen', '🍰'], ['Pferd', '🐴'], ['Kiwi', '🥝'], ['Puppe', '🪆'], ['Dino', '🦕']];
 function countTask(r: Rng): Gen {
   const [w, e] = pick(r, COUNT_W);
   return { key: w, prompt: `Wie viele Buchstaben hat das Wort?\n${w}`, speak: `Wie viele Buchstaben hat das Wort ${w}?`, visual: { kind: 'emoji', chars: e }, answer: { type: 'number', value: w.length }, tags: [w.includes('sch') || w.startsWith('Sch') ? 'sch-zaehlen' : 'buchstaben-zaehlen'], solution: [`${w.split('').join(' – ')}`, `Das sind ${w.length} Buchstaben.`, ...(w.toLowerCase().includes('sch') ? ['Achtung: „sch“ klingt wie ein Laut, sind aber 3 Buchstaben (s, c, h).'] : [])], solutionVisual: { kind: 'word', word: w } };
