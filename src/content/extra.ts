@@ -236,6 +236,8 @@ const TRENN: [string, string, string[]][] = [
   ['Hammer', 'Ham-mer', ['Ha-mmer', 'Hamm-er']], ['Kerze', 'Ker-ze', ['Ke-rze', 'Kerz-e']], ['Pinsel', 'Pin-sel', ['Pi-nsel', 'Pins-el']], ['Lampe', 'Lam-pe', ['La-mpe', 'Lamp-e']],
   ['Butter', 'But-ter', ['Bu-tter', 'Butt-er']], ['Tasche', 'Ta-sche', ['Tas-che', 'Tasch-e']], ['Decke', 'De-cke', ['Dec-ke', 'Deck-e']], ['Fahrrad', 'Fahr-rad', ['Fah-rrad', 'Fahrr-ad']],
   ['Kissen', 'Kis-sen', ['Ki-ssen', 'Kiss-en']], ['Pirat', 'Pi-rat', ['Pir-at', 'P-irat']],
+  ['Hose', 'Ho-se', ['Hos-e', 'H-ose']], ['Gabel', 'Ga-bel', ['Gab-el', 'G-abel']], ['Mantel', 'Man-tel', ['Ma-ntel', 'Mant-el']],
+  ['Rakete', 'Ra-ke-te', ['Rak-et-e', 'Ra-ket-e']], ['Wecker', 'We-cker', ['Weck-er', 'Wec-ker']], ['Spinne', 'Spin-ne', ['Spi-nne', 'Spinn-e']], ['Erdbeere', 'Erd-bee-re', ['Er-dbee-re', 'Erdb-ee-re']],
 ];
 function trennTask(r: Rng): Gen {
   const [w, ok, wrong] = pick(r, TRENN);
