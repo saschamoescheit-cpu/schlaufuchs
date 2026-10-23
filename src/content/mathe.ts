@@ -646,7 +646,7 @@ function storyTask(r: Rng, level: 2 | 3 | 4, stage: Stage = 2): Gen {
     const t = (m: number) => `${Math.floor(m / 60)}:${pad(m % 60)} Uhr`;
     const traps = s.wrong !== undefined && s.wrong !== s.res ? [{ answer: t(s.wrong), tag: 'hundert-statt-sechzig', hint: 'Eine Stunde hat 60 Minuten, nicht 100! Zerlege die Fahrzeit in Stunden und Minuten.' }] : [];
     return {
-      key: s.text,
+      key: `${s.text}|${s.q}`,
       prompt: `${s.text}\n${s.q}`,
       answer: choice(r, t(s.res), [t(s.res + 10), t(s.res - 60), ...(s.wrong !== undefined ? [t(s.wrong)] : []), t(s.res + 60)]),
       tags: ['zeit'],
@@ -655,7 +655,7 @@ function storyTask(r: Rng, level: 2 | 3 | 4, stage: Stage = 2): Gen {
     };
   }
   return {
-    key: s.text,
+    key: `${s.text}|${s.q}`,
     prompt: `${s.text}\n${s.q}`,
     answer: { type: 'number', value: s.res, unit: s.unit === '€' ? '€' : undefined },
     tags: [s.op],
