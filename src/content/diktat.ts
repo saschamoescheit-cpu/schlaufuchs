@@ -55,6 +55,9 @@ const G4: string[] = [
   'Der Fußball fliegt über den Zaun in den Garten.', 'Weil der Bus zu spät kommt, warten wir an der Haltestelle.',
   'Der Igel sucht im Laub nach Futter.', 'Meine Katze schläft am liebsten auf dem Sofa.', 'Im Frühling bauen die Vögel ihre Nester.', 'Wir packen Brote, Äpfel und Wasser in den Rucksack.',
   'Papa sagt, dass wir morgen in den Zoo fahren.', 'Die Feuerwehr kommt mit lautem Martinshorn.', 'Nach dem Regen sehen wir einen bunten Regenbogen.', 'Mein Bruder spielt jeden Dienstag Handball.',
+  // Nachtlauf 24.10.2026: mehr Sätze
+  'Der Schmetterling fliegt von Blume zu Blume.', 'Im Schwimmbad springen wir vom Dreimeterbrett.', 'Meine Mutter kauft auf dem Markt frisches Gemüse.',  'Der Zug fährt pünktlich um acht Uhr ab.', 'Wir haben im Wald einen großen Pilz gefunden.', 'Opa erzählt uns eine lustige Geschichte.',  'Ich putze mir jeden Abend die Zähne.', 'Als es dunkel wurde, gingen wir nach Hause.',
+  'Der Hase hoppelt schnell über die Wiese.',  'In der Pause essen wir unser Pausenbrot.', 'Die Kinder bauen im Schnee einen Schneemann.', 'Mia fragt, ob sie mitspielen darf.',  'Auf dem Bauernhof gibt es Kühe, Schweine und Hühner.', 'Das Flugzeug fliegt hoch über den Wolken.', 'Mein Onkel wohnt in einer großen Stadt.',
 ];
 
 /** Rechtschreib-Merkmale eines Textes (für die Fehlerstatistik: wie oft kam ein Muster vor, wie oft war es falsch) */
