@@ -260,6 +260,75 @@ function categoryTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Zusammengesetzte Adjektive (Deutsch Kl. 4) ----------
+// Nomen + Adjektiv: so schnell wie der Blitz → blitzschnell (klein und zusammen geschrieben)
+
+const COMP_ADJ: { w: string; noun: string; adj: string; wie: string; e: string }[] = [
+  { w: 'blitzschnell', noun: 'Blitz', adj: 'schnell', wie: 'der Blitz', e: '⚡' },
+  { w: 'federleicht', noun: 'Feder', adj: 'leicht', wie: 'eine Feder', e: '🪶' },
+  { w: 'steinhart', noun: 'Stein', adj: 'hart', wie: 'ein Stein', e: '🪨' },
+  { w: 'eiskalt', noun: 'Eis', adj: 'kalt', wie: 'Eis', e: '🧊' },
+  { w: 'zuckersüß', noun: 'Zucker', adj: 'süß', wie: 'Zucker', e: '🍬' },
+  { w: 'grasgrün', noun: 'Gras', adj: 'grün', wie: 'Gras', e: '🌿' },
+  { w: 'himmelblau', noun: 'Himmel', adj: 'blau', wie: 'der Himmel', e: '🌤️' },
+  { w: 'schneeweiß', noun: 'Schnee', adj: 'weiß', wie: 'Schnee', e: '❄️' },
+  { w: 'kugelrund', noun: 'Kugel', adj: 'rund', wie: 'eine Kugel', e: '⚪' },
+  { w: 'mausgrau', noun: 'Maus', adj: 'grau', wie: 'eine Maus', e: '🐭' },
+  { w: 'bärenstark', noun: 'Bär', adj: 'stark', wie: 'ein Bär', e: '🐻' },
+  { w: 'zitronengelb', noun: 'Zitrone', adj: 'gelb', wie: 'eine Zitrone', e: '🍋' },
+  { w: 'feuerrot', noun: 'Feuer', adj: 'rot', wie: 'Feuer', e: '🔥' },
+  { w: 'messerscharf', noun: 'Messer', adj: 'scharf', wie: 'ein Messer', e: '🔪' },
+  { w: 'spiegelglatt', noun: 'Spiegel', adj: 'glatt', wie: 'ein Spiegel', e: '🪞' },
+  { w: 'butterweich', noun: 'Butter', adj: 'weich', wie: 'Butter', e: '🧈' },
+];
+
+function compAdjTask(r: Rng, s: Stage): Gen {
+  const i = ri(r, 0, COMP_ADJ.length - 1);
+  const a = COMP_ADJ[i];
+  const others = COMP_ADJ.filter((_, k) => k !== i);
+  const visual = { kind: 'emoji' as const, chars: a.e };
+  const sol = [`${a.w} = so ${a.adj} wie ${a.wie}`, 'Zusammengesetzte Adjektive schreibt man klein und zusammen.'];
+  // Stufe 3: selbst schreiben
+  if (s === 3 && chance(r, 0.6)) {
+    return {
+      key: `s-${a.w}`,
+      prompt: `Schreibe als ein Wort:\nso ${a.adj} wie ${a.wie}`,
+      visual,
+      answer: { type: 'text', value: a.w, caseSensitive: true },
+      tags: ['schreiben'],
+      solution: sol,
+    };
+  }
+  // Stufe 2: richtig zusammensetzen und schreiben (klein, zusammen)
+  if (s === 2 && chance(r, 0.5)) {
+    const cap = a.w.charAt(0).toUpperCase() + a.w.slice(1);
+    return {
+      key: `z-${a.w}`,
+      prompt: `${a.noun} + ${a.adj} = ?\nWie schreibt man das Adjektiv richtig?`,
+      visual,
+      answer: choice(r, a.w, [cap, `${a.noun.toLowerCase()} ${a.adj}`, `${a.adj}${a.noun.toLowerCase()}`]),
+      tags: ['schreibweise'],
+      traps: [{ answer: cap, tag: 'gross', hint: 'Es ist ein Adjektiv – also klein, auch wenn ein Nomen darin steckt.' }],
+      solution: sol,
+    };
+  }
+  // Wie sagt man kürzer?
+  return {
+    key: `k-${a.w}`,
+    prompt: `Wie sagt man kürzer?\nso ${a.adj} wie ${a.wie}`,
+    visual,
+    answer: choice(
+      r,
+      a.w,
+      shuffle(r, others)
+        .slice(0, 3)
+        .map((x) => x.w),
+    ),
+    tags: ['bedeutung'],
+    solution: sol,
+  };
+}
+
 // ---------- Redewendungen (Deutsch Kl. 4) ----------
 // Feste Wendungen, die man nicht wörtlich nimmt. Je Wendung: Bild, Bedeutung und ein Satz, in den sie passt.
 
@@ -327,6 +396,19 @@ function idiomTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA5: Skill[] = [
+  D(
+    4,
+    'd4-adjektive-zusammengesetzt',
+    'Zusammengesetzte Adjektive',
+    '⚡',
+    {
+      text: ['Aus einem Nomen und einem Adjektiv kann man ein neues Adjektiv bauen: der Blitz + schnell = blitzschnell.', 'Es bedeutet: so schnell wie der Blitz – also sehr schnell.', 'Zusammengesetzte Adjektive schreibt man klein und zusammen: federleicht, steinhart, eiskalt.'],
+      visual: { kind: 'text', text: 'Blitz + schnell = blitzschnell' },
+      videoQuery: 'zusammengesetzte Adjektive Grundschule',
+    },
+    compAdjTask,
+    { tagLabels: { bedeutung: 'Wie sagt man kürzer?', schreibweise: 'klein und zusammen', schreiben: 'selbst schreiben', gross: 'groß geschrieben' }, testSeconds: 25 },
+  ),
   D(
     3,
     'd3-doppelvokal',
@@ -702,7 +784,86 @@ function birthdayTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- There is / There are (2. Lernjahr) ----------
+
+const THINGS: { e: string; one: string; many: string }[] = [
+  { e: '🍎', one: 'apple', many: 'apples' },
+  { e: '🐱', one: 'cat', many: 'cats' },
+  { e: '⚽', one: 'ball', many: 'balls' },
+  { e: '🐶', one: 'dog', many: 'dogs' },
+  { e: '🐦', one: 'bird', many: 'birds' },
+  { e: '🚗', one: 'car', many: 'cars' },
+  { e: '🌳', one: 'tree', many: 'trees' },
+  { e: '⭐', one: 'star', many: 'stars' },
+  { e: '🌷', one: 'flower', many: 'flowers' },
+  { e: '🍌', one: 'banana', many: 'bananas' },
+  { e: '✏️', one: 'pencil', many: 'pencils' },
+  { e: '🦆', one: 'duck', many: 'ducks' },
+];
+const an = (w: string) => (/^[aeiou]/.test(w) ? 'an' : 'a');
+const thereSentence = (n: number, t: (typeof THINGS)[number]) => (n === 1 ? `There is ${an(t.one)} ${t.one}.` : `There are ${CARD[n]} ${t.many}.`);
+
+function thereTask(r: Rng, s: Stage): Gen {
+  const t = pick(r, THINGS);
+  const n = s === 1 ? pick(r, [1, 1, 2, 3, 4]) : ri(r, 1, s === 2 ? 6 : 9);
+  const visual = { kind: 'row' as const, items: Array.from({ length: n }, () => t.e) };
+  const ok = thereSentence(n, t);
+  const sol = [n === 1 ? 'Eins: There is (a/an …).' : 'Mehr als eins: There are … mit Mehrzahl-s.', ok];
+  // Stufe 3: die Zahl auf Englisch schreiben
+  if (s === 3 && n > 1 && chance(r, 0.5)) {
+    return {
+      key: `w-${t.one}-${n}`,
+      prompt: `Schau aufs Bild und schreibe die Zahl auf Englisch:\nThere are ☐ ${t.many}.`,
+      speak: 'Schau aufs Bild und schreibe die Zahl auf Englisch.',
+      visual,
+      answer: { type: 'text', value: CARD[n], lang: 'en' },
+      tags: ['zahl'],
+      solution: sol,
+      pronounce: { text: ok, lang: 'en' },
+    };
+  }
+  // Stufe 2: There is oder There are einsetzen
+  if (s === 2 && chance(r, 0.5)) {
+    const rest = n === 1 ? `${an(t.one)} ${t.one}.` : `${CARD[n]} ${t.many}.`;
+    return {
+      key: `l-${t.one}-${n}`,
+      prompt: `Setze ein: There is oder There are?\n☐ ${rest}`,
+      speak: 'Setze ein: There is oder There are? Schau, wie viele es sind.',
+      visual,
+      answer: { ...fixedChoiceEn(['There is', 'There are'], n === 1 ? 'There is' : 'There are') },
+      tags: ['is-are'],
+      solution: sol,
+      pronounce: { text: ok, lang: 'en' },
+    };
+  }
+  // Welcher Satz passt zum Bild?
+  const wrong = n === 1 ? [`There are one ${t.one}.`, `There are two ${t.many}.`, `There is ${an(t.one)} ${t.many}.`] : [`There is ${CARD[n]} ${t.many}.`, `There are ${CARD[n]} ${t.one}.`, thereSentence(n === 2 ? 3 : n - 1, t)];
+  return {
+    key: `b-${t.one}-${n}`,
+    prompt: 'Welcher Satz passt zum Bild?',
+    visual,
+    answer: { ...choice(r, ok, wrong), speakOptions: 'en' },
+    tags: ['satz'],
+    solution: sol,
+    pronounce: { text: ok, lang: 'en' },
+  };
+}
+const fixedChoiceEn = (options: string[], ok: string) => ({ type: 'choice' as const, options, correct: options.indexOf(ok), speakOptions: 'en' as const });
+
 export const ENGLISCH_EXTRA5: Skill[] = [
+  E(
+    2,
+    'e2-there-is-are',
+    'There is – There are',
+    '🔢',
+    {
+      text: ['There is sagt man bei einem Ding: There is a cat.', 'There are sagt man bei mehreren Dingen – mit Mehrzahl-s: There are three cats.', 'Auf Deutsch heißt beides „Da ist“ oder „Da sind“ (es gibt).'],
+      visual: { kind: 'row', items: ['🐱', '🐱', '🐱'] },
+      videoQuery: 'there is there are song for kids',
+    },
+    thereTask,
+    { tagLabels: { satz: 'Satz zum Bild', 'is-are': 'is oder are', zahl: 'Zahl auf Englisch' }, testSeconds: 20 },
+  ),
   E(
     2,
     'e2-birthday',

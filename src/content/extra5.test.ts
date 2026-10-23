@@ -8,7 +8,7 @@ describe('Ordnungszahlen und Datum (e2-birthday)', () => {
     expect([1, 2, 3, 4, 11, 12, 13, 21, 22, 23, 24, 31].map(ordShort)).toEqual(['1st', '2nd', '3rd', '4th', '11th', '12th', '13th', '21st', '22nd', '23rd', '24th', '31st']);
   });
   it('jede Stufe erzeugt lösbare Aufgaben: richtige Antwort genau einmal unter den Möglichkeiten', () => {
-    const s = ENGLISCH_EXTRA5[0];
+    const s = ENGLISCH_EXTRA5.find((x) => x.id === 'e2-birthday')!;
     expect(s.id).toBe('e2-birthday');
     const r = mulberry32(7);
     for (const stage of [1, 2, 3] as const)
@@ -27,7 +27,7 @@ describe('Ordnungszahlen und Datum (e2-birthday)', () => {
       }
   });
   it('das gehörte Datum passt zur richtigen Antwort', () => {
-    const s = ENGLISCH_EXTRA5[0];
+    const s = ENGLISCH_EXTRA5.find((x) => x.id === 'e2-birthday')!;
     const r = mulberry32(3);
     let seen = 0;
     for (let i = 0; i < 300; i++) {
@@ -189,6 +189,43 @@ describe('Wörter mit aa, ee, oo (d3-doppelvokal)', () => {
           const at = ok.search(/aa|ee|oo/);
           expect(v.mark, t.key).toEqual([[at, at + 2]]);
         }
+      }
+  });
+});
+
+describe('There is / There are (e2-there-is-are)', () => {
+  it('Bild und Satz passen: eins → There is a/an, mehr → There are + Zahlwort + Mehrzahl', () => {
+    const s = ENGLISCH_EXTRA5.find((x) => x.id === 'e2-there-is-are')!;
+    const r = mulberry32(15);
+    const NUM = ['', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine'];
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, stage);
+        if (t.visual?.kind !== 'row') throw new Error(t.key);
+        const n = t.visual.items.length;
+        const said = t.pronounce!.text;
+        if (n === 1) expect(said, t.key).toMatch(/^There is an? [a-z]+\.$/);
+        else expect(said, t.key).toMatch(new RegExp(`^There are ${NUM[n]} [a-z]+s\\.$`));
+        if (t.answer.type === 'choice') {
+          expect(new Set(t.answer.options).size, t.key).toBe(t.answer.options.length);
+          if (t.key.startsWith('b-')) expect(t.answer.options[t.answer.correct], t.key).toBe(said);
+          else expect(t.answer.options[t.answer.correct], t.key).toBe(n === 1 ? 'There is' : 'There are');
+        } else if (t.answer.type === 'text') expect(t.answer.value, t.key).toBe(NUM[n]);
+      }
+  });
+});
+
+describe('Zusammengesetzte Adjektive (d4-adjektive-zusammengesetzt)', () => {
+  it('Lösung klein und zusammen; die Antwort steht nicht in der Frage', () => {
+    const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd4-adjektive-zusammengesetzt')!;
+    const r = mulberry32(16);
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, stage);
+        const ok = t.answer.type === 'choice' ? t.answer.options[t.answer.correct] : t.answer.type === 'text' ? t.answer.value : '';
+        expect(ok, t.key).toMatch(/^[a-zäöüß]+$/);
+        expect(t.prompt.includes(ok), t.key).toBe(false);
+        if (t.answer.type === 'choice') expect(new Set(t.answer.options).size, t.key).toBe(t.answer.options.length);
       }
   });
 });
