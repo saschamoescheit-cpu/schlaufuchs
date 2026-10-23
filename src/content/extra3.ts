@@ -260,7 +260,7 @@ const SHOP_QA: [string, string, string[]][] = [
 ];
 const SHOP_WANT: [string, string][] = [
   ['an apple', 'einen Apfel'], ['a banana', 'eine Banane'], ['an ice cream', 'ein Eis'], ['a lemonade', 'eine Limonade'], ['an orange', 'eine Orange'], ['a sandwich', 'ein Sandwich'], ['a muffin', 'einen Muffin'],
-  ['a cookie', 'einen Keks'], ['an egg', 'ein Ei'], ['a pizza', 'eine Pizza'], ['a carrot', 'eine Karotte'], ['an apple juice', 'einen Apfelsaft'],
+  ['a biscuit', 'einen Keks'], ['an egg', 'ein Ei'], ['a pizza', 'eine Pizza'], ['a carrot', 'eine Karotte'], ['an apple juice', 'einen Apfelsaft'],
 ];
 function shopTask(r: Rng, s: Stage): Gen {
   const v = ri(r, 0, s === 1 ? 1 : 2);
