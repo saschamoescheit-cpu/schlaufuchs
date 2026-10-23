@@ -965,19 +965,19 @@ const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
 function story4(r: Rng): Gen {
   const stories = [
     { t: 'Nele ist neu in der Klasse 4b. Am ersten Tag kennt sie niemanden und sitzt in der Pause allein auf der Bank. Da kommt Tarek und fragt, ob sie beim Fangen mitspielen möchte. Nele zögert erst, dann rennt sie mit. Am Nachmittag erzählt sie ihrer Mutter, dass sie schon einen Freund gefunden hat. Am nächsten Morgen freut sie sich auf die Schule.', qs: [
-      { q: 'Warum sitzt Nele in der Pause allein?', a: 'Sie ist neu und kennt noch niemanden.', w: ['Sie ist krank.', 'Sie mag keine Spiele.', 'Sie hat Streit mit Tarek.'] },
-      { q: 'Was fragt Tarek?', a: 'ob sie beim Fangen mitspielen möchte', w: ['ob sie ihm ein Brot gibt', 'wie spät es ist', 'ob sie neu ist'] },
-      { q: 'Wie hat sich Neles Gefühl am Ende verändert?', a: 'Erst war sie allein, am Ende freut sie sich.', w: ['Erst war sie fröhlich, am Ende traurig.', 'Sie war die ganze Zeit traurig.', 'Sie ist am Ende wütend.'] },
+      { q: 'Warum sitzt Nele in der Pause allein?', a: 'Sie ist neu und kennt noch niemanden.', w: ['Sie hat Streit mit Tarek gehabt.', 'Sie ist krank und muss sich ausruhen.', 'Sie mag überhaupt keine Spiele.'] },
+      { q: 'Was fragt Tarek?', a: 'ob sie beim Fangen mitspielen möchte', w: ['ob sie ihm etwas von ihrem Brot gibt', 'ob sie neu in der Klasse ist', 'wie spät es gerade ist'] },
+      { q: 'Wie hat sich Neles Gefühl am Ende verändert?', a: 'Erst war sie allein, am Ende freut sie sich.', w: ['Am Anfang und am Ende ist sie wütend.', 'Erst war sie fröhlich, am Ende traurig.', 'Sie war die ganze Zeit sehr traurig.'] },
     ] },
     { t: 'In der Nacht hat es stark geschneit. Als Finn aufwacht, ist alles weiß. Der Schulbus kann nicht fahren, weil die Straßen nicht geräumt sind. Finn und seine Schwester bauen im Garten einen riesigen Schneemann. Als Nase bekommt er eine Möhre, als Augen zwei Kohlestücke. Am Abend ist Finn müde, aber glücklich.', qs: [
-      { q: 'Warum kann der Schulbus nicht fahren?', a: 'Die Straßen sind nicht geräumt.', w: ['Der Busfahrer ist krank.', 'Es ist Sonntag.', 'Der Bus ist kaputt.'] },
+      { q: 'Warum kann der Schulbus nicht fahren?', a: 'Die Straßen sind nicht geräumt.', w: ['Der Busfahrer ist heute krank.', 'Es ist Sonntag und schulfrei.', 'Der Bus ist leider kaputt.'] },
       { q: 'Was bekommt der Schneemann als Nase?', a: 'eine Möhre', w: ['ein Kohlestück', 'einen Knopf', 'einen Ast'] },
       { q: 'In welcher Jahreszeit spielt die Geschichte?', a: 'im Winter', w: ['im Sommer', 'im Herbst', 'im Frühling'] },
     ] },
     { t: 'Die Klasse 4a plant einen Flohmarkt. Jedes Kind bringt Spielsachen und Bücher mit, die es nicht mehr braucht. Der Flohmarkt findet in der Turnhalle statt. Am Ende haben die Kinder 236 Euro eingenommen. Das Geld spenden sie an ein Tierheim. Die Leiterin des Tierheims kommt in die Klasse und bedankt sich.', qs: [
       { q: 'Wo findet der Flohmarkt statt?', a: 'in der Turnhalle', w: ['im Klassenzimmer', 'auf dem Schulhof', 'im Tierheim'] },
       { q: 'Wie viel Geld nehmen die Kinder ein?', a: '236 Euro', w: ['263 Euro', '200 Euro', '36 Euro'] },
-      { q: 'Warum kommt die Leiterin des Tierheims in die Klasse?', a: 'Sie will sich für die Spende bedanken.', w: ['Sie will Tiere verkaufen.', 'Sie will beim Flohmarkt helfen.', 'Sie ist eine neue Lehrerin.'] },
+      { q: 'Warum kommt die Leiterin des Tierheims in die Klasse?', a: 'Sie will sich für die Spende bedanken.', w: ['Sie will beim Flohmarkt mithelfen.', 'Sie ist die neue Lehrerin der Klasse.', 'Sie will den Kindern Tiere verkaufen.'] },
     ] },
     { t: 'Paula und ihr Bruder Max fahren mit dem Zug zu ihrer Tante nach Hamburg. Die Fahrt dauert vier Stunden. Unterwegs spielen sie Karten und essen belegte Brote. Max schläft nach zwei Stunden ein. Als sie ankommen, regnet es. Die Tante wartet mit einem großen roten Regenschirm am Bahnsteig.', qs: [
       { q: 'Wohin fahren Paula und Max?', a: 'nach Hamburg', w: ['nach Berlin', 'nach München', 'nach Köln'] },
@@ -986,7 +986,7 @@ function story4(r: Rng): Gen {
       { q: 'Was macht Max nach zwei Stunden?', a: 'Er schläft ein.', w: ['Er isst ein Brot.', 'Er steigt aus.', 'Er liest ein Buch.'] },
     ] },
     { t: 'Im Herbst sammeln Eichhörnchen Nüsse und Eicheln. Sie verstecken sie an vielen Stellen im Boden. Im Winter suchen sie ihre Vorräte wieder. Doch nicht alle Verstecke finden sie. Aus manchen vergessenen Nüssen wachsen im Frühling neue Bäume. So helfen Eichhörnchen dem Wald.', qs: [
-      { q: 'Was sammeln Eichhörnchen im Herbst?', a: 'Nüsse und Eicheln', w: ['Blätter und Gras', 'Pilze und Beeren', 'Steine'] },
+      { q: 'Was sammeln Eichhörnchen im Herbst?', a: 'Nüsse und Eicheln', w: ['Blätter und Gras', 'Pilze und Beeren', 'kleine Steine'] },
       { q: 'Was passiert mit vergessenen Nüssen?', a: 'Es wachsen neue Bäume.', w: ['Sie werden zu Steinen.', 'Vögel fressen sie alle.', 'Sie verschwinden.'] },
       { q: 'Wie helfen Eichhörnchen dem Wald?', a: 'Sie pflanzen ohne Absicht neue Bäume.', w: ['Sie fällen alte Bäume.', 'Sie gießen die Pflanzen.', 'Sie vertreiben die Vögel.'] },
     ] },
@@ -994,39 +994,39 @@ function story4(r: Rng): Gen {
       { q: 'Wie alt wird Jonas?', a: 'zehn Jahre', w: ['neun Jahre', 'elf Jahre', 'acht Jahre'] },
       { q: 'Wo finden die Kinder den Schatz?', a: 'im Sandkasten', w: ['im Gartenhaus', 'unter dem Apfelbaum', 'im Keller'] },
       { q: 'Wie hat Jonas der Geburtstag gefallen?', a: 'sehr gut', w: ['gar nicht', 'langweilig', 'Das steht nicht im Text.'] },
-      { q: 'Wie viele Freunde lädt Jonas ein?', a: 'sechs', w: ['zehn', 'vier', 'acht'] },
+      { q: 'Wie viele Freunde lädt Jonas ein?', a: 'sechs', w: ['sieben', 'zwölf', 'neun'] },
     ] },
     // Nachtlauf 22.10.2026: mehr Texte
     { t: 'Die Klasse 4c fährt für drei Tage auf einen Bauernhof. Jeden Morgen um sechs Uhr helfen die Kinder im Stall. Lina füttert die Kälber, Emre sammelt die Eier ein. Am zweiten Tag wird ein kleines Ferkel geboren. Die Kinder dürfen ihm einen Namen geben und nennen es Rosi. Bei der Abfahrt sind alle ein bisschen traurig.', qs: [
       { q: 'Wie lange bleibt die Klasse auf dem Bauernhof?', a: 'drei Tage', w: ['zwei Tage', 'eine Woche', 'vier Tage'] },
-      { q: 'Was macht Emre?', a: 'Er sammelt die Eier ein.', w: ['Er füttert die Kälber.', 'Er melkt die Kühe.', 'Er fegt den Hof.'] },
+      { q: 'Was macht Emre?', a: 'Er sammelt die Eier ein.', w: ['Er füttert die kleinen Kälber.', 'Er fegt den ganzen Hof.', 'Er melkt die Kühe im Stall.'] },
       { q: 'Wie heißt das Ferkel?', a: 'Rosi', w: ['Lina', 'Susi', 'Emma'] },
-      { q: 'Warum sind die Kinder bei der Abfahrt traurig?', a: 'Es hat ihnen auf dem Bauernhof gefallen.', w: ['Sie haben Hunger.', 'Das Ferkel ist krank.', 'Es regnet.'] },
+      { q: 'Warum sind die Kinder bei der Abfahrt traurig?', a: 'Es hat ihnen auf dem Bauernhof gefallen.', w: ['Das kleine Ferkel ist krank geworden.', 'Sie haben großen Hunger.', 'Es regnet den ganzen Tag.'] },
     ] },
     { t: 'Als Mia nach der Schule nach Hause kommt, findet sie ihren Haustürschlüssel nicht. Sie sucht in ihrer Jackentasche und in ihrem Ranzen. Dann fällt ihr ein, dass sie beim Sportunterricht ihre Jacke ausgezogen hat. Sie läuft zurück zur Turnhalle. Der Hausmeister hat den Schlüssel schon gefunden und gibt ihn ihr zurück. Mia bedankt sich und bringt ihm am nächsten Tag ein selbst gemaltes Bild.', qs: [
-      { q: 'Wo sucht Mia zuerst?', a: 'in ihrer Jackentasche', w: ['unter der Fußmatte', 'im Briefkasten', 'in der Küche'] },
-      { q: 'Wer hat den Schlüssel gefunden?', a: 'der Hausmeister', w: ['die Lehrerin', 'ihr Freund', 'ihre Mutter'] },
-      { q: 'Warum läuft Mia zurück zur Turnhalle?', a: 'Sie hat dort ihre Jacke ausgezogen.', w: ['Sie hat gleich wieder Sport.', 'Sie will dort spielen.', 'Ihre Mutter wartet dort.'] },
-      { q: 'Was bringt Mia dem Hausmeister?', a: 'ein selbst gemaltes Bild', w: ['Schokolade', 'eine Blume', 'einen Brief'] },
+      { q: 'Wo sucht Mia zuerst?', a: 'in ihrer Jackentasche', w: ['unter der Fußmatte', 'in der Küchenschublade', 'im Briefkasten am Haus'] },
+      { q: 'Wer hat den Schlüssel gefunden?', a: 'der Hausmeister', w: ['ihre Mutter', 'die Sportlehrerin', 'ihr bester Freund'] },
+      { q: 'Warum läuft Mia zurück zur Turnhalle?', a: 'Sie hat dort ihre Jacke ausgezogen.', w: ['Ihre Mutter wartet dort auf sie.', 'Sie will dort noch etwas spielen.', 'Sie hat gleich wieder Sportunterricht.'] },
+      { q: 'Was bringt Mia dem Hausmeister?', a: 'ein selbst gemaltes Bild', w: ['einen langen Brief', 'eine Tafel Schokolade', 'einen Blumenstrauß'] },
     ] },
     { t: 'Fledermäuse sind die einzigen Säugetiere, die richtig fliegen können. Am Tag schlafen sie kopfüber hängend in Höhlen oder auf Dachböden. In der Nacht jagen sie Insekten. Dabei stoßen sie hohe Rufe aus, die wir Menschen nicht hören können. Das Echo zeigt ihnen, wo ein Hindernis oder eine Mücke ist. Im Winter halten Fledermäuse Winterschlaf.', qs: [
       { q: 'Wann jagen Fledermäuse?', a: 'in der Nacht', w: ['am Morgen', 'am Mittag', 'nur im Winter'] },
-      { q: 'Wie schlafen Fledermäuse?', a: 'kopfüber hängend', w: ['in einem Nest', 'auf dem Rücken', 'im Wasser'] },
+      { q: 'Wie schlafen Fledermäuse?', a: 'kopfüber hängend', w: ['in einem warmen Nest', 'auf dem Rücken liegend', 'im Wasser schwimmend'] },
       { q: 'Warum finden Fledermäuse im Dunkeln ihren Weg?', a: 'Das Echo ihrer Rufe zeigt ihnen den Weg.', w: ['Sie haben eine Taschenlampe.', 'Sie fliegen nur, wenn der Mond scheint.', 'Sie kennen jeden Baum auswendig.'] },
       { q: 'Was machen Fledermäuse im Winter?', a: 'Sie halten Winterschlaf.', w: ['Sie fliegen in den Süden.', 'Sie jagen Mücken.', 'Sie bauen Nester.'] },
     ] },
     // Nachtlauf 23.10.2026: mehr Texte
     { t: 'Jonas will beim Schulfest einen Waffelstand machen. Zusammen mit seiner Freundin Aylin schreibt er eine Einkaufsliste: Mehl, Eier, Milch, Zucker und Puderzucker. Am Festtag stehen viele Kinder an. Nach zwei Stunden ist der Teig aufgebraucht. Mit dem Geld kaufen die beiden neue Bälle für die Pausenhalle. Die Rektorin bedankt sich bei ihnen.', qs: [
-      { q: 'Wer hilft Jonas beim Waffelstand?', a: 'seine Freundin Aylin', w: ['sein Bruder', 'die Rektorin', 'seine Mutter'] },
+      { q: 'Wer hilft Jonas beim Waffelstand?', a: 'seine Freundin Aylin', w: ['die freundliche Rektorin', 'seine große Schwester', 'sein kleiner Bruder'] },
       { q: 'Wann ist der Teig aufgebraucht?', a: 'nach zwei Stunden', w: ['nach einer Stunde', 'am Abend', 'nach zehn Minuten'] },
-      { q: 'Was kaufen Jonas und Aylin von dem Geld?', a: 'neue Bälle für die Pausenhalle', w: ['ein Geschenk für die Rektorin', 'neues Mehl', 'Süßigkeiten für sich'] },
-      { q: 'Warum bedankt sich die Rektorin?', a: 'Die Kinder haben das Geld für die Schule ausgegeben.', w: ['Die Waffeln waren kalt.', 'Sie hat eine Waffel geschenkt bekommen.', 'Jonas hat aufgeräumt.'] },
+      { q: 'Was kaufen Jonas und Aylin von dem Geld?', a: 'neue Bälle für die Pausenhalle', w: ['Süßigkeiten nur für sich selbst', 'neues Mehl für die nächsten Waffeln', 'ein Geschenk für die Rektorin'] },
+      { q: 'Warum bedankt sich die Rektorin?', a: 'Die Kinder haben das Geld für die Schule ausgegeben.', w: ['Sie hat selbst eine Waffel geschenkt bekommen.', 'Die Waffeln waren besonders lecker und warm.', 'Jonas hat nach dem Fest alles aufgeräumt.'] },
     ] },
-    { t: 'Eichhörnchen sammeln im Herbst Nüsse und Samen. Sie vergraben ihre Vorräte an vielen verschiedenen Stellen im Boden. Im Winter suchen sie die Verstecke wieder. Dabei finden sie aber längst nicht alle. Aus manchen vergessenen Nüssen wachsen im Frühling kleine Bäume. So helfen die Eichhörnchen ganz nebenbei, dass neue Wälder entstehen.', qs: [
-      { q: 'Wann sammeln Eichhörnchen Vorräte?', a: 'im Herbst', w: ['im Frühling', 'im Sommer', 'im Winter'] },
-      { q: 'Wo verstecken Eichhörnchen ihre Vorräte?', a: 'an vielen Stellen im Boden', w: ['in einem einzigen Nest', 'auf Dächern', 'im Wasser'] },
-      { q: 'Was passiert mit vergessenen Nüssen?', a: 'Aus manchen wachsen kleine Bäume.', w: ['Sie werden zu Steinen.', 'Die Vögel bringen sie zurück.', 'Sie verschwinden sofort.'] },
-      { q: 'Wie helfen Eichhörnchen dem Wald?', a: 'Aus ihren vergessenen Nüssen wachsen neue Bäume.', w: ['Sie fressen schädliche Käfer.', 'Sie gießen die Bäume.', 'Sie vertreiben die Füchse.'] },
+    { t: 'Kaiserpinguine leben in der Antarktis, wo es eisig kalt ist. Sie können nicht fliegen, aber sehr gut schwimmen und tauchen. Das Weibchen legt ein einziges Ei. Danach wandert es zum Meer, um Fische zu fangen. Das Männchen hält das Ei wochenlang auf seinen Füßen warm, damit es auf dem Eis nicht erfriert. Wenn das Küken schlüpft, kommt die Mutter mit Futter zurück.', qs: [
+      { q: 'Wo leben Kaiserpinguine?', a: 'in der Antarktis', w: ['in der Wüste Sahara', 'im Regenwald', 'in den Alpen'] },
+      { q: 'Wer wärmt das Ei?', a: 'das Männchen', w: ['das Weibchen', 'die Großeltern', 'die Sonne'] },
+      { q: 'Warum hält der Vater das Ei auf den Füßen?', a: 'Damit es auf dem Eis nicht erfriert.', w: ['Damit es nicht ins Meer rollt.', 'Weil es dort am weichsten liegt.', 'Damit die Mutter es nicht findet.'] },
+      { q: 'Was macht das Weibchen, nachdem es das Ei gelegt hat?', a: 'Es geht zum Meer und fängt Fische.', w: ['Es baut ein großes Nest aus Ästen.', 'Es schläft den ganzen Winter lang.', 'Es fliegt in ein wärmeres Land.'] },
     ] },
   ];
   const s = pick(r, stories);
