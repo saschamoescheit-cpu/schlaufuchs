@@ -306,6 +306,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'M0_9VgZc41g', title: 'Kannst du dieses Zahlenrätsel lösen? (Teil 2, Rechenketten)', channel: 'Mathe mit MO & Ni', len: '4:03' },
     { id: 'lTwdzkDvZFI', title: 'Zahlenrätsel || Mathematik (3. - 6. Klasse)', channel: 'Expresslehrer', len: '7:24' },
   ],
+  'd3-doppelvokal': [
+    { id: 'ExOhvYkfbZw', title: 'Doppelte Selbstlaute merken: aa, oo, ee – Rechtschreibregel?', channel: 'Nachhilfe vom Lehrer', len: '2:58' },
+    { id: 'sGOtzGVuAsQ', title: 'Wörter mit aa und oo Überblick', channel: 'www.mein-lernen.at', len: '8:26' },
+  ],
   'd2-oberbegriffe': [{ id: 'K8eYDI_cPFo', title: 'Oberbegriff finden | Deutsch | Grundschule', channel: 'sofaDeutsch', len: '1:35' }],
   'm4-punkt-vor-strich': [
     { id: 'DAapjJHQQiM', title: 'Punkt vor Strich und Klammern zuerst / Rechenregeln / Mathematik / ab Klasse 4', channel: 'Lernen mit Leo', len: '3:53' },

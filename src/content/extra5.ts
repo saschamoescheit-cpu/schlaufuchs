@@ -3,6 +3,7 @@
 import { chance, choice, pick, ri, shuffle, type Rng } from '../engine/rng';
 import type { Skill, Stage } from '../engine/types';
 import { skill, type Gen } from './helpers';
+import { spellTask, type Pair } from './deutsch';
 
 const E = (year: 1 | 2, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('englisch', year === 1 ? 3 : 4, ...a);
 const M = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('mathe', grade, ...a);
@@ -167,6 +168,40 @@ function prepTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Wörter mit aa, ee, oo (Deutsch Kl. 3) ----------
+// Merkwörter mit doppeltem Selbstlaut – dazu Gegenbeispiele, denn meistens steht der lange Selbstlaut nur einmal.
+
+const DOPPEL: Pair[] = [
+  ['Boot', 'Bot', '⛵'],
+  ['Meer', 'Mer', '🌊'],
+  ['Haar', 'Har', '💇'],
+  ['Tee', 'Te', '🍵'],
+  ['Zoo', 'Zo', '🦁'],
+  ['Moos', 'Mos', '🌿'],
+  ['Beere', 'Bere', '🫐'],
+  ['Schnee', 'Schne', '❄️'],
+  ['Fee', 'Fe', '🧚'],
+  ['See', 'Se', '🏞️'],
+  ['Paar', 'Par', '🧦'],
+  ['Waage', 'Wage', '⚖️'],
+  ['Klee', 'Kle', '☘️'],
+  ['Kaffee', 'Kaffe', '☕'],
+  ['leer', 'ler', '📭'],
+  ['Beet', 'Bet', '🌱'],
+  ['Idee', 'Ide', '💡'],
+  ['Saal', 'Sal', '🏛️'],
+  // Gegenbeispiele: langer Selbstlaut, aber nur einmal geschrieben
+  ['Hase', 'Haase', '🐰'],
+  ['Rose', 'Roose', '🌹'],
+  ['Note', 'Noote', '🎵'],
+  ['Besen', 'Beesen', '🧹'],
+  ['Hose', 'Hoose', '👖'],
+  ['Name', 'Naame', '📛'],
+  ['Regen', 'Reegen', '🌧️'],
+  ['Brot', 'Broot', '🍞'],
+];
+const doppelt = (p: Pair) => /aa|ee|oo/.test(p[0]);
+
 // ---------- Oberbegriffe (Deutsch Kl. 2) ----------
 
 const GROUPS: { name: string; words: string[] }[] = [
@@ -292,6 +327,36 @@ function idiomTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA5: Skill[] = [
+  D(
+    3,
+    'd3-doppelvokal',
+    'Wörter mit aa, ee, oo',
+    '⛵',
+    {
+      text: [
+        'Bei manchen Wörtern wird der lange Selbstlaut doppelt geschrieben: aa, ee oder oo – Boot, Meer, Haar.',
+        'Das sind Merkwörter. Meistens schreibt man einen langen Selbstlaut nur einmal: Hase, Rose, Brot.',
+        'Doppelt gibt es nur aa, ee und oo – nie ii oder uu.',
+        'Achtung: Umlaute verdoppelt man nie: das Haar – das Härchen, das Boot – das Bötchen.',
+      ],
+      visual: { kind: 'word', word: 'Boot', mark: [[1, 3]] },
+      videoQuery: 'Doppelte Selbstlaute aa ee oo Grundschule',
+    },
+    (r, s) => {
+      const t = spellTask(
+        r,
+        s,
+        DOPPEL,
+        (p) => (doppelt(p) ? 'doppelt' : 'einfach'),
+        (p) => (doppelt(p) ? ['Das ist ein Merkwort mit doppeltem Selbstlaut (aa, ee oder oo).'] : ['Hier steht der lange Selbstlaut nur einmal – doppelte Selbstlaute gibt es nur in wenigen Merkwörtern.']),
+      );
+      // im Lösungsbild den doppelten Selbstlaut als Paar markieren (Kaff·ee·, nicht nur das letzte e)
+      const v = t.solutionVisual;
+      const at = v?.kind === 'word' ? v.word.search(/aa|ee|oo/) : -1;
+      return v?.kind === 'word' && at >= 0 ? { ...t, solutionVisual: { ...v, mark: [[at, at + 2]] } } : t;
+    },
+    { tagLabels: { doppelt: 'Merkwörter mit aa, ee, oo', einfach: 'langer Selbstlaut nur einmal' }, testSeconds: 15 },
+  ),
   D(
     2,
     'd2-oberbegriffe',

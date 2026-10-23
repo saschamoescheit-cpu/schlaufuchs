@@ -6,8 +6,8 @@ import { NAMES, skill, type Gen } from './helpers';
 const D = (grade: 1 | 2 | 3 | 4, ...a: Parameters<typeof skill> extends [unknown, unknown, ...infer R] ? R : never) => skill('deutsch', grade, ...a);
 
 /** zwei Schreibweisen: richtig + falsch (+ Bild) */
-type Pair = [string, string, string?];
-function spellTask(r: Rng, stage: Stage, list: Pair[], tag: (p: Pair) => string, why: (p: Pair) => string[], prompt = 'Welches Wort ist richtig geschrieben?'): Gen {
+export type Pair = [string, string, string?];
+export function spellTask(r: Rng, stage: Stage, list: Pair[], tag: (p: Pair) => string, why: (p: Pair) => string[], prompt = 'Welches Wort ist richtig geschrieben?'): Gen {
   const p = pick(r, list);
   if (stage === 3) {
     // schwer: das Wort selbst schreiben statt auswählen

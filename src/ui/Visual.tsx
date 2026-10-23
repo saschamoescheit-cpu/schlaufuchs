@@ -715,8 +715,11 @@ function Triangle({ inner, outer }: { inner: (number | '?' | null)[]; outer: (nu
     [150, 258],
   ];
   const label = (v: number | '?' | null) => (v === null ? '' : String(v));
+  // für Bildschirmleser: alle Felder mit Ort und Inhalt
+  const say = (v: number | '?' | null) => (v === null ? 'leer' : v === '?' ? 'gesucht' : String(v));
+  const aria = `Rechendreieck. Innen: oben ${say(inner[0])}, links unten ${say(inner[1])}, rechts unten ${say(inner[2])}. Außen: links ${say(outer[0])}, rechts ${say(outer[1])}, unten ${say(outer[2])}.`;
   return (
-    <Svg w={W} h={H} label="Rechendreieck" max={320}>
+    <Svg w={W} h={H} label={aria} max={320}>
       <polygon points={tri} fill="#FFF6EC" stroke={C.ink} strokeWidth={2.5} strokeLinejoin="round" />
       {inPos.map(([x, y], i) => (
         <g key={`i${i}`}>

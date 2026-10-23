@@ -166,6 +166,33 @@ describe('Zahlenrätsel (m3-zahlenraetsel)', () => {
   });
 });
 
+describe('Wörter mit aa, ee, oo (d3-doppelvokal)', () => {
+  it('richtige und falsche Schreibweise unterscheiden sich nur im doppelten Selbstlaut; Stufe 3 schreiben', () => {
+    const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd3-doppelvokal')!;
+    const r = mulberry32(14);
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 200; i++) {
+        const t = s.generate(r, stage);
+        if (stage === 3) {
+          expect(t.answer.type, t.key).toBe('text');
+          continue;
+        }
+        if (t.answer.type !== 'choice') throw new Error(t.key);
+        const ok = t.answer.options[t.answer.correct];
+        const wrong = t.answer.options.find((o) => o !== ok)!;
+        // aus der doppelten Form wird durch Weglassen eines Selbstlauts die einfache
+        const [long, short] = /aa|ee|oo/.test(ok) ? [ok, wrong] : [wrong, ok];
+        expect(long.replace(/(aa|ee|oo)/, (m) => m[0]), t.key).toBe(short);
+        // Lösungsbild: bei Merkwörtern ist das Paar (aa/ee/oo) markiert
+        const v = t.solutionVisual;
+        if (v?.kind === 'word' && /aa|ee|oo/.test(ok)) {
+          const at = ok.search(/aa|ee|oo/);
+          expect(v.mark, t.key).toEqual([[at, at + 2]]);
+        }
+      }
+  });
+});
+
 describe('Oberbegriffe (d2-oberbegriffe)', () => {
   it('genau eine Antwort passt; „passt nicht“ hat drei Wörter einer Gruppe', () => {
     const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd2-oberbegriffe')!;

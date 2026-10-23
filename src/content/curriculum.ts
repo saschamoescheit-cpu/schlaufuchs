@@ -110,7 +110,7 @@ const AREAS: Record<Subject, { name: string; re: RegExp }[]> = {
   deutsch: [
     { name: 'Buchstaben und Laute', re: /anlaut|endlaut|buchstaben|^d1-silben|reime|luecke|selbstlaute|d1-schreiben|nachspuren|lautposition/ },
     { name: 'Lesen und Zuhören', re: /lesen|saetze|sachtexte|minitexte|reihenfolge|zuhoeren/ },
-    { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|sp-st|ei-ie|ig-ich|ck-tz|-ie$|grossschreibung|nominalisierung|v-f|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch|fehlerdetektiv/ },
+    { name: 'Rechtschreibung', re: /diktat|doppelkonsonant|doppelvokal|sp-st|ei-ie|ig-ich|ck-tz|-ie$|grossschreibung|nominalisierung|v-f|silbentrennung|auslaut|ae-aeu|dehnungs|s-ss-sz|das-dass|komma|woertliche|satzzeichen|abc|woerterbuch|fehlerdetektiv/ },
     { name: 'Sprache untersuchen', re: /./ },
   ],
   englisch: [
