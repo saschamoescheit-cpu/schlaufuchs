@@ -6,16 +6,16 @@ Interaktive Lern-App für Grundschüler: **Mathe, Deutsch und Englisch, Klassen 
 
 ## Was die App kann
 - Kinderprofile (Name, Tier, Alter, Klasse, Bundesland) – mehrere Kinder pro Gerät
-- rund 180 Themen mit Zufallsaufgaben in drei Stufen, Lösungsweg, Erklärung mit Bild, Beispiel und geprüften YouTube-Erklärvideos, Vorlesen
+- rund 200 Themen mit Zufallsaufgaben in drei Stufen, Lösungsweg, Erklärung mit Bild, Beispiel und geprüften YouTube-Erklärvideos, Vorlesen
 - Lernstand je Thema, Schwächen und typische Fehlermuster
 - **Fehler-Kiste:** falsch gelöste Aufgaben kommen wieder, bis sie zweimal hintereinander richtig sind
 - **Tests** mit Zeitlimit und Note (Notenschlüssel einstellbar), als Arbeitsblatt druckbar (Hör-Aufgaben mit Vorlese-Blatt für Erwachsene); Klassenarbeiten eintragen mit Wiederholungsplan
 - **Englisch-Vokabeltrainer:** Wortfelder wählen, gemischt üben, **Vokabelkarten** (Karteikasten mit 5 Fächern, Wiederholung nach 1/3/7/14/30 Tagen; Englisch oder Deutsch vorne, selbst schreiben oder nur hören), **Buchstabier-Diktat**, Vokabeltest
 - **Blitzrunde** (60 Sekunden, Rekord je Thema)
 - **Eltern-Bereich** mit PIN: Lernzeit, Lernziele, Tests, Karteikasten, Wochenbericht, Lernstand drucken
-- **Konto (optional):** Abgleich zwischen Geräten über Supabase (EU); ohne Konto bleibt alles auf dem Gerät (localStorage + Kopie in IndexedDB)
-- **Mitteilungen:** Lern-Erinnerung, Klassenarbeit naht, Vokabelkarten fällig (Web Push, je Gerät einschaltbar; Einrichtung: `docs/push.md`)
-- **Vorlesen:** Cloud-Stimme (Supabase-Funktion `tts` → Google Text-to-Speech, auch im Stummmodus von iPhone/iPad), sonst Gerätestimme
+- **Konto (optional):** Abgleich zwischen Geräten über Supabase (EU); ohne Konto bleibt alles auf dem Gerät (localStorage + Kopie in IndexedDB; ein großer Lernstand zieht ganz in IndexedDB um – `docs/speicher.md`)
+- **Mitteilungen:** Lern-Erinnerung, Klassenarbeit naht, Vokabelkarten fällig (Web Push; an/aus und Arten gelten für alle Geräte der Familie, erlauben muss jedes Gerät einmal selbst; Einrichtung: `docs/push.md`)
+- **Vorlesen:** Cloud-Stimme (Supabase-Funktion `tts` → Google Text-to-Speech, auch im Stummmodus von iPhone/iPad), sonst Gerätestimme; Erklärungen und Lösungswege der Englisch-Themen gemischt – Englisch mit englischer, Deutsch mit deutscher Stimme
 - Web-App zum Installieren („Zum Home-Bildschirm“), funktioniert offline
 
 ## Entwickeln

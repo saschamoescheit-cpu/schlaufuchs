@@ -381,7 +381,7 @@ const BAUSTEINE: [string, string, string[]][] = [
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
-  return { key: s, prompt: `Welcher Wortbaustein passt?\n${s}`, speak: s.replace('☐', 'Lücke '), answer: { ...choice(r, ok, w), big: true }, tags: ['vorsilben'], solution: [s.replace('☐', ok), 'Vorsilben wie ab-, an-, ver-, vor-, zer-, mit- verändern die Bedeutung eines Verbs: schreiben → abschreiben.', ...(/☐[.!?]$/.test(s) ? [`Hier steht die Vorsilbe am Satzende – sie gehört zum Verb davor.`] : [])] };
+  return { key: s, prompt: `Welcher Wortbaustein passt?\n${s}`, speak: s.replace('☐', 'Lücke ').replace(/ ([.!?,])/g, '$1'), answer: { ...choice(r, ok, w), big: true }, tags: ['vorsilben'], solution: [s.replace('☐', ok), 'Vorsilben wie ab-, an-, ver-, vor-, zer-, mit- verändern die Bedeutung eines Verbs: schreiben → abschreiben.', ...(/☐[.!?]$/.test(s) ? [`Hier steht die Vorsilbe am Satzende – sie gehört zum Verb davor.`] : [])] };
 }
 
 export const DEUTSCH_EXTRA: Skill[] = [

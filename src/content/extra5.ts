@@ -117,6 +117,21 @@ const PREP_SENTENCES: [string, string][] = [
   ['Wir gehen ohne Jacke raus.', 'ohne'],
   ['Das Geschenk ist für dich.', 'für'],
   ['Seit Montag hat Lea ein Fahrrad.', 'Seit'],
+  // Nachtlauf 24.10.2026: mehr Sätze (je genau eine Präposition)
+  ['Der Hase sitzt hinter dem Busch.', 'hinter'],
+  ['Wir fahren mit dem Zug.', 'mit'],
+  ['Die Brille liegt auf dem Regal.', 'auf'],
+  ['Tom wartet vor der Tür.', 'vor'],
+  ['Das Eis ist für Oma.', 'für'],
+  ['Nach dem Essen putzen wir die Zähne.', 'Nach'],
+  ['Die Maus läuft unter den Tisch.', 'unter'],
+  ['Ein Vogel fliegt über das Haus.', 'über'],
+  ['Der Brief kommt von Opa.', 'von'],
+  ['Die Kinder laufen durch den Park.', 'durch'],
+  ['Mein Platz ist neben dir.', 'neben'],
+  ['Der Ball liegt zwischen den Autos.', 'zwischen'],
+  ['Ohne Schirm werden wir nass.', 'Ohne'],
+  ['Die Jacke hängt an dem Haken.', 'an'],
 ];
 
 function prepTask(r: Rng, s: Stage): Gen {
@@ -150,7 +165,7 @@ function prepTask(r: Rng, s: Stage): Gen {
   if (s === 1 || roll < 0.55) {
     const ok = `${PREP_DE[pos]} ${art}`;
     return {
-      key: `w-${pos}`,
+      key: `w-${pos}-${a.e}`,
       prompt: `Wo ist das Tier? ${a.who} ${a.verb} …`,
       visual,
       answer: choice(r, ok, allPreps.filter((p) => p !== PREP_DE[pos]).map((p) => `${p} ${art}`)),
@@ -160,7 +175,7 @@ function prepTask(r: Rng, s: Stage): Gen {
   }
   // Stufe 2: Lückensatz – die passende Präposition einsetzen
   return {
-    key: `l-${pos}`,
+    key: `l-${pos}-${a.e}`,
     prompt: `Setze die passende Präposition ein:\n${a.who} ${a.verb} ☐ ${art}.`,
     speak: `Setze die passende Präposition ein: ${a.who} ${a.verb} Lücke ${art}.`,
     visual,
@@ -209,10 +224,13 @@ const doppelt = (p: Pair) => /aa|ee|oo/.test(p[0]);
 
 const GRENZEN: [string, string][] = [
   ['Der Hund bellt', '🐶'], ['Die Katze schläft', '🐱'], ['Mama kocht Suppe', '🍲'], ['Ich mag Eis', '🍦'], ['Das Auto ist rot', '🚗'],
-  ['Tim spielt Ball', '⚽'], ['Die Sonne scheint', '☀️'], ['Oma backt Kuchen', '🎂'], ['Lea malt ein Bild', '🎨'], ['Papa liest ein Buch', '📖'],
+  ['Tim spielt Ball', '⚽'], ['Die Sonne scheint', '☀️'], ['Oma backt Kuchen', '🍰'], ['Lea malt ein Bild', '🎨'], ['Papa liest ein Buch', '📖'],
   ['Der Vogel singt', '🐦'], ['Ben trinkt Saft', '🧃'], ['Es regnet heute', '🌧️'], ['Der Igel frisst Äpfel', '🦔'], ['Die Maus ist klein', '🐭'],
   ['Wir gehen in den Zoo', '🦁'], ['Das Schaf ist weich', '🐑'], ['Die Ente schwimmt im Teich', '🦆'], ['Opa hat einen Hut', '🎩'], ['Der Mond ist rund', '🌙'],
   ['Ich habe einen roten Ball', '🔴'], ['Die Kinder spielen im Garten', '🏡'], ['Am Abend lesen wir ein Buch', '📚'], ['Der Bus kommt um acht Uhr', '🚌'],
+  ['Die Kuh gibt Milch', '🐮'], ['Mia hat eine Puppe', '🪆'], ['Das Pferd rennt', '🐴'], ['Ich putze die Zähne', '🪥'], ['Der Baum ist groß', '🌳'],
+  ['Wir bauen einen Schneemann', '⛄'], ['Die Biene summt', '🐝'], ['Mein Bruder lacht', '😄'], ['Der Fisch schwimmt', '🐟'], ['Papa fährt Rad', '🚲'],
+  ['Die Blume ist gelb', '🌼'], ['Das Baby schläft im Bett', '👶'], ['Lina hat Geburtstag', '🎂'], ['Der Zug fährt schnell', '🚆'], ['Wir essen Nudeln', '🍝'], ['Die Uhr tickt', '⏰'],
 ];
 const words = (s: string) => s.toUpperCase().split(' ');
 
