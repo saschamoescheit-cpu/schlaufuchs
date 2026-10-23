@@ -265,6 +265,14 @@ const UK: { q: string; a: string; w: string[]; e: string; info: string }[] = [
   { q: 'Wie heißen Kekse in Großbritannien?', a: 'biscuits', w: ['cookies', 'cakes', 'crisps'], e: '🍪', info: 'In Großbritannien sagt man biscuits, in Amerika cookies.' },
   { q: 'Was gehört zu einem typischen englischen Frühstück?', a: 'Spiegelei, Bohnen und Würstchen', w: ['Döner und Pommes', 'Spaghetti mit Tomatensoße', 'Sushi und Reis'], e: '🍳', info: 'Zum „Full English Breakfast“ gehören Ei, gebackene Bohnen, Würstchen und Toast.' },
   { q: 'Welche Farbe haben die alten Telefonzellen in London?', a: 'rot', w: ['blau', 'grün', 'gelb'], e: '☎️', info: 'Die roten Telefonzellen sind – wie die Busse – ein Wahrzeichen von London.' },
+  { q: 'Wie heißt die Hauptstadt von Wales?', a: 'Cardiff', w: ['Edinburgh', 'Belfast', 'Dublin'], e: '🗺️', info: 'Cardiff ist die Hauptstadt von Wales.' },
+  { q: 'Welches Tier ist auf der Flagge von Wales?', a: 'ein roter Drache', w: ['ein Löwe', 'ein Adler', 'ein Bär'], e: '🐉', info: 'Auf der walisischen Flagge ist ein roter Drache.' },
+  { q: 'Wie nennt man die Flagge des Vereinigten Königreichs?', a: 'Union Jack', w: ['Stars and Stripes', 'Big Flag', 'Red Cross'], e: '🚩', info: 'Der Union Jack verbindet die Kreuze von England, Schottland und Nordirland.' },
+  { q: 'Wie heißt das berühmte Fußballstadion in London?', a: 'Wembley', w: ['Allianz Arena', 'Signal Iduna Park', 'Camp Nou'], e: '⚽', info: 'Im Wembley-Stadion spielt die englische Nationalmannschaft.' },
+  { q: 'Wie heißt der berühmte Palast des Königs in London?', a: 'Buckingham Palace', w: ['Schloss Neuschwanstein', 'Versailles', 'Tower Bridge'], e: '👑', info: 'Vor dem Buckingham Palace stehen Wachen mit hohen Bärenfellmützen.' },
+  { q: 'Was ist „Boxing Day“?', a: 'der 26. Dezember', w: ['ein Boxkampf', 'der 1. Januar', 'der Ostermontag'], e: '🎁', info: 'Boxing Day ist der zweite Weihnachtstag – der 26. Dezember.' },
+  { q: 'Wie heißt der berühmte Detektiv aus London?', a: 'Sherlock Holmes', w: ['Harry Potter', 'Peter Pan', 'Mr Bean'], e: '🔍', info: 'Sherlock Holmes wohnt in den Geschichten in der Baker Street 221b.' },
+  { q: 'Wie sagt man in Großbritannien zum Aufzug?', a: 'lift', w: ['elevator', 'escalator', 'stairs'], e: '⬆️', info: 'In Großbritannien sagt man lift, in Amerika elevator.' },
 ];
 function ukTask(r: Rng, s: Stage): Gen {
   const x = pick(r, UK);
