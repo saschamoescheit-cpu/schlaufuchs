@@ -990,6 +990,19 @@ function story4(r: Rng): Gen {
       { q: 'Warum finden Fledermäuse im Dunkeln ihren Weg?', a: 'Das Echo ihrer Rufe zeigt ihnen den Weg.', w: ['Sie haben eine Taschenlampe.', 'Sie fliegen nur, wenn der Mond scheint.', 'Sie kennen jeden Baum auswendig.'] },
       { q: 'Was machen Fledermäuse im Winter?', a: 'Sie halten Winterschlaf.', w: ['Sie fliegen in den Süden.', 'Sie jagen Mücken.', 'Sie bauen Nester.'] },
     ] },
+    // Nachtlauf 23.10.2026: mehr Texte
+    { t: 'Jonas will beim Schulfest einen Waffelstand machen. Zusammen mit seiner Freundin Aylin schreibt er eine Einkaufsliste: Mehl, Eier, Milch, Zucker und Puderzucker. Am Festtag stehen viele Kinder an. Nach zwei Stunden ist der Teig aufgebraucht. Mit dem Geld kaufen die beiden neue Bälle für die Pausenhalle. Die Rektorin bedankt sich bei ihnen.', qs: [
+      { q: 'Wer hilft Jonas beim Waffelstand?', a: 'seine Freundin Aylin', w: ['sein Bruder', 'die Rektorin', 'seine Mutter'] },
+      { q: 'Wann ist der Teig aufgebraucht?', a: 'nach zwei Stunden', w: ['nach einer Stunde', 'am Abend', 'nach zehn Minuten'] },
+      { q: 'Was kaufen Jonas und Aylin von dem Geld?', a: 'neue Bälle für die Pausenhalle', w: ['ein Geschenk für die Rektorin', 'neues Mehl', 'Süßigkeiten für sich'] },
+      { q: 'Warum bedankt sich die Rektorin?', a: 'Die Kinder haben das Geld für die Schule ausgegeben.', w: ['Die Waffeln waren kalt.', 'Sie hat eine Waffel geschenkt bekommen.', 'Jonas hat aufgeräumt.'] },
+    ] },
+    { t: 'Eichhörnchen sammeln im Herbst Nüsse und Samen. Sie vergraben ihre Vorräte an vielen verschiedenen Stellen im Boden. Im Winter suchen sie die Verstecke wieder. Dabei finden sie aber längst nicht alle. Aus manchen vergessenen Nüssen wachsen im Frühling kleine Bäume. So helfen die Eichhörnchen ganz nebenbei, dass neue Wälder entstehen.', qs: [
+      { q: 'Wann sammeln Eichhörnchen Vorräte?', a: 'im Herbst', w: ['im Frühling', 'im Sommer', 'im Winter'] },
+      { q: 'Wo verstecken Eichhörnchen ihre Vorräte?', a: 'an vielen Stellen im Boden', w: ['in einem einzigen Nest', 'auf Dächern', 'im Wasser'] },
+      { q: 'Was passiert mit vergessenen Nüssen?', a: 'Aus manchen wachsen kleine Bäume.', w: ['Sie werden zu Steinen.', 'Die Vögel bringen sie zurück.', 'Sie verschwinden sofort.'] },
+      { q: 'Wie helfen Eichhörnchen dem Wald?', a: 'Aus ihren vergessenen Nüssen wachsen neue Bäume.', w: ['Sie fressen schädliche Käfer.', 'Sie gießen die Bäume.', 'Sie vertreiben die Füchse.'] },
+    ] },
   ];
   const s = pick(r, stories);
   const q = pick(r, s.qs);
