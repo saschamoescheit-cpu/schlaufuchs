@@ -1,6 +1,7 @@
 import { useEffect, useState, type ReactNode } from 'react';
 import type { Lang } from '../engine/types';
-import { onSpeech, speak, stopSpeaking } from './speech';
+import { onSpeech, speak, speakMixed, stopSpeaking } from './speech';
+import type { LangPart } from './langsplit';
 import { OUTFITS } from './outfitArt';
 
 /** Der Schlaufuchs – Maskottchen und Logo */
@@ -75,7 +76,8 @@ export const CloseIcon = () => (
 );
 
 /** Lautsprecher-Knopf: liest Text vor (nochmal tippen = stopp) */
-export function Speak({ text, lang = 'de', big, slow, label = 'Vorlesen', className = '' }: { text: string; lang?: Lang; big?: boolean; slow?: boolean; label?: string; className?: string }) {
+/** Lautsprecher-Knopf. parts: gemischt vorlesen (Deutsch und Englisch je mit eigener Stimme, langsplit.ts) */
+export function Speak({ text, lang = 'de', big, slow, label = 'Vorlesen', className = '', parts }: { text: string; lang?: Lang; big?: boolean; slow?: boolean; label?: string; className?: string; parts?: LangPart[] }) {
   const [on, setOn] = useState(false);
   useEffect(() => () => stopSpeaking(), []);
   return (
@@ -92,7 +94,8 @@ export function Speak({ text, lang = 'de', big, slow, label = 'Vorlesen', classN
           return;
         }
         setOn(true);
-        speak(text, lang, () => setOn(false), slow);
+        if (parts) speakMixed(parts, () => setOn(false), slow);
+        else speak(text, lang, () => setOn(false), slow);
         setTimeout(() => setOn(false), Math.max(3000, text.length * 120));
       }}
     >

@@ -231,8 +231,12 @@ function speakDevice(text: string, lang: Lang = 'de', onEnd?: () => void, slow =
   else go();
 }
 
+/** gemischtes Vorlesen: Zähler – jedes Stopp oder neue Vorlesen beendet die laufende Folge */
+let mix = 0;
+
 export function stopSpeaking() {
   seq++;
+  mix++;
   if (player && !player.paused) player.pause();
   if (current && synth && (synth.speaking || synth.pending)) synth.cancel();
   current = null;
@@ -380,12 +384,30 @@ export function cloudChunks(text: string, lang: Lang): string[] {
   return out;
 }
 
+/** Vorlesen (eine Sprache). Bricht ein laufendes gemischtes Vorlesen ab. */
 export function speak(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
+  mix++;
+  speakOne(text, lang, onEnd, slow);
+}
+
+/** Gemischt vorlesen (Nachtlauf 23.10.2026): Abschnitte nacheinander, jeder mit der Stimme seiner Sprache – z. B.
+ *  Erklärungen der Englisch-Themen („Hello = Hallo“), aufgeteilt von langsplit.ts. Stopp oder neues Vorlesen bricht ab. */
+export function speakMixed(parts: { text: string; lang: Lang }[], onEnd?: () => void, slow = false) {
+  const my = ++mix;
+  const next = (i: number) => {
+    if (my !== mix) return;
+    if (i >= parts.length) return onEnd?.();
+    speakOne(parts[i].text, parts[i].lang, () => next(i + 1), slow);
+  };
+  next(0);
+}
+
+function speakOne(text: string, lang: Lang = 'de', onEnd?: () => void, slow = false) {
   if (!cloudUsable() || !player) return speakDevice(text, lang, onEnd, slow);
   const chunks = cloudChunks(text, lang);
   if (chunks.length > 1) {
     const [first, ...rest] = chunks;
-    return speak(first, lang, () => speak(rest.join(' '), lang, onEnd, slow), slow);
+    return speakOne(first, lang, () => speakOne(rest.join(' '), lang, onEnd, slow), slow);
   }
   const my = ++seq;
   unlocked = true;

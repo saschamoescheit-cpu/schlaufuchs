@@ -1,5 +1,5 @@
 // Erklärung eines Themas: Text, Bild, Vorlesen und passende YouTube-Videos.
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import type { Skill } from '../engine/types';
 import type { VideoRef } from '../content/videos';
 
@@ -11,6 +11,20 @@ import { correctText } from '../engine/check';
 import { Visual } from './Visual';
 import { WORDS } from '../content/words';
 import { speak } from './speech';
+import { addWords, hasEnglish, splitLangs, titleParts, type LangPart } from './langsplit';
+
+// Wortlisten fürs gemischte Vorlesen einmal übernehmen (die Wortfelder tragen sich beim Laden der Inhalte ein)
+let wordsIn = 0;
+function mixedParts(skill: Skill): LangPart[] | undefined {
+  if (skill.subject !== 'englisch') return undefined;
+  const n = Object.keys(WORDS).length;
+  if (n !== wordsIn) {
+    addWords(Object.values(WORDS).flat());
+    wordsIn = n;
+  }
+  const parts = [...titleParts(skill.title), ...splitLangs(skill.explain.text.join(' '))];
+  return hasEnglish(parts) ? parts : undefined;
+}
 
 export function VideoCard({ v, onPlay }: { v: VideoRef; onPlay: () => void }) {
   return (
@@ -81,12 +95,14 @@ export function Videos({ skill }: { skill: Skill }) {
 
 export function ExplainBody({ skill }: { skill: Skill }) {
   const text = skill.explain.text.join(' ');
+  // Englisch-Themen: Deutsch mit deutscher, Englisch mit englischer Stimme (Nachtlauf 23.10.2026)
+  const parts = useMemo(() => mixedParts(skill), [skill]);
   return (
     <div className="stack">
       <div className="row">
         <span style={{ fontSize: '2rem' }}>{skill.icon}</span>
         <h2 className="grow">{skill.title}</h2>
-        <Speak text={`${skill.title}. ${text}`} label="Erklärung vorlesen" />
+        <Speak text={`${skill.title}. ${text}`} parts={parts} label="Erklärung vorlesen" />
       </div>
       <div className="explain-text">
         {skill.explain.text.map((t, i) => (
