@@ -118,6 +118,22 @@ function mitteTask(r: Rng, unit: number, maxUnits: number): Gen {
   };
 }
 
+/** Zahlenstrahl bis 20 (Kl. 1, Nachtlauf 23./24.10.2026): erst bis 10, dann Zehner-Abschnitte, zuletzt 0 bis 20 am Stück */
+function strahl20(r: Rng, s: Stage): Gen {
+  if (s === 3 && chance(r, 0.25)) return mitteTask(r, 1, 20);
+  const pickN = (lo: number, hi: number) => {
+    let n = ri(r, lo, hi);
+    if (n % 5 === 0) n++;
+    return n;
+  };
+  if (s === 1) return strahlTask(0, 10, 5, 1, pickN(1, 9));
+  if (s === 2) {
+    const t = pick(r, [0, 10]);
+    return strahlTask(t, t + 10, 5, 1, pickN(t + 1, t + 9));
+  }
+  return strahlTask(0, 20, 10, 1, pickN(1, 19));
+}
+
 function strahl100(r: Rng, s: Stage): Gen {
   if (s > 1 && chance(r, 0.25)) return mitteTask(r, 10, 10);
   if (s === 1) {
@@ -1138,6 +1154,7 @@ export const MATHE_EXTRA3: Skill[] = [
   M(1, 'm1-lage', 'Links, rechts, oben, unten', '↔️', { text: ['Links und rechts: Strecke beide Hände aus und spreize die Daumen ab – die linke Hand zeigt ein „L“.', 'Über heißt: weiter oben. Unter heißt: weiter unten.', 'Zwischen heißt: Auf beiden Seiten liegt etwas.'], visual: { kind: 'grid', rows: [['🍎', '⚽', '🚗']], mark: [0, 1] }, videoQuery: 'links rechts oben unten Lagebeziehungen Klasse 1' }, lageTask, { tagLabels: { 'links-rechts': 'links und rechts', 'oben-unten': 'oben und unten', zwischen: 'zwischen', 'links-rechts-vertauscht': 'links und rechts verwechselt', 'oben-unten-vertauscht': 'über und unter verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-ordnen', 'Zahlen ordnen', '🔢', { text: ['Am Zahlenstrahl stehen die kleinen Zahlen links, die großen rechts.', 'Zum Ordnen suchst du zuerst die kleinste Zahl, dann die nächstgrößere – bis zur größten.', 'Das Zeichen < heißt „kleiner als“: 3 < 7.'], visual: { kind: 'numberline', from: 0, to: 10, start: 7, jumps: [] }, videoQuery: 'Zahlen ordnen der Größe nach Klasse 1' }, ordnenTask, { tagLabels: { kleinste: 'kleinste Zahl finden', groesste: 'größte Zahl finden', ordnen: 'Zahlen der Reihe nach ordnen', verwechselt: 'kleinste und größte verwechselt' }, testSeconds: 15 }),
   M(1, 'm1-geld', 'Geld bis 20 €', '💶', { text: ['Auf jeder Münze und jedem Schein steht, wie viel sie wert sind: 1 €, 2 €, 5 €, 10 €.', 'Zähle immer vom größten zum kleinsten Wert und zähle dabei weiter: 10, 15, 17, 18.', 'Nicht die Münzen zählen – ihren Wert zählen!'], visual: { kind: 'money', items: [1000, 500, 200, 100] }, videoQuery: 'Geld zählen Euro Klasse 1' }, geld1Task, { tagLabels: { zaehlen: 'Geld zählen', rest: 'Restgeld', 'stueck-gezaehlt': 'Münzen statt Wert gezählt', 'plus-statt-minus': 'plus statt minus' }, testSeconds: 25 }),
+  M(1, 'm1-zahlenstrahl', 'Zahlenstrahl bis 20', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach: links die kleinen, rechts die großen.', 'Jeder kleine Strich ist 1 weiter.', 'Suche die nächste Zahl, die dasteht, und zähle die Striche weiter: von 10 noch 3 Striche → 13.'], visual: { kind: 'numberline', from: 0, to: 20, start: 13, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 20 Klasse 1' }, strahl20, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 20 }),
   M(2, 'm2-zahlenstrahl', 'Zahlenstrahl bis 100', '📏', { text: ['Am Zahlenstrahl stehen die Zahlen der Reihe nach – links die kleinen, rechts die großen.', 'Suche die nächste beschriftete Zahl links vom Punkt und zähle die kleinen Striche weiter.', 'Achtung: Schau zuerst, wie viel ein kleiner Strich wert ist – 1, 2 oder 5?'], visual: { kind: 'numberline', from: 30, to: 50, start: 37, jumps: [], step: 10, minor: 1, ask: true }, videoQuery: 'Zahlenstrahl bis 100 Klasse 2 erklärt' }, strahl100, { tagLabels: { ablesen: 'Zahlen ablesen', mitte: 'Mitte finden', verzaehlt: 'Striche verzählt', 'strich-wert': 'Strich-Wert nicht beachtet', 'abstand-statt-mitte': 'Abstand statt Mitte' }, testSeconds: 25 }),
   M(2, 'm2-ergaenzen', 'Ergänzen und Platzhalter', '🧩', { text: ['Ergänzen bis 100: Erst bis zum nächsten Zehner, dann bis 100. 37 + 3 = 40, 40 + 60 = 100 → 63.', 'Steht die Lücke in der Mitte oder vorne, hilft die Umkehraufgabe: 25 + ☐ = 60 → 60 − 25 = 35.', 'Mach immer die Probe: Stimmt die Aufgabe mit deiner Zahl?'], visual: { kind: 'numberline', from: 30, to: 100, start: 37, jumps: [3, 60], step: 10, minor: 5 }, videoQuery: 'Ergänzen bis 100 Platzhalteraufgaben Klasse 2' }, ergaenzenTask, { tagLabels: { 'bis-100': 'bis 100 ergänzen', platzhalter: 'Platzhalteraufgaben', 'zehner-zu-viel': 'einen Zehner zu viel', 'falsch-gerechnet': 'Umkehraufgabe nicht genutzt' }, testSeconds: 25 }),
   M(3, 'm3-geteilt-gross', 'Teilen mit großen Zahlen', '➗', { text: ['Große Zahlen teilst du in Schritten: Zerlege die Zahl in zwei Teile, die du gut teilen kannst.', '84 : 4 → 80 : 4 = 20 und 4 : 4 = 1 → zusammen 21.', 'Probe mit der Malaufgabe: 21 · 4 = 84 ✓'], visual: { kind: 'text', text: '84 : 4 = 80 : 4 + 4 : 4 = 21' }, videoQuery: 'halbschriftliche Division Klasse 3 erklärt' }, teilenGrossTask, { tagLabels: { zweistellig: 'zweistellige Zahlen teilen', dreistellig: 'dreistellige Zahlen teilen', 'teil-vergessen': 'einen Teil vergessen' }, testSeconds: 30 }),

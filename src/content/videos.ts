@@ -134,6 +134,10 @@ export const VIDEOS: Record<string, VideoRef[]> = {
   'd4-sachtexte': [{ id: 'J71q1WzHhFc', title: "Wie liest man einen Sachtext? einfach erklärt – Deutsch 3. & 4. Klasse", channel: "sofatutor", len: '4:33' }],
   'e1-classroom': [{ id: 'WsiRSWthV1k', title: "Stand Up, Sit Down", channel: "Fun Kids English", len: '2:57' }],
   'm1-lage': [{ id: 'ySAqipEArog', title: 'Lagebeziehungen - rechts/links - oben/unten - auf/unter', channel: 'Frau Ha', len: '4:05' }],
+  'm1-zahlenstrahl': [
+    { id: 'PixV6mgCtqs', title: 'Zahlenstrahl bis 20 mit Übungen - Grundschule - Klasse 1', channel: 'Lehrerschmidt - Grundschule', len: '7:15' },
+    { id: 'nTeo_M4j-2o', title: 'Der Zahlenstrahl bis 20', channel: 'FrauTorge', len: '8:49' },
+  ],
   'm2-zahlenstrahl': [
     { id: 'DTPJA-4KWwI', title: 'Der Zahlenstrahl - einfach erklärt', channel: 'Lehrerschmidt - Grundschule', len: '7:37' },
     { id: 'krofH4VgDnM', title: 'Mathe Klasse 2: Der Zahlenstrahl bis 100', channel: 'Frau Ehmanns', len: '6:24' },
