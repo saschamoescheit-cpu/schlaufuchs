@@ -6,7 +6,10 @@ const { p, shot, click, done } = await open({ url: 'http://localhost:5192/', out
 await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
 await click('Eltern-Bereich');
 for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+// PIN bestätigen: das Tastenfeld wird neu aufgebaut – kurz warten (wie in parent.mjs/home-shots.mjs)
+await p.waitForTimeout(300);
 for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+await p.waitForTimeout(300);
 await p.locator('.parent-card').first().click();
 await p.getByRole('tab', { name: /Einstellungen/ }).click();
 await p.getByText('Speicher auf diesem Gerät').scrollIntoViewIfNeeded();
