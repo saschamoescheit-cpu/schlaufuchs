@@ -746,6 +746,8 @@ const FAELLE: { s: string; mark: string; fall: 'Nominativ' | 'Genitiv' | 'Dativ'
   { s: 'Der Briefträger bringt **dem Nachbarn** ein Paket.', mark: 'dem Nachbarn', fall: 'Dativ' }, { s: 'Der Briefträger bringt dem Nachbarn **ein Paket**.', mark: 'ein Paket', fall: 'Akkusativ' },
   { s: '**Der Briefträger** bringt dem Nachbarn ein Paket.', mark: 'Der Briefträger', fall: 'Nominativ' }, { s: 'Die Blätter **des Baumes** sind gelb.', mark: 'des Baumes', fall: 'Genitiv' },
   { s: 'Wir gratulieren **unserer Lehrerin**.', mark: 'unserer Lehrerin', fall: 'Dativ' }, { s: 'Das Spielzeug **des Babys** ist bunt.', mark: 'des Babys', fall: 'Genitiv' },
+  { s: '**Der Bäcker** backt Brötchen.', mark: 'Der Bäcker', fall: 'Nominativ' }, { s: 'Wir kaufen **einen Kuchen**.', mark: 'einen Kuchen', fall: 'Akkusativ' },
+  { s: 'Ich helfe **meinem Opa** im Garten.', mark: 'meinem Opa', fall: 'Dativ' }, { s: 'Die Farbe **des Autos** ist rot.', mark: 'des Autos', fall: 'Genitiv' },
 ];
 const FRAGE = { Nominativ: 'Wer oder was?', Genitiv: 'Wessen?', Dativ: 'Wem?', Akkusativ: 'Wen oder was?' } as const;
 const faelle = D(4, 'd4-faelle', 'Die vier Fälle', '🗝️', {
