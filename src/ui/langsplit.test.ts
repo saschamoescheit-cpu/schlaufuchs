@@ -25,6 +25,7 @@ describe('gemischtes Vorlesen: Deutsch und Englisch auseinanderhalten', () => {
   it('Lösungswege: buchstabierte Wörter englisch am Stück, „Puppe = doll“ ohne „equals“', () => {
     expect(show('Hase heißt auf Englisch: rabbit Buchstabiert: R – A – B – B – I – T')).toEqual(['de:Hase heißt auf Englisch:', 'en:rabbit', 'de:Buchstabiert:', 'en:R – A – B – B – I – T']);
     expect(show('Puppe = doll')).toEqual(['de:Puppe heißt', 'en:doll']);
+    expect(show('fourth = 4. (4th)')).toEqual(['en:fourth', 'de:heißt 4. (', 'en:4th)']);
     expect(show('orange heißt auf Englisch: orange')).toEqual(['de:orange heißt auf Englisch:', 'en:orange']);
     expect(show('Bus heißt auf Englisch: bus')).toEqual(['de:Bus heißt auf Englisch:', 'en:bus']);
     expect(show('park heißt auf Deutsch: Park')).toEqual(['en:park', 'de:heißt auf Deutsch: Park']);

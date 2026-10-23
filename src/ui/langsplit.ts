@@ -43,7 +43,8 @@ export function addWords(words: { en: string; de: string }[]) {
 type Tok = { s: string; word: boolean; lang: Lang | null; start?: boolean };
 /** typisch deutsche Schreibung bei unbekannten Wörtern (benutzt, anfangen, hörst, Schultasche …) */
 const GERMANISH = /sch|tz|ung$|heit$|keit$|lich$|chen$|ig$|en$|zt$|st$/;
-const WORD = /[A-Za-zÄÖÜäöüß']+(?:-[A-Za-zÄÖÜäöüß']+)*/g;
+// englische Ordnungszahlen (4th, 21st) als ein Wort – die englische Stimme liest „fourth“
+const WORD = /\d+(?:st|nd|rd|th)\b|[A-Za-zÄÖÜäöüß']+(?:-[A-Za-zÄÖÜäöüß']+)*/g;
 
 function classify(w: string, sentenceStart: boolean, afterEq = false): Lang | null {
   // nach „=“ steht in den Erklärungen das deutsche Wort („bus = Bus“, „pilot = Pilot“)
@@ -52,6 +53,7 @@ function classify(w: string, sentenceStart: boolean, afterEq = false): Lang | nu
     return c === 'en' && !/^[A-ZÄÖÜ]/.test(w) ? 'en' : 'de';
   }
   const low = w.toLowerCase().replace(/^'+|'+$/g, '');
+  if (/^\d+(st|nd|rd|th)$/.test(w)) return 'en';
   if (/[äöüß]/i.test(w)) return 'de';
   if (w === 'I' || /^I'(m|ve|ll|d)$/.test(w)) return 'en';
   // mit Bindestrich (forty-seven, T-shirt): nach den Teilen
