@@ -29,4 +29,7 @@ npx vite-node scripts/giveaway.ts         # Aufgaben, deren Text die Lösung ver
 npx vite-node scripts/variety.ts 30       # Themen mit der geringsten Abwechslung
 node qa/tour.mjs http://localhost:5173/   # Klick-Durchlauf mit Bildschirmfotos (cd qa && npm i)
 ```
+Weitere Prüfskripte: `scripts/longest.ts` (Lösung an der Länge erkennbar?), `scripts/solutions.ts` (Lösungswege).
+Inhalts-Schutztests in `src/content/*.test.ts`: keine Lösung im Aufgabentext, Antwortlängen ausgewogen, gleicher Aufgaben-Schlüssel = gleiche Antwort, Vorlesetexte ≤ 400 Zeichen und englische Sätze nicht mit deutscher Stimme, jedes Thema mit Erklärvideo. QA-Klickskripte: `qa/*.mjs` (je Datei oben ein Kommentar, was sie prüft).
+
 Push auf `main` baut und veröffentlicht automatisch (GitHub Pages). Domain-Umzug: siehe `docs/domain-umzug.md`.
