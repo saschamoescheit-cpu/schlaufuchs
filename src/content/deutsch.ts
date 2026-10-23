@@ -562,6 +562,9 @@ const FAMILIEN: { stamm: string; fam: string[]; out: string[] }[] = [
   { stamm: 'mal', fam: ['malen', 'Maler', 'Malkasten', 'bemalt'], out: ['mahlen', 'Mehl', 'Mantel'] },
   { stamm: 'trink', fam: ['trinken', 'Trinkflasche', 'Trinkhalm', 'austrinken'], out: ['Trick', 'tragen', 'trocken'] },
   { stamm: 'schlaf', fam: ['schlafen', 'Schlafanzug', 'einschlafen', 'schläfrig'], out: ['Schlange', 'schlau', 'Schaf'] },
+  { stamm: 'fall', fam: ['fallen', 'Unfall', 'Abfall', 'gefallen'], out: ['Falte', 'Falke', 'Faden'] },
+  { stamm: 'sing', fam: ['singen', 'Singvogel', 'vorsingen', 'mitsingen'], out: ['sinken', 'Sieger', 'Sinn'] },
+  { stamm: 'flieg', fam: ['fliegen', 'Fliege', 'Flieger', 'abfliegen'], out: ['fließen', 'Flöte', 'Flasche'] },
 ];
 const wortfamilie = D(3, 'd3-wortfamilie', 'Wortfamilien', '👨‍👩‍👧', {
   text: ['Wörter mit dem gleichen Wortstamm gehören zu einer Wortfamilie: fahren, Fahrer, Fahrrad, Abfahrt.', 'Der Wortstamm wird gleich (oder fast gleich, z. B. a → ä) geschrieben.', 'Achtung: Nicht jedes Wort, das ähnlich anfängt, gehört dazu – „fallen“ hat nichts mit „fahren“ zu tun.'],
