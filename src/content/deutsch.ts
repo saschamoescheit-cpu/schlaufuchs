@@ -665,7 +665,7 @@ const steigerung = D(3, 'd3-steigerung', 'Adjektive steigern', '📈', {
   const reg = (x: string) => [st + 'er', 'am ' + x + 'sten', 'mehr ' + x, st + 'erer'];
   const opts = comp ? [k, s, st + 'er', 'mehr ' + g] : [s, k, 'am ' + g + 'sten', 'am ' + st + 'esten'];
   const sentence = comp ? `${n} ${verb} ☐ als ${n2}. (${g})` : `Von allen Kindern ${verb} ${n} ☐. (${g})`;
-  return { key: `${g}-${comp}`, prompt: `Setze richtig ein:\n${sentence}`, speak: `Setze das Wort ${g} richtig ein. ${sentence.replace('☐', 'Lücke').replace(/\(.*\)/, '')}`, answer: choice(r, comp ? k : s, [...opts, ...reg(g)]), tags: [IRR.has(g) ? 'unregelmäßig' : comp ? 'vergleichsstufe' : 'höchststufe'], solution: [`${g} – ${k} – ${s}`, comp ? `Beim Vergleich mit „als“ nimmst du die Vergleichsstufe: ${k}.` : `Wenn jemand der/die Beste ist, nimmst du die Höchststufe: ${s}.`] };
+  return { key: `${g}-${comp}`, prompt: `Setze richtig ein:\n${sentence}`, speak: `Setze das Wort ${g} richtig ein. ${sentence.replace('☐', 'Lücke').replace(/\(.*\)/, '')}`, answer: choice(r, comp ? k : s, [g, ...pickN(r, [...new Set([...opts, ...reg(g)])].filter((x) => x !== (comp ? k : s) && x !== g), 2)]), tags: [IRR.has(g) ? 'unregelmäßig' : comp ? 'vergleichsstufe' : 'höchststufe'], solution: [`${g} – ${k} – ${s}`, comp ? `Beim Vergleich mit „als“ nimmst du die Vergleichsstufe: ${k}.` : `Wenn jemand der/die Beste ist, nimmst du die Höchststufe: ${s}.`] };
 }, { tagLabels: { unregelmäßig: 'besondere Steigerung (gut, viel …)', vergleichsstufe: 'Vergleichsstufe', höchststufe: 'Höchststufe' }, testSeconds: 20 });
 
 const SP_SAETZE: { s: string[]; subj: [number, number]; pred: number }[] = [
