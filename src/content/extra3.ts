@@ -1477,6 +1477,9 @@ const ADV: { s: string; mark: string; was: Adv }[] = [
   { s: '**Vor dem Frühstück** putzt Ben die Zähne.', mark: 'Vor dem Frühstück', was: 'zeit' }, { s: 'Die Kinder klettern **auf den Baum**.', mark: 'auf den Baum', was: 'wohin' },
   { s: 'Oma liest **jeden Abend** ein Buch.', mark: 'jeden Abend', was: 'zeit' }, { s: 'Die Fische schwimmen **im Teich**.', mark: 'im Teich', was: 'wo' },
   { s: 'Lea stellt die Blumen **ans Fenster**.', mark: 'ans Fenster', was: 'wohin' },
+  { s: '**Am Sonntag** besuchen wir Opa.', mark: 'Am Sonntag', was: 'zeit' }, { s: 'Die Katze schläft **unter dem Tisch**.', mark: 'unter dem Tisch', was: 'wo' },
+  { s: 'Tim fährt **nach Hamburg**.', mark: 'nach Hamburg', was: 'wohin' }, { s: '**In den Ferien** fahren wir ans Meer.', mark: 'In den Ferien', was: 'zeit' },
+  { s: 'In den Ferien fahren wir **ans Meer**.', mark: 'ans Meer', was: 'wohin' }, { s: 'Die Jacke hängt **an der Garderobe**.', mark: 'an der Garderobe', was: 'wo' },
 ];
 const ADV_NAME = { zeit: 'Zeitangabe (Wann?)', ort: 'Ortsangabe (Wo? Wohin?)' };
 function advTask(r: Rng, s: Stage): Gen {
