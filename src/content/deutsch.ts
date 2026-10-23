@@ -51,6 +51,8 @@ const ANLAUT: [string, string][] = [
   ['Löwe', '🦁'], ['Leiter', '🪜'], ['Mond', '🌙'], ['Maus', '🐭'], ['Möhre', '🥕'], ['Nase', '👃'], ['Nashorn', '🦏'], ['Ohr', '👂'], ['Oma', '👵'], ['Pilz', '🍄'],
   ['Pinguin', '🐧'], ['Rakete', '🚀'], ['Rose', '🌹'], ['Sonne', '☀️'], ['Schaf', '🐑'], ['Schnecke', '🐌'], ['Tiger', '🐯'], ['Tomate', '🍅'], ['Uhr', '⌚'],
   ['Vogel', '🐦'], ['Wal', '🐋'], ['Wolke', '☁️'], ['Zebra', '🦓'], ['Zitrone', '🍋'],
+  ['Ball', '⚽'], ['Dose', '🥫'], ['Fuchs', '🦊'], ['Hase', '🐰'], ['Kerze', '🕯️'], ['Lampe', '💡'], ['Nudel', '🍝'], ['Pferd', '🐴'],
+  ['Rad', '🚲'], ['Tasse', '☕'], ['Wurm', '🪱'], ['Zug', '🚆'], ['Lupe', '🔍'], ['Ufo', '🛸'], ['Olive', '🫒'],
 ];
 const anlautOf = (w: string) => (w.startsWith('Sch') ? 'Sch' : w.startsWith('Ei') ? 'Ei' : w.startsWith('Au') ? 'Au' : w[0]);
 const anlaut = D(1, 'd1-anlaut', 'Anlaute', '🔤', {
