@@ -304,7 +304,8 @@ const verben = D(2, 'd2-verben', 'Verben erkennen', '🏃', {
   return { key: v, prompt: 'Welches Wort ist ein Verb (Tunwort)?', answer: choice(r, v.toUpperCase(), opts), tags: ['verb'], solution: [`${v} ist ein Verb: ich ${/eln$/.test(v) ? v.replace(/eln$/, 'le') : /ern$/.test(v) ? v.replace(/ern$/, 'ere') : v.replace(/en$/, 'e')}, wir ${v}.`, 'Verben sagen, was jemand tut.'] };
 }, { testSeconds: 15 });
 
-const GEGENTEIL: [string, string][] = [['groß', 'klein'], ['dick', 'dünn'], ['heiß', 'kalt'], ['hell', 'dunkel'], ['laut', 'leise'], ['schnell', 'langsam'], ['nass', 'trocken'], ['voll', 'leer'], ['hart', 'weich'], ['lang', 'kurz'], ['schwer', 'leicht'], ['früh', 'spät'], ['reich', 'arm'], ['fröhlich', 'traurig'], ['sauber', 'schmutzig'], ['stark', 'schwach'], ['offen', 'geschlossen'], ['hoch', 'tief']];
+const GEGENTEIL: [string, string][] = [['groß', 'klein'], ['dick', 'dünn'], ['heiß', 'kalt'], ['hell', 'dunkel'], ['laut', 'leise'], ['schnell', 'langsam'], ['nass', 'trocken'], ['voll', 'leer'], ['hart', 'weich'], ['lang', 'kurz'], ['schwer', 'leicht'], ['früh', 'spät'], ['reich', 'arm'], ['fröhlich', 'traurig'], ['sauber', 'schmutzig'], ['stark', 'schwach'], ['offen', 'geschlossen'], ['hoch', 'tief'],
+  ['gut', 'schlecht'], ['richtig', 'falsch'], ['mutig', 'ängstlich'], ['fleißig', 'faul'], ['billig', 'teuer'], ['eng', 'weit'], ['gesund', 'krank']];
 const adjektive2 = D(2, 'd2-adjektive', 'Adjektive und Gegenteile', '🌗', {
   text: ['Adjektive (Wiewörter) sagen, wie etwas ist: groß, schnell, bunt.', 'Viele Adjektive haben ein Gegenteil: groß – klein, heiß – kalt.', 'Adjektive schreibt man klein.'],
   visual: { kind: 'emoji', chars: '🐘 🐭', label: 'groß – klein' },
