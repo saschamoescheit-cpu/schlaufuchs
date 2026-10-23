@@ -13,22 +13,26 @@ import './styles.css';
 import App from './App';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { SpeechHint } from './ui/common';
-import { checkMirror, getData, setChangeHook, updateFromSync } from './data/store';
+import { checkMirror, getData, needsMirrorFirst, setChangeHook, updateFromSync } from './data/store';
 import { connectStore, startSync, syncSoon } from './data/sync';
 
 // Abgleich zwischen den Geräten: jede Änderung geht ein paar Sekunden später hoch
 connectStore(getData, updateFromSync);
 setChangeHook(() => syncSoon());
+// Liegt der Lernstand im großen Speicher (umgezogen), erst ihn lesen, dann zeigen – sonst sähe die App kurz leer aus
+const first = needsMirrorFirst();
 // erst den Zweitspeicher prüfen (stellt einen neueren Stand wieder her), dann abgleichen
-void checkMirror()
-  .catch(() => undefined)
-  .finally(() => void startSync());
+const mirror = checkMirror().catch(() => undefined);
+void mirror.finally(() => void startSync());
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <ErrorBoundary>
-      <App />
-      <SpeechHint />
-    </ErrorBoundary>
-  </StrictMode>,
-);
+const show = () =>
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <ErrorBoundary>
+        <App />
+        <SpeechHint />
+      </ErrorBoundary>
+    </StrictMode>,
+  );
+if (first) void mirror.finally(show);
+else show();

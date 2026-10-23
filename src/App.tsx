@@ -3,7 +3,7 @@ import { buildMix, buildPattern, buildPractice, buildReview } from './engine/ses
 import { dueReviews, emptyProgress, type Mode } from './engine/learning';
 import type { Skill, Subject, Task } from './engine/types';
 import { ALL_SKILLS } from './content/curriculum';
-import { getData, hasSaveError, setActive, useData, usesSchoolFont } from './data/store';
+import { getData, hasLoadError, hasSaveError, setActive, useData, usesSchoolFont } from './data/store';
 import { followFamily, takePushTarget } from './data/push';
 import { useSyncStatus } from './data/sync';
 import { mirrorOk } from './data/mirror';
@@ -276,7 +276,17 @@ export default function App() {
             )}
           </div>
         )}
-        {body}
+        {hasLoadError() ? (
+          <div className="card" role="alert">
+            <h2>Lernstand gerade nicht lesbar</h2>
+            <p>Der Browser lässt den Schlaufuchs im Moment nicht an seinen Speicher. Es ist nichts verloren – bitte die App neu öffnen.</p>
+            <button className="btn ok block" onClick={() => location.reload()}>
+              Neu laden
+            </button>
+          </div>
+        ) : (
+          body
+        )}
       </main>
       <nav className="tabbar" aria-label="Menü">
         <div className="tabbar-inner">

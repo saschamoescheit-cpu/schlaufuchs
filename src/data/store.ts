@@ -1,5 +1,8 @@
 // Speicherung aller Kinderprofile und Lernstände auf dem Gerät; mit Google-Anmeldung zusätzlich auf allen Geräten
 // gleich (sync.ts).
+// Speicherort: localStorage (sofort lesbar) mit Kopie in IndexedDB (mirror.ts). Wird der Lernstand groß oder ist
+// localStorage voll, zieht er ganz in IndexedDB um; localStorage behält dann nur einen Verweis (Nachtlauf 23.10.2026,
+// docs/speicher.md). Umgezogen wird erst, wenn IndexedDB genau diesen Stand nachweislich hat – nie geht etwas verloren.
 // Das Datenmodell ist für einen späteren Eltern-Bereich vorbereitet (parent: PIN, Einstellungen je Kind).
 import { useSyncExternalStore } from 'react';
 import { DEFAULT_KEY } from '../engine/grading';
@@ -8,7 +11,7 @@ import type { Grade, Subject } from '../engine/types';
 import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
 import { mergeTwo } from './merge';
-import { askPersist, choose, putMirror, readMirror, writeMirror } from './mirror';
+import { askPersist, available as mirrorAvailable, choose, putMirror, readMirror, readMirrorStrict, writeMirror } from './mirror';
 
 export interface Profile {
   id: string;
@@ -71,6 +74,11 @@ export interface FamilyPush {
 
 const KEY = 'schlaufuchs:v1';
 const AT_KEY = 'schlaufuchs:v1:at';
+/** Ab dieser Größe (Zeichen) zieht der Lernstand in den großen Speicher (IndexedDB) um: localStorage fasst je Seite nur
+ *  etwa 5 MB und wird auch für Anmeldung und Abgleich gebraucht. */
+export const MOVE_AT = 1_000_000;
+/** Verweis in localStorage: der Lernstand liegt in IndexedDB */
+const MOVED = 'indexeddb';
 const empty = (): AppData => ({ schema: 1, profiles: [], progress: {}, activeId: null, parent: { pin: null } });
 
 /** fehlende oder kaputte Felder auffüllen (nichts wird entfernt) – sonst stürzen Bildschirme ab */
@@ -86,12 +94,26 @@ function repair(d: AppData): AppData {
   return { ...empty(), ...d, profiles: arr(d.profiles), progress };
 }
 
+/** Liegt der Lernstand nur noch in IndexedDB? */
+let movedOut = false;
+/** Nach dem Umzug ist beim Start erst IndexedDB zu lesen – bis dahin wird nichts geschrieben (sonst überschriebe ein
+ *  leerer Stand den echten). Bleibt false, wenn IndexedDB nicht lesbar ist. */
+let ready = true;
+/** IndexedDB beim Start nicht lesbar (nach dem Umzug): nichts schreiben, Hinweis zeigen, später neu versuchen */
+let loadError = false;
+
 function load(): AppData {
   let raw: string | null = null;
   try {
     raw = localStorage.getItem(KEY);
     if (!raw) return empty();
-    return repair(JSON.parse(raw) as AppData);
+    const parsed = JSON.parse(raw) as AppData & { moved?: string };
+    if (parsed && parsed.moved === MOVED) {
+      movedOut = true;
+      ready = false;
+      return empty();
+    }
+    return repair(parsed);
   } catch {
     // nicht lesbar: Rohdaten aufheben, bevor irgendetwas überschrieben wird (nie Nutzerdaten verlieren)
     try {
@@ -110,19 +132,74 @@ let onChange: (() => void) | null = null;
 /** Jede Änderung meldet sich hier (der Abgleich startet kurz danach). */
 export const setChangeHook = (fn: (() => void) | null) => void (onChange = fn);
 
+let rev = 0;
 function persist() {
+  if (!ready) return;
   const json = JSON.stringify(data);
   const at = Date.now();
+  const r = ++rev;
+  if (movedOut) {
+    // Hauptspeicher ist IndexedDB; localStorage bekommt nur den Zeitpunkt
+    try {
+      localStorage.setItem(AT_KEY, String(at));
+    } catch {
+      /* egal – der Verweis genügt */
+    }
+    writeMirror({ json, at }, (ok) => {
+      if (ok) return void (saveError = false);
+      if (r !== rev) return; // inzwischen gibt es einen neueren Stand – der schreibt selbst
+      // IndexedDB klappt nicht (mehr): den ganzen Stand doch wieder in localStorage
+      try {
+        localStorage.setItem(KEY, json);
+        localStorage.setItem(AT_KEY, String(at));
+        movedOut = false;
+        saveError = false;
+      } catch {
+        saveError = true;
+      }
+    });
+    return;
+  }
+  let full = false;
   try {
     localStorage.setItem(KEY, json);
     localStorage.setItem(AT_KEY, String(at));
     saveError = false;
   } catch {
     saveError = true;
+    full = true;
   }
   // immer auch in den Zweitspeicher (springt ein, wenn localStorage voll ist)
   writeMirror({ json, at });
+  if (full || json.length > MOVE_AT) void moveOut(json, at, r);
 }
+
+let moving = false;
+/** Umzug in IndexedDB: erst dort schreiben und nachlesen; nur wenn genau dieser Stand dort liegt (und es nichts Neueres
+ *  gibt), ersetzt ein Verweis den Lernstand in localStorage. */
+async function moveOut(json: string, at: number, r: number): Promise<void> {
+  if (moving || movedOut || !mirrorAvailable()) return;
+  moving = true;
+  try {
+    if (!(await putMirror({ json, at }))) return;
+    const back = await readMirrorStrict();
+    if (back?.json !== json || r !== rev) return;
+    localStorage.setItem(KEY, JSON.stringify({ moved: MOVED, at }));
+    movedOut = true;
+    saveError = false;
+    localStorage.setItem(AT_KEY, String(at));
+  } catch {
+    /* Verweis nicht schreibbar oder IndexedDB nicht lesbar – dann bleibt es wie bisher (die neuere Kopie gilt beim Start) */
+  } finally {
+    moving = false;
+  }
+}
+/** Liegt der Lernstand in IndexedDB? (Anzeige in den Eltern-Einstellungen) */
+export const isMovedOut = () => movedOut;
+/** Muss die App vor dem ersten Bild IndexedDB lesen? (main.tsx) */
+export const needsMirrorFirst = () => !ready;
+/** Lernstand nach dem Umzug nicht lesbar – die App zeigt dann nur einen Hinweis */
+export const hasLoadError = () => loadError;
 
 /**
  * Beim Start einmal: Zweitspeicher mit dem normalen Speicher vergleichen. Ist die Kopie neuer (der normale Speicher war
@@ -130,6 +207,7 @@ function persist() {
  */
 export async function checkMirror(): Promise<'local' | 'mirror'> {
   askPersist();
+  if (movedOut && !ready) return loadMoved();
   let at = 0;
   let has = false;
   try {
@@ -154,6 +232,37 @@ export async function checkMirror(): Promise<'local' | 'mirror'> {
   if (data.profiles.length) await putMirror({ json: JSON.stringify(data), at: at || Date.now() }, `vor-wiederherstellung:${Date.now()}`);
   data = restored;
   persist();
+  listeners.forEach((l) => l());
+  onChange?.();
+  return 'mirror';
+}
+
+/** Start nach dem Umzug: den Lernstand aus IndexedDB holen. Ein Lesefehler ist nicht „leer“: dann wird nichts
+ *  geschrieben (bis zum nächsten Start), damit der echte Stand nicht überschrieben wird. */
+async function loadMoved(): Promise<'local' | 'mirror'> {
+  let m: Awaited<ReturnType<typeof readMirrorStrict>> = null;
+  for (let i = 0; ; i++) {
+    try {
+      m = await readMirrorStrict();
+      break;
+    } catch {
+      if (i >= 2) {
+        loadError = true;
+        listeners.forEach((l) => l());
+        return 'local';
+      }
+      await new Promise((res) => setTimeout(res, 300));
+    }
+  }
+  ready = true;
+  if (m) {
+    try {
+      data = repair(JSON.parse(m.json) as AppData);
+    } catch {
+      // unlesbar: aufheben, nicht überschreiben
+      await putMirror(m, `unlesbar:${Date.now()}`);
+    }
+  }
   listeners.forEach((l) => l());
   onChange?.();
   return 'mirror';
@@ -271,8 +380,8 @@ export function mergeProfiles(keepId: string, dropId: string) {
 }
 
 /** belegter Gerätespeicher (localStorage) von Schlaufuchs in Zeichen – Browser erlauben je Seite etwa 5 Mio. Zeichen */
-export function storageUsage(): { used: number; limit: number } {
-  let used = 0;
+export function storageUsage(): { used: number; limit: number; moved: boolean } {
+  let used = movedOut ? JSON.stringify(data).length : 0;
   try {
     for (let i = 0; i < localStorage.length; i++) {
       const k = localStorage.key(i);
@@ -281,5 +390,5 @@ export function storageUsage(): { used: number; limit: number } {
   } catch {
     // Speicher nicht lesbar – dann 0 anzeigen
   }
-  return { used, limit: 5 * 1024 * 1024 };
+  return { used, limit: 5 * 1024 * 1024, moved: movedOut };
 }

@@ -621,9 +621,20 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
 
 /** Wie voll ist der Gerätespeicher? (Lernstand, Tests und Verlauf liegen im Browser-Speicher) */
 function StorageInfo() {
-  const { used, limit } = storageUsage();
+  const { used, limit, moved } = storageUsage();
   const pct = Math.min(100, Math.round((used / limit) * 100));
   const size = used < 1024 * 1024 ? `${Math.max(1, Math.round(used / 1024))} KB` : `${(used / 1024 / 1024).toFixed(1).replace('.', ',')} MB`;
+  // umgezogen in den großen Speicher (IndexedDB): Platz für viele Jahre, kein Balken
+  if (moved)
+    return (
+      <div className="card small muted">
+        <div className="row">
+          <span className="grow">Speicher auf diesem Gerät</span>
+          <b>{size}</b>
+        </div>
+        <div style={{ marginTop: 6 }}>Liegt im großen Speicher des Browsers – Platz für viele Jahre.</div>
+      </div>
+    );
   return (
     <div className="card small muted">
       <div className="row">

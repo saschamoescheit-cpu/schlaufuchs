@@ -3,6 +3,9 @@
 // bekommt bei jeder Änderung eine Kopie (nur schreiben, nie löschen). Beim Start gilt: Ist der normale Speicher leer
 // oder älter als die Kopie (z. B. weil er voll war), wird die Kopie genommen – der bisherige Stand bleibt dabei als
 // eigene Sicherung im Zweitspeicher liegen.
+//
+// Umzug (Nachtlauf 23.10.2026): Wird der Lernstand groß oder ist localStorage voll, ist dieser Speicher der
+// Hauptspeicher – localStorage behält dann nur einen Verweis (store.ts, moveOut). Siehe docs/speicher.md.
 
 const DB = 'schlaufuchs';
 const STORE = 'kv';
@@ -14,7 +17,7 @@ export interface Snapshot {
   at: number;
 }
 
-const available = () => typeof indexedDB !== 'undefined';
+export const available = () => typeof indexedDB !== 'undefined';
 
 let dbp: Promise<IDBDatabase> | null = null;
 function open(): Promise<IDBDatabase> {
@@ -61,19 +64,35 @@ export async function putMirror(snap: Snapshot, id = MAIN): Promise<boolean> {
 }
 
 // Schreiben gebündelt (viele Antworten kurz hintereinander = eine Kopie), beim Verlassen der Seite sofort
+/** wie readMirror, aber ein Lesefehler wirft (statt „nichts da“) – wichtig, wenn dieser Speicher der einzige ist */
+export async function readMirrorStrict(id = MAIN): Promise<Snapshot | null> {
+  if (!available()) return null;
+  const v = await req<Snapshot | undefined>('readonly', (s) => s.get(id));
+  return v && typeof v.json === 'string' && typeof v.at === 'number' ? v : null;
+}
+
 let pending: Snapshot | null = null;
+let pendingDone: ((ok: boolean) => void) | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
 let lastOk = true;
 const flush = () => {
   if (timer) clearTimeout(timer);
   timer = null;
   const s = pending;
+  const done = pendingDone;
   pending = null;
-  if (s) void putMirror(s).then((ok) => (lastOk = ok));
+  pendingDone = null;
+  if (s)
+    void putMirror(s).then((ok) => {
+      lastOk = ok;
+      done?.(ok);
+    });
 };
-export function writeMirror(snap: Snapshot) {
-  if (!available()) return;
+/** Kopie schreiben (gebündelt). done: Bescheid, ob dieser Stand angekommen ist (nur der zuletzt übergebene). */
+export function writeMirror(snap: Snapshot, done?: (ok: boolean) => void) {
+  if (!available()) return done?.(false);
   pending = snap;
+  pendingDone = done ?? null;
   timer ??= setTimeout(flush, 500);
 }
 if (typeof window !== 'undefined') {
