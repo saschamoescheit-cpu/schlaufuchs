@@ -47,12 +47,13 @@ function markDiff(a: string, b: string): [number, number][] {
 const ANLAUT: [string, string][] = [
   ['Apfel', '🍎'], ['Ameise', '🐜'], ['Auto', '🚗'], ['Banane', '🍌'], ['Baum', '🌳'], ['Biene', '🐝'], ['Buch', '📖'], ['Dino', '🦕'], ['Delfin', '🐬'],
   ['Ente', '🦆'], ['Erdbeere', '🍓'], ['Eis', '🍦'], ['Fisch', '🐟'], ['Frosch', '🐸'], ['Feder', '🪶'], ['Gabel', '🍴'], ['Giraffe', '🦒'], ['Gurke', '🥒'],
-  ['Haus', '🏠'], ['Hund', '🐶'], ['Hut', '🎩'], ['Igel', '🦔'], ['Insel', '🏝️'], ['Jacke', '🧥'], ['Joghurt', '🥛'], ['Käse', '🧀'], ['Katze', '🐱'], ['Kuh', '🐮'],
+  ['Haus', '🏠'], ['Hund', '🐶'], ['Hut', '🎩'], ['Igel', '🦔'], ['Insel', '🏝️'], ['Jacke', '🧥'], ['Jojo', '🪀'], ['Käse', '🧀'], ['Katze', '🐱'], ['Kuh', '🐮'],
   ['Löwe', '🦁'], ['Leiter', '🪜'], ['Mond', '🌙'], ['Maus', '🐭'], ['Möhre', '🥕'], ['Nase', '👃'], ['Nashorn', '🦏'], ['Ohr', '👂'], ['Oma', '👵'], ['Pilz', '🍄'],
   ['Pinguin', '🐧'], ['Rakete', '🚀'], ['Rose', '🌹'], ['Sonne', '☀️'], ['Schaf', '🐑'], ['Schnecke', '🐌'], ['Tiger', '🐯'], ['Tomate', '🍅'], ['Uhr', '⌚'],
   ['Vogel', '🐦'], ['Wal', '🐋'], ['Wolke', '☁️'], ['Zebra', '🦓'], ['Zitrone', '🍋'],
-  ['Ball', '⚽'], ['Dose', '🥫'], ['Fuchs', '🦊'], ['Hase', '🐰'], ['Kerze', '🕯️'], ['Lampe', '💡'], ['Nudel', '🍝'], ['Pferd', '🐴'],
-  ['Rad', '🚲'], ['Tasse', '☕'], ['Wurm', '🪱'], ['Zug', '🚆'], ['Lupe', '🔍'], ['Ufo', '🛸'], ['Olive', '🫒'],
+  ['Ball', '⚽'], ['Dose', '🥫'], ['Fuchs', '🦊'], ['Hase', '🐰'], ['Kerze', '🕯️'], ['Nudel', '🍝'], ['Pferd', '🐴'],
+  // Nachtlauf 23./24.10.2026: Joghurt (🥛 sieht aus wie Milch), Rad (Kinder sagen „Fahrrad“) und Lampe (💡 ist eine Glühbirne) raus
+  ['Tasse', '☕'], ['Wurm', '🪱'], ['Zug', '🚆'], ['Lupe', '🔍'], ['Ufo', '🛸'], ['Olive', '🫒'],
 ];
 const anlautOf = (w: string) => (w.startsWith('Sch') ? 'Sch' : w.startsWith('Ei') ? 'Ei' : w.startsWith('Au') ? 'Au' : w[0]);
 const anlaut = D(1, 'd1-anlaut', 'Anlaute', '🔤', {
@@ -159,10 +160,10 @@ const buchstaben = D(1, 'd1-buchstaben', 'Groß- und Kleinbuchstaben', '🅰️'
 }, { tagLabels: { 'b-d-p-q': 'b, d, p, q verwechselt' }, testSeconds: 12 });
 
 const LESEN: [string, string][][] = [
-  [['Haus', '🏠'], ['Hase', '🐰'], ['Hose', '👖'], ['Hals', '🦒']],
+  [['Haus', '🏠'], ['Hase', '🐰'], ['Hose', '👖'], ['Hai', '🦈']],
   [['Maus', '🐭'], ['Mais', '🌽'], ['Mund', '👄'], ['Mond', '🌙']],
   [['Hund', '🐶'], ['Hand', '✋'], ['Huhn', '🐔'], ['Hut', '🎩']],
-  [['Rose', '🌹'], ['Rakete', '🚀'], ['Rock', '👗'], ['Rad', '🚲']],
+  [['Rose', '🌹'], ['Rakete', '🚀'], ['Ring', '💍'], ['Rad', '🚲']],
   [['Eis', '🍦'], ['Ei', '🥚'], ['Eimer', '🪣'], ['Eule', '🦉']],
   [['Ohr', '👂'], ['Uhr', '⌚'], ['Tor', '🥅'], ['Oma', '👵']],
   [['Kuh', '🐮'], ['Kuchen', '🍰'], ['Krone', '👑'], ['Kamel', '🐫']],
