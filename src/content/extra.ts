@@ -378,6 +378,8 @@ const BAUSTEINE: [string, string, string[]][] = [
   ['Der Bäcker ☐kauft frische Brötchen.', 'ver', ['zer', 'ab', 'er']], ['Ich schreibe die Wörter ins Heft ☐.', 'ab', ['zer', 'er', 'an']],
   ['Der Wind hat den Drachen ☐rissen.', 'zer', ['ab', 'an', 'mit']], ['Am Abend ☐zählt Opa eine Geschichte.', 'er', ['zer', 'ab', 'mit']],
   ['Wir ☐teilen die Bonbons unter allen Kindern.', 'ver', ['er', 'an', 'mit']], ['Zum Schwimmen ziehen wir den Badeanzug ☐.', 'an', ['zer', 'ver', 'er']],
+  // Nachtlauf 24.10.2026: mehr Sätze (trennbare Vorsilben am Satzende, untrennbare vorne)
+  ['Ich ☐spreche dir, dass ich komme.', 'ver', ['ab', 'an', 'mit']], ['Wir ☐kaufen unsere alten Spielsachen auf dem Flohmarkt.', 'ver', ['ab', 'zer', 'mit']], ['Bitte ☐klär mir die Aufgabe noch einmal.', 'er', ['zer', 'ab', 'mit']], ['Der Zauberer ☐schwindet plötzlich.', 'ver', ['zer', 'an', 'mit']], ['Lena ☐sucht ihre kranke Oma.', 'be', ['zer', 'ab', 'vor']], ['Der Wind ☐reißt das Papier.', 'zer', ['ab', 'an', 'vor']], ['Bitte mach die Tür ☐, es zieht.', 'zu', ['zer', 'ver', 'er']], ['Am Morgen stehe ich um sieben Uhr ☐.', 'auf', ['zer', 'ver', 'be']], ['Morgen ruft Oma uns ☐.', 'an', ['zer', 'ver', 'er']], ['Der Lehrer ☐teilt die Hefte.', 'ver', ['ab', 'an', 'mit']], ['Die Sonne geht am Abend ☐.', 'unter', ['zer', 'ver', 'er']], ['Ich ☐kenne meine Freundin an ihrer Stimme.', 'er', ['ab', 'zer', 'an']],
 ];
 function bausteinTask(r: Rng): Gen {
   const [s, ok, w] = pick(r, BAUSTEINE);
