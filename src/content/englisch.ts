@@ -186,6 +186,10 @@ const PHRASES: { en: string; de: string; sit: string }[] = [
   { en: 'Sorry!', de: 'Entschuldigung!', sit: 'Du hast jemanden aus Versehen angerempelt.' }, { en: 'How are you?', de: 'Wie geht es dir?', sit: 'Du möchtest wissen, wie es jemandem geht.' },
   { en: "I'm fine, thank you.", de: 'Mir geht es gut, danke.', sit: 'Jemand fragt dich, wie es dir geht.' }, { en: "What's your name?", de: 'Wie heißt du?', sit: 'Du möchtest den Namen eines Kindes wissen.' },
   { en: 'My name is Tom.', de: 'Ich heiße Tom.', sit: 'Tom stellt sich vor.' }, { en: 'Happy birthday!', de: 'Alles Gute zum Geburtstag!', sit: 'Deine Freundin hat Geburtstag.' },
+  // Nachtlauf 23.10.2026: nur Situationen, zu denen genau ein Satz passt (nicht „Bis morgen“ neben „Goodbye“)
+  { en: 'Well done!', de: 'Gut gemacht!', sit: 'Dein Freund hat ein Tor geschossen. Du lobst ihn.' }, { en: 'Here you are.', de: 'Bitte schön! (beim Geben)', sit: 'Du gibst jemandem etwas, um das er dich gebeten hat.' },
+  { en: "I don't know.", de: 'Ich weiß es nicht.', sit: 'Die Lehrerin fragt dich etwas, aber du kennst die Antwort nicht.' }, { en: 'Can you help me, please?', de: 'Kannst du mir bitte helfen?', sit: 'Du schaffst etwas nicht allein und brauchst Hilfe.' },
+  { en: 'Good luck!', de: 'Viel Glück!', sit: 'Deine Freundin schreibt gleich eine Klassenarbeit.' },
 ];
 const phrases = E(1, 'e1-phrases', 'Hello! – Begrüßen und Sätze', '👋', { text: ['Hello = Hallo, Goodbye = Tschüss.', 'Good morning = Guten Morgen, Good night = Gute Nacht.', 'Höflich sein: Please = Bitte, Thank you = Danke, Sorry = Entschuldigung.', 'Fragen: How are you? – I\'m fine, thank you. What\'s your name? – My name is …'], visual: { kind: 'emoji', chars: '👋' }, videoQuery: 'hello song greetings for kids English' }, (r) => {
   const p = pick(r, PHRASES);
