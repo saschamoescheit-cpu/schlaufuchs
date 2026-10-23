@@ -783,6 +783,8 @@ const DAS_DASS: [string, 'das' | 'dass'][] = [
   ['Ich wünsche mir, ☐ es schneit.', 'dass'], ['☐ Mädchen, ☐ neben mir sitzt, heißt Lara.', 'das'], ['Mia ist traurig, ☐ ihr Hamster krank ist.', 'dass'], ['Bring bitte ☐ Brot mit.', 'das'],
   ['Ich merke, ☐ ich müde werde.', 'dass'], ['☐ Eis schmeckt lecker.', 'das'], ['Oma schreibt, ☐ sie uns bald besucht.', 'dass'], ['Wer hat ☐ Fenster offen gelassen?', 'das'],
   ['Es ist schade, ☐ die Ferien vorbei sind.', 'dass'], ['Das Bild, ☐ an der Wand hängt, hat Paul gemalt.', 'das'], ['Der Lehrer sagt, ☐ wir leise sein sollen.', 'dass'], ['Ist ☐ dein Rucksack?', 'das'],
+  ['Ich hoffe, ☐ das Wetter schön bleibt.', 'dass'], ['☐ Fahrrad steht im Keller.', 'das'], ['Wir wissen, ☐ Bienen Honig machen.', 'dass'],
+  ['Das Buch, ☐ du mir geliehen hast, ist toll.', 'das'], ['Schön, ☐ du gekommen bist!', 'dass'], ['Siehst du ☐ Flugzeug am Himmel?', 'das'],
 ];
 const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   text: ['„das“ ist ein Artikel oder Begleiter: das Buch – oder es steht für ein Nomen.', 'Probe: Kannst du „dieses“, „jenes“ oder „welches“ einsetzen? Dann schreibst du „das“.', '„dass“ verbindet zwei Sätze und steht oft nach Verben wie glauben, hoffen, sagen, wissen: „Ich hoffe, dass …“.', 'Vor „dass“ steht immer ein Komma.'],
@@ -802,6 +804,9 @@ const SSZ: [string, 's' | 'ss' | 'ß', string, string?][] = [
   ['Haus', 's', 'Verlängere: Häuser – man hört ein weiches s → s.', '🏠'], ['Gras', 's', 'Verlängere: Gräser – weiches s → s.', '🌱'], ['Maus', 's', 'Verlängere: Mäuse – weiches s → s.', '🐭'], ['Glas', 's', 'Verlängere: Gläser – weiches s → s.', '🥛'], ['Hose', 's', 'Man hört ein weiches, summendes s → s.', '👖'], ['Bus', 's', 'Merkwort: Bus (die Busse).', '🚌'],
   ['Kloß', 'ß', 'Das o ist lang → ß.', '🥟'], ['beißen', 'ß', 'Nach ei schreibt man ß.', '🦷'], ['Pass', 'ss', 'Das a ist kurz → ss.', '🛂'],
   ['Hase', 's', 'Man hört ein weiches, summendes s → s.', '🐰'], ['Esel', 's', 'Man hört ein weiches, summendes s → s.', '🐴'], ['Käse', 's', 'Man hört ein weiches, summendes s → s.', '🧀'],
+  ['Grüße', 'ß', 'Das ü ist lang → ß.', '👋'], ['Fleiß', 'ß', 'Nach ei schreibt man ß.', '🐝'], ['draußen', 'ß', 'Nach au schreibt man ß.', '🌳'],
+  ['Kasse', 'ss', 'Das a ist kurz → ss.', '🧾'], ['essen', 'ss', 'Das e ist kurz → ss.', '🍽️'],
+  ['Wiese', 's', 'Man hört ein weiches, summendes s → s.', '🌾'], ['Reise', 's', 'Man hört ein weiches, summendes s → s.', '🧳'],
 ];
 const ssz = D(4, 'd4-s-ss-sz', 's, ss oder ß', '🐍', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ss: Fluss, Wasser.', 'Nach einem langen Selbstlaut oder ei, au, eu schreibt man ß, wenn das s zischt (stimmlos): Straße, heiß.', 'Klingt das s weich und summend (stimmhaft), schreibt man s: Hose, Nase.', 'Am Wortende verlängern: Haus → Häuser (weich) → s. Fuß → Füße (zischend) → ß.'],
@@ -960,6 +965,11 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: 'Am Strand ☐ die Kinder fröhlich durch die Wellen.', ok: 'springen', opts: ['schleichen', 'humpeln', 'kriechen'], feld: 'gehen' },
   { s: 'Das Baby kann noch nicht laufen. Es ☐ auf allen vieren.', ok: 'krabbelt', opts: ['rennt', 'stolziert', 'hüpft'], feld: 'gehen' },
   { s: 'Genüsslich ☐ Lea an ihrem Eis.', ok: 'schleckt', opts: ['schlürft', 'verschlingt', 'trinkt'], feld: 'essen' },
+  { s: 'Mit dem Fernrohr ☐ der Kapitän nach der Insel.', ok: 'späht', opts: ['gähnt', 'schläft', 'überhört'], feld: 'sehen' },
+  { s: 'Der kleine Hund ☐ fröhlich neben uns her.', ok: 'hüpft', opts: ['schleicht', 'humpelt', 'kriecht'], feld: 'gehen' },
+  { s: '„Psst, das Baby schläft!“, ☐ Mama.', ok: 'flüstert', opts: ['brüllt', 'jubelt', 'schimpft'], feld: 'sagen' },
+  { s: 'Hungrig ☐ der Junge sein Pausenbrot in drei Bissen.', ok: 'verschlingt', opts: ['nascht', 'knabbert', 'kostet'], feld: 'essen' },
+  { s: 'Vorsichtig ☐ Oma die heiße Suppe.', ok: 'probiert', opts: ['verschlingt', 'stopft', 'schlingt'], feld: 'essen' },
 ];
 const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
   text: ['Ein Wortfeld sind Wörter mit ähnlicher Bedeutung: sagen – flüstern – rufen – fragen – antworten.', 'Treffende Wörter machen deine Texte spannender: Statt „Tim sagt leise“ schreibst du „Tim flüstert“.', 'Achte auf Hinweise im Satz: leise, laut, schnell, verletzt …'],
