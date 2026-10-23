@@ -254,6 +254,28 @@ describe('Gerade und ungerade (m2-gerade-ungerade)', () => {
   });
 });
 
+describe('Wortgrenzen (d1-wortgrenzen)', () => {
+  it('alle Möglichkeiten haben dieselben Buchstaben, nur eine trennt richtig; Wörter zählen stimmt', () => {
+    const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd1-wortgrenzen')!;
+    const r = mulberry32(18);
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, stage);
+        const glued = t.prompt.split('\n')[1];
+        expect(glued, t.key).toMatch(/^[A-ZÄÖÜ]+$/);
+        const sentence = t.key.slice(2).toUpperCase();
+        if (t.answer.type === 'number') expect(t.answer.value, t.key).toBe(sentence.split(' ').length);
+        else if (t.answer.type === 'choice') {
+          expect(t.answer.options[t.answer.correct], t.key).toBe(sentence);
+          for (const o of t.answer.options) expect(o.replace(/ /g, ''), t.key).toBe(glued);
+          expect(new Set(t.answer.options).size, t.key).toBe(t.answer.options.length);
+          expect(t.answer.options.length, t.key).toBeGreaterThanOrEqual(3);
+        } else throw new Error(t.key);
+        if (stage === 1) expect(sentence.split(' ').length, t.key).toBe(3);
+      }
+  });
+});
+
 describe('Oberbegriffe (d2-oberbegriffe)', () => {
   it('genau eine Antwort passt; „passt nicht“ hat drei Wörter einer Gruppe', () => {
     const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd2-oberbegriffe')!;

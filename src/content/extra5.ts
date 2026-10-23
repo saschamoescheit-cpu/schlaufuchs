@@ -204,6 +204,67 @@ const DOPPEL: Pair[] = [
 ];
 const doppelt = (p: Pair) => /aa|ee|oo/.test(p[0]);
 
+// ---------- Wortgrenzen finden (Deutsch Kl. 1) ----------
+// „DERHUNDBELLT“ → „DER HUND BELLT“: in Großbuchstaben wie in der Anlauttabelle; kein ß (wird groß zu SS)
+
+const GRENZEN: [string, string][] = [
+  ['Der Hund bellt', '🐶'], ['Die Katze schläft', '🐱'], ['Mama kocht Suppe', '🍲'], ['Ich mag Eis', '🍦'], ['Das Auto ist rot', '🚗'],
+  ['Tim spielt Ball', '⚽'], ['Die Sonne scheint', '☀️'], ['Oma backt Kuchen', '🎂'], ['Lea malt ein Bild', '🎨'], ['Papa liest ein Buch', '📖'],
+  ['Der Vogel singt', '🐦'], ['Ben trinkt Saft', '🧃'], ['Es regnet heute', '🌧️'], ['Der Igel frisst Äpfel', '🦔'], ['Die Maus ist klein', '🐭'],
+  ['Wir gehen in den Zoo', '🦁'], ['Das Schaf ist weich', '🐑'], ['Die Ente schwimmt im Teich', '🦆'], ['Opa hat einen Hut', '🎩'], ['Der Mond ist rund', '🌙'],
+  ['Ich habe einen roten Ball', '🔴'], ['Die Kinder spielen im Garten', '🏡'], ['Am Abend lesen wir ein Buch', '📚'], ['Der Bus kommt um acht Uhr', '🚌'],
+];
+const words = (s: string) => s.toUpperCase().split(' ');
+
+/** falsche Trennungen: zwei Wörter zusammen, eine Grenze um 1–2 Buchstaben verschoben */
+function wrongSplits(r: Rng, ws: string[]): string[] {
+  const out = new Set<string>();
+  const ok = ws.join(' ');
+  for (let tries = 0; tries < 40 && out.size < 3; tries++) {
+    const k = ri(r, 0, ws.length - 2);
+    const v = [...ws];
+    if (chance(r, 0.35)) v.splice(k, 2, v[k] + v[k + 1]);
+    else {
+      const shift = pick(r, [-2, -1, 1, 2]);
+      const joined = v[k] + v[k + 1];
+      const cut = v[k].length + shift;
+      if (cut <= 0 || cut >= joined.length) continue;
+      v.splice(k, 2, joined.slice(0, cut), joined.slice(cut));
+    }
+    const s = v.join(' ');
+    if (s !== ok) out.add(s);
+  }
+  return [...out];
+}
+
+function grenzTask(r: Rng, s: Stage): Gen {
+  const pool = s === 1 ? GRENZEN.filter(([t]) => t.split(' ').length === 3) : s === 2 ? GRENZEN.filter(([t]) => t.split(' ').length <= 4) : GRENZEN.filter(([t]) => t.split(' ').length >= 4);
+  const [text, e] = pick(r, pool);
+  const ws = words(text);
+  const glued = ws.join('');
+  // Wie viele Wörter? (ab Stufe 2)
+  if (s > 1 && chance(r, 0.35)) {
+    return {
+      key: `n-${text}`,
+      prompt: `Wie viele Wörter sind es?\n${glued}`,
+      speak: 'Wie viele Wörter sind es? Lies selbst!',
+      visual: { kind: 'emoji', chars: e },
+      answer: { type: 'number', value: ws.length },
+      tags: ['zaehlen'],
+      solution: [ws.join(' – '), `Das sind ${ws.length} Wörter: ${text}.`],
+    };
+  }
+  return {
+    key: `t-${text}`,
+    prompt: `Wo sind die Wortgrenzen?\n${glued}`,
+    speak: 'Wo sind die Wortgrenzen? Lies selbst!',
+    visual: { kind: 'emoji', chars: e },
+    answer: choice(r, ws.join(' '), wrongSplits(r, ws)),
+    tags: ['trennen'],
+    solution: [`Richtig: ${ws.join(' ')}`, `Der Satz heißt: ${text}.`, 'Lies langsam und überlege bei jedem Wort: Gibt es das Wort wirklich?'],
+  };
+}
+
 // ---------- Oberbegriffe (Deutsch Kl. 2) ----------
 
 const GROUPS: { name: string; words: string[] }[] = [
@@ -398,6 +459,19 @@ function idiomTask(r: Rng, s: Stage): Gen {
 }
 
 export const DEUTSCH_EXTRA5: Skill[] = [
+  D(
+    1,
+    'd1-wortgrenzen',
+    'Wortgrenzen finden',
+    '🧱',
+    {
+      text: ['Zwischen zwei Wörtern lässt man beim Schreiben eine Lücke – sonst kann man den Satz kaum lesen.', 'DERHUNDBELLT ist schwer zu lesen. DER HUND BELLT ist leicht.', 'Lies ganz langsam und frag dich bei jedem Teil: Ist das ein Wort?'],
+      visual: { kind: 'text', text: 'DERHUNDBELLT\nDER HUND BELLT' },
+      videoQuery: 'Wortgrenzen erkennen Klasse 1',
+    },
+    grenzTask,
+    { tagLabels: { trennen: 'Wortgrenzen finden', zaehlen: 'Wörter zählen' }, testSeconds: 25 },
+  ),
   D(
     4,
     'd4-adjektive-zusammengesetzt',

@@ -323,6 +323,7 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'ry9LKYdjeUU', title: 'There Is / There Are Song | Rooms and Furniture Vocabulary for Kids', channel: 'Toca story time', len: '1:41' },
   ],
   'd4-adjektive-zusammengesetzt': [{ id: '12jfDVUMp0o', title: 'Zusammengesetzte Adjektive - aus diesen Wortarten kannst du sie bilden', channel: 'Frau Weber digital', len: '5:01' }],
+  'd1-wortgrenzen': [{ id: 'N_oM7Gh29KY', title: 'Wortgrenzen beim Schreiben einhalten: Übungen mit Soforteffekt (Klasse 1, Klasse 2)', channel: 'Dr. Dina Beneken, Lerntherapeutin', len: '3:04' }],
   'd3-doppelvokal': [
     { id: 'ExOhvYkfbZw', title: 'Doppelte Selbstlaute merken: aa, oo, ee – Rechtschreibregel?', channel: 'Nachhilfe vom Lehrer', len: '2:58' },
     { id: 'sGOtzGVuAsQ', title: 'Wörter mit aa und oo Überblick', channel: 'www.mein-lernen.at', len: '8:26' },
