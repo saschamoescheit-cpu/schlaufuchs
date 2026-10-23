@@ -252,9 +252,14 @@ const SHOP_QA: [string, string, string[]][] = [
   ['Anything else?', 'No, thank you.', ['Yes, I am.', 'It’s red.', 'Good morning.']],
   ['How much are the apples?', 'They’re one euro.', ['It’s an apple.', 'Yes, please.', 'I’m fine.']],
   ['Can I have a lemonade, please?', 'Here you are.', ['I’m nine.', 'Yes, I do.', 'It’s Monday.']],
+  ['Do you want a bag?', 'No, thank you.', ['It’s a bag.', 'I’m ten.', 'Good night.']],
+  ['What would you like?', 'A banana, please.', ['It’s three euros.', 'Yes, I am.', 'Goodbye.']],
+  ['How much is the T-shirt?', 'It’s ten euros.', ['It’s blue.', 'Yes, please.', 'I like it.']],
+  ['Goodbye!', 'Bye! Have a nice day!', ['How much is it?', 'Yes, please.', 'It’s two euros.']],
 ];
 const SHOP_WANT: [string, string][] = [
   ['an apple', 'einen Apfel'], ['a banana', 'eine Banane'], ['an ice cream', 'ein Eis'], ['a lemonade', 'eine Limonade'], ['an orange', 'eine Orange'], ['a sandwich', 'ein Sandwich'], ['a muffin', 'einen Muffin'],
+  ['a cookie', 'einen Keks'], ['an egg', 'ein Ei'], ['a pizza', 'eine Pizza'], ['a carrot', 'eine Karotte'], ['an apple juice', 'einen Apfelsaft'],
 ];
 function shopTask(r: Rng, s: Stage): Gen {
   const v = ri(r, 0, s === 1 ? 1 : 2);
