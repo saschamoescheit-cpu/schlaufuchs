@@ -17,6 +17,8 @@ const G1: Item[] = [
   ['Salat', '🥗', 'Der Salat ist frisch.'], ['Melone', '🍉', 'Die Melone ist saftig.'], ['Nudel', '🍝', 'Die Nudel ist lang.'], ['Lupe', '🔍', 'Die Lupe ist rund.'], ['Pinsel', '🖌️', 'Der Pinsel ist nass.'],
   ['Ananas', '🍍', 'Die Ananas ist süß.'], ['Kamera', '📷', 'Die Kamera ist neu.'], ['Laterne', '🏮', 'Die Laterne leuchtet.'], ['Lineal', '📏', 'Das Lineal ist lang.'], ['Telefon', '☎️', 'Das Telefon klingelt.'],
   ['Elefant', '🐘', 'Der Elefant ist grau.'], ['Tulpe', '🌷', 'Die Tulpe blüht.'], ['Palme', '🌴', 'Die Palme ist hoch.'], ['Pirat', '🏴‍☠️', 'Der Pirat lacht.'], ['Krone', '👑', 'Die Krone glänzt.'],
+  ['Dino', '🦕', 'Der Dino ist groß.'], ['Kino', '🎬', 'Wir gehen ins Kino.'], ['Name', '📛', 'Mein Name ist Mia.'], ['Pilot', '✈️', 'Der Pilot fliegt.'],
+  ['Radio', '📻', 'Das Radio ist laut.'], ['Kuli', '🖊️', 'Der Kuli schreibt blau.'], ['Mofa', '🛵', 'Das Mofa fährt.'], ['Roboter', '🤖', 'Der Roboter tanzt.'],
 ];
 const G2: Item[] = [
   ['Biene', '🐝', 'Die Biene summt.'], ['Ball', '⚽', 'Der Ball rollt.'], ['Sonne', '☀️', 'Die Sonne scheint.'], ['Puppe', '🪆', 'Die Puppe ist alt.'], ['Katze', '🐱', 'Die Katze schläft.'],
