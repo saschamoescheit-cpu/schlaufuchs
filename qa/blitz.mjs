@@ -17,12 +17,25 @@ let wrongDone = false;
 const until = Date.now() + 15000;
 while (Date.now() < until) {
   const prompt = await p.locator('.blitz-task .prompt').innerText().catch(() => '');
-  const m = prompt.match(/(\d+)\s*·\s*(\d+)/);
-  if (!m) {
-    await p.waitForTimeout(100);
+  // Einmaleins in allen Formen (3 · 4 = ☐, 9 · 8 = 8 · ☐, 3 · ☐ = 12, 12 : 3 = ☐): Lücke als x, x durchprobieren
+  let expr = prompt.split('\n')[0].replace(/☐|_+/g, 'x').trim();
+  if (/[·:=]\s*$/.test(expr)) expr += ' x';
+  if (!/=/.test(expr)) expr += ' = x';
+  const js = (side, x) => Function(`return ${side.replace(/x/g, `(${x})`).replace(/·/g, '*').replace(/:/g, '/').replace(/−/g, '-')}`)();
+  const [l, rr] = expr.split('=');
+  let want = null;
+  if (/^[\d\s·:x+−-]+$/.test(l + rr)) for (let x = 0; x <= 100 && want === null; x++) if (Math.abs(js(l, x) - js(rr, x)) < 1e-9) want = String(x);
+  if (want === null) {
+    // Auswahl-Aufgabe (z. B. Punktefeld): erste Antwort antippen und am Ergebnis-Markierung erkennen, ob sie stimmte
+    const first = p.locator('.choices .choice').first();
+    if (await first.isVisible().catch(() => false)) {
+      await first.click();
+      await p.waitForTimeout(150);
+      if ((await first.getAttribute('class'))?.includes('right')) solved++;
+      await p.waitForTimeout(900);
+    } else await p.waitForTimeout(100);
     continue;
   }
-  const want = String(Number(m[1]) * Number(m[2]));
   const typed = !wrongDone && solved === 3 ? (want === '1' ? '2' : '1'.repeat(want.length)) : want;
   for (const ch of typed) await p.keyboard.press(ch);
   if (typed !== want) {

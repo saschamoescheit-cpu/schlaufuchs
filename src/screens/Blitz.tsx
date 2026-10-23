@@ -5,6 +5,7 @@ import { record, stageOf, type Progress } from '../engine/learning';
 import type { Skill, Task } from '../engine/types';
 import { saveProfile, updateProgress, type Profile } from '../data/store';
 import { byArea } from '../content/curriculum';
+import { mulberry32 } from '../engine/rng';
 import { CloseIcon, Confetti, Fox, Rich, Sheet, Speak } from '../ui/common';
 import { Visual } from '../ui/Visual';
 import { sounds } from '../ui/sound';
@@ -13,10 +14,20 @@ import { speak, stopSpeaking } from '../ui/speech';
 export const BLITZ_SECONDS = 60;
 
 /** Themen, die sich für die Blitzrunde eignen: schnelle Aufgaben ohne Kästchen und ohne Hören/Schreiben */
+// Ergebnis je Thema merken: mit festem Zufall immer gleich (sonst taucht ein Thema mal auf und mal nicht)
+const blitzCache = new Map<string, boolean>();
 export function blitzable(s: Skill): boolean {
+  const hit = blitzCache.get(s.id);
+  if (hit !== undefined) return hit;
+  const ok = isBlitzable(s);
+  blitzCache.set(s.id, ok);
+  return ok;
+}
+function isBlitzable(s: Skill): boolean {
   if ((s.testSeconds ?? 30) > 30) return false;
-  for (let i = 0; i < 6; i++) {
-    const t = s.generate(Math.random, 2);
+  const r = mulberry32(7);
+  for (let i = 0; i < 12; i++) {
+    const t = s.generate(r, 2);
     if (t.work || t.listen || t.answer.type === 'text' || t.answer.type === 'trace' || t.prompt.length > 90) return false;
     if (t.answer.type === 'choice' && t.answer.options.some((o) => o.length > 14)) return false;
   }
