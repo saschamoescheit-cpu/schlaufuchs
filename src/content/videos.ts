@@ -302,6 +302,11 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: 'XqEQDeIAwQQ', title: 'Deutsch lernen: Präpositionen (Deutsch als Fremdsprache, Grundschule)', channel: 'Grundschulatelier', len: '4:59' },
     { id: 'lNtu7WSPzzA', title: 'Präpositionen | Deutsch – Grundschule', channel: 'Deutsch - Sivakids', len: '9:51' },
   ],
+  'm3-zahlenraetsel': [
+    { id: 'M0_9VgZc41g', title: 'Kannst du dieses Zahlenrätsel lösen? (Teil 2, Rechenketten)', channel: 'Mathe mit MO & Ni', len: '4:03' },
+    { id: 'lTwdzkDvZFI', title: 'Zahlenrätsel || Mathematik (3. - 6. Klasse)', channel: 'Expresslehrer', len: '7:24' },
+  ],
+  'd2-oberbegriffe': [{ id: 'K8eYDI_cPFo', title: 'Oberbegriff finden | Deutsch | Grundschule', channel: 'sofaDeutsch', len: '1:35' }],
   'm4-punkt-vor-strich': [
     { id: 'DAapjJHQQiM', title: 'Punkt vor Strich und Klammern zuerst / Rechenregeln / Mathematik / ab Klasse 4', channel: 'Lernen mit Leo', len: '3:53' },
     { id: 'zbT5YuKKR8Q', title: 'Punkt vor Strichrechnung 3. und 4. Klasse. Mit Klammern für besseres Verständnis von Anfang an.', channel: 'Dr. Dina Beneken, Lerntherapeutin', len: '2:16' },

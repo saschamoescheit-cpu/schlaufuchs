@@ -140,3 +140,45 @@ describe('Redewendungen (d4-redewendungen)', () => {
     expect([...kinds].sort()).toEqual(['b', 'c', 'r']);
   });
 });
+
+describe('Zahlenrätsel (m3-zahlenraetsel)', () => {
+  it('die gedachte Zahl ergibt mit den genannten Schritten das Ergebnis; Zahlenraum der Stufe', () => {
+    const s = MATHE_EXTRA5.find((x) => x.id === 'm3-zahlenraetsel')!;
+    const r = mulberry32(12);
+    const step = (x: number, op: string, n: number) => (op === '+' ? x + n : op === '−' ? x - n : op === '·' ? x * n : x / n);
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 400; i++) {
+        const t = s.generate(r, stage);
+        if (t.answer.type !== 'number' || t.visual?.kind !== 'text') throw new Error(t.key);
+        // die Kette im Bild: „? → + 7 → · 2 → 30“
+        const parts = t.visual.text.split(' → ');
+        const end = Number(parts[parts.length - 1]);
+        let x = t.answer.value;
+        for (const p of parts.slice(1, -1)) {
+          const [op, n] = p.split(' ');
+          x = step(x, op, Number(n));
+          expect(Number.isInteger(x) && x >= 0 && x <= (stage === 3 ? 1000 : stage === 2 ? 200 : 100), t.key).toBe(true);
+        }
+        expect(x, t.key).toBe(end);
+        expect(parts.length - 2, t.key).toBe(stage);
+        expect(t.prompt, t.key).toContain(`Heraus kommt ${end}.`);
+      }
+  });
+});
+
+describe('Oberbegriffe (d2-oberbegriffe)', () => {
+  it('genau eine Antwort passt; „passt nicht“ hat drei Wörter einer Gruppe', () => {
+    const s = DEUTSCH_EXTRA5.find((x) => x.id === 'd2-oberbegriffe')!;
+    const r = mulberry32(13);
+    const kinds = new Set<string>();
+    for (const stage of [1, 2, 3] as const)
+      for (let i = 0; i < 300; i++) {
+        const t = s.generate(r, stage);
+        if (t.answer.type !== 'choice') throw new Error(t.key);
+        expect(new Set(t.answer.options).size, t.key).toBe(t.answer.options.length);
+        expect(t.answer.options.length, t.key).toBeGreaterThanOrEqual(3);
+        kinds.add(t.key[0]);
+      }
+    expect([...kinds].sort()).toEqual(['n', 'o', 'u']);
+  });
+});

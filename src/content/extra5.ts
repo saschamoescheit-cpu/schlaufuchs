@@ -167,6 +167,64 @@ function prepTask(r: Rng, s: Stage): Gen {
   };
 }
 
+// ---------- Oberbegriffe (Deutsch Kl. 2) ----------
+
+const GROUPS: { name: string; words: string[] }[] = [
+  { name: 'Obst', words: ['Apfel', 'Birne', 'Kirsche', 'Banane', 'Pflaume', 'Erdbeere'] },
+  { name: 'Gemüse', words: ['Möhre', 'Gurke', 'Paprika', 'Zwiebel', 'Kartoffel', 'Brokkoli'] },
+  { name: 'Möbel', words: ['Tisch', 'Stuhl', 'Schrank', 'Bett', 'Sofa', 'Regal'] },
+  { name: 'Fahrzeuge', words: ['Auto', 'Bus', 'Fahrrad', 'Zug', 'Lastwagen', 'Roller'] },
+  { name: 'Kleidung', words: ['Hose', 'Pullover', 'Jacke', 'Rock', 'Mütze', 'Socke'] },
+  { name: 'Werkzeug', words: ['Hammer', 'Säge', 'Zange', 'Bohrer', 'Schraubenzieher', 'Feile'] },
+  { name: 'Musikinstrumente', words: ['Gitarre', 'Geige', 'Flöte', 'Trommel', 'Klavier', 'Trompete'] },
+  { name: 'Blumen', words: ['Rose', 'Tulpe', 'Sonnenblume', 'Nelke', 'Gänseblümchen', 'Lilie'] },
+  { name: 'Vögel', words: ['Amsel', 'Meise', 'Spatz', 'Taube', 'Adler', 'Eule'] },
+  { name: 'Getränke', words: ['Wasser', 'Saft', 'Milch', 'Tee', 'Kakao', 'Limonade'] },
+  { name: 'Schulsachen', words: ['Heft', 'Stift', 'Lineal', 'Radiergummi', 'Schere', 'Füller'] },
+];
+
+function categoryTask(r: Rng, s: Stage): Gen {
+  const gi = ri(r, 0, GROUPS.length - 1);
+  const g = GROUPS[gi];
+  const others = GROUPS.filter((_, i) => i !== gi);
+  const three = shuffle(r, g.words).slice(0, 3);
+  const roll = r();
+  // Stufe 1 (und manchmal 2): den Oberbegriff finden
+  if (s === 1 || (s === 2 && roll < 0.4)) {
+    return {
+      key: `o-${three.join('-')}`,
+      prompt: `Wie heißt der Oberbegriff?\n${three.join(', ')}`,
+      answer: choice(r, g.name, shuffle(r, others).slice(0, 3).map((x) => x.name)),
+      tags: ['oberbegriff'],
+      solution: [`${three.join(', ')} – das ist alles ${g.name}.`, `„${g.name}“ ist der Oberbegriff, die einzelnen Wörter sind Unterbegriffe.`],
+    };
+  }
+  // Stufe 3 (und manchmal 2): Welches Wort gehört dazu?
+  if (s === 3 && roll < 0.4) {
+    const ok = pick(r, g.words);
+    const wrong = shuffle(r, others)
+      .slice(0, 3)
+      .map((x) => pick(r, x.words));
+    return {
+      key: `u-${g.name}-${ok}`,
+      prompt: `Welches Wort gehört zum Oberbegriff „${g.name}“?`,
+      answer: choice(r, ok, wrong),
+      tags: ['unterbegriff'],
+      solution: [`${ok} gehört zu ${g.name}.`, ...wrong.map((w) => `${w} gehört zu ${GROUPS.find((x) => x.words.includes(w))!.name}.`)],
+    };
+  }
+  // Was passt nicht dazu?
+  const other = pick(r, others);
+  const odd = pick(r, other.words);
+  return {
+    key: `n-${three.join('-')}-${odd}`,
+    prompt: 'Welches Wort passt nicht dazu?',
+    answer: choice(r, odd, three),
+    tags: ['passt-nicht'],
+    solution: [`${three.join(', ')} gehören zum Oberbegriff ${g.name}.`, `${odd} gehört zu ${other.name} – es passt nicht dazu.`],
+  };
+}
+
 // ---------- Redewendungen (Deutsch Kl. 4) ----------
 // Feste Wendungen, die man nicht wörtlich nimmt. Je Wendung: Bild, Bedeutung und ein Satz, in den sie passt.
 
@@ -235,6 +293,19 @@ function idiomTask(r: Rng, s: Stage): Gen {
 
 export const DEUTSCH_EXTRA5: Skill[] = [
   D(
+    2,
+    'd2-oberbegriffe',
+    'Oberbegriffe',
+    '🗂️',
+    {
+      text: ['Ein Oberbegriff fasst viele Wörter zusammen: Apfel, Birne und Kirsche sind Obst.', '„Obst“ ist der Oberbegriff, Apfel, Birne und Kirsche sind Unterbegriffe.', 'Mit Oberbegriffen kannst du Wörter ordnen – und merken, wenn eines nicht dazu passt.'],
+      visual: { kind: 'table', head: ['Oberbegriff', 'Unterbegriffe'], rows: [['Obst', 'Apfel, Birne, Kirsche'], ['Möbel', 'Tisch, Stuhl, Bett'], ['Fahrzeuge', 'Auto, Bus, Zug']] },
+      videoQuery: 'Oberbegriff finden Grundschule',
+    },
+    categoryTask,
+    { tagLabels: { oberbegriff: 'Oberbegriff finden', unterbegriff: 'Unterbegriff zuordnen', 'passt-nicht': 'Was passt nicht?' }, testSeconds: 20 },
+  ),
+  D(
     4,
     'd4-redewendungen',
     'Redewendungen',
@@ -270,6 +341,66 @@ export const DEUTSCH_EXTRA5: Skill[] = [
     { tagLabels: { ort: 'Wo ist das Tier?', luecke: 'Präposition einsetzen', finden: 'Präposition im Satz finden' }, testSeconds: 25 },
   ),
 ];
+
+// ---------- Zahlenrätsel mit Rechenketten (Kl. 3) ----------
+// „Ich denke mir eine Zahl …“ – rückwärts lösen: jeder Schritt mit der Umkehraufgabe.
+
+type Op = { k: '+' | '−' | '·' | ':'; n: number };
+const opWord = (o: Op, first: boolean) => {
+  const it = first ? 'sie' : 'das Ergebnis';
+  return o.k === '+' ? `addiere ${o.n}` : o.k === '−' ? `ziehe ${o.n} ab` : o.k === '·' ? (o.n === 2 ? `verdopple ${it}` : `multipliziere ${it} mit ${o.n}`) : o.n === 2 ? `halbiere ${it}` : `teile ${it} durch ${o.n}`;
+};
+const apply = (x: number, o: Op) => (o.k === '+' ? x + o.n : o.k === '−' ? x - o.n : o.k === '·' ? x * o.n : x / o.n);
+const undo = (o: Op): Op => ({ k: o.k === '+' ? '−' : o.k === '−' ? '+' : o.k === '·' ? ':' : '·', n: o.n });
+
+function riddleTask(r: Rng, s: Stage): Gen {
+  const steps = s === 1 ? 1 : s === 2 ? 2 : 3;
+  const max = s === 1 ? 100 : s === 2 ? 200 : 1000;
+  for (;;) {
+    const start = ri(r, 2, s === 3 ? 60 : 40);
+    const ops: Op[] = [];
+    let x = start;
+    let ok = true;
+    for (let i = 0; i < steps; i++) {
+      const kinds: Op['k'][] = s === 1 ? ['+', '−'] : ['+', '−', '·', ...(s === 3 ? [':' as const] : [])];
+      const k = pick(r, i === 0 && s > 1 ? (['·', ...kinds] as Op['k'][]) : kinds);
+      const n = k === '·' || k === ':' ? ri(r, 2, s === 3 ? 6 : 4) : ri(r, 2, s === 1 ? 30 : 50);
+      const o: Op = { k, n };
+      const y = apply(x, o);
+      if (!Number.isInteger(y) || y < 0 || y > max || (k === '−' && y === 0)) {
+        ok = false;
+        break;
+      }
+      ops.push(o);
+      x = y;
+    }
+    if (!ok || ops.some((o, i) => i > 0 && o.k === ops[i - 1].k)) continue;
+    const end = x;
+    const words = ops.map((o, i) => opWord(o, i === 0));
+    const told = `Ich ${words.length === 1 ? words[0] : `${words.slice(0, -1).join(', ')} und ${words[words.length - 1]}`}`;
+    // rückwärts: vom Ergebnis aus jeden Schritt umkehren
+    const back: string[] = [];
+    let y = end;
+    for (const o of [...ops].reverse()) {
+      const u = undo(o);
+      const z = apply(y, u);
+      back.push(`${y} ${u.k} ${u.n} = ${z}`);
+      y = z;
+    }
+    const chain = `? → ${ops.map((o) => `${o.k} ${o.n}`).join(' → ')} → ${end}`;
+    // typischer Fehler: vorwärts weiterrechnen statt umkehren (nur bei einem Schritt eindeutig)
+    const wrong = steps === 1 ? apply(end, ops[0]) : null;
+    return {
+      key: `z-${start}-${ops.map((o) => o.k + o.n).join('')}`,
+      prompt: `Ich denke mir eine Zahl. ${told}. Heraus kommt ${end}.\nWelche Zahl habe ich mir gedacht?`,
+      visual: { kind: 'text', text: chain },
+      answer: { type: 'number', value: start },
+      tags: [steps === 1 ? 'ein-schritt' : 'kette'],
+      traps: wrong !== null && wrong >= 0 && wrong !== start ? [{ answer: String(wrong), tag: 'vorwaerts', hint: 'Rechne rückwärts mit der Umkehraufgabe: Aus plus wird minus, aus minus wird plus.' }] : [],
+      solution: ['Rückwärts rechnen – jeden Schritt umkehren:', ...back, `Probe: ${[start, ...ops.map((_, i) => ops.slice(0, i + 1).reduce(apply, start))].join(' → ')} ✓`],
+    };
+  }
+}
 
 // ---------- Punkt vor Strich und Klammern (Kl. 4) ----------
 
@@ -358,6 +489,19 @@ function pvsTask(r: Rng, s: Stage): Gen {
 }
 
 export const MATHE_EXTRA5: Skill[] = [
+  M(
+    3,
+    'm3-zahlenraetsel',
+    'Zahlenrätsel und Rechenketten',
+    '🕵️',
+    {
+      text: ['„Ich denke mir eine Zahl …“ – solche Rätsel löst du rückwärts.', 'Fang beim Ergebnis an und kehre jeden Schritt um: Aus plus wird minus, aus mal wird geteilt.', 'Beispiel: Ich verdopple meine Zahl und addiere 4, heraus kommt 30. Rückwärts: 30 − 4 = 26, 26 : 2 = 13.', 'Probe: 13 · 2 = 26, 26 + 4 = 30 ✓'],
+      visual: { kind: 'text', text: '? → · 2 → + 4 → 30\n13 ← : 2 ← − 4 ← 30' },
+      videoQuery: 'Zahlenrätsel Rechenketten rückwärts rechnen Klasse 3',
+    },
+    riddleTask,
+    { tagLabels: { 'ein-schritt': 'Ein Schritt', kette: 'Rechenkette', vorwaerts: 'vorwärts statt rückwärts gerechnet' }, testSeconds: 45 },
+  ),
   M(
     4,
     'm4-punkt-vor-strich',
