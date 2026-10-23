@@ -24,8 +24,13 @@ const idbKeys = () => p.evaluate(() => new Promise((res) => {
   r.onerror = () => res([]);
 }));
 await p.reload();
-await p.waitForTimeout(800);
-check((await idbKeys()).includes('app'), 'Kopie im Zweitspeicher angelegt');
+// die Kopie wird verzögert geschrieben – unter Last kann das dauern
+let copied = false;
+for (let i = 0; i < 25 && !copied; i++) {
+  await p.waitForTimeout(200);
+  copied = (await idbKeys()).includes('app');
+}
+check(copied, 'Kopie im Zweitspeicher angelegt');
 
 // 1) Speicher voll: drei Antworten landen nur im Zweitspeicher
 await p.evaluate(() => sessionStorage.setItem('qa-full', '1'));
