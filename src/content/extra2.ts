@@ -182,6 +182,7 @@ const NACH: [string, string, string, string?][] = [
   ['fröhlich', 'Fröhlichkeit', 'keit'], ['höflich', 'Höflichkeit', 'keit'], ['flüssig', 'Flüssigkeit', 'keit'], ['fähig', 'Fähigkeit', 'keit'],
   ['rechnen', 'Rechnung', 'ung'], ['warnen', 'Warnung', 'ung'], ['lösen', 'Lösung', 'ung'], ['ordnen', 'Ordnung', 'ung'],
   ['finster', 'Finsternis', 'nis'], ['hindern', 'Hindernis', 'nis', 'das'], ['wild', 'Wildnis', 'nis'], ['ärgern', 'Ärgernis', 'nis', 'das'],
+  ['frech', 'Frechheit', 'heit'], ['möglich', 'Möglichkeit', 'keit'], ['dankbar', 'Dankbarkeit', 'keit'], ['wandern', 'Wanderung', 'ung'], ['heizen', 'Heizung', 'ung'],
 ];
 function nachTask(r: Rng, s: Stage): Gen {
   const [base, noun, suf, art = 'die'] = pick(r, NACH);
