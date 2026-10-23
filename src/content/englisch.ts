@@ -36,9 +36,28 @@ function vocabTask(r: Rng, words: Word[], year: 1 | 2, stage: Stage = 2): Gen {
   return { key: `u-${w.en}`, prompt: `Was heißt „${w.de}“ auf Englisch?`, answer: { ...choice(r, w.en, pickN(r, others, 3).map((x) => x.en)), speakOptions: 'en' }, tags: ['übersetzen'], solution: sol, solutionVisual: visualOf(w), pronounce: say };
 }
 
-function vocabSkill(year: 1 | 2, id: string, title: string, icon: string, words: Word[], tips: string[], q: string) {
+/** extra: zusätzliche Aufgabenart für kleine Wortfelder (null = normale Vokabelaufgabe) */
+function vocabSkill(year: 1 | 2, id: string, title: string, icon: string, words: Word[], tips: string[], q: string, extra?: (r: Rng, s: Stage) => Gen | null) {
   registerWords(id, words);
-  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r, s) => withWord(vocabTask(r, words, year, s), words), { tagLabels: VTAGS, testSeconds: 15 });
+  return E(year, id, title, icon, { text: [...tips, 'Tipp: Tippe auf den Lautsprecher und sprich jedes Wort laut nach!'], visual: visualOf(words[0]), videoQuery: q }, (r, s) => extra?.(r, s) ?? withWord(vocabTask(r, words, year, s), words), { tagLabels: VTAGS, testSeconds: 15 });
+}
+
+// Wochentage: nur 7 Wörter – ab Stufe 2 auch die Reihenfolge (Welcher Tag kommt nach Tuesday?)
+function dayOrderTask(r: Rng, s: Stage): Gen | null {
+  if (s === 1 || !chance(r, 0.35)) return null;
+  const i = ri(r, 0, 6);
+  const after = chance(r, 0.6);
+  const ok = DAYS[(i + (after ? 1 : 6)) % 7];
+  const wrong = [DAYS[(i + (after ? 6 : 1)) % 7], DAYS[(i + 2) % 7], DAYS[(i + 4) % 7]].filter((d) => d !== ok).map((d) => d.en);
+  return {
+    key: `o-${DAYS[i].en}-${after}`,
+    prompt: `Welcher Tag kommt ${after ? 'nach' : 'vor'} ${DAYS[i].en}?`,
+    speak: `Welcher Tag kommt ${after ? 'nach' : 'vor'} ${DAYS[i].de}? Antworte auf Englisch.`,
+    answer: { ...choice(r, ok.en, wrong), speakOptions: 'en' },
+    tags: ['verstehen'],
+    solution: [DAYS.map((d) => d.en).join(', '), `${after ? 'Nach' : 'Vor'} ${DAYS[i].en} (${DAYS[i].de}) kommt ${ok.en} (${ok.de}).`],
+    pronounce: { text: ok.en, lang: 'en' },
+  };
 }
 
 const COLOURS: Word[] = [
@@ -155,7 +174,7 @@ const body = vocabSkill(1, 'e1-body', 'My body – Körper', '🖐️', BODY, ['
 const school = vocabSkill(1, 'e1-school', 'School things – Schulsachen', '🎒', SCHOOL, ['pen, pencil, ruler, book – Dinge in deiner Schultasche (school bag).', 'Frage: What is this? – It\'s a pencil.'], 'classroom objects English for kids');
 const food = vocabSkill(1, 'e1-food', 'Food – Essen', '🍎', FOOD, ['apple, banana, bread, milk, cheese …', 'So sagst du, was du magst: I like apples. I don\'t like cheese.'], 'food vocabulary English for kids');
 const clothes = vocabSkill(1, 'e1-clothes', 'Clothes – Kleidung', '👕', CLOTHES, ['T-shirt, trousers (Hose), dress (Kleid), shoes, socks.', 'trousers, shoes, socks und gloves benutzt man meistens in der Mehrzahl.'], 'clothes vocabulary English for kids');
-const days = vocabSkill(1, 'e1-days', 'Days of the week – Wochentage', '📅', DAYS, ['Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.', 'Wochentage schreibt man im Englischen immer groß!', 'Wednesday spricht man „Wens-day“.'], 'days of the week song');
+const days = vocabSkill(1, 'e1-days', 'Days of the week – Wochentage', '📅', DAYS, ['Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, Sunday.', 'Wochentage schreibt man im Englischen immer groß!', 'Wednesday spricht man „Wens-day“.'], 'days of the week song', dayOrderTask);
 const fruit = vocabSkill(1, 'e1-fruit', 'Fruit and vegetables – Obst und Gemüse', '🍇', FRUIT, ['pear = Birne, grapes = Weintrauben, cherries = Kirschen, lemon = Zitrone.', 'potato = Kartoffel, cucumber = Gurke, onion = Zwiebel, mushroom = Pilz.', 'Achtung: pepper ist hier die Paprika (nicht der Pfeffer).', "I like grapes. I don't like onions."], 'fruits and vegetables vocabulary English for kids');
 const transport = vocabSkill(1, 'e1-transport', 'Transport – Fahrzeuge', '🚌', TRANSPORT, ['car = Auto, bus = Bus, train = Zug, plane = Flugzeug, bike = Fahrrad.', 'In Großbritannien heißt der Lastwagen lorry, in Amerika truck.', 'How do you get to school? – By bus. / By bike. / On foot (zu Fuß).'], 'transport vocabulary English for kids');
 const nature = vocabSkill(1, 'e1-nature', 'Nature – Natur', '🌳', NATURE, ['tree = Baum, flower = Blume, sun = Sonne, moon = Mond, star = Stern.', 'sea = Meer, beach = Strand, mountain = Berg, forest = Wald.', 'Look! A rainbow! = Schau! Ein Regenbogen!'], 'nature vocabulary English for kids');
