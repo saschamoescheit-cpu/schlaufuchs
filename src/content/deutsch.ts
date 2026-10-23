@@ -233,7 +233,7 @@ const abc = D(2, 'd2-abc', 'Das ABC', '🔡', {
   }
   const second = chance(r, 0.35);
   const pool = ['Apfel', 'Ball', 'Dach', 'Ente', 'Fuchs', 'Garten', 'Hose', 'Igel', 'Junge', 'Kuchen', 'Lampe', 'Mond', 'Nudel', 'Ofen', 'Puppe', 'Rabe', 'Sonne', 'Tisch', 'Uhr', 'Vogel', 'Wolke', 'Zahn'];
-  const sameB = [['Bach', 'Bett', 'Bild', 'Boot', 'Bus'], ['Mann', 'Mehl', 'Milch', 'Mond', 'Mut'], ['Tag', 'Tee', 'Tisch', 'Tor', 'Tulpe'], ['Sand', 'Seil', 'Sieb', 'Sofa', 'Suppe']];
+  const sameB = [['Bach', 'Bett', 'Bild', 'Boot', 'Bus'], ['Mann', 'Mehl', 'Milch', 'Mond', 'Mut'], ['Tag', 'Tee', 'Tisch', 'Tor', 'Tulpe'], ['Sand', 'Seil', 'Sieb', 'Sofa', 'Suppe'], ['Hand', 'Hemd', 'Hirsch', 'Hose', 'Hut'], ['Kamm', 'Keks', 'Kind', 'Kopf', 'Kuh'], ['Rad', 'Regen', 'Ring', 'Rose', 'Rucksack'], ['Fahne', 'Feder', 'Fisch', 'Fohlen', 'Fuß']];
   const words = second ? pickN(r, pick(r, sameB), 3) : pickN(r, pool, 3);
   const first = [...words].sort((a, b) => a.localeCompare(b, 'de'))[0];
   return { key: words.join(','), prompt: 'Welches Wort kommt im ABC zuerst?', answer: choice(r, first, words), tags: [second ? 'zweiter-buchstabe' : 'erster-buchstabe'], solution: second ? ['Alle Wörter beginnen gleich – schau auf den zweiten Buchstaben.', `Sortiert: ${[...words].sort((a, b) => a.localeCompare(b, 'de')).join(', ')}`] : [`Sortiert nach dem ersten Buchstaben: ${[...words].sort((a, b) => a.localeCompare(b, 'de')).join(', ')}`] };
