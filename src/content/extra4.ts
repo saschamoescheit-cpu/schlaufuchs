@@ -198,7 +198,7 @@ const SENT: [string, string][] = [
   // Nachtlauf 23.10.2026 (keine Namen am Satzanfang – die würden klein gezeigt)
   ['I like reading books.', 'Ich lese gern Bücher.'], ['The baby is sleeping.', 'Das Baby schläft.'], ['We have got a new car.', 'Wir haben ein neues Auto.'],
   ['Is it cold outside?', 'Ist es draußen kalt?'], ['My grandma lives in London.', 'Meine Oma wohnt in London.'], ['The apples are on the table.', 'Die Äpfel liegen auf dem Tisch.'],
-  ['Can you help me?', 'Kannst du mir helfen?'], ['I am hungry now.', 'Ich habe jetzt Hunger.'],
+  ['Can you help me?', 'Kannst du mir helfen?'], ['I am very hungry.', 'Ich habe großen Hunger.'],
   ['We play football after school.', 'Wir spielen nach der Schule Fußball.'], ['The sun is very hot.', 'Die Sonne ist sehr heiß.'], ['Where are my shoes?', 'Wo sind meine Schuhe?'],
   ['My cat likes milk.', 'Meine Katze mag Milch.'], ['Do you have a pet?', 'Hast du ein Haustier?'], ['I can see a rainbow.', 'Ich kann einen Regenbogen sehen.'],
 ];
