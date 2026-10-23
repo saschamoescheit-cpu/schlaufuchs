@@ -195,6 +195,10 @@ const SENT: [string, string][] = [
   ['I go to bed at eight.', 'Ich gehe um acht ins Bett.'], ['My sister likes horses.', 'Meine Schwester mag Pferde.'], ['Where is my bag?', 'Wo ist meine Tasche?'],
   ['The dog can run fast.', 'Der Hund kann schnell rennen.'], ['We play in the park.', 'Wir spielen im Park.'], ['I have got a red bike.', 'Ich habe ein rotes Fahrrad.'],
   ['What is the time?', 'Wie spät ist es?'], ['My dad is very tall.', 'Mein Papa ist sehr groß.'], ['Can I have an apple?', 'Kann ich einen Apfel haben?'],
+  // Nachtlauf 23.10.2026 (keine Namen am Satzanfang – die würden klein gezeigt)
+  ['I like reading books.', 'Ich lese gern Bücher.'], ['The baby is sleeping.', 'Das Baby schläft.'], ['We have got a new car.', 'Wir haben ein neues Auto.'],
+  ['Is it cold outside?', 'Ist es draußen kalt?'], ['My grandma lives in London.', 'Meine Oma wohnt in London.'], ['The apples are on the table.', 'Die Äpfel liegen auf dem Tisch.'],
+  ['Can you help me?', 'Kannst du mir helfen?'], ['I am hungry now.', 'Ich habe jetzt Hunger.'],
 ];
 const capFirst = (w: string) => w[0].toUpperCase() + w.slice(1);
 // Satzanfang klein zeigen (sonst verrät der große Buchstabe das erste Wort) – außer „I“
@@ -217,7 +221,7 @@ function wordOrderTask(r: Rng, s: Stage): Gen {
   const ok = (ws: string[]) => {
     const t = sentence(ws);
     if (t === en) return false;
-    if (end === '.' && /^(Is|Are|Can|Do|Does|Has|Have|Don't|Can't) /.test(t)) return false;
+    if (end === '.' && /^(Am|Is|Are|Can|Do|Does|Has|Have|Don't|Can't) /.test(t)) return false;
     // Frage ohne Umstellung (You can swim?) – gesprochen möglich, also kein Ablenker
     if (end === '?' && ws[0] === plain[1] && ws[1] === plain[0]) return false;
     return ws[0] !== plain[plain.length - 1];
