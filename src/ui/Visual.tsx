@@ -698,6 +698,46 @@ function Wall({ rows }: { rows: (number | null)[][] }) {
   );
 }
 
+/** Rechendreieck (Nachtlauf 23.10.2026): innen drei Zahlen in Kreisen, außen an jeder Seite ihre Summe in einem Kasten */
+function Triangle({ inner, outer }: { inner: (number | '?' | null)[]; outer: (number | '?' | null)[] }) {
+  const W = 300;
+  const H = 284;
+  // Ecken, Innenkreise (zur Mitte hin) und Außenkästen (an den Seitenmitten, nach außen)
+  const tri = '150,20 30,222 270,222';
+  const inPos = [
+    [150, 82],
+    [82, 190],
+    [218, 190],
+  ];
+  const outPos = [
+    [54, 104],
+    [246, 104],
+    [150, 258],
+  ];
+  const label = (v: number | '?' | null) => (v === null ? '' : String(v));
+  return (
+    <Svg w={W} h={H} label="Rechendreieck" max={320}>
+      <polygon points={tri} fill="#FFF6EC" stroke={C.ink} strokeWidth={2.5} strokeLinejoin="round" />
+      {inPos.map(([x, y], i) => (
+        <g key={`i${i}`}>
+          <circle cx={x} cy={y} r={25} fill={inner[i] === '?' ? '#FFE3C7' : '#CFE0FF'} stroke={C.ink} strokeWidth={2} />
+          <text x={x} y={y + 7} textAnchor="middle" fontSize={20} fontWeight={600} fill={inner[i] === '?' ? C.b : C.ink} fontFamily="Fredoka, sans-serif">
+            {label(inner[i])}
+          </text>
+        </g>
+      ))}
+      {outPos.map(([x, y], i) => (
+        <g key={`o${i}`}>
+          <rect x={x - 30} y={y - 19} width={60} height={38} rx={6} fill={outer[i] === '?' ? '#FFE3C7' : '#F6E3D3'} stroke={C.ink} strokeWidth={2} />
+          <text x={x} y={y + 7} textAnchor="middle" fontSize={20} fontWeight={600} fill={outer[i] === '?' ? C.b : C.ink} fontFamily="Fredoka, sans-serif">
+            {label(outer[i])}
+          </text>
+        </g>
+      ))}
+    </Svg>
+  );
+}
+
 function Net({ cells }: { cells: [number, number][] }) {
   const u = 40;
   const W = (Math.max(...cells.map((c) => c[0])) + 1) * u + 8;
@@ -894,6 +934,8 @@ function VisualInner({ v }: { v: V }) {
       return <Prep pos={v.pos} animal={v.animal} />;
     case 'wall':
       return <Wall rows={v.rows} />;
+    case 'triangle':
+      return <Triangle inner={v.inner} outer={v.outer} />;
     case 'bars':
       return <Bars {...v} />;
     case 'net':

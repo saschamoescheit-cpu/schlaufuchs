@@ -35,6 +35,9 @@ export type Visual =
   | { kind: 'prep'; pos: 'in' | 'on' | 'under' | 'next to' | 'behind' | 'in front of'; animal?: string } // animal: Emoji (Standard 🐱)
   /** Zahlenmauer: Reihen von unten nach oben, null = gesuchter Stein */
   | { kind: 'wall'; rows: (number | null)[][] }
+  /** Rechendreieck: innen [oben, links unten, rechts unten], außen [linke Seite, rechte Seite, unten] (Summe der beiden
+   *  Innenzahlen daneben); '?' = gesucht, null = leer */
+  | { kind: 'triangle'; inner: (number | '?' | null)[]; outer: (number | '?' | null)[] }
   /** Netz aus Quadraten (Würfelnetz): Zellen [Spalte, Zeile] */
   | { kind: 'net'; cells: [number, number][] }
   /** Säulendiagramm */

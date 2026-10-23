@@ -298,6 +298,26 @@ export const VIDEOS: Record<string, VideoRef[]> = {
     { id: '5dqiCDYZEI4', title: 'Umkehraufgaben Klasse 1 | Addition und Subtraktion', channel: 'Frau_Willms', len: '3:25' },
   ],
   'e2-wordorder': [{ id: 'LBsQ-iYZXPI', title: 'Word Order for Kids | Sentence Structure', channel: 'Kids Academy', len: '3:06' }],
+  'd3-praepositionen': [
+    { id: 'XqEQDeIAwQQ', title: 'Deutsch lernen: Präpositionen (Deutsch als Fremdsprache, Grundschule)', channel: 'Grundschulatelier', len: '4:59' },
+    { id: 'lNtu7WSPzzA', title: 'Präpositionen | Deutsch – Grundschule', channel: 'Deutsch - Sivakids', len: '9:51' },
+  ],
+  'm4-punkt-vor-strich': [
+    { id: 'DAapjJHQQiM', title: 'Punkt vor Strich und Klammern zuerst / Rechenregeln / Mathematik / ab Klasse 4', channel: 'Lernen mit Leo', len: '3:53' },
+    { id: 'zbT5YuKKR8Q', title: 'Punkt vor Strichrechnung 3. und 4. Klasse. Mit Klammern für besseres Verständnis von Anfang an.', channel: 'Dr. Dina Beneken, Lerntherapeutin', len: '2:16' },
+  ],
+  'd4-redewendungen': [
+    { id: 'jhvtmxBuTag', title: 'Deutsche Redewendungen Teil 2 – Die lustigsten Ausdrücke erklärt!', channel: 'Lernrad - Learn German', len: '3:19' },
+    { id: 'ynH3GgI9j0k', title: 'Deutsche Redewendungen Teil 3 – Noch mehr lustige Ausdrücke erklärt!', channel: 'Lernrad - Learn German', len: '4:38' },
+  ],
+  'm2-rechendreieck': [
+    { id: '1o3J0CPbzBM', title: 'Rechendreiecke Teil 1: Addition, plus rechnen - Mathe Grundschule', channel: 'Hirngold', len: '2:15' },
+    { id: '-BWInPDiYpQ', title: 'Rechendreiecke Teil 2: Ergänzen, Subtraktion, minus rechnen - Mathe Grundschule', channel: 'Hirngold', len: '4:23' },
+  ],
+  'e2-birthday': [
+    { id: 'i1avSlscOWI', title: 'Ordinal Numbers | Level Up | Jack Hartmann Ordinal Numbers Song', channel: 'Jack Hartmann Kids Music Channel', len: '2:34' },
+    { id: 'jOUdGf8oVc8', title: 'Ordinal Numbers Song | First Second Third Song', channel: 'English Vitamin Bubbles', len: '2:36' },
+  ],
   'e2-britain': [
     { id: 'qMqf7Y1IPzc', title: 'Reise nach Großbritannien - eine Zusammenfassung | Erdkunde für Kinder', channel: 'Kinderweltreise', len: '3:49' },
     { id: 'KtqVoo8iqeo', title: 'Ein Reiseführer durch London für Kinder', channel: 'Twinkl Kids TV', len: '3:22' },
