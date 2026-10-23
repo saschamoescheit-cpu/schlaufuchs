@@ -76,6 +76,7 @@ const ANIMALS: Word[] = [
 const FAMILY: Word[] = [
   { en: 'mum', de: 'Mama', e: '👩' }, { en: 'dad', de: 'Papa', e: '👨' }, { en: 'sister', de: 'Schwester', e: '👧' }, { en: 'brother', de: 'Bruder', e: '👦' },
   { en: 'grandma', de: 'Oma', e: '👵' }, { en: 'grandpa', de: 'Opa', e: '👴' }, { en: 'baby', de: 'Baby', e: '👶' }, { en: 'family', de: 'Familie', e: '👨‍👩‍👧‍👦' }, { en: 'friend', de: 'Freund / Freundin', e: '🧑‍🤝‍🧑' },
+  { en: 'parents', de: 'Eltern', e: '👩👨' }, { en: 'grandparents', de: 'Großeltern', e: '👵👴' },
 ];
 const BODY: Word[] = [
   { en: 'head', de: 'Kopf', e: '🙂' }, { en: 'eye', de: 'Auge', e: '👁️' }, { en: 'ear', de: 'Ohr', e: '👂' }, { en: 'nose', de: 'Nase', e: '👃' }, { en: 'mouth', de: 'Mund', e: '👄' },
