@@ -578,6 +578,8 @@ const AUSLAUT: [string, string, string, string, string][] = [
   ['Hemd', 'd', 't', 'die Hemden', '👔'], ['Wald', 'd', 't', 'die Wälder', '🌲'], ['Strand', 'd', 't', 'die Strände', '🏖️'], ['Mond', 'd', 't', 'die Monde', '🌙'],
   ['Licht', 't', 'd', 'die Lichter', '💡'], ['Weg', 'g', 'k', 'die Wege', '🛤️'], ['Krug', 'g', 'k', 'die Krüge', '🏺'], ['Sieg', 'g', 'k', 'die Siege', '🏆'],
   ['Bank', 'k', 'g', 'die Bänke', '🪑'], ['Stab', 'b', 'p', 'die Stäbe', '🪄'],
+  ['Kleid', 'd', 't', 'die Kleider', '👗'], ['Land', 'd', 't', 'die Länder', '🗺️'], ['Hand', 'd', 't', 'die Hände', '✋'], ['Abend', 'd', 't', 'die Abende', '🌆'], ['rund', 'd', 't', 'der runde Ball', '⚽'],
+  ['Salat', 't', 'd', 'die Salate', '🥗'], ['Burg', 'g', 'k', 'die Burgen', '🏰'], ['Käfig', 'g', 'k', 'die Käfige', '🦜'], ['Sieb', 'b', 'p', 'die Siebe', '🥣'],
 ];
 const auslaut = D(3, 'd3-auslaut', 'Wörter verlängern: d/t, g/k, b/p', '🔍', {
   text: ['Am Wortende klingen d und t gleich – ebenso g und k, b und p.', 'Trick: Verlängere das Wort! Bilde die Mehrzahl (Hund → Hunde), steigere das Adjektiv (wild → wilder) oder nimm die Grundform des Verbs (er gibt → geben).', 'Hund → die Hunde: Jetzt hörst du das d deutlich.', 'Zug → die Züge: Jetzt hörst du das g.'],
