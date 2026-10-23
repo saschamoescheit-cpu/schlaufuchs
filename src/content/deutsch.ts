@@ -446,6 +446,12 @@ const WA_SAETZE: [string, 'N' | 'V' | 'A' | '-'][][] = [
   [['Der', '-'], ['Lehrer', 'N'], ['liest', 'V'], ['eine', '-'], ['spannende', 'A'], ['Geschichte', 'N']],
   [['Im', '-'], ['dunklen', 'A'], ['Wald', 'N'], ['heult', 'V'], ['ein', '-'], ['Wolf', 'N']],
   [['Paul', 'N'], ['trinkt', 'V'], ['kalten', 'A'], ['Kakao', 'N']],
+  [['Die', '-'], ['bunte', 'A'], ['Blume', 'N'], ['blüht', 'V'], ['im', '-'], ['Garten', 'N']],
+  [['Der', '-'], ['schnelle', 'A'], ['Hase', 'N'], ['rennt', 'V'], ['weg', '-']],
+  [['Oma', 'N'], ['backt', 'V'], ['einen', '-'], ['leckeren', 'A'], ['Kuchen', 'N']],
+  [['Wir', '-'], ['singen', 'V'], ['ein', '-'], ['fröhliches', 'A'], ['Lied', 'N']],
+  [['Das', '-'], ['alte', 'A'], ['Auto', 'N'], ['fährt', 'V'], ['langsam', 'A']],
+  [['Ben', 'N'], ['isst', 'V'], ['einen', '-'], ['roten', 'A'], ['Apfel', 'N']],
 ];
 const WA_NAME = { N: 'Nomen', V: 'Verb', A: 'Adjektiv' } as const;
 const wortarten = D(3, 'd3-wortarten', 'Wortarten', '🧺', {
