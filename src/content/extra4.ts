@@ -201,6 +201,10 @@ const SENT: [string, string][] = [
   ['Can you help me?', 'Kannst du mir helfen?'], ['I am very hungry.', 'Ich habe großen Hunger.'],
   ['We play football after school.', 'Wir spielen nach der Schule Fußball.'], ['The sun is very hot.', 'Die Sonne ist sehr heiß.'], ['Where are my shoes?', 'Wo sind meine Schuhe?'],
   ['My cat likes milk.', 'Meine Katze mag Milch.'], ['Do you have a pet?', 'Hast du ein Haustier?'], ['I can see a rainbow.', 'Ich kann einen Regenbogen sehen.'],
+  // Nachtlauf 24.10.2026: mehr Sätze
+  ['I like ice cream.', 'Ich mag Eis.'], ['We have got a big garden.', 'Wir haben einen großen Garten.'], ['The horse is in the field.', 'Das Pferd ist auf der Weide.'],
+  ['Where do you live?', 'Wo wohnst du?'], ['What colour is your bike?', 'Welche Farbe hat dein Fahrrad?'], ['I brush my teeth every day.', 'Ich putze jeden Tag meine Zähne.'],
+  ['My teacher is very nice.', 'Meine Lehrerin ist sehr nett.'], ['It is raining today.', 'Heute regnet es.'], ['I have got a little sister.', 'Ich habe eine kleine Schwester.'],
 ];
 const capFirst = (w: string) => w[0].toUpperCase() + w.slice(1);
 // Satzanfang klein zeigen (sonst verrät der große Buchstabe das erste Wort) – außer „I“

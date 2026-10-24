@@ -773,6 +773,12 @@ const FAELLE: { s: string; mark: string; fall: 'Nominativ' | 'Genitiv' | 'Dativ'
   { s: 'Wir gratulieren **unserer Lehrerin**.', mark: 'unserer Lehrerin', fall: 'Dativ' }, { s: 'Das Spielzeug **des Babys** ist bunt.', mark: 'des Babys', fall: 'Genitiv' },
   { s: '**Der Bäcker** backt Brötchen.', mark: 'Der Bäcker', fall: 'Nominativ' }, { s: 'Wir kaufen **einen Kuchen**.', mark: 'einen Kuchen', fall: 'Akkusativ' },
   { s: 'Ich helfe **meinem Opa** im Garten.', mark: 'meinem Opa', fall: 'Dativ' }, { s: 'Die Farbe **des Autos** ist rot.', mark: 'des Autos', fall: 'Genitiv' },
+  // Nachtlauf 24.10.2026: mehr Aufgaben
+  { s: 'Der Schwanz **des Pferdes** ist lang.', mark: 'des Pferdes', fall: 'Genitiv' }, { s: 'Das Zimmer **meiner Schwester** ist aufgeräumt.', mark: 'meiner Schwester', fall: 'Genitiv' },
+  { s: 'Die Mähne **des Löwen** ist zottelig.', mark: 'des Löwen', fall: 'Genitiv' }, { s: 'Die Räder **des Fahrrads** sind platt.', mark: 'des Fahrrads', fall: 'Genitiv' },
+  { s: '**Der Zug** kommt pünktlich.', mark: 'Der Zug', fall: 'Nominativ' }, { s: '**Meine Freundin** wohnt nebenan.', mark: 'Meine Freundin', fall: 'Nominativ' },
+  { s: 'Ich höre **den Vogel**.', mark: 'den Vogel', fall: 'Akkusativ' }, { s: 'Papa wäscht **das Auto**.', mark: 'das Auto', fall: 'Akkusativ' }, { s: 'Wir füttern **die Enten**.', mark: 'die Enten', fall: 'Akkusativ' },
+  { s: 'Wir winken **dem Kapitän**.', mark: 'dem Kapitän', fall: 'Dativ' }, { s: 'Der Ball gehört **dem Jungen**.', mark: 'dem Jungen', fall: 'Dativ' }, { s: 'Der Hund folgt **seinem Herrchen**.', mark: 'seinem Herrchen', fall: 'Dativ' },
 ];
 const FRAGE = { Nominativ: 'Wer oder was?', Genitiv: 'Wessen?', Dativ: 'Wem?', Akkusativ: 'Wen oder was?' } as const;
 const faelle = D(4, 'd4-faelle', 'Die vier Fälle', '🗝️', {

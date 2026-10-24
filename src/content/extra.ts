@@ -224,6 +224,18 @@ const SATZBILD: [string, string, string[]][] = [
   ['🦉🌙', 'Die Eule ist in der Nacht wach.', ['Die Eule schläft in der Nacht.', 'Der Hahn ist in der Nacht wach.', 'Die Eule frisst Körner.']],
   ['👧🍓', 'Das Mädchen isst eine Erdbeere.', ['Das Mädchen isst eine Kirsche.', 'Der Junge isst eine Erdbeere.', 'Das Mädchen pflückt Blumen.']],
   ['👨‍🍳🍳', 'Der Koch brät ein Ei.', ['Der Koch backt ein Brot.', 'Die Oma brät ein Ei.', 'Der Koch kocht Suppe.']],
+  // Nachtlauf 24.10.2026: mehr Bilder
+  ['🐝🌻', 'Die Biene sitzt auf der Blume.', ['Die Biene sitzt auf dem Baum.', 'Der Käfer sitzt auf der Blume.', 'Die Biene schläft im Bett.']],
+  ['👦🚲', 'Der Junge fährt Fahrrad.', ['Der Junge fährt Auto.', 'Das Mädchen fährt Fahrrad.', 'Der Junge läuft weg.']],
+  ['🐸🌧️', 'Der Frosch sitzt im Regen.', ['Der Frosch sitzt in der Sonne.', 'Die Ente sitzt im Regen.', 'Der Frosch schläft im Bett.']],
+  ['👵📖', 'Die Oma liest ein Buch.', ['Die Oma backt einen Kuchen.', 'Der Opa liest ein Buch.', 'Die Oma liest die Zeitung.']],
+  ['🐻🍯', 'Der Bär nascht Honig.', ['Der Bär frisst Fisch.', 'Die Maus nascht Honig.', 'Der Bär schläft.']],
+  ['⛄❄️', 'Der Schneemann steht im Schnee.', ['Der Schneemann schmilzt in der Sonne.', 'Das Kind steht im Schnee.', 'Der Schneemann steht im Regen.']],
+  ['🦁💤', 'Der Löwe schläft.', ['Der Löwe brüllt laut.', 'Der Tiger schläft.', 'Der Löwe frisst Fleisch.']],
+  ['🚀🌙', 'Die Rakete fliegt zum Mond.', ['Die Rakete fliegt zur Sonne.', 'Das Flugzeug fliegt zum Mond.', 'Die Rakete steht am Boden.']],
+  ['👨‍🌾🚜', 'Der Bauer fährt Traktor.', ['Der Bauer fährt Bus.', 'Der Koch fährt Traktor.', 'Der Bauer melkt die Kuh.']],
+  ['🧒⚽', 'Das Kind spielt Fußball.', ['Das Kind spielt Tennis.', 'Der Hund spielt Fußball.', 'Das Kind liest ein Buch.']],
+  ['🐿️🌰', 'Das Eichhörnchen hat eine Nuss.', ['Das Eichhörnchen hat einen Apfel.', 'Die Maus hat eine Nuss.', 'Das Eichhörnchen schläft.']],
 ];
 function satzBild(r: Rng, s: Stage): Gen {
   const [e, ok, wrong] = pick(r, SATZBILD);
@@ -244,6 +256,11 @@ const TRENN: [string, string, string[]][] = [
   ['Kissen', 'Kis-sen', ['Ki-ssen', 'Kiss-en']], ['Pirat', 'Pi-rat', ['Pir-at', 'P-irat']],
   ['Hose', 'Ho-se', ['Hos-e', 'H-ose']], ['Gabel', 'Ga-bel', ['Gab-el', 'G-abel']], ['Mantel', 'Man-tel', ['Ma-ntel', 'Mant-el']],
   ['Rakete', 'Ra-ke-te', ['Rak-et-e', 'Ra-ket-e']], ['Wecker', 'We-cker', ['Weck-er', 'Wec-ker']], ['Spinne', 'Spin-ne', ['Spi-nne', 'Spinn-e']], ['Erdbeere', 'Erd-bee-re', ['Er-dbee-re', 'Erdb-ee-re']],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Teller', 'Tel-ler', ['Te-ller', 'Tell-er']], ['Puppe', 'Pup-pe', ['Pu-ppe', 'Pupp-e']], ['Winter', 'Win-ter', ['Wi-nter', 'Wint-er']], ['Sommer', 'Som-mer', ['So-mmer', 'Somm-er']],
+  ['Kuchen', 'Ku-chen', ['Kuc-hen', 'Kuch-en']], ['Flasche', 'Fla-sche', ['Flas-che', 'Flasch-e']], ['Glocke', 'Glo-cke', ['Glock-e', 'Gloc-ke']], ['Socke', 'So-cke', ['Sock-e', 'Soc-ke']],
+  ['Kartoffel', 'Kar-tof-fel', ['Ka-rto-ffel', 'Kart-off-el']], ['Fußball', 'Fuß-ball', ['Fu-ßball', 'Fußb-all']], ['Schwester', 'Schwes-ter', ['Schwe-ster', 'Schwest-er']],
+  ['Bagger', 'Bag-ger', ['Ba-gger', 'Bagg-er']], ['Paket', 'Pa-ket', ['Pak-et', 'P-aket']], ['Tante', 'Tan-te', ['Ta-nte', 'Tant-e']],
 ];
 function trennTask(r: Rng): Gen {
   const [w, ok, wrong] = pick(r, TRENN);
