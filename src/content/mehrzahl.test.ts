@@ -21,3 +21,21 @@ describe('Einzahl und Mehrzahl (d2-mehrzahl)', () => {
     expect(options.filter((o) => ['Hass', 'Eis', 'Töpfer', 'Hause'].includes(o))).toEqual([]);
   });
 });
+
+// Nachtlauf 24.10.2026: „catss“, „dresss“, „applees“, „leavess“ waren keine glaubhaften Fehler
+describe('a / an and plurals (e2-a-an-plural)', () => {
+  const s = skillById('e2-a-an-plural')!;
+  const r = mulberry32(12);
+  const tasks = Array.from({ length: 3000 }, (_, i) => s.generate(r, (1 + (i % 3)) as 1 | 2 | 3)).filter((t) => t.key.startsWith('p-'));
+
+  it('keine Ablenker mit -ss + s, -s + s oder -e + es', () => {
+    const odd = new Set<string>();
+    for (const t of tasks) if (t.answer.type === 'choice') for (const o of t.answer.options) if (o !== t.key.slice(2) && /(sss|[^s]ss$|ees$)/.test(o)) odd.add(o);
+    // erlaubt: „buss“ (bus + s) – häufiger Anfängerfehler
+    expect([...odd].filter((o) => o !== 'buss')).toEqual([]);
+  });
+
+  it('immer mindestens drei Antworten (Stufe 2 und 3)', () => {
+    for (const t of tasks) if (t.answer.type === 'choice' && t.answer.options.length < 3) throw new Error(t.prompt);
+  });
+});

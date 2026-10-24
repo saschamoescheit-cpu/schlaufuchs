@@ -270,8 +270,9 @@ const grammar1 = E(2, 'e2-a-an-plural', 'a / an and plurals', '🍏', { text: ['
   const irr = v === 2;
   const [s, p, e] = pick(r, irr ? IRREG : REG);
   // Ablenker mit deutscher Endung -en – aber keine, die zufällig ein deutsches Wort ergeben (bus → „busen“)
-  const enForm = (w: string) => (['busen'].includes(w + 'en') ? [] : [w + 'en']);
-  const wrong = [s + 's', s + 'es', p === s ? s + 's' : p + 's', s.replace(/y$/, 'ys')].filter((x) => x !== p && x !== s);
+  const enForm = (w: string) => (['busen', 'boxen'].includes(w + 'en') ? [] : [w.endsWith('e') ? w + 'n' : w + 'en']);
+  // doppelte Mehrzahl nur bei besonderen Wörtern (mices, feets) – „catss“, „dresss“, „applees“ macht niemand
+  const wrong = [...(s.endsWith('ss') ? [] : [s + 's']), ...(s.endsWith('e') ? [] : [s + 'es']), ...(irr && !p.endsWith('s') ? [p === s ? s + 's' : p + 's'] : []), s.replace(/y$/, 'ys')].filter((x) => x !== p && x !== s);
   return { key: `p-${s}`, prompt: `one ${s} – two ☐`, speak: `One ${s}. Two what?`, visual: { kind: 'emoji', chars: `${e}${e}` }, answer: { ...choice(r, p, p === s ? [...wrong, ...enForm(s)] : [s, ...pickN(r, [...new Set([...wrong, ...enForm(s)])], 2)]), speakOptions: 'en' }, tags: [irr ? 'plural-besonders' : 'plural-s'], solution: [`one ${s} – two ${p}`, irr ? 'Das ist eine besondere Mehrzahl – die musst du dir merken.' : s.endsWith('y') ? 'Nach Mitlaut + y wird -ies angehängt.' : /(s|x|sh|ch)$/.test(s) ? 'Nach s, x, sh, ch hängt man -es an.' : 'Meistens hängt man einfach -s an.'], pronounce: { text: `one ${s}, two ${p}`, lang: 'en' } };
 }, { tagLabels: { 'a-an': 'a oder an', 'plural-s': 'Mehrzahl mit -s', 'plural-besonders': 'besondere Mehrzahl (mice, feet …)' }, testSeconds: 15 });
 
