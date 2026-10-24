@@ -337,7 +337,11 @@ const SAETZE_ZEICHEN: [string, '.' | '?' | '!'][] = [
   ['Wer hat meinen Stift genommen', '?'], ['Warum weint das Baby', '?'], ['Gehst du morgen schwimmen', '?'], ['Unser Hund heißt Bello', '.'], ['Oma backt einen Apfelkuchen', '.'], ['Im Winter ist es kalt', '.'],
   ['Räum bitte dein Zimmer auf', '!'], ['Gib mir sofort den Ball', '!'], ['Toll, ein Regenbogen', '!'],
   ['Wo ist meine Mütze', '?'], ['Wie viele Beine hat eine Spinne', '?'], ['Darf ich mitspielen', '?'], ['Der Zug fährt nach Köln', '.'], ['Mein Lieblingsessen ist Pizza', '.'], ['Die Vögel singen im Baum', '.'],
-  ['Hör sofort auf', '!'], ['Achtung, ein Auto', '!'], ['Wie schön das ist', '!'],
+  ['Hör sofort auf', '!'], ['Achtung, ein Auto', '!'], ['So ein Glück', '!'],
+  // Nachtlauf 24.10.2026: mehr Sätze („Wie schön das ist“ raus – ohne Satzzeichen sieht es wie eine Frage aus)
+  ['Welche Farbe hat dein Fahrrad', '?'], ['Isst du gern Spinat', '?'], ['Wohin fahrt ihr in den Ferien', '?'], ['Weißt du die Antwort', '?'],
+  ['Mein Opa wohnt auf einem Bauernhof', '.'], ['Wir haben heute keine Hausaufgaben', '.'], ['Die Schule beginnt um acht Uhr', '.'], ['Im Sommer gehen wir oft baden', '.'],
+  ['Steh bitte auf', '!'], ['Bleib stehen', '!'], ['Schnell, der Bus kommt', '!'], ['Hurra, Ferien', '!'],
 ];
 const SATZART: Record<'.' | '?' | '!', string> = { '.': 'Aussagesatz', '?': 'Fragesatz', '!': 'Ausrufe- oder Aufforderungssatz' };
 const FRAGE_UM: [string, string, string[]][] = [

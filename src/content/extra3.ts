@@ -1326,6 +1326,13 @@ const MINI: [string, string, string, string[]][] = [
   ['Opa hat einen Hut. Der Hut ist braun.', 'Was hat Opa?', '🎩', ['🧢', '👓', '🧣']], ['Ben spielt Trommel. Das ist laut!', 'Was spielt Ben?', '🥁', ['🎻', '🎺', '🎹']],
   ['Im Wald wohnt ein Fuchs. Er ist rot.', 'Wer wohnt im Wald?', '🦊', ['🐻', '🐰', '🐿️']], ['Lina isst eine Birne. Sie ist süß.', 'Was isst Lina?', '🍐', ['🍎', '🍌', '🍇']],
   ['Der Zug fährt schnell. Er ist sehr lang.', 'Was fährt schnell?', '🚂', ['🚗', '🚌', '🚲']], ['Papa liest ein Buch. Es ist spannend.', 'Was liest Papa?', '📖', ['📰', '✉️', '🗺️']],
+  // Nachtlauf 24.10.2026: mehr Texte
+  ['Lisa hat eine Puppe. Die Puppe hat ein rotes Kleid.', 'Was hat Lisa?', '🪆', ['🧸', '⚽', '🚗']], ['Der Bauer fährt mit dem Traktor auf das Feld.', 'Womit fährt der Bauer?', '🚜', ['🚗', '🚲', '🚌']],
+  ['Im Zoo sieht Mia einen Elefanten. Er ist sehr groß.', 'Was sieht Mia im Zoo?', '🐘', ['🦒', '🦁', '🐒']], ['Jonas hat einen Hamster. Er wohnt in einem Käfig.', 'Welches Tier hat Jonas?', '🐹', ['🐶', '🐰', '🐱']],
+  ['Es ist heiß. Die Kinder essen eine Melone.', 'Was essen die Kinder?', '🍉', ['🍦', '🍓', '🍒']], ['Die Feuerwehr kommt mit Blaulicht.', 'Wer kommt mit Blaulicht?', '🚒', ['🚌', '🚜', '🚲']],
+  ['Sara schreibt einen Brief an Oma.', 'Was schreibt Sara?', '✉️', ['📖', '📰', '🗺️']], ['Der Igel rollt sich ein. Er hat viele Stacheln.', 'Wer hat Stacheln?', '🦔', ['🐰', '🐢', '🐿️']],
+  ['Nach dem Regen ist am Himmel ein Regenbogen.', 'Was ist nach dem Regen am Himmel?', '🌈', ['🌙', '⭐', '⚡']], ['Die Kuh steht auf der Weide. Sie gibt Milch.', 'Wer gibt Milch?', '🐄', ['🐷', '🐴', '🐑']],
+  ['Lea geht mit Mama einkaufen. Sie kauft Äpfel.', 'Was kauft Lea?', '🍎', ['🍌', '🍐', '🥕']], ['Der Pirat hat ein Schiff. Es hat große Segel.', 'Was hat der Pirat?', '⛵', ['🚂', '✈️', '🚗']],
 ];
 function miniTask(r: Rng, s: Stage): Gen {
   const [t, q, ok, wrong] = pick(r, MINI);
