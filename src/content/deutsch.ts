@@ -260,7 +260,9 @@ const NOMEN: { w: string; a: 'der' | 'die' | 'das'; e: string; pl: string }[] = 
   { w: 'Topf', a: 'der', e: '🍲', pl: 'Töpfe' }, { w: 'Tomate', a: 'die', e: '🍅', pl: 'Tomaten' }, { w: 'Zelt', a: 'das', e: '⛺', pl: 'Zelte' },
   { w: 'Hahn', a: 'der', e: '🐓', pl: 'Hähne' }, { w: 'Ente', a: 'die', e: '🦆', pl: 'Enten' }, { w: 'Krokodil', a: 'das', e: '🐊', pl: 'Krokodile' },
 ];
-const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen', 'graben', 'fahren', 'nähen', 'füttern', 'hüpfen', 'gießen', 'wandern', 'pflücken', 'zeichnen', 'rutschen', 'kleben', 'reiten', 'pfeifen', 'schaukeln', 'sammeln', 'winken', 'zählen', 'ziehen'];
+const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen', 'graben', 'fahren', 'nähen', 'füttern', 'hüpfen', 'gießen', 'wandern', 'pflücken', 'zeichnen', 'rutschen', 'kleben', 'reiten', 'pfeifen', 'schaukeln', 'sammeln', 'winken', 'zählen', 'ziehen',
+  // Nachtlauf 24.10.2026: mehr Verben
+  'bellen', 'backen', 'flüstern', 'gähnen', 'hören', 'kaufen', 'lernen', 'niesen', 'rechnen', 'suchen', 'träumen', 'waschen', 'zaubern', 'trommeln', 'streicheln', 'telefonieren'];
 // Verben in der er-Form: als Ablenker bei „Nomen erkennen“ eindeutig keine Nomen (ESSEN oder RENNEN könnten es sein: das Essen)
 const VERBEN_ER = ['läuft', 'spielt', 'liest', 'schreibt', 'singt', 'malt', 'springt', 'isst', 'trinkt', 'lacht', 'schwimmt', 'tanzt', 'ruft', 'baut', 'schläft', 'kocht', 'klettert', 'wirft', 'fliegt', 'hilft', 'rennt', 'weint', 'sägt', 'bastelt', 'putzt', 'turnt'];
 const ADJ = ['groß', 'klein', 'schnell', 'langsam', 'laut', 'leise', 'bunt', 'lustig', 'müde', 'warm', 'kalt', 'süß', 'nass', 'weich', 'hell', 'dunkel'];
