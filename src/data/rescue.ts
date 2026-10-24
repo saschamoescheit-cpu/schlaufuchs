@@ -7,6 +7,7 @@
 import { emptyProgress, type Progress } from '../engine/learning';
 import { mergeRescue } from './merge';
 import { listMirror } from './mirror';
+import { cloudCopies } from './sync';
 import { getData, update, type AppData, type Profile } from './store';
 
 export interface Rescue {
@@ -53,23 +54,36 @@ export function hasMore(copy: Progress, here: Progress | undefined): boolean {
   return a.solved > b.solved || a.answers > b.answers || a.stars > b.stars || a.tests > b.tests;
 }
 
+/** Deutlich mehr (für Cloud und letzten Abgleich: ein anderes Gerät ist dort oft nur ein paar Aufgaben voraus – das
+ *  holt der Abgleich selbst; die Karte soll nur bei echtem Verlust erscheinen) */
+export function hasMuchMore(copy: Progress, here: Progress | undefined): boolean {
+  if (!here) return hasMore(copy, here);
+  const a = amount(copy);
+  const b = amount(here);
+  const much = (x: number, y: number) => x - y >= Math.max(20, y * 0.2);
+  return much(a.solved, b.solved) || much(a.answers, b.answers) || much(a.stars, b.stars);
+}
+
 /** Das Kind hier zur Kopie: gleiche Id, sonst gleicher Name (z. B. nach dem Verlust neu angelegt). */
 export function matchKid(d: AppData, p: Profile): string | null {
   if (d.profiles.some((x) => x.id === p.id)) return p.id;
-  const name = p.name.trim().toLowerCase();
+  const name = (p.name ?? '').trim().toLowerCase();
+  if (!name) return null;
   return d.profiles.find((x) => x.name.trim().toLowerCase() === name)?.id ?? null;
 }
 
 const sigOf = (p: Profile, pr: Progress) => `${p.id}:${pr.solved}:${pr.log.length}:${pr.stars}`;
 
 /** Aus allen Kopien je Kind die mit dem meisten Inhalt, wenn sie mehr hat als der Stand hier. Pure (getestet). */
-export function pickRescues(d: AppData, copies: { profile: Profile; progress: Progress; source: string }[], dismissed: string[] = []): Rescue[] {
+export function pickRescues(d: AppData, copies: { profile: Profile; progress: Progress; source: string }[], dismissed: string[] = [], deletedOnPurpose: string[] = []): Rescue[] {
   const best = new Map<string, Rescue>();
   for (const c of copies) {
     if (!c.profile || typeof c.profile.id !== 'string' || !c.progress) continue;
     const progress: Progress = { ...emptyProgress(), ...c.progress, log: c.progress.log ?? [], tests: c.progress.tests ?? [] };
     const into = matchKid(d, c.profile);
-    if (!hasMore(progress, into ? d.progress[into] : undefined)) continue;
+    if (!into && deletedOnPurpose.includes(c.profile.id)) continue;
+    const strict = c.source === 'Cloud' || c.source === 'letzter Abgleich';
+    if (!(strict ? hasMuchMore : hasMore)(progress, into ? d.progress[into] : undefined)) continue;
     const sig = sigOf(c.profile, progress);
     if (dismissed.includes(sig)) continue;
     const k = into ?? `neu:${c.profile.id}`;
@@ -81,7 +95,7 @@ export function pickRescues(d: AppData, copies: { profile: Profile; progress: Pr
 }
 
 /** Alle Kopien auf diesem Gerät einsammeln. */
-export async function collectCopies(): Promise<{ profile: Profile; progress: Progress; source: string }[]> {
+export async function collectCopies(cloud = false): Promise<{ profile: Profile; progress: Progress; source: string }[]> {
   const out: { profile: Profile; progress: Progress; source: string }[] = [];
   const addData = (d: Partial<AppData> | null, source: string) => {
     if (!d || !Array.isArray(d.profiles)) return;
@@ -107,19 +121,46 @@ export async function collectCopies(): Promise<{ profile: Profile; progress: Pro
   } catch {
     /* nicht lesbar */
   }
+  // 4. die Cloud (angemeldet): auch als gelöscht markierte Zeilen und der ganze Aufgaben-Verlauf
+  if (cloud) try {
+    for (const c of await cloudCopies()) {
+      const here = d.profiles.find((x) => x.id === c.pid);
+      out.push({ profile: c.profile ?? here ?? unnamed(c.pid), progress: c.progress, source: 'Cloud' });
+    }
+  } catch {
+    /* offline – dann nur das Gerät */
+  }
   return out;
 }
 
-export async function findRescues(): Promise<Rescue[]> {
-  return pickRescues(getData(), await collectCopies(), parse<string[]>(readLs(DISMISSED), []));
+/** Profil, dessen Name in der Cloud nicht mehr lesbar ist – die Karte fragt, zu welchem Kind es gehört */
+const unnamed = (id: string): Profile => ({ ...newProfileStub(), id, name: '' });
+const newProfileStub = (): Omit<Profile, 'id' | 'name'> => ({ avatar: '🦊', age: 8, grade: 3, state: 'NW', englishFrom: 3, gradesFrom: 3, gradeKey: [92, 81, 67, 50, 30], autoRead: false, sound: true, pace: 'schule', created: Date.now() });
+
+/** Wo zuletzt in der Cloud gesucht wurde – beim Start höchstens alle 6 Stunden (liest den ganzen Verlauf) */
+const CLOUD_AT = 'schlaufuchs:rescue.cloudAt';
+export async function findRescues(opts: { cloud?: 'auto' | 'now' | 'never' } = {}): Promise<Rescue[]> {
+  const mode = opts.cloud ?? 'auto';
+  let cloud = mode === 'now';
+  if (mode === 'auto') {
+    const last = Number(readLs(CLOUD_AT) ?? 0) || 0;
+    cloud = Date.now() - last > 6 * 3600_000;
+  }
+  if (cloud)
+    try {
+      localStorage.setItem(CLOUD_AT, String(Date.now()));
+    } catch {
+      /* egal */
+    }
+  return pickRescues(getData(), await collectCopies(cloud), parse<string[]>(readLs(DISMISSED), []), parse<string[]>(readLs('schlaufuchs:deleted-ever.v1'), []));
 }
 
 /** Zurückholen: zusammenführen – nichts von heute geht verloren. Geht mit dem nächsten Abgleich auf alle Geräte. */
-export function applyRescue(r: Rescue): void {
+export function applyRescue(r: Rescue, intoId?: string): void {
   update((d) => {
-    let id = matchKid(d, r.profile);
+    let id = intoId ?? matchKid(d, r.profile);
     if (!id) {
-      d.profiles.push(r.profile);
+      d.profiles.push(r.profile.name ? r.profile : { ...r.profile, name: 'Kind' });
       d.profiles.sort((a, b) => a.created - b.created);
       id = r.profile.id;
     }

@@ -87,6 +87,17 @@ export async function listMirror(): Promise<{ id: string; snap: Snapshot }[]> {
   }
 }
 
+/** Tages-Sicherungen „tag:JJJJ-MM-TT“: nur die neuesten `keep` behalten (die anderen Sicherungen bleiben unberührt). */
+export async function pruneDaily(keep: number): Promise<void> {
+  if (!available()) return;
+  try {
+    const ids = (await req<IDBValidKey[]>('readonly', (s) => s.getAllKeys())).map(String).filter((k) => k.startsWith('tag:')).sort();
+    for (const id of ids.slice(0, Math.max(0, ids.length - keep))) await req('readwrite', (s) => s.delete(id));
+  } catch {
+    /* egal – dann bleiben sie eben */
+  }
+}
+
 let pending: Snapshot | null = null;
 let pendingDone: ((ok: boolean) => void) | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;

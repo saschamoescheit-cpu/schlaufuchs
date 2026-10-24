@@ -219,3 +219,37 @@ describe('Lernstand: localStorage, ab 1 Mio. Zeichen oder bei vollem Speicher in
     expect(s.getData().profiles[0].name).toBe('Mia');
   });
 });
+
+// 24.10.2026: Leanas Lernstand war weg – jeder Verlust hinterlässt jetzt eine Sicherung, Abgleich nur mit geladenem Stand
+describe('Sicherung vor jedem Verlust', { timeout: 30_000 }, () => {
+  it('Kind gelöscht oder Lernstand geleert: vorher wird der alte Stand als „vor-verlust:…“ aufgehoben', async () => {
+    const s = await start();
+    s.saveProfile(s.newProfile({ id: 'leana', name: 'Leana' }));
+    s.update((d) => void Object.assign(d.progress.leana, { stars: 120, solved: 5 }));
+    await settle();
+    expect([...db.kv.keys()].some((k) => k.startsWith('vor-verlust:'))).toBe(false);
+    s.update((d) => void Object.assign(d.progress.leana, { stars: 0, solved: 0 }));
+    await settle();
+    const backups = [...db.kv].filter(([k]) => k.startsWith('vor-verlust:'));
+    expect(backups).toHaveLength(1);
+    expect(JSON.parse(backups[0][1].json).progress.leana.stars).toBe(120);
+    s.deleteProfile('leana');
+    await settle();
+    expect([...db.kv.keys()].filter((k) => k.startsWith('vor-verlust:')).length).toBeGreaterThanOrEqual(2);
+    expect(JSON.parse(ls.m.get('schlaufuchs:deleted-ever.v1')!)).toEqual(['leana']);
+    expect(JSON.parse(ls.m.get('schlaufuchs:sync.deleted.v1')!)).toEqual(['leana']);
+  });
+
+  it('nicht lesbarer großer Speicher: Lernstand gilt als nicht geladen (kein Abgleich)', async () => {
+    let s = await start();
+    s.saveProfile(s.newProfile({ name: 'Mia' }));
+    s.update((d) => void ((d as unknown as { pad: string }).pad = big));
+    await settle();
+    s = await start();
+    expect(s.isLoaded()).toBe(false);
+    db.failRead = 3;
+    await s.checkMirror();
+    expect(s.hasLoadError()).toBe(true);
+    expect(s.isLoaded()).toBe(false);
+  });
+});

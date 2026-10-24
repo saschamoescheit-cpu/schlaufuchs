@@ -11,7 +11,7 @@ import type { Grade, Subject } from '../engine/types';
 import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
 import { mergeTwo } from './merge';
-import { askPersist, available as mirrorAvailable, choose, putMirror, readMirror, readMirrorStrict, writeMirror } from './mirror';
+import { askPersist, available as mirrorAvailable, choose, pruneDaily, putMirror, readMirror, readMirrorStrict, writeMirror } from './mirror';
 import { DELETED } from './sync';
 
 export interface Profile {
@@ -74,6 +74,8 @@ export interface FamilyPush {
 }
 
 const KEY = 'schlaufuchs:v1';
+/** auf diesem Gerät absichtlich gelöschte Kinder (für immer – rescue.ts) */
+export const DELETED_EVER = 'schlaufuchs:deleted-ever.v1';
 const AT_KEY = 'schlaufuchs:v1:at';
 /** Ab dieser Größe (Zeichen) zieht der Lernstand in den großen Speicher (IndexedDB) um: localStorage fasst je Seite nur
  *  etwa 5 MB und wird auch für Anmeldung und Abgleich gebraucht. */
@@ -206,6 +208,11 @@ export const hasLoadError = () => loadError;
  */
 export async function checkMirror(): Promise<'local' | 'mirror'> {
   askPersist();
+  const res = await checkMirrorInner();
+  if (isLoaded()) void dailyBackup().catch(() => undefined);
+  return res;
+}
+async function checkMirrorInner(): Promise<'local' | 'mirror'> {
   if (movedOut && !ready) return loadMoved();
   let at = 0;
   let has = false;
@@ -270,9 +277,37 @@ async function loadMoved(): Promise<'local' | 'mirror'> {
 // structuredClone gibt es in Safari erst ab iOS 15.4 – auf älteren iPads per JSON kopieren (die Daten sind reines JSON)
 const clone = <T,>(x: T): T => (typeof structuredClone === 'function' ? structuredClone(x) : (JSON.parse(JSON.stringify(x)) as T));
 
+/** Verliert diese Änderung etwas? (ein Kind weg, oder weniger Sterne/gelöste Aufgaben/Verlauf) */
+export function losesSomething(before: AppData, after: AppData): boolean {
+  for (const p of before.profiles) {
+    if (!after.profiles.some((x) => x.id === p.id)) return true;
+    const a = before.progress[p.id];
+    const b = after.progress[p.id];
+    if (!a) continue;
+    if (!b || b.stars < a.stars || b.solved < a.solved || b.log.length < a.log.length || b.tests.length < a.tests.length) return true;
+  }
+  return false;
+}
+
+/** Vor jedem Verlust den bisherigen Stand als eigene Sicherung in den großen Speicher (24.10.2026: Leanas Lernstand) –
+ *  die Lernstand-Rettung (rescue.ts) findet sie. */
+function keepBeforeLoss(before: AppData, after: AppData) {
+  if (!before.profiles.length || !losesSomething(before, after)) return;
+  void putMirror({ json: JSON.stringify(before), at: Date.now() }, `vor-verlust:${Date.now()}`);
+}
+
+/** Einmal am Tag eine Sicherung (die letzten 30 Tage bleiben) */
+async function dailyBackup() {
+  if (!data.profiles.length) return;
+  const day = new Date().toISOString().slice(0, 10);
+  const ok = await putMirror({ json: JSON.stringify(data), at: Date.now() }, `tag:${day}`);
+  if (ok) await pruneDaily(30);
+}
+
 function commit(fn: (d: AppData) => void) {
   const next = clone(data);
   fn(next);
+  keepBeforeLoss(data, next);
   data = next;
   persist();
   listeners.forEach((l) => l());
@@ -345,6 +380,9 @@ function markDeleted(id: string) {
   try {
     const list = JSON.parse(localStorage.getItem(DELETED) ?? '[]') as string[];
     if (!list.includes(id)) localStorage.setItem(DELETED, JSON.stringify([...list, id]));
+    // dauerhaft: die Lernstand-Rettung bietet absichtlich gelöschte Kinder nicht wieder an
+    const ever = JSON.parse(localStorage.getItem(DELETED_EVER) ?? '[]') as string[];
+    if (!ever.includes(id)) localStorage.setItem(DELETED_EVER, JSON.stringify([...ever, id]));
   } catch {
     /* nicht schreibbar – dann bleibt das Kind auf den anderen Geräten (lieber zu viel als zu wenig) */
   }

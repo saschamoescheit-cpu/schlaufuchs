@@ -200,6 +200,22 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
   const changedHere = (k: string, l?: Item) => l != null && (!meta[k] || meta[k].hash !== hashOf(l.json));
   const changedThere = (k: string, r?: Row) => r != null && (!meta[k] || !sameTime(r.updated_at, meta[k].at));
 
+  /** Zeilen, die nicht einfach hochgehen dürfen, sondern mit der Cloud zusammengeführt werden */
+  const guard = new Set<string>();
+  /** Lernstand kleiner als beim letzten Abgleich (Sterne, gelöste Aufgaben oder Antworten je Thema weniger)? */
+  const shrunk = (id: string, l: Item): boolean => {
+    const b = base[id];
+    if (!b) return false;
+    const c = JSON.parse(l.json) as Core;
+    const n = (s: Record<string, { n: number }>) => Object.values(s ?? {}).reduce((x, y) => x + (y?.n ?? 0), 0);
+    return (c.stars ?? 0) < (b.stars ?? 0) || (c.solved ?? 0) < (b.solved ?? 0) || n(c.skills) < n(b.skills);
+  };
+  const lostDay = (pid: string, day: string): boolean => {
+    const pr = dev.get().progress[pid];
+    if (!pr || !dev.get().profiles.some((p) => p.id === pid)) return false;
+    if (pr.log.length < LOG_MAX) return true;
+    return day > dayKey(pr.log[0].t);
+  };
   const keys = [...new Set([...snap.keys(), ...remoteBy.keys()])];
   const deletedHere = new Set(parse<string[]>(dev.read(DELETED), []));
   // Kinder, die hier gelöscht wurden: ihre übrigen Zeilen gehen mit
@@ -224,6 +240,9 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
       if (r.deleted) continue;
       const pid = pidOf(kind, id);
       if (pid && missing.has(pid)) pullKeys.push({ kind, id });
+      // ein Tag fehlt im Verlauf, obwohl er nicht voll ist (oder der Tag jünger ist als der älteste hier): verloren
+      // gegangen, nicht herausgefallen → zurückholen (vereint)
+      else if (kind === 'log' && pid && lostDay(pid, id.slice(pid.length + 1))) pullKeys.push({ kind, id });
       else if (meta[k] && !rc) {
         // hier nicht mehr da: gelöscht – oder nur ein alter Tag, der aus dem vollen Verlauf gefallen ist
         if (kind === 'profile' || (pid && goneHere.has(pid))) push.push({ row: { kind, id, updated_at: at, deleted: true } });
@@ -232,8 +251,14 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
       if (r.deleted) {
         if (rc && !lc) removeHere.push(k);
         else if (lc) pushLocal(l, r); // hier nach dem Löschen noch geändert (oder wiederhergestellt): bleibt
-      } else if (lc && !rc) pushLocal(l, r);
-      else if (rc) pullKeys.push({ kind, id }); // nach dem Holen entschieden
+      } else if (lc && !rc) {
+        // nie verkleinern: ein geschrumpfter Lernstand oder Tagesverlauf wird mit der Cloud zusammengeführt statt sie
+        // zu überschreiben (24.10.2026: ein geleerter Stand hätte sonst auch die Cloud geleert)
+        if (kind === 'log' || (kind === 'progress' && shrunk(id, l))) {
+          guard.add(k);
+          pullKeys.push({ kind, id });
+        } else pushLocal(l, r);
+      } else if (rc) pullKeys.push({ kind, id }); // nach dem Holen entschieden
     }
   }
 
@@ -251,6 +276,14 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
       continue;
     }
     const json = canon(r.data);
+    if (l && guard.has(k)) {
+      const local = JSON.parse(l.json) as unknown;
+      const merged = r.kind === 'progress' ? mergeCore(null, local as Core, r.data as Core) : unionLog(local as Attempt[], r.data as Attempt[]);
+      const up = canon(merged) !== json;
+      writes.set(k, { kind: r.kind, id: r.id, data: merged, at: r.updated_at, ...(up ? { merged: r.data } : {}) });
+      if (up) push.push({ row: { kind: r.kind, id: r.id, data: merged, updated_at: at, deleted: false }, ifAt: r.updated_at, ...(r.kind === 'progress' ? { core: merged as Core } : {}) });
+      continue;
+    }
     if (l && l.json === json) {
       meta[k] = { hash: hashOf(l.json), at: r.updated_at };
       if (r.kind === 'progress') base[r.id] = baseOf(r.data as Core);
@@ -347,6 +380,88 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
     if (left.length !== deletedHere.size) dev.write(DELETED, left.length ? JSON.stringify(left) : null);
   }
   return { pushed: sent.length, pulled, at, again, ...(refused.length ? { failed: refused.length, error: refused[0].error } : {}) };
+}
+
+/** Lernstand aus dem Aufgaben-Verlauf neu berechnen: Sterne = richtige Antworten, je Thema Anzahl/richtig/letzte
+ *  Antworten, Übungstage. (Was nicht im Verlauf steht – Stufe, Fehler-Kiste, gelöste Wiederholungen – bleibt leer.) */
+export function progressFromLog(log: Attempt[]): Progress {
+  const p = emptyProgress();
+  for (const a of [...log].sort((x, y) => x.t - y.t)) {
+    const st = (p.skills[a.s] ??= { n: 0, ok: 0, recent: [], last: 0, tags: {} });
+    st.n++;
+    if (a.ok) st.ok++;
+    st.recent = [...st.recent, a.ok].slice(-12);
+    st.last = Math.max(st.last, a.t);
+    if (a.tag) {
+      const c = (st.tags[a.tag] ??= [0, 0]);
+      c[0]++;
+      if (!a.ok) c[1]++;
+    }
+    if (a.ok) p.stars++;
+    const dk = dayKey(a.t);
+    p.days[dk] = (p.days[dk] ?? 0) + 1;
+  }
+  p.log = log.slice(-LOG_MAX);
+  return p;
+}
+
+/** Alles, was die Cloud zu jedem Kind hat – auch als gelöscht markierte Zeilen und alte Tage (Lernstand-Rettung,
+ *  24.10.2026). Je Kind: Profil (wenn noch lesbar), Lernstand aus der Lernstand-Zeile und dem ganzen Verlauf. */
+export async function collectCloud(remote: Remote): Promise<{ pid: string; profile: Profile | null; progress: Progress }[]> {
+  const rows = await remote.list();
+  const keys = rows.filter((r) => r.kind === 'profile' || r.kind === 'progress' || r.kind === 'test' || r.kind === 'log').map((r) => ({ kind: r.kind, id: r.id }));
+  const full = keys.length ? await remote.fetch(keys) : [];
+  const by = new Map<string, { profile: Profile | null; core: Partial<Core> | null; log: Attempt[]; tests: TestResult[] }>();
+  const get = (pid: string) => {
+    let g = by.get(pid);
+    if (!g) by.set(pid, (g = { profile: null, core: null, log: [], tests: [] }));
+    return g;
+  };
+  for (const r of full) {
+    const pid = pidOf(r.kind, r.id);
+    if (!pid || r.data == null || typeof r.data !== 'object') continue;
+    const g = get(pid);
+    if (r.kind === 'profile' && typeof (r.data as Profile).name === 'string') g.profile = r.data as Profile;
+    else if (r.kind === 'progress' && (r.data as Core).skills) g.core = r.data as Core;
+    else if (r.kind === 'log' && Array.isArray(r.data)) g.log = unionLog(g.log, r.data as Attempt[]);
+    else if (r.kind === 'test' && typeof (r.data as TestResult).id === 'string') g.tests.push(r.data as TestResult);
+  }
+  const out: { pid: string; profile: Profile | null; progress: Progress }[] = [];
+  for (const [pid, g] of by) {
+    const fromLog = { ...progressFromLog(g.log), tests: g.tests.sort((a, b) => a.t - b.t) };
+    const fromRow = g.core ? { ...emptyProgress(), ...g.core, log: [], tests: [] } : null;
+    const progress = fromRow ? mergeRescue(fromRow as Progress, fromLog) : fromLog;
+    if (progress.log.length || progress.stars || progress.solved || progress.tests.length) out.push({ pid, profile: g.profile, progress });
+  }
+  return out;
+}
+
+/** Kurzer Überblick über die Cloud für die Speicher-Diagnose: je Kind, ob Profil/Lernstand dort als gelöscht markiert
+ *  sind und wie viele Tage Verlauf es gibt. null = nicht angemeldet oder offline. */
+export async function cloudSummary(): Promise<{ pid: string; profileDeleted: boolean | null; progressDeleted: boolean | null; logDays: number; logDaysDeleted: number }[] | null> {
+  if (!syncConfigured() || !loadSession()) return null;
+  const t = await authToken();
+  if (!t) return null;
+  const rows = await supabaseRemote(t).list();
+  const by = new Map<string, { pid: string; profileDeleted: boolean | null; progressDeleted: boolean | null; logDays: number; logDaysDeleted: number }>();
+  for (const r of rows) {
+    const pid = pidOf(r.kind, r.id);
+    if (!pid) continue;
+    const g = by.get(pid) ?? { pid, profileDeleted: null, progressDeleted: null, logDays: 0, logDaysDeleted: 0 };
+    by.set(pid, g);
+    if (r.kind === 'profile') g.profileDeleted = !!r.deleted;
+    if (r.kind === 'progress') g.progressDeleted = !!r.deleted;
+    if (r.kind === 'log') r.deleted ? g.logDaysDeleted++ : g.logDays++;
+  }
+  return [...by.values()];
+}
+
+/** Angemeldet: die Cloud nach Lernständen durchsuchen (rescue.ts). Ohne Anmeldung oder Netz: nichts. */
+export async function cloudCopies(): Promise<{ pid: string; profile: Profile | null; progress: Progress }[]> {
+  if (!syncConfigured() || !loadSession()) return [];
+  const t = await authToken();
+  if (!t) return [];
+  return collectCloud(supabaseRemote(t));
 }
 
 export const removedList = (dev: Device = browserDevice): Removed[] => parse<Removed[]>(dev.read(REMOVED), []);
@@ -653,8 +768,16 @@ function supabaseRemote(bearer: string): Remote {
         }
       return out;
     },
-    upsert: async (rows) => {
+    upsert: async (all) => {
       const failed: { row: Row; error: string }[] = [];
+      // Löschen setzt nur das Kennzeichen – der Inhalt bleibt in der Cloud (Rettung, 24.10.2026)
+      const marks = all.filter((r) => r.deleted && r.data === undefined);
+      for (const row of marks) {
+        const x = await fetch(`${base}?${one(row)}`, { method: 'PATCH', headers: { ...headers, Prefer: 'return=minimal' }, body: JSON.stringify({ deleted: true, updated_at: row.updated_at }) });
+        if (x.status === 401) throw new Error('401 Anmeldung abgelaufen');
+        if (!x.ok) failed.push({ row, error: `${x.status} ${(await x.text().catch(() => '')).slice(0, 120)}`.trim() });
+      }
+      const rows = all.filter((r) => !marks.includes(r));
       const send = (list: Row[]) => fetch(`${base}?on_conflict=user_id,kind,id`, { method: 'POST', headers: { ...headers, Prefer: 'resolution=merge-duplicates,return=minimal' }, body: JSON.stringify(list.map(body)) });
       for (let i = 0; i < rows.length; i += 50) {
         const chunk = rows.slice(i, i + 50);

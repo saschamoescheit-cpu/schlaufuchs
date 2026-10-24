@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyProgress, LOG_MAX, record, type TestResult } from '../engine/learning';
 import type { Task } from '../engine/types';
 import type { AppData, Profile } from './store';
-import { DELETED, removedList, restoreRemoved, syncOnce, type Device, type Remote, type Row } from './sync';
+import { collectCloud, DELETED, removedList, restoreRemoved, syncOnce, type Device, type Remote, type Row } from './sync';
 
 // Ein simulierter Server mit denselben Regeln wie Supabase: Zeilen je kind|id, „nur anlegen, wenn neu“ und
 // „nur ersetzen, wenn unverändert“.
@@ -11,7 +11,8 @@ function server() {
   // der Server speichert die mitgeschickte Zeit, gibt sie aber in seinem Format zurück (+00:00 statt Z) und ordnet JSON-Schlüssel um
   const stamp = (at: string) => new Date(at).toISOString().replace('Z', '+00:00');
   const reorder = (v: unknown): unknown => (v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.entries(v).reverse().map(([k, x]) => [k, reorder(x)])) : Array.isArray(v) ? v.map(reorder) : v);
-  const put = (r: Row) => rows.set(`${r.kind}|${r.id}`, { ...r, data: reorder(structuredClone(r.data ?? {})), updated_at: stamp(r.updated_at) });
+  // Löschen ohne Inhalt setzt nur das Kennzeichen (wie supabaseRemote per PATCH) – der Inhalt bleibt
+  const put = (r: Row) => rows.set(`${r.kind}|${r.id}`, { ...r, data: r.deleted && r.data === undefined && rows.has(`${r.kind}|${r.id}`) ? rows.get(`${r.kind}|${r.id}`)!.data : reorder(structuredClone(r.data ?? {})), updated_at: stamp(r.updated_at) });
   const remote: Remote = {
     list: async () => [...rows.values()].map(({ kind, id, updated_at, deleted }) => ({ kind, id, updated_at, deleted })),
     fetch: async (keys) => keys.map((k) => rows.get(`${k.kind}|${k.id}`)).filter((x): x is Row => !!x).map((x) => structuredClone(x)),
@@ -264,6 +265,28 @@ describe('Abgleich zwischen Geräten', () => {
     await sync(ipad, s.remote);
     expect(ipad.d.profiles.map((p) => p.id)).toEqual(['mia']);
     expect(P(ipad).stars).toBe(2);
+  });
+
+  it('Cloud-Rettung: Lernstand auf dem Gerät geleert und hochgeladen – der Verlauf in der Cloud bringt ihn zurück', async () => {
+    const s = server();
+    const ipad = device();
+    addKid(ipad);
+    practice(ipad, [['a', true], ['b', false], ['c', true]]);
+    await sync(ipad, s.remote);
+    ipad.commit((d) => void (d.progress.mia = emptyProgress()));
+    await sync(ipad, s.remote);
+    // neu: ein geschrumpfter Stand überschreibt die Cloud nicht mehr – das Gerät bekommt ihn zurück
+    expect((s.rows.get('progress|mia')!.data as { stars: number }).stars).toBe(2);
+    expect(P(ipad).stars).toBe(2);
+    expect(P(ipad).log).toHaveLength(3);
+    // so wie vor dem Fix: Lernstand-Zeile in der Cloud schon geleert – der Verlauf reicht zum Zurückholen
+    s.rows.get('progress|mia')!.data = { skills: {}, review: [], solved: 0, stars: 0, days: {} };
+    const found = await collectCloud(s.remote);
+    expect(found).toHaveLength(1);
+    expect(found[0].profile?.name).toBe('Mia');
+    expect(found[0].progress.stars).toBe(2);
+    expect(found[0].progress.log).toHaveLength(3);
+    expect(found[0].progress.skills['m2-plus100'].n).toBe(3);
   });
 
   it('wiederherstellen führt zusammen: was danach geübt wurde, bleibt', async () => {

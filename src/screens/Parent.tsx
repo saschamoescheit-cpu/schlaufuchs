@@ -7,7 +7,10 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, saveProfile, schoolYear, storageUsage, usesSchoolFont, type AppData, type Profile } from '../data/store';
+import { deleteProfile, saveProfile, schoolYear, storageUsage, useData, usesSchoolFont, type AppData, type Profile } from '../data/store';
+import { collectCopies, findRescues } from '../data/rescue';
+import { cloudSummary } from '../data/sync';
+import { showRescues } from '../ui/RescueCard';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
 import { Confirm, TopBar } from '../ui/common';
@@ -595,6 +598,7 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
               </div>
             </div>
             <StorageInfo />
+            <RescueSearch />
             <button className="btn ghost block small" style={{ color: 'var(--bad)' }} onClick={() => setDel(true)}>
               {p.name} löschen
             </button>
@@ -615,6 +619,52 @@ export function ParentChild({ data, id, onBack }: { data: AppData; id: string; o
           onNo={() => setDel(false)}
         />
       )}
+    </div>
+  );
+}
+
+/** Lernstand suchen (24.10.2026): auf dem Gerät und in der Cloud nach aufgehobenen Ständen suchen; dazu ein kurzer
+ *  Überblick, was wo liegt (zum Weitergeben, falls etwas fehlt). Gefundenes erscheint oben als Karte „Zurückholen“. */
+function RescueSearch() {
+  const data = useData();
+  const [busy, setBusy] = useState(false);
+  const [report, setReport] = useState<string | null>(null);
+  const run = async () => {
+    setBusy(true);
+    const lines: string[] = [];
+    try {
+      const found = await findRescues({ cloud: 'now' });
+      showRescues(found);
+      lines.push(found.length ? `${found.length} Stand/Stände gefunden – oben „Zurückholen“ antippen.` : 'Kein Stand gefunden, der mehr enthält als jetzt.');
+      for (const p of data.profiles) {
+        const pr = data.progress[p.id];
+        lines.push(`Jetzt: ${p.name} – ${pr?.log.length ?? 0} Aufgaben im Verlauf, ${pr?.stars ?? 0} Sterne, ${pr?.solved ?? 0} gelöst`);
+      }
+      const copies = await collectCopies(false);
+      lines.push(`Kopien auf dem Gerät: ${copies.length ? copies.map((c) => `${c.profile.name || '?'} ${c.progress.log?.length ?? 0} (${c.source})`).join(', ') : 'keine'}`);
+      const cloud = await cloudSummary().catch(() => null);
+      if (cloud == null) lines.push('Cloud: nicht angemeldet oder offline');
+      else
+        for (const c of cloud) {
+          const name = data.profiles.find((p) => p.id === c.pid)?.name ?? `Kind ${c.pid}`;
+          lines.push(`Cloud: ${name} – Profil ${c.profileDeleted ? 'gelöscht' : c.profileDeleted === false ? 'da' : 'fehlt'}, Lernstand ${c.progressDeleted ? 'gelöscht' : c.progressDeleted === false ? 'da' : 'fehlt'}, Verlauf ${c.logDays} Tage${c.logDaysDeleted ? ` (+${c.logDaysDeleted} gelöscht)` : ''}`);
+        }
+    } catch (e) {
+      lines.push(`Fehler: ${(e as Error).message}`);
+    }
+    setReport(lines.join('\n'));
+    setBusy(false);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+  return (
+    <div className="card small stack" style={{ gap: 8 }}>
+      <div className="row">
+        <span className="grow">Lernstand verschwunden?</span>
+        <button className="btn ghost small" disabled={busy} onClick={() => void run()}>
+          {busy ? 'Sucht …' : 'Lernstand suchen'}
+        </button>
+      </div>
+      {report && <div style={{ whiteSpace: 'pre-wrap' }}>{report}</div>}
     </div>
   );
 }
