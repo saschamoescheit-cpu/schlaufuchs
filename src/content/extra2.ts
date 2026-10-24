@@ -228,6 +228,9 @@ const CLASS: [string, string, string][] = [
   // jedes Bild nur einmal – beim Hören wird das passende Bild gewählt
   ['Stand in a line.', 'Stellt euch in einer Reihe auf.', '🚶'], ['Turn on the light.', 'Mach das Licht an.', '💡'], ['Read the text.', 'Lies den Text.', '📄'],
   ['Say it again, please.', 'Sag es bitte noch einmal.', '🔁'], ['Look at the picture.', 'Schau dir das Bild an.', '🖼️'], ['Put your books away.', 'Räum deine Bücher weg.', '📚'],
+  // Nachtlauf 24.10.2026: mehr Sätze
+  ['Open the window.', 'Mach das Fenster auf.', '🪟'], ['Wash your hands.', 'Wasch deine Hände.', '🚰'], ['Turn off the computer.', 'Mach den Computer aus.', '💻'],
+  ['Clap your hands.', 'Klatsch in die Hände.', '👏'], ['Close your eyes.', 'Mach die Augen zu.', '😌'], ['Throw it in the bin.', 'Wirf es in den Mülleimer.', '🗑️'],
 ];
 function classTask(r: Rng, s: Stage): Gen {
   const [en, de, e] = pick(r, CLASS);
