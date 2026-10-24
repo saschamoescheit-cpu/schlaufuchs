@@ -627,7 +627,7 @@ const AUSLAUT: [string, string, string, string, string][] = [
   // Nachtlauf 24.10.2026: mehr Wörter
   ['Freund', 'd', 't', 'die Freunde', '🤝'], ['Feld', 'd', 't', 'die Felder', '🌾'], ['Lied', 'd', 't', 'die Lieder', '🎵'], ['Schild', 'd', 't', 'die Schilder', '🪧'],
   ['Bart', 't', 'd', 'die Bärte', '🧔'], ['Paket', 't', 'd', 'die Pakete', '📦'], ['Schwert', 't', 'd', 'die Schwerter', '⚔️'],
-  ['König', 'g', 'k', 'die Könige', '🤴'], ['Zweig', 'g', 'k', 'die Zweige', '🌿'], ['Pflug', 'g', 'k', 'die Pflüge', '🚜'],
+  ['König', 'g', 'k', 'die Könige', '🤴'], ['Zweig', 'g', 'k', 'die Zweige', '🌿'], ['Flug', 'g', 'k', 'die Flüge', '🛫'],
   ['Geschenk', 'k', 'g', 'die Geschenke', '🎁'], ['Getränk', 'k', 'g', 'die Getränke', '🥤'],
   ['Staub', 'b', 'p', 'staubig', '🧹'], ['halb', 'b', 'p', 'die halbe Pizza', '🍕'],
 ];
