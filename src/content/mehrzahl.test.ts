@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { skillById } from './curriculum';
+import { ALL_SKILLS, skillById } from './curriculum';
 import { mulberry32 } from '../engine/rng';
 
 // Nachtlauf 24.10.2026: Ablenker wie „Zugn“ oder „Turmn“ waren auf den ersten Blick falsch, „Eis“ (von Ei) ist ein echtes Wort
@@ -19,6 +19,20 @@ describe('Einzahl und Mehrzahl (d2-mehrzahl)', () => {
 
   it('keine echten fremden Wörter als Ablenker', () => {
     expect(options.filter((o) => ['Hass', 'Eis', 'Töpfer', 'Hause'].includes(o))).toEqual([]);
+  });
+});
+
+// Nachtlauf 24.10.2026: „Tasss“, „Schlosss“, „essst“ – drei gleiche Buchstaben sind nie ein glaubhafter Fehler
+describe('Auswahl-Antworten aller Themen', () => {
+  it('nie drei gleiche Buchstaben hintereinander', () => {
+    const r = mulberry32(21);
+    const odd: string[] = [];
+    for (const s of ALL_SKILLS)
+      for (let i = 0; i < 150; i++) {
+        const t = s.generate(r, (1 + (i % 3)) as 1 | 2 | 3);
+        if (t.answer.type === 'choice') for (const o of t.answer.options) if (/([a-zäöüß])\1\1/i.test(o)) odd.push(`${s.id}: ${o}`);
+      }
+    expect([...new Set(odd)]).toEqual([]);
   });
 });
 

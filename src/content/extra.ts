@@ -377,7 +377,8 @@ function verbTask(r: Rng, s: Stage): Gen {
   const [inf, forms, irr] = pick(r, s === 1 ? VERBS.filter((v) => !v[2]) : s === 3 ? VERBS.filter((v) => v[2]) : VERBS);
   const p = pick(r, Object.keys(forms));
   const right = forms[p];
-  const wrongs = [...new Set([...Object.values(forms), inf.replace(/en$/, 'st'), inf.replace(/en$/, 't')])].filter((x) => x !== right);
+  // keine Formen mit drei gleichen Buchstaben (essen → „essst“)
+  const wrongs = [...new Set([...Object.values(forms), inf.replace(/en$/, 'st'), inf.replace(/en$/, 't')])].filter((x) => x !== right && !/(.)\1\1/.test(x));
   if (s === 3 && chance(r, 0.5)) return { key: `${inf}-${p}-t`, prompt: `Schreibe die richtige Form:\n${PERSON[p].split('/')[0]} ☐ (${inf})`, speak: `Schreibe die richtige Form von ${inf} für ${PERSON[p].split('/')[0]}.`, answer: { type: 'text', value: right, caseSensitive: true }, tags: [irr ? 'unregelmaessig' : 'regelmaessig'], solution: [`${PERSON[p]} ${right}`, ...(right !== regularForm(inf, p) ? [`${inf} ist ein besonderes Verb – ${Object.entries(forms).map(([k, v]) => `${k} ${v}`).join(', ')}`] : [])] };
   return { key: `${inf}-${p}`, prompt: `Welche Form passt?\n${PERSON[p]} ☐ (${inf})`, speak: `Welche Form von ${inf} passt zu ${PERSON[p].split('/')[0]}?`, answer: choice(r, right, wrongs), tags: [irr ? 'unregelmaessig' : 'regelmaessig', `person-${p}`], solution: [`${PERSON[p]} ${right}`, 'Die Endung zeigt die Person: ich -e, du -st, er/sie/es -t, wir -en, ihr -t, sie -en.', ...(right !== regularForm(inf, p) ? [`Diese Form ist besonders – merke sie dir: ${PERSON[p].split('/')[0]} ${right}.`] : [])] };
 }

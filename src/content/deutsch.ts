@@ -299,7 +299,8 @@ function wrongPlurals(w: string, pl: string): string[] {
   // nur -n nach -el/-er (Gabeln) – „Zugn“ oder „Turmn“ wären zu leicht als falsch zu erkennen
   const c = w.endsWith('e') ? [w + 's', w + 'r', uml(w) + 'n', uml(w), w.slice(0, -1) + 's'] : [w + 's', w + 'en', w + 'e', w + 'er', uml(w) + 'e', ...(/(el|er)$/.test(w) ? [w + 'n'] : []), uml(w) + 'er'];
   // keine echten, aber fremden Wörter als Ablenker (Hase → „Hass“, Ei → „Eis“, Topf → „Töpfer“)
-  return [...new Set(c)].filter((x) => x !== pl && x !== w && !['Hass', 'Eis', 'Töpfer', 'Hause'].includes(x));
+  // und keine Formen mit drei gleichen Buchstaben (Tasse → „Tasss“, Schloss → „Schlosss“)
+  return [...new Set(c)].filter((x) => x !== pl && x !== w && !['Hass', 'Eis', 'Töpfer', 'Hause'].includes(x) && !/(.)\1\1/.test(x));
 }
 const mehrzahl = D(2, 'd2-mehrzahl', 'Einzahl und Mehrzahl', '👯', {
   text: ['Einzahl: ein Ding. Mehrzahl: viele Dinge.', 'Die Mehrzahl bildet man verschieden: Hund → Hunde, Katze → Katzen, Buch → Bücher, Auto → Autos.', 'Oft wird aus a, o, u ein ä, ö, ü: Baum → Bäume, Vogel → Vögel.', 'In der Mehrzahl ist der Artikel immer „die“.'],
