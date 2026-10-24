@@ -296,9 +296,10 @@ function wrongPlurals(w: string, pl: string): string[] {
   const UML: Record<string, string> = { au: 'äu', a: 'ä', o: 'ö', u: 'ü' };
   const uml = (s: string) => s.replace(/(au|a|o|u)([^aou]*)$/, (_, v: string, rest: string) => UML[v] + rest);
   // Wörter auf -e (Sonne, Biene): keine Formen wie „Sönnee“ oder „Sonneer“
-  const c = w.endsWith('e') ? [w + 's', w + 'r', uml(w) + 'n', uml(w), w.slice(0, -1) + 's'] : [w + 's', w + 'en', w + 'e', w + 'er', uml(w) + 'e', w + 'n', uml(w) + 'er'];
-  // keine echten, aber fremden Wörter als Ablenker (Hase → „Hass“)
-  return [...new Set(c)].filter((x) => x !== pl && x !== w && !['Hass'].includes(x));
+  // nur -n nach -el/-er (Gabeln) – „Zugn“ oder „Turmn“ wären zu leicht als falsch zu erkennen
+  const c = w.endsWith('e') ? [w + 's', w + 'r', uml(w) + 'n', uml(w), w.slice(0, -1) + 's'] : [w + 's', w + 'en', w + 'e', w + 'er', uml(w) + 'e', ...(/(el|er)$/.test(w) ? [w + 'n'] : []), uml(w) + 'er'];
+  // keine echten, aber fremden Wörter als Ablenker (Hase → „Hass“, Ei → „Eis“, Topf → „Töpfer“)
+  return [...new Set(c)].filter((x) => x !== pl && x !== w && !['Hass', 'Eis', 'Töpfer', 'Hause'].includes(x));
 }
 const mehrzahl = D(2, 'd2-mehrzahl', 'Einzahl und Mehrzahl', '👯', {
   text: ['Einzahl: ein Ding. Mehrzahl: viele Dinge.', 'Die Mehrzahl bildet man verschieden: Hund → Hunde, Katze → Katzen, Buch → Bücher, Auto → Autos.', 'Oft wird aus a, o, u ein ä, ö, ü: Baum → Bäume, Vogel → Vögel.', 'In der Mehrzahl ist der Artikel immer „die“.'],
