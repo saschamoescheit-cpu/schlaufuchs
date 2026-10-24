@@ -2573,3 +2573,13 @@ html[data-school-font] .prompt.long {
   border-radius: 12px;
   padding: 10px 12px;
 }
+
+/* lange Lösungswörter („achthundertdreiundsechzig“) dürfen umbrechen statt über den Rand zu laufen (Nachtlauf 24.10.2026) */
+.answer-text,
+.choice,
+.prompt,
+.steps li {
+  overflow-wrap: anywhere;
+  hyphens: auto;
+  -webkit-hyphens: auto;
+}

@@ -488,7 +488,7 @@ function TestItemSheet({ item, onClose }: { item: TestItem; onClose: () => void 
             {item.ok ? '✅ Richtig!' : item.given ? `❌ Deine Antwort: ${answerText(item.task.answer, item.given)}` : '❌ Nicht beantwortet'}
           </div>
           <div>
-            Richtig ist: <b>{correctText(item.task.answer)}</b>
+            Richtig ist: <b className="answer-text">{correctText(item.task.answer)}</b>
           </div>
           {!item.ok && item.given && item.task.answer.type === 'text' && !item.task.work && <SpellDiff correct={item.task.answer.value} given={item.given} tags={check(item.task, item.given).tags} caseSensitive={item.task.answer.caseSensitive} />}
           <div className="row" style={{ marginTop: 10 }}>

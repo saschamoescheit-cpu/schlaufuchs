@@ -237,7 +237,7 @@ export function Practice({ profile, title, tasks, mode, onExit, onRestart, onPra
                   <div className="grow">
                     <h2>Nicht ganz!</h2>
                     <div>
-                      Richtig ist: <b style={{ fontSize: '1.15rem' }}>{correctText(a)}</b>
+                      Richtig ist: <b className="answer-text" style={{ fontSize: '1.15rem' }}>{correctText(a)}</b>
                     </div>
                   </div>
                 </div>
