@@ -346,6 +346,11 @@ const PRONOMEN: [string, string, string][] = [
   ['Lara und ich', 'Wir', 'Lara und ich lesen. ☐ mögen Pferdebücher.'], ['Du und Tim', 'Ihr', 'Du und Tim, ☐ seid ein gutes Team!'], ['Die Kühe', 'Sie', 'Die Kühe stehen auf der Weide. ☐ fressen Gras.'],
   ['Das Eis', 'Es', 'Das Eis ist lecker. ☐ schmeckt nach Erdbeere.'], ['Der Drache', 'Er', 'Der Drache fliegt hoch. ☐ hat einen langen Schwanz.'],
   ['Die Lampe', 'Sie', 'Die Lampe ist kaputt. ☐ leuchtet nicht mehr.'], ['Emma und ich', 'Wir', 'Emma und ich spielen Fangen. ☐ rennen um die Wette.'],
+  // Nachtlauf 24.10.2026: mehr Sätze
+  ['Der Bauer', 'Er', 'Der Bauer füttert die Hühner. ☐ steht jeden Tag früh auf.'], ['Die Ärztin', 'Sie', 'Die Ärztin hört mein Herz ab. ☐ ist sehr nett.'], ['Das Mädchen', 'Es', 'Das Mädchen springt Seil. ☐ zählt laut mit.'],
+  ['Die Eltern', 'Sie', 'Die Eltern kochen. ☐ machen eine Suppe.'], ['Jonas und ich', 'Wir', 'Jonas und ich bauen eine Höhle. ☐ brauchen viele Decken.'], ['Du und Ali', 'Ihr', 'Du und Ali, ☐ dürft die Fische füttern!'],
+  ['Der Kuchen', 'Er', 'Der Kuchen ist fertig. ☐ riecht lecker.'], ['Die Brücke', 'Sie', 'Die Brücke ist lang. ☐ führt über den Fluss.'], ['Das Telefon', 'Es', 'Das Telefon klingelt. ☐ liegt in der Küche.'],
+  ['Die Hühner', 'Sie', 'Die Hühner gackern. ☐ legen Eier.'],
 ];
 function pronTask(r: Rng): Gen {
   const [who, pr, s] = pick(r, PRONOMEN);
