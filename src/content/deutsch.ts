@@ -624,6 +624,12 @@ const AUSLAUT: [string, string, string, string, string][] = [
   ['Bank', 'k', 'g', 'die Bänke', '🪑'], ['Stab', 'b', 'p', 'die Stäbe', '🪄'],
   ['Kleid', 'd', 't', 'die Kleider', '👗'], ['Land', 'd', 't', 'die Länder', '🗺️'], ['Hand', 'd', 't', 'die Hände', '✋'], ['Abend', 'd', 't', 'die Abende', '🌆'], ['rund', 'd', 't', 'der runde Ball', '⚽'],
   ['Salat', 't', 'd', 'die Salate', '🥗'], ['Burg', 'g', 'k', 'die Burgen', '🏰'], ['Käfig', 'g', 'k', 'die Käfige', '🦜'], ['Sieb', 'b', 'p', 'die Siebe', '🥣'],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Freund', 'd', 't', 'die Freunde', '🤝'], ['Feld', 'd', 't', 'die Felder', '🌾'], ['Lied', 'd', 't', 'die Lieder', '🎵'], ['Schild', 'd', 't', 'die Schilder', '🪧'],
+  ['Bart', 't', 'd', 'die Bärte', '🧔'], ['Paket', 't', 'd', 'die Pakete', '📦'], ['Schwert', 't', 'd', 'die Schwerter', '⚔️'],
+  ['König', 'g', 'k', 'die Könige', '🤴'], ['Zweig', 'g', 'k', 'die Zweige', '🌿'], ['Pflug', 'g', 'k', 'die Pflüge', '🚜'],
+  ['Geschenk', 'k', 'g', 'die Geschenke', '🎁'], ['Getränk', 'k', 'g', 'die Getränke', '🥤'],
+  ['Staub', 'b', 'p', 'staubig', '🧹'], ['halb', 'b', 'p', 'die halbe Pizza', '🍕'],
 ];
 const auslaut = D(3, 'd3-auslaut', 'Wörter verlängern: d/t, g/k, b/p', '🔍', {
   text: ['Am Wortende klingen d und t gleich – ebenso g und k, b und p.', 'Trick: Verlängere das Wort! Bilde die Mehrzahl (Hund → Hunde), steigere das Adjektiv (wild → wilder) oder nimm die Grundform des Verbs (er gibt → geben).', 'Hund → die Hunde: Jetzt hörst du das d deutlich.', 'Zug → die Züge: Jetzt hörst du das g.'],
@@ -652,7 +658,7 @@ const AE_EU: [string, string, string, string, string?][] = [
   // Nachtlauf 24.10.2026: mehr Wörter
   ['Gärten', 'ä', 'e', 'Gärten kommt von Garten.', '🏡'], ['Väter', 'ä', 'e', 'Väter kommt von Vater.', '👨'], ['Mäntel', 'ä', 'e', 'Mäntel kommt von Mantel.', '🧥'], ['Schränke', 'ä', 'e', 'Schränke kommt von Schrank.', '🗄️'],
   ['Herbst', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🍁'], ['Messer', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🔪'], ['Pferd', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🐴'], ['Geld', 'e', 'ä', 'Es gibt kein verwandtes Wort mit a – also e.', '🪙'],
-  ['Sträuße', 'äu', 'eu', 'Sträuße kommt von Strauß.', '💐'], ['Fäuste', 'äu', 'eu', 'Fäuste kommt von Faust.', '✊'], ['Läuse', 'äu', 'eu', 'Läuse kommt von Laus.', '🪲'],
+  ['Sträuße', 'äu', 'eu', 'Sträuße kommt von Strauß.', '💐'], ['Fäuste', 'äu', 'eu', 'Fäuste kommt von Faust.', '✊'], ['Läuse', 'äu', 'eu', 'Läuse kommt von Laus.'],
   ['Beutel', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '👜'], ['teuer', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '💸'], ['Heu', 'eu', 'äu', 'Es gibt kein verwandtes Wort mit au – also eu.', '🌾'],
 ];
 const aeEu = D(3, 'd3-ae-aeu', 'ä oder e, äu oder eu', '🌳', {
