@@ -436,6 +436,15 @@ const GROSS_SAETZE: { w: string[]; noun: number[] }[] = [
   { w: ['Der', 'Igel', 'sucht', 'im', 'Laub', 'nach', 'Futter'], noun: [1, 4, 6] }, { w: ['Lena', 'trinkt', 'kalten', 'Saft'], noun: [0, 3] },
   { w: ['Im', 'Zoo', 'schlafen', 'die', 'Löwen'], noun: [1, 4] }, { w: ['Opa', 'liest', 'die', 'Zeitung'], noun: [0, 3] },
   { w: ['Die', 'Kinder', 'spielen', 'auf', 'dem', 'Hof'], noun: [1, 5] }, { w: ['Der', 'Bus', 'hält', 'vor', 'der', 'Schule'], noun: [1, 5] },
+  // Nachtlauf 24.10.2026: mehr Sätze
+  { w: ['Der', 'Bäcker', 'backt', 'frisches', 'Brot'], noun: [1, 4] }, { w: ['Die', 'Feuerwehr', 'löscht', 'das', 'Feuer'], noun: [1, 4] },
+  { w: ['Im', 'Frühling', 'bauen', 'die', 'Vögel', 'Nester'], noun: [1, 4, 5] }, { w: ['Max', 'spielt', 'mit', 'seinem', 'Hund'], noun: [0, 4] },
+  { w: ['Die', 'Lehrerin', 'schreibt', 'an', 'die', 'Tafel'], noun: [1, 5] }, { w: ['Der', 'Pilot', 'fliegt', 'das', 'Flugzeug'], noun: [1, 4] },
+  { w: ['Meine', 'Schwester', 'hat', 'einen', 'Hamster'], noun: [1, 4] }, { w: ['Die', 'Kuh', 'frisst', 'grünes', 'Gras'], noun: [1, 4] },
+  { w: ['Paula', 'putzt', 'ihre', 'Zähne'], noun: [0, 3] }, { w: ['Der', 'Clown', 'macht', 'lustige', 'Witze'], noun: [1, 4] },
+  { w: ['Im', 'Keller', 'steht', 'ein', 'altes', 'Regal'], noun: [1, 5] }, { w: ['Die', 'Biene', 'fliegt', 'von', 'Blume', 'zu', 'Blume'], noun: [1, 4, 6] },
+  { w: ['Ali', 'baut', 'einen', 'Turm', 'aus', 'Klötzen'], noun: [0, 3, 5] }, { w: ['Der', 'Mond', 'leuchtet', 'in', 'der', 'Nacht'], noun: [1, 5] },
+  { w: ['Unser', 'Nachbar', 'mäht', 'den', 'Rasen'], noun: [1, 4] }, { w: ['Die', 'Ärztin', 'hilft', 'dem', 'kranken', 'Kind'], noun: [1, 5] },
 ];
 const grossschreibung = D(2, 'd2-grossschreibung', 'Groß oder klein?', '🔠', {
   text: ['Groß schreibt man: das erste Wort im Satz und alle Nomen (Namenwörter).', 'Klein schreibt man: Verben (Tunwörter), Adjektive (Wiewörter) und kleine Wörter wie mit, auf, ein.', 'Probe für Nomen: Passt der, die oder das davor?'],
@@ -944,6 +953,12 @@ const SG4: { s: string; mark: string; was: 'Subjekt' | 'Prädikat' | 'Dativobjek
   { s: 'Am Abend **liest** Papa ein Buch.', mark: 'liest', was: 'Prädikat' }, { s: 'Am Abend liest Papa **ein Buch**.', mark: 'ein Buch', was: 'Akkusativobjekt' },
   { s: '**Die Ärztin** untersucht das Kind.', mark: 'Die Ärztin', was: 'Subjekt' }, { s: 'Die Ärztin **untersucht** das Kind.', mark: 'untersucht', was: 'Prädikat' }, { s: 'Die Ärztin untersucht **das Kind**.', mark: 'das Kind', was: 'Akkusativobjekt' },
   { s: 'Ich schreibe **meiner Oma** eine Karte.', mark: 'meiner Oma', was: 'Dativobjekt' }, { s: 'Ich schreibe meiner Oma **eine Karte**.', mark: 'eine Karte', was: 'Akkusativobjekt' }, { s: 'Der Ball gehört **dem Jungen**.', mark: 'dem Jungen', was: 'Dativobjekt' },
+  // Nachtlauf 24.10.2026: mehr Sätze, auch mit Subjekt hinter dem Prädikat
+  { s: '**Der Postbote** bringt uns ein Paket.', mark: 'Der Postbote', was: 'Subjekt' }, { s: 'Der Postbote **bringt** uns ein Paket.', mark: 'bringt', was: 'Prädikat' }, { s: 'Der Postbote bringt **uns** ein Paket.', mark: 'uns', was: 'Dativobjekt' }, { s: 'Der Postbote bringt uns **ein Paket**.', mark: 'ein Paket', was: 'Akkusativobjekt' },
+  { s: '**Lea** leiht ihrer Freundin einen Stift.', mark: 'Lea', was: 'Subjekt' }, { s: 'Lea leiht **ihrer Freundin** einen Stift.', mark: 'ihrer Freundin', was: 'Dativobjekt' }, { s: 'Lea leiht ihrer Freundin **einen Stift**.', mark: 'einen Stift', was: 'Akkusativobjekt' },
+  { s: '**Die Kinder** bauen eine Hütte im Wald.', mark: 'Die Kinder', was: 'Subjekt' }, { s: 'Die Kinder **bauen** eine Hütte im Wald.', mark: 'bauen', was: 'Prädikat' }, { s: 'Die Kinder bauen **eine Hütte** im Wald.', mark: 'eine Hütte', was: 'Akkusativobjekt' },
+  { s: 'Opa erzählt **dem Enkel** eine Geschichte.', mark: 'dem Enkel', was: 'Dativobjekt' }, { s: 'Am Morgen **trinkt** Mama einen Kaffee.', mark: 'trinkt', was: 'Prädikat' }, { s: 'Am Morgen trinkt **Mama** einen Kaffee.', mark: 'Mama', was: 'Subjekt' },
+  { s: 'Heute besucht **der Zirkus** unsere Stadt.', mark: 'der Zirkus', was: 'Subjekt' }, { s: 'Der Hund folgt **seinem Herrchen**.', mark: 'seinem Herrchen', was: 'Dativobjekt' },
 ];
 /** Satzanfang mitten im Satz: Begleiter und Pronomen klein ("Meine Schwester" → "meine Schwester"), Nomen bleiben groß */
 function midSentence(w: string): string {
@@ -1003,6 +1018,19 @@ const WORTFELD: { s: string; ok: string; opts: string[]; feld: string }[] = [
   { s: '„Psst, das Baby schläft!“, ☐ Mama.', ok: 'flüstert', opts: ['brüllt', 'jubelt', 'schimpft'], feld: 'sagen' },
   { s: 'Hungrig ☐ der Junge sein Pausenbrot in drei Bissen.', ok: 'verschlingt', opts: ['nascht', 'knabbert', 'kostet'], feld: 'essen' },
   { s: 'Vorsichtig ☐ Oma die heiße Suppe.', ok: 'probiert', opts: ['verschlingt', 'stopft', 'schlingt'], feld: 'essen' },
+  // Nachtlauf 24.10.2026: mehr Sätze
+  { s: '„Komm sofort her!“, ☐ der Trainer über den ganzen Platz.', ok: 'brüllt', opts: ['flüstert', 'murmelt', 'fragt'], feld: 'sagen' },
+  { s: '„Bitte, bitte, darf ich noch aufbleiben?“, ☐ Lisa.', ok: 'bettelt', opts: ['befiehlt', 'brüllt', 'antwortet'], feld: 'sagen' },
+  { s: 'Kichernd ☐ die Mädchen sich ein Geheimnis zu.', ok: 'flüstern', opts: ['brüllen', 'schimpfen', 'befehlen'], feld: 'sagen' },
+  { s: 'Die Schnecke ☐ langsam über das Blatt.', ok: 'kriecht', opts: ['rennt', 'springt', 'rast'], feld: 'gehen' },
+  { s: 'Stolz wie ein König ☐ der Hahn über den Hof.', ok: 'stolziert', opts: ['kriecht', 'humpelt', 'stolpert'], feld: 'gehen' },
+  { s: 'Über eine Wurzel ☐ Tom und fällt fast hin.', ok: 'stolpert', opts: ['schwebt', 'schleicht', 'bummelt'], feld: 'gehen' },
+  { s: 'Der Feuerwehrmann ☐ die Leiter hinauf.', ok: 'klettert', opts: ['trippelt', 'bummelt', 'schlendert'], feld: 'gehen' },
+  { s: 'Mit offenem Mund ☐ der Junge den Zauberer an.', ok: 'starrt', opts: ['überhört', 'vergisst', 'verschläft'], feld: 'sehen' },
+  { s: 'Aufgeregt ☐ die Kinder aus dem Fenster, ob es schon schneit.', ok: 'schauen', opts: ['schlafen', 'gähnen', 'überhören'], feld: 'sehen' },
+  { s: 'Am Buffet ☐ Paul von jeder Speise ein kleines bisschen.', ok: 'probiert', opts: ['verschlingt', 'schlürft', 'trinkt'], feld: 'essen' },
+  { s: 'Das Kaninchen ☐ an einer Möhre.', ok: 'knabbert', opts: ['schlürft', 'verschlingt', 'trinkt'], feld: 'essen' },
+  { s: 'Der hungrige Löwe ☐ ein großes Stück Fleisch.', ok: 'verschlingt', opts: ['nascht', 'schleckt', 'kostet'], feld: 'essen' },
 ];
 const wortfeld = D(4, 'd4-wortfeld', 'Treffende Wörter (Wortfelder)', '🌈', {
   text: ['Ein Wortfeld sind Wörter mit ähnlicher Bedeutung: sagen – flüstern – rufen – fragen – antworten.', 'Treffende Wörter machen deine Texte spannender: Statt „Tim sagt leise“ schreibst du „Tim flüstert“.', 'Achte auf Hinweise im Satz: leise, laut, schnell, verletzt …'],

@@ -311,17 +311,25 @@ const BE: { s: string; ok: string; opts: string[]; tag: string; why: string }[] 
   { s: 'They ☐ my friends.', ok: 'are', opts: ['is', 'am'], tag: 'to-be', why: 'Nach we, you, they steht „are“.' },
   { s: 'It ☐ a big dog. 🐕', ok: 'is', opts: ['are', 'am'], tag: 'to-be', why: 'Nach he, she, it steht „is“.' },
   { s: 'Fish ☐ swim. 🐟', ok: 'can', opts: ["can't", 'are'], tag: 'can', why: 'Fish can swim. = Fische können schwimmen.' },
-  { s: 'Penguins ☐ fly. 🐧', ok: "can't", opts: ['can', 'is'], tag: 'can', why: "Penguins can't fly. = Pinguine können nicht fliegen." },
+  { s: 'Snakes ☐ run. 🐍', ok: "can't", opts: ['can', 'are'], tag: 'can', why: "Snakes can't run. = Schlangen können nicht rennen." },
   { s: 'My brother ☐ football. ⚽', ok: 'likes', opts: ['like', 'are'], tag: 'like', why: 'My brother = he → likes (mit -s).' },
-  { s: 'We ☐ ice cream. 🍦', ok: 'like', opts: ['likes', 'is'], tag: 'like', why: 'Nach I, you, we, they ohne -s: we like.' },
+  { s: 'My friends ☐ dancing. 💃', ok: 'like', opts: ['likes', 'is'], tag: 'like', why: 'My friends = they → like ohne -s.' },
   { s: 'She ☐ got long hair.', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'Nach he, she, it: has got.' },
   { s: 'I ☐ got a sister.', ok: 'have', opts: ['has', 'am'], tag: 'have-got', why: 'Nach I: have got.' },
-  { s: 'You ☐ my best friend.', ok: 'are', opts: ['is', 'am'], tag: 'to-be', why: 'Nach you steht „are“.' },
+  { s: 'You ☐ very tall.', ok: 'are', opts: ['is', 'am'], tag: 'to-be', why: 'Nach you steht „are“.' },
   { s: 'The dog ☐ hungry. 🐶', ok: 'is', opts: ['are', 'am'], tag: 'to-be', why: 'The dog = it → is.' },
   { s: 'Birds ☐ fly. 🐦', ok: 'can', opts: ["can't", 'are'], tag: 'can', why: 'Birds can fly. = Vögel können fliegen.' },
   { s: 'Fish ☐ walk. 🐟', ok: "can't", opts: ['can', 'is'], tag: 'can', why: "Fish can't walk. = Fische können nicht laufen." },
   { s: 'Tom ☐ pizza. 🍕', ok: 'likes', opts: ['like', 'is'], tag: 'like', why: 'Tom = he → likes (mit -s).' },
   { s: 'They ☐ got a big house. 🏠', ok: 'have', opts: ['has', 'are'], tag: 'have-got', why: 'Nach they: have got.' },
+  // Nachtlauf 24.10.2026: mehr Sätze
+  { s: 'He ☐ ten years old.', ok: 'is', opts: ['am', 'are'], tag: 'to-be', why: 'Nach he, she, it steht „is“.' },
+  { s: 'The cats ☐ asleep. 😴', ok: 'are', opts: ['is', 'am'], tag: 'to-be', why: 'The cats = they → „are“.' },
+  { s: 'Monkeys ☐ climb. 🐒', ok: 'can', opts: ["can't", 'is'], tag: 'can', why: 'Monkeys can climb. = Affen können klettern.' },
+  { s: 'My grandma ☐ cats. 🐈', ok: 'likes', opts: ['like', 'are'], tag: 'like', why: 'My grandma = she → likes (mit -s).' },
+  { s: 'We ☐ got a new teacher.', ok: 'have', opts: ['has', 'are'], tag: 'have-got', why: 'Nach we: have got.' },
+  { s: 'It ☐ got four legs. 🐴', ok: 'has', opts: ['have', 'is'], tag: 'have-got', why: 'Nach he, she, it: has got.' },
+  { s: 'This is ☐ bike. 🚲', ok: 'my', opts: ['I', 'me'], tag: 'my', why: 'my bike = mein Fahrrad.' },
 ];
 const sentences = E(2, 'e2-sentences', 'Little sentences', '💬', { text: ['I am – you are – he/she/it is – we are – they are.', 'I can swim. I can\'t fly.', 'I like apples. He likes apples (mit -s!).', 'I have got a dog. She has got a cat.'], visual: { kind: 'text', text: 'I am · she is · we are' }, videoQuery: 'verb to be am is are for kids' }, (r) => {
   const b = pick(r, BE);

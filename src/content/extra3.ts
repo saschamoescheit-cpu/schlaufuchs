@@ -1130,6 +1130,11 @@ const ILL: { en: string; de: string; e: string }[] = [
   { en: "I'm sad.", de: 'Ich bin traurig.', e: '😢' },
   { en: "I'm hungry.", de: 'Ich habe Hunger.', e: '😋' },
   { en: "I'm thirsty.", de: 'Ich habe Durst.', e: '🥤' },
+  // Nachtlauf 24.10.2026: mehr Aufgaben
+  { en: "I'm happy.", de: 'Ich bin glücklich.', e: '😄' },
+  { en: "I'm scared.", de: 'Ich habe Angst.', e: '😨' },
+  { en: "I'm angry.", de: 'Ich bin wütend.', e: '😠' },
+  { en: "I'm bored.", de: 'Mir ist langweilig.', e: '😑' },
 ];
 function healthTask(r: Rng, s: Stage): Gen {
   const d = pick(r, ILL);

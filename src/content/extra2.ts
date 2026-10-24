@@ -147,6 +147,9 @@ const END: [string, string, string][] = [
   ['Tomate', '🍅', 'e'], ['Radio', '📻', 'o'], ['Pizza', '🍕', 'a'], ['Elefant', '🐘', 't'], ['Hammer', '🔨', 'r'], ['Kerze', '🕯️', 'e'],
   // ohne Wörter auf -d/-g/-b (Hund): dort hört man t/k/p
   ['Baum', '🌳', 'm'], ['Turm', '🗼', 'm'], ['Salat', '🥗', 't'], ['Zebra', '🦓', 'a'], ['Melone', '🍉', 'e'], ['Teller', '🍽️', 'r'], ['Mais', '🌽', 's'], ['Delfin', '🐬', 'n'], ['Kanu', '🛶', 'u'],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Hase', '🐰', 'e'], ['Schal', '🧣', 'l'], ['Zelt', '⛺', 't'], ['Robbe', '🦭', 'e'], ['Rakete', '🚀', 'e'], ['Panda', '🐼', 'a'], ['Koala', '🐨', 'a'], ['Pinguin', '🐧', 'n'],
+  ['Wal', '🐋', 'l'], ['Haus', '🏠', 's'], ['Helm', '⛑️', 'm'], ['Gitarre', '🎸', 'e'], ['Trommel', '🥁', 'l'], ['Ballon', '🎈', 'n'], ['Paket', '📦', 't'], ['Bär', '🐻', 'r'],
 ];
 function endTask(r: Rng): Gen {
   const [w, e, l] = pick(r, END);
