@@ -527,7 +527,7 @@ function Syllables({ parts, emoji }: { parts: string[]; emoji?: string }) {
   return (
     <div className="vis-syll">
       {emoji && <div className="vis-emoji small">{emoji}</div>}
-      <div className="syll-row">
+      <div className={`syll-row ${parts.join('').length > 10 ? 'long' : ''}`}>
         {parts.map((p, i) => (
           <span key={i} className={`syll ${i % 2 ? 'b' : 'a'}`}>
             {i === 0 ? p[0].toUpperCase() + p.slice(1) : p}

@@ -906,9 +906,13 @@ a {
 }
 .syll-row {
   font-family: var(--head);
-  font-size: 2.2rem;
+  /* passt sich der Breite an: „Schmetterling“ lief auf dem iPhone SE 20 px über (Nachtlauf 24.10.2026) */
+  font-size: min(2.2rem, 9vw);
   display: inline-flex;
   gap: 2px;
+}
+.syll-row.long {
+  font-size: min(1.9rem, 7.2vw);
 }
 .syll {
   padding: 0 4px 10px;
