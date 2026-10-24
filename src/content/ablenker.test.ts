@@ -34,6 +34,17 @@ describe('Auswahl-Antworten aller Themen', () => {
       }
     expect([...new Set(odd)]).toEqual([]);
   });
+
+  it('Subjekt und Prädikat: kein Wort doppelt („Die“ und „die“)', () => {
+    const s = skillById('d3-satzglieder')!;
+    const r = mulberry32(22);
+    for (let i = 0; i < 1500; i++) {
+      const t = s.generate(r, (1 + (i % 3)) as 1 | 2 | 3);
+      if (t.answer.type !== 'choice') continue;
+      const low = t.answer.options.map((o) => o.toLowerCase());
+      expect(new Set(low).size, t.prompt).toBe(low.length);
+    }
+  });
 });
 
 // Nachtlauf 24.10.2026: „catss“, „dresss“, „applees“, „leavess“ waren keine glaubhaften Fehler
