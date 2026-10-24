@@ -7,9 +7,9 @@ import { PACES } from '../engine/session';
 import { DEFAULT_KEY } from '../engine/grading';
 import { ALL_SKILLS, currentSkills, skillById, englishYear, STATES, stateInfo, SUBJECTS, subjectInfo } from '../content/curriculum';
 import { level } from '../engine/learning';
-import { deleteProfile, saveProfile, schoolYear, storageUsage, useData, usesSchoolFont, type AppData, type Profile } from '../data/store';
+import { deleteProfile, LOSS_LOG, saveProfile, schoolYear, storageUsage, useData, usesSchoolFont, type AppData, type Profile } from '../data/store';
 import { collectCopies, findRescues } from '../data/rescue';
-import { cloudSummary } from '../data/sync';
+import { cloudProtected, cloudSummary } from '../data/sync';
 import { showRescues } from '../ui/RescueCard';
 import { emptyProgress } from '../engine/learning';
 import { checkPin, hasPin, lock, setPin, unlock } from '../data/parent';
@@ -642,6 +642,8 @@ function RescueSearch() {
       }
       const copies = await collectCopies(false);
       lines.push(`Kopien auf dem Gerät: ${copies.length ? copies.map((c) => `${c.profile.name || '?'} ${c.progress.log?.length ?? 0} (${c.source})`).join(', ') : 'keine'}`);
+      const prot = await cloudProtected();
+      lines.push(`Cloud-Schutz: ${prot ? 'eingerichtet' : prot === false ? 'noch nicht eingerichtet' : 'unbekannt (offline)'}`);
       const cloud = await cloudSummary().catch(() => null);
       if (cloud == null) lines.push('Cloud: nicht angemeldet oder offline');
       else
@@ -649,6 +651,9 @@ function RescueSearch() {
           const name = data.profiles.find((p) => p.id === c.pid)?.name ?? `Kind ${c.pid}`;
           lines.push(`Cloud: ${name} – Profil ${c.profileDeleted ? 'gelöscht' : c.profileDeleted === false ? 'da' : 'fehlt'}, Lernstand ${c.progressDeleted ? 'gelöscht' : c.progressDeleted === false ? 'da' : 'fehlt'}, Verlauf ${c.logDays} Tage${c.logDaysDeleted ? ` (+${c.logDaysDeleted} gelöscht)` : ''}`);
         }
+      for (const l of (JSON.parse(localStorage.getItem(LOSS_LOG) ?? '[]') as { at: number; source: string; what: string; version: string }[]).slice(-5))
+        lines.push(`Verlust ${new Date(l.at).toLocaleString('de-DE')} (${l.source}, App ${l.version}): ${l.what} – Sicherung liegt vor`);
+      lines.push(`App-Stand: ${__APP_BUILD__}`);
     } catch (e) {
       lines.push(`Fehler: ${(e as Error).message}`);
     }

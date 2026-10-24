@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { emptyProgress, LOG_MAX, record, type TestResult } from '../engine/learning';
 import type { Task } from '../engine/types';
+import { mulberry32 } from '../engine/rng';
 import type { AppData, Profile } from './store';
 import { collectCloud, DELETED, removedList, restoreRemoved, syncOnce, type Device, type Remote, type Row } from './sync';
 
@@ -343,4 +344,60 @@ describe('Abgleich zwischen Geräten', () => {
     await sync(ipad, s.remote);
     expect(ipad.d.profiles[0].grade).toBe(3);
   });
+});
+
+// 24.10.2026 (Leana): Chaos-Prüfung – drei Geräte üben, gleichen in zufälliger Reihenfolge ab und verlieren zwischendurch
+// zufällig ihren ganzen Stand (ohne dass jemand löscht). Die Cloud darf dabei nie ein Kind verlieren, der Lernstand
+// dort nie kleiner werden und keine einmal hochgeladene Aufgabe vergessen; am Ende hat jedes Gerät wieder alles.
+describe('Chaos: Geräte verlieren zufällig ihren Stand', () => {
+  for (let seed = 1; seed <= 20; seed++)
+    it(`Ablauf ${seed}`, async () => {
+      const rnd = mulberry32(seed);
+      const s = server();
+      const devs = [device(), device(), device()];
+      addKid(devs[0], 'leana');
+      addKid(devs[0], 'ben');
+      await sync(devs[0], s.remote);
+      for (const d of devs.slice(1)) await sync(d, s.remote);
+      const uploaded = new Set<string>();
+      let maxStars: Record<string, number> = {};
+      for (let step = 0; step < 300; step++) {
+        const d = devs[Math.floor(rnd() * devs.length)];
+        const pid = rnd() < 0.5 ? 'leana' : 'ben';
+        const r = rnd();
+        if (r < 0.5) {
+          if (d.d.profiles.some((p) => p.id === pid)) practice(d, [[`k${step}`, rnd() < 0.8]], pid);
+        } else if (r < 0.9) {
+          const before = new Set(Object.values(d.d.progress).flatMap((p) => p.log.map((a) => `${a.t}|${a.ok}`)));
+          await sync(d, s.remote);
+          for (const k of before) uploaded.add(k);
+        } else if (r < 0.95) {
+          // Stand weg (z. B. Speicher nicht lesbar) – niemand hat gelöscht
+          d.commit((x) => {
+            x.profiles = [];
+            x.progress = {};
+          });
+        } else {
+          // nur der Lernstand eines Kindes geleert
+          d.commit((x) => void (x.progress[pid] = emptyProgress()));
+        }
+        // Cloud: kein Kind gelöscht, Sterne nie weniger
+        for (const k of ['leana', 'ben']) {
+          expect(s.rows.get(`profile|${k}`)?.deleted ?? false, `Schritt ${step}: ${k} in der Cloud gelöscht`).toBe(false);
+          const stars = (s.rows.get(`progress|${k}`)?.data as { stars?: number } | undefined)?.stars ?? 0;
+          expect(stars, `Schritt ${step}: Sterne von ${k} in der Cloud kleiner`).toBeGreaterThanOrEqual(maxStars[k] ?? 0);
+          maxStars = { ...maxStars, [k]: stars };
+        }
+      }
+      // heilen: jedes Gerät gleicht zweimal ab
+      for (let i = 0; i < 2; i++) for (const d of devs) await sync(d, s.remote);
+      const cloudLog = new Set([...s.rows.values()].filter((r) => r.kind === 'log' && !r.deleted).flatMap((r) => (r.data as { t: number; ok: number }[]).map((a) => `${a.t}|${a.ok}`)));
+      for (const k of uploaded) expect(cloudLog.has(k), `hochgeladene Aufgabe ${k} fehlt in der Cloud`).toBe(true);
+      for (const d of devs) {
+        expect(d.d.profiles.map((p) => p.id).sort()).toEqual(['ben', 'leana']);
+        const here = new Set(Object.values(d.d.progress).flatMap((p) => p.log.map((a) => `${a.t}|${a.ok}`)));
+        for (const k of uploaded) expect(here.has(k), `Gerät hat hochgeladene Aufgabe ${k} nicht zurück`).toBe(true);
+        for (const k of ['leana', 'ben']) expect(d.d.progress[k].stars).toBeGreaterThanOrEqual(maxStars[k]);
+      }
+    });
 });

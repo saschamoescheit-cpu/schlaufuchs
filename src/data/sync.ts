@@ -30,6 +30,8 @@ export interface Remote {
   create(row: Row): Promise<boolean>;
   /** Ersetzt eine Zeile nur, wenn sie noch so ist wie zuletzt gesehen – false: inzwischen von einem anderen Gerät geändert. */
   replace(row: Row, ifAt: string): Promise<boolean>;
+  /** Sicherungen der Datenbank (schlaufuchs_history, supabase/schlaufuchs-schutz.sql) – fehlt die Tabelle: [] */
+  history?(): Promise<Row[]>;
 }
 export interface Device {
   get(): AppData;
@@ -410,27 +412,27 @@ export function progressFromLog(log: Attempt[]): Progress {
 export async function collectCloud(remote: Remote): Promise<{ pid: string; profile: Profile | null; progress: Progress }[]> {
   const rows = await remote.list();
   const keys = rows.filter((r) => r.kind === 'profile' || r.kind === 'progress' || r.kind === 'test' || r.kind === 'log').map((r) => ({ kind: r.kind, id: r.id }));
-  const full = keys.length ? await remote.fetch(keys) : [];
-  const by = new Map<string, { profile: Profile | null; core: Partial<Core> | null; log: Attempt[]; tests: TestResult[] }>();
+  const full = [...(keys.length ? await remote.fetch(keys) : []), ...(remote.history ? await remote.history().catch(() => []) : [])];
+  const by = new Map<string, { profile: Profile | null; cores: Core[]; log: Attempt[]; tests: TestResult[] }>();
   const get = (pid: string) => {
     let g = by.get(pid);
-    if (!g) by.set(pid, (g = { profile: null, core: null, log: [], tests: [] }));
+    if (!g) by.set(pid, (g = { profile: null, cores: [], log: [], tests: [] }));
     return g;
   };
   for (const r of full) {
     const pid = pidOf(r.kind, r.id);
     if (!pid || r.data == null || typeof r.data !== 'object') continue;
     const g = get(pid);
-    if (r.kind === 'profile' && typeof (r.data as Profile).name === 'string') g.profile = r.data as Profile;
-    else if (r.kind === 'progress' && (r.data as Core).skills) g.core = r.data as Core;
+    if (r.kind === 'profile' && typeof (r.data as Profile).name === 'string') g.profile ??= r.data as Profile;
+    else if (r.kind === 'progress' && (r.data as Core).skills) g.cores.push(r.data as Core);
     else if (r.kind === 'log' && Array.isArray(r.data)) g.log = unionLog(g.log, r.data as Attempt[]);
-    else if (r.kind === 'test' && typeof (r.data as TestResult).id === 'string') g.tests.push(r.data as TestResult);
+    else if (r.kind === 'test' && typeof (r.data as TestResult).id === 'string' && !g.tests.some((t) => t.id === (r.data as TestResult).id)) g.tests.push(r.data as TestResult);
   }
   const out: { pid: string; profile: Profile | null; progress: Progress }[] = [];
   for (const [pid, g] of by) {
     const fromLog = { ...progressFromLog(g.log), tests: g.tests.sort((a, b) => a.t - b.t) };
-    const fromRow = g.core ? { ...emptyProgress(), ...g.core, log: [], tests: [] } : null;
-    const progress = fromRow ? mergeRescue(fromRow as Progress, fromLog) : fromLog;
+    // alle Fassungen der Lernstand-Zeile (aktuell + Sicherungen): je Zähler das Größte
+    const progress = g.cores.reduce<Progress>((acc, c) => mergeRescue(acc, { ...emptyProgress(), ...c, log: [], tests: [] }), fromLog);
     if (progress.log.length || progress.stars || progress.solved || progress.tests.length) out.push({ pid, profile: g.profile, progress });
   }
   return out;
@@ -457,6 +459,18 @@ export async function cloudSummary(): Promise<{ pid: string; profileDeleted: boo
 }
 
 /** Angemeldet: die Cloud nach Lernständen durchsuchen (rescue.ts). Ohne Anmeldung oder Netz: nichts. */
+/** Ist der Datenbank-Schutz (supabase/schlaufuchs-schutz.sql) eingerichtet? null = unbekannt (offline) */
+export async function cloudProtected(): Promise<boolean | null> {
+  if (!syncConfigured()) return null;
+  try {
+    const r = await fetch(`${SUPABASE_URL}/rest/v1/rpc/schlaufuchs_schutz_version`, { method: 'POST', headers: { apikey: SUPABASE_KEY, 'Content-Type': 'application/json' }, body: '{}' });
+    if (r.ok) return (await r.json()) === 1;
+    return r.status === 404 ? false : null;
+  } catch {
+    return null;
+  }
+}
+
 export async function cloudCopies(): Promise<{ pid: string; profile: Profile | null; progress: Progress }[]> {
   if (!syncConfigured() || !loadSession()) return [];
   const t = await authToken();
@@ -790,6 +804,10 @@ function supabaseRemote(bearer: string): Remote {
         }
       }
       return failed;
+    },
+    history: async () => {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/schlaufuchs_history?select=kind,id,data,updated_at,deleted&kind=in.(profile,progress,log,test)&order=saved_at.desc&limit=5000`, { headers });
+      return r.ok ? ((await r.json()) as Row[]).map((x) => ({ ...x, deleted: false })) : [];
     },
     create: async (row) => {
       const r = await ok(await fetch(`${base}?on_conflict=user_id,kind,id`, { method: 'POST', headers: { ...headers, Prefer: 'resolution=ignore-duplicates,return=representation' }, body: JSON.stringify([body(row)]) }));

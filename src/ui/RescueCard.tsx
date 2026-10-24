@@ -2,7 +2,7 @@
 // Stand jetzt, bietet sie oben an, sie zurückzuholen (data/rescue.ts – zusammenführen, nichts geht verloren).
 import { useEffect, useState } from 'react';
 import { applyRescue, dismissRescue, findRescues, type Rescue } from '../data/rescue';
-import { useData } from '../data/store';
+import { onLoss, useData } from '../data/store';
 
 /** Ergebnis einer Suche von außen (Eltern-Bereich „Lernstand suchen“) */
 let pushList: ((l: Rescue[]) => void) | null = null;
@@ -16,8 +16,11 @@ export function RescueCard() {
   const kids = data.profiles.length;
   useEffect(() => {
     pushList = setList;
+    // geht etwas verloren, sofort nach Kopien suchen (die Sicherung „vor-verlust“ ist dann schon da)
+    const off = onLoss(() => void setTimeout(() => void findRescues({ cloud: 'never' }).then((r) => setList((cur) => [...cur.filter((x) => !r.some((y) => y.sig === x.sig)), ...r])), 800));
     return () => {
       pushList = null;
+      off();
     };
   }, []);
   useEffect(() => {

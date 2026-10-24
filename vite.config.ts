@@ -8,7 +8,8 @@ const pkg = JSON.parse(readFileSync('package.json', 'utf-8')) as { version: stri
 // base './' – die App läuft unter jedem GitHub-Pages-Unterpfad.
 export default defineConfig({
   base: './',
-  define: { __APP_VERSION__: JSON.stringify(pkg.version) },
+  // Stand der App (Datum/Uhrzeit des Builds) – zeigt im Überblick „Lernstand suchen“, welche Version läuft
+  define: { __APP_VERSION__: JSON.stringify(pkg.version), __APP_BUILD__: JSON.stringify(new Date().toISOString().slice(0, 16).replace('T', ' ')) },
   // Homepage und Rechtliches als eigene, schlanke Seiten neben der App (Vorschau unter …/home/)
   build: {
     rollupOptions: {

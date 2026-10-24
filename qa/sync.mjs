@@ -82,10 +82,12 @@ async function device(name, dev) {
   // ein Test-Projekt statt des echten (sync.ts liest window.__schlaufuchsSupabase)
   await ctx.addInitScript(() => { window.__schlaufuchsSupabase = { url: 'https://test-sf.supabase.co', key: 'test', google: true }; });
   await ctx.route(/supabase\.co\/rest\/v1\/schlaufuchs_items/, rest);
+  // Datenbank-Schutz noch nicht eingerichtet (wie ein Projekt ohne schlaufuchs-schutz.sql): 404
+  await ctx.route(/supabase\.co\/rest\/v1\/(schlaufuchs_history|rpc\/schlaufuchs_schutz_version)/, (r) => r.fulfill({ status: 404, headers: { ...cors, 'Content-Type': 'application/json' }, body: '{}' }));
   await ctx.routeWebSocket(/supabase\.co\/realtime/, realtime);
   const p = await ctx.newPage();
   // WebKit leitet den CORS-Vorabcheck nicht durch den Mock – das meldet es als Zugriffsfehler, nicht die App
-  p.on('pageerror', (e) => !/schlaufuchs_items.*access control/.test(e.message) && errs.push(`${name}: ${e.message}`));
+  p.on('pageerror', (e) => !/schlaufuchs_(items|history).*access control/.test(e.message) && errs.push(`${name}: ${e.message}`));
   await p.goto(url);
   await p.evaluate((t) => {
     localStorage.clear();

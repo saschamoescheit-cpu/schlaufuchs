@@ -291,10 +291,37 @@ export function losesSomething(before: AppData, after: AppData): boolean {
 
 /** Vor jedem Verlust den bisherigen Stand als eigene Sicherung in den großen Speicher (24.10.2026: Leanas Lernstand) –
  *  die Lernstand-Rettung (rescue.ts) findet sie. */
-function keepBeforeLoss(before: AppData, after: AppData) {
+function keepBeforeLoss(before: AppData, after: AppData, source: 'app' | 'abgleich') {
   if (!before.profiles.length || !losesSomething(before, after)) return;
-  void putMirror({ json: JSON.stringify(before), at: Date.now() }, `vor-verlust:${Date.now()}`);
+  const at = Date.now();
+  void putMirror({ json: JSON.stringify(before), at }, `vor-verlust:${at}`);
+  // Protokoll auf dem Gerät (Überblick „Lernstand suchen“): was ging verloren, woher kam es
+  try {
+    const what = before.profiles
+      .map((p) => {
+        const a = before.progress[p.id];
+        const b = after.profiles.some((x) => x.id === p.id) ? after.progress[p.id] : undefined;
+        if (!after.profiles.some((x) => x.id === p.id)) return `${p.name} weg`;
+        if (a && (!b || b.stars < a.stars || b.log.length < a.log.length)) return `${p.name} ${a.stars}→${b?.stars ?? 0} Sterne, ${a.log.length}→${b?.log.length ?? 0} Aufgaben`;
+        return '';
+      })
+      .filter(Boolean)
+      .join('; ');
+    const log = JSON.parse(localStorage.getItem(LOSS_LOG) ?? '[]') as unknown[];
+    localStorage.setItem(LOSS_LOG, JSON.stringify([...log, { at, source, what, version: typeof __APP_BUILD__ === 'string' ? __APP_BUILD__ : '?' }].slice(-50)));
+  } catch {
+    /* Protokoll ist nur Beiwerk */
+  }
+  lossListeners.forEach((l) => l());
 }
+/** Protokoll der Verluste auf diesem Gerät (die letzten 50) */
+export const LOSS_LOG = 'schlaufuchs:loss-log.v1';
+const lossListeners = new Set<() => void>();
+/** Bescheid bei jedem Verlust – die Rettungs-Karte sucht dann sofort */
+export const onLoss = (fn: () => void) => {
+  lossListeners.add(fn);
+  return () => void lossListeners.delete(fn);
+};
 
 /** Einmal am Tag eine Sicherung (die letzten 30 Tage bleiben) */
 async function dailyBackup() {
@@ -304,10 +331,10 @@ async function dailyBackup() {
   if (ok) await pruneDaily(30);
 }
 
-function commit(fn: (d: AppData) => void) {
+function commit(fn: (d: AppData) => void, source: 'app' | 'abgleich' = 'app') {
   const next = clone(data);
   fn(next);
-  keepBeforeLoss(data, next);
+  keepBeforeLoss(data, next, source);
   data = next;
   persist();
   listeners.forEach((l) => l());
@@ -319,7 +346,7 @@ export function update(fn: (d: AppData) => void) {
 }
 
 /** Was der Abgleich von den anderen Geräten holt – löst selbst keinen neuen Abgleich aus. */
-export const updateFromSync = commit;
+export const updateFromSync = (fn: (d: AppData) => void) => commit(fn, 'abgleich');
 
 export const getData = () => data;
 export const hasSaveError = () => saveError;
