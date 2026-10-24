@@ -516,6 +516,12 @@ const QA: [string, string, string[]][] = [
   ['Can you dance?', 'Yes, I can.', ['Yes, I do.', 'Yes, I am.', 'I like music.']],
   ['What’s your favourite sport?', 'My favourite sport is tennis.', ['I am good at sports.', 'Yes, I play every day.', 'It is a green ball.']],
   ['Is your bag heavy?', 'Yes, it is.', ['Yes, I am.', 'Yes, I can.', 'Yes, I have.']],
+  // Nachtlauf 24.10.2026: mehr Fragen (is/am/has/can/do auseinanderhalten)
+  ["Has your sister got a bike?", "Yes, she has.", ["Yes, she is.", "Yes, she does.", "Yes, she can."]],
+  ["How many legs has a spider got?", "It has got eight legs.", ["It is eight years old.", "It is black and small.", "It can run very fast."]],
+  ["What do you eat for breakfast?", "I eat cereal.", ["I go to school.", "I am very hungry.", "It is in the kitchen."]],
+  ["What colour is the sky?", "It is blue.", ["It is big.", "It is Sunday.", "Yes, it is."]],
+  ["Who is your teacher?", "My teacher is Mrs Smith.", ["It is Monday today.", "I like my school.", "She is in Room 5."]],
 ];
 function qaTask(r: Rng, s: Stage): Gen {
   const [q, a, w] = pick(r, QA);
