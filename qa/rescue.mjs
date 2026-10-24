@@ -82,6 +82,37 @@ const pc = await run('C letzter Abgleich-Stand', ({ kid }) => {
   sessionStorage.setItem('seeded', '1');
 }).catch(() => null);
 check(pc && pc.stars === 120 && pc.skills['m3-plus']?.n === 130, `C: Sterne und Lernstand je Thema zurück (${pc?.stars} Sterne)`);
+// D) Eltern-Bereich: „Lernstand suchen“ zeigt den Überblick (ohne Anmeldung: Cloud nicht erreichbar)
+{
+  const ctx = await b.newContext({ ...devices['iPad (gen 7)'], locale: 'de-DE' });
+  await ctx.addInitScript(({ kid }) => {
+    if (sessionStorage.getItem('seeded')) return;
+    localStorage.clear();
+    localStorage.setItem('schlaufuchs:v1', JSON.stringify({ schema: 1, profiles: [kid], progress: { leana: { skills: {}, review: [], log: [], tests: [], days: {}, stars: 3, solved: 0 } }, activeId: 'leana', parent: { pin: null } }));
+    sessionStorage.setItem('seeded', '1');
+  }, { kid: kid('leana', 'Leana') });
+  const p = await ctx.newPage();
+  const errors = [];
+  p.on('pageerror', (e) => errors.push(e.message));
+  await p.goto(url);
+  await p.waitForTimeout(2000);
+  await p.getByRole('button', { name: 'Profil und Einstellungen' }).click();
+  await p.getByRole('button', { name: /Eltern-Bereich/ }).first().click();
+  for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+  await p.waitForTimeout(300);
+  for (const d of '1234') await p.getByRole('button', { name: d, exact: true }).click();
+  await p.waitForTimeout(300);
+  await p.locator('.parent-card').first().click();
+  await p.getByRole('tab', { name: /Einstellungen/ }).click();
+  await p.getByRole('button', { name: 'Lernstand suchen' }).click();
+  await p.waitForTimeout(2500);
+  const txt = await p.locator('body').innerText();
+  check(/Jetzt: Leana – 0 Aufgaben im Verlauf, 3 Sterne/.test(txt), 'D: Überblick zeigt den Stand jetzt');
+  check(/Cloud: nicht angemeldet oder offline/.test(txt), 'D: Überblick nennt die Cloud');
+  if (process.env.SHOT2) await p.screenshot({ path: process.env.SHOT2, fullPage: false });
+  check(!errors.length, `D: keine Seitenfehler ${errors.join(' | ')}`);
+  await ctx.close();
+}
 await b.close();
 console.log(bad ? `${bad} Fehler` : 'alles gut');
 process.exit(bad ? 1 : 0);
