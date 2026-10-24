@@ -713,6 +713,12 @@ const SP_SAETZE: { s: string[]; subj: [number, number]; pred: number }[] = [
   { s: ['Der', 'Bäcker', 'backt', 'frische', 'Brötchen'], subj: [0, 2], pred: 2 }, { s: ['Im', 'Zoo', 'füttert', 'der', 'Wärter', 'die', 'Affen'], subj: [3, 5], pred: 2 },
   { s: ['Paul', 'spielt', 'Gitarre'], subj: [0, 1], pred: 1 }, { s: ['Die', 'Katze', 'fängt', 'eine', 'Maus'], subj: [0, 2], pred: 2 },
   { s: ['Am', 'Wochenende', 'besuchen', 'wir', 'den', 'Zoo'], subj: [3, 4], pred: 2 }, { s: ['Die', 'Vögel', 'singen', 'im', 'Baum'], subj: [0, 2], pred: 2 },
+  // Nachtlauf 24.10.2026: mehr Sätze
+  { s: ['Der', 'Clown', 'jongliert', 'mit', 'Bällen'], subj: [0, 2], pred: 2 }, { s: ['Zum', 'Frühstück', 'isst', 'Mia', 'ein', 'Brötchen'], subj: [3, 4], pred: 2 },
+  { s: ['Die', 'Feuerwehr', 'löscht', 'den', 'Brand'], subj: [0, 2], pred: 2 }, { s: ['Unser', 'Hund', 'schläft', 'im', 'Körbchen'], subj: [0, 2], pred: 2 },
+  { s: ['Im', 'Winter', 'baut', 'Jonas', 'einen', 'Schneemann'], subj: [3, 4], pred: 2 }, { s: ['Die', 'Schüler', 'schreiben', 'ein', 'Diktat'], subj: [0, 2], pred: 2 },
+  { s: ['Plötzlich', 'klingelt', 'das', 'Telefon'], subj: [2, 4], pred: 1 }, { s: ['Ein', 'Flugzeug', 'fliegt', 'über', 'die', 'Stadt'], subj: [0, 2], pred: 2 },
+  { s: ['Mama', 'gießt', 'die', 'Blumen'], subj: [0, 1], pred: 1 },
 ];
 const satzglieder3 = D(3, 'd3-satzglieder', 'Subjekt und Prädikat', '🧱', {
   text: ['Das Prädikat (Satzkern) ist das Verb im Satz. Frage: Was tut jemand? Was geschieht?', 'Das Subjekt ist der Satzgegenstand. Frage: Wer oder was tut etwas?', '„Der Hund bellt.“ Wer oder was bellt? → der Hund (Subjekt). Was tut der Hund? → bellt (Prädikat).', 'Das Subjekt steht nicht immer am Anfang: „Am Abend kocht Papa Nudeln.“'],
@@ -818,6 +824,10 @@ const DAS_DASS: [string, 'das' | 'dass'][] = [
   ['Es ist schade, ☐ die Ferien vorbei sind.', 'dass'], ['Das Bild, ☐ an der Wand hängt, hat Paul gemalt.', 'das'], ['Der Lehrer sagt, ☐ wir leise sein sollen.', 'dass'], ['Ist ☐ dein Rucksack?', 'das'],
   ['Ich hoffe, ☐ das Wetter schön bleibt.', 'dass'], ['☐ Fahrrad steht im Keller.', 'das'], ['Wir wissen, ☐ Bienen Honig machen.', 'dass'],
   ['Das Buch, ☐ du mir geliehen hast, ist toll.', 'das'], ['Schön, ☐ du gekommen bist!', 'dass'], ['Siehst du ☐ Flugzeug am Himmel?', 'das'],
+  // Nachtlauf 24.10.2026: mehr Aufgaben
+  ['Ich sehe, ☐ du dich freust.', 'dass'], ['☐ Kaninchen frisst eine Möhre.', 'das'], ['Wir hoffen, ☐ die Sonne scheint.', 'dass'], ['Das Geschenk, ☐ auf dem Tisch liegt, ist für dich.', 'das'],
+  ['Papa verspricht, ☐ wir am Sonntag schwimmen gehen.', 'dass'], ['Hast du ☐ Geräusch gehört?', 'das'], ['Ich wette, ☐ ich schneller bin als du.', 'dass'], ['☐ Zimmer ist aufgeräumt.', 'das'],
+  ['Die Lehrerin freut sich, ☐ alle ihre Hausaufgaben gemacht haben.', 'dass'], ['Das Lied, ☐ im Radio läuft, kenne ich.', 'das'], ['Es stimmt, ☐ Pinguine nicht fliegen können.', 'dass'], ['Wem gehört ☐ Handy?', 'das'],
 ];
 const dasDass = D(4, 'd4-das-dass', 'das oder dass', '⚖️', {
   text: ['„das“ ist ein Artikel oder Begleiter: das Buch – oder es steht für ein Nomen.', 'Probe: Kannst du „dieses“, „jenes“ oder „welches“ einsetzen? Dann schreibst du „das“.', '„dass“ verbindet zwei Sätze und steht oft nach Verben wie glauben, hoffen, sagen, wissen: „Ich hoffe, dass …“.', 'Vor „dass“ steht immer ein Komma.'],
@@ -840,6 +850,11 @@ const SSZ: [string, 's' | 'ss' | 'ß', string, string?][] = [
   ['Grüße', 'ß', 'Das ü ist lang → ß.', '👋'], ['Fleiß', 'ß', 'Nach ei schreibt man ß.', '🐝'], ['draußen', 'ß', 'Nach au schreibt man ß.', '🌳'],
   ['Kasse', 'ss', 'Das a ist kurz → ss.', '🧾'], ['essen', 'ss', 'Das e ist kurz → ss.', '🍽️'],
   ['Wiese', 's', 'Man hört ein weiches, summendes s → s.', '🌾'], ['Reise', 's', 'Man hört ein weiches, summendes s → s.', '🧳'],
+  // Nachtlauf 24.10.2026: mehr Wörter
+  ['Fass', 'ss', 'Das a ist kurz → ss.', '🛢️'], ['Biss', 'ss', 'Das i ist kurz → ss.', '🦷'], ['Kompass', 'ss', 'Das a ist kurz → ss.', '🧭'], ['Flosse', 'ss', 'Das o ist kurz → ss.', '🐟'],
+  ['Schweiß', 'ß', 'Nach ei schreibt man ß.', '💦'], ['gießen', 'ß', 'Das ie ist lang → ß.', '🪴'], ['Füße', 'ß', 'Das ü ist lang → ß.', '🦶'],
+  ['Dose', 's', 'Man hört ein weiches, summendes s → s.', '🥫'], ['Meise', 's', 'Man hört ein weiches, summendes s → s.', '🐦'], ['Vase', 's', 'Man hört ein weiches, summendes s → s.', '🏺'], ['Bluse', 's', 'Man hört ein weiches, summendes s → s.', '👚'],
+  ['Kreis', 's', 'Verlängere: Kreise – weiches s → s.', '⭕'], ['Los', 's', 'Verlängere: Lose – weiches s → s.', '🎟️'],
 ];
 const ssz = D(4, 'd4-s-ss-sz', 's, ss oder ß', '🐍', {
   text: ['Nach einem kurzen Selbstlaut schreibt man ss: Fluss, Wasser.', 'Nach einem langen Selbstlaut oder ei, au, eu schreibt man ß, wenn das s zischt (stimmlos): Straße, heiß.', 'Klingt das s weich und summend (stimmhaft), schreibt man s: Hose, Nase.', 'Am Wortende verlängern: Haus → Häuser (weich) → s. Fuß → Füße (zischend) → ß.'],
