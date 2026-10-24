@@ -1128,6 +1128,19 @@ function story4(r: Rng): Gen {
       { q: 'Warum hält der Vater das Ei auf den Füßen?', a: 'Damit es auf dem Eis nicht erfriert.', w: ['Damit es nicht ins Meer rollt.', 'Weil es dort am weichsten liegt.', 'Damit die Mutter es nicht findet.'] },
       { q: 'Was macht das Weibchen, nachdem es das Ei gelegt hat?', a: 'Es geht zum Meer und fängt Fische.', w: ['Es baut ein großes Nest aus Ästen.', 'Es schläft den ganzen Winter lang.', 'Es fliegt in ein wärmeres Land.'] },
     ] },
+    // Nachtlauf 24.10.2026: mehr Texte
+    { t: 'Emma und ihr Opa gehen am Samstag angeln. Sie stehen früh auf und packen belegte Brote und heißen Tee ein. Am See ist es noch neblig. Lange beißt kein Fisch an. Opa erzählt, wie er als Kind mit seinem Vater geangelt hat. Kurz vor Mittag zieht Emma einen großen Karpfen aus dem Wasser. Weil er so schön ist, setzen sie ihn wieder zurück in den See.', qs: [
+      { q: 'Mit wem geht Emma angeln?', a: 'mit ihrem Opa', w: ['mit ihrer Mutter', 'mit ihrem Bruder', 'mit ihrer Freundin'] },
+      { q: 'Was trinken die beiden?', a: 'heißen Tee', w: ['kalten Saft', 'warmen Kakao', 'frische Milch'] },
+      { q: 'Was erzählt Opa?', a: 'wie er als Kind geangelt hat', w: ['wie man ein Boot baut', 'wo es die besten Fische gibt', 'warum der See so neblig ist'] },
+      { q: 'Warum setzen sie den Karpfen zurück?', a: 'Weil er so schön ist.', w: ['Weil er zu klein ist.', 'Weil Emma keinen Fisch mag.', 'Weil der Eimer schon voll ist.'] },
+    ] },
+    { t: 'Auf dem Heimweg sieht Ben einen kleinen Hund ohne Halsband. Er zittert und sieht ängstlich aus. Ben nimmt ihn vorsichtig mit nach Hause. Seine Mutter ruft beim Tierheim an. Dort hat sich schon eine Frau gemeldet, die ihren Hund sucht. Eine Stunde später klingelt es an der Tür. Die Frau umarmt ihren Hund Bello und schenkt Ben zum Dank zwei Kinokarten.', qs: [
+      { q: 'Wo findet Ben den Hund?', a: 'auf dem Heimweg', w: ['im Tierheim', 'im Park beim Spielen', 'vor der Schule'] },
+      { q: 'Wie sieht der Hund aus, als Ben ihn findet?', a: 'ängstlich und zitternd', w: ['fröhlich und verspielt', 'müde und schläfrig', 'wütend und bellend'] },
+      { q: 'Wen ruft Bens Mutter an?', a: 'das Tierheim', w: ['die Polizei', 'den Tierarzt', 'Bens Vater'] },
+      { q: 'Warum schenkt die Frau Ben Kinokarten?', a: 'Sie will sich für seine Hilfe bedanken.', w: ['Sie hat zu viele Karten gekauft.', 'Ben hat an diesem Tag Geburtstag.', 'Sie möchte mit ihm ins Kino gehen.'] },
+    ] },
   ];
   const s = pick(r, stories);
   const q = pick(r, s.qs);
