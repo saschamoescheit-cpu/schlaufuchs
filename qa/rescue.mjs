@@ -22,12 +22,16 @@ async function run(name, seed) {
   await p.goto(url);
   await p.waitForTimeout(2500);
   const card = p.locator('.card', { hasText: 'Lernstand von Leana gefunden' });
+  if (process.env.SHOT && name.startsWith('A')) await p.screenshot({ path: process.env.SHOT });
   check(await card.count() > 0, `${name}: Karte „Lernstand von Leana gefunden“`);
   await card.getByRole('button', { name: 'Zurückholen' }).click().catch(() => {});
   await p.waitForTimeout(1500);
   const d = await p.evaluate(async () => {
-    const m = await import('/src/data/store.ts');
-    return m.getData();
+    try {
+      return (await import('/src/data/store.ts')).getData();
+    } catch {
+      return JSON.parse(localStorage.getItem('schlaufuchs:v1'));
+    }
   });
   const l = d.profiles.find((x) => x.name.trim().toLowerCase() === 'leana');
   const pr = l && d.progress[l.id];
