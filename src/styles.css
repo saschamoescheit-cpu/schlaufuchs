@@ -2270,8 +2270,9 @@ html[data-school-font] .prompt.long {
   border-bottom: 1px solid #c9d7f2;
   margin-top: 4px;
 }
-/* im Beispielkasten ist weniger Platz: Bilder (z. B. Fahrplan) bekommen schmalere Ränder */
-.example .visual-box {
+/* im Beispielkasten und in der Rückmeldung ist weniger Platz: Bilder (z. B. Fahrplan, Bilderreihe) bekommen schmalere Ränder */
+.example .visual-box,
+.feedback .visual-box {
   padding: 10px 6px;
 }
 /* Druck: Vergleichsbild (zwei Punktreihen) braucht eine feste Breite, sonst schrumpfen die Reihen auf null */
