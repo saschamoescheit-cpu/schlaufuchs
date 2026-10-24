@@ -21,6 +21,7 @@ export interface Rescue {
 }
 
 const REMOVED = 'schlaufuchs:sync.removed.v1';
+const BASE = 'schlaufuchs:sync.base.v1';
 const DISMISSED = 'schlaufuchs:rescue.dismissed.v1';
 /** zurückgeholte Kopien aus REMOVED – bleiben als Sicherung liegen und werden weiter mit durchsucht */
 const RESTORED = 'schlaufuchs:rescue.restored.v1';
@@ -88,6 +89,13 @@ export async function collectCopies(): Promise<{ profile: Profile; progress: Pro
   };
   // 1. auf einem anderen Gerät „gelöscht“ – beim Abgleich hier aufgehoben
   for (const k of [REMOVED, RESTORED]) for (const r of parse<{ profile: Profile; progress: Progress }[]>(readLs(k), [])) if (r?.profile && r.progress) out.push({ profile: r.profile, progress: r.progress, source: 'Abgleich' });
+  // 1b. der zuletzt abgeglichene Stand je Kind (Sterne, gelöste Aufgaben, Lernstand je Thema – ohne Verlauf)
+  const base = parse<Record<string, { skills?: Progress['skills']; solved?: number; stars?: number; days?: Progress['days'] }>>(readLs(BASE), {});
+  const d = getData();
+  for (const [id, b] of Object.entries(base)) {
+    const p = d.profiles.find((x) => x.id === id);
+    if (p && b) out.push({ profile: p, progress: { ...emptyProgress(), skills: b.skills ?? {}, solved: b.solved ?? 0, stars: b.stars ?? 0, days: b.days ?? {} }, source: 'letzter Abgleich' });
+  }
   // 2. Sicherungen und Kopie im großen Speicher
   for (const { id, snap } of await listMirror()) addData(parse<AppData | null>(snap.json, null), `Speicher (${id})`);
   // 3. unlesbare oder alte Stände in localStorage

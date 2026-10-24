@@ -32,7 +32,7 @@ async function run(name, seed) {
   const l = d.profiles.find((x) => x.name.trim().toLowerCase() === 'leana');
   const pr = l && d.progress[l.id];
   check(!!l, `${name}: Leana ist da`);
-  check(pr && pr.solved >= 120 && pr.log.length >= 120, `${name}: 120 Aufgaben zurück (gelöst ${pr?.solved}, Verlauf ${pr?.log.length})`);
+  check(pr && pr.solved >= 120 && (name.startsWith("C") || pr.log.length >= 120), `${name}: 120 Aufgaben zurück (gelöst ${pr?.solved}, Verlauf ${pr?.log.length})`);
   check(await p.locator('text=ist wieder da').count() > 0, `${name}: Bestätigung „wieder da“`);
   await p.reload();
   await p.waitForTimeout(2500);
@@ -67,6 +67,17 @@ const pr = await run('B Sicherung im großen Speicher', ({ kid, full, T0 }) => {
   };
 });
 check(pr && pr.log.length === 121, `B: heutige Aufgabe bleibt dazu (Verlauf ${pr?.log.length} = 120 + 1)`);
+
+// C) Kind da, Lernstand leer, nur der letzte Abgleich-Stand (sync.base) kennt Sterne und Lernstand
+const pc = await run('C letzter Abgleich-Stand', ({ kid }) => {
+  if (sessionStorage.getItem('seeded')) return;
+  localStorage.clear();
+  localStorage.setItem('schlaufuchs:v1', JSON.stringify({ schema: 1, profiles: [kid], progress: { leana: { skills: {}, review: [], log: [], tests: [], days: {}, stars: 0, solved: 0 } }, activeId: 'leana', parent: { pin: null } }));
+  localStorage.setItem('schlaufuchs:v1:at', String(Date.now()));
+  localStorage.setItem('schlaufuchs:sync.base.v1', JSON.stringify({ leana: { skills: { 'm3-plus': { n: 130, ok: 120, recent: [], last: 1, tags: {} } }, review: [], solved: 120, stars: 120, days: {} } }));
+  sessionStorage.setItem('seeded', '1');
+}).catch(() => null);
+check(pc && pc.stars === 120 && pc.skills['m3-plus']?.n === 130, `C: Sterne und Lernstand je Thema zurück (${pc?.stars} Sterne)`);
 await b.close();
 console.log(bad ? `${bad} Fehler` : 'alles gut');
 process.exit(bad ? 1 : 0);
