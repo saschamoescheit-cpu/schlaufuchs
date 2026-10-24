@@ -948,7 +948,7 @@ function mydayTask(r: Rng, s: Stage): Gen {
 type Pos = 'am Anfang' | 'in der Mitte' | 'am Ende';
 // [Laut, Wort, Bild, Position]
 const LAUTPOS: [string, string, string, Pos][] = [
-  ['M', 'Maus', '🐭', 'am Anfang'], ['M', 'Lampe', '💡', 'in der Mitte'], ['M', 'Baum', '🌳', 'am Ende'], ['M', 'Mond', '🌙', 'am Anfang'], ['M', 'Ampel', '🚦', 'in der Mitte'],
+  ['M', 'Maus', '🐭', 'am Anfang'], ['M', 'Ameise', '🐜', 'in der Mitte'], ['M', 'Baum', '🌳', 'am Ende'], ['M', 'Mond', '🌙', 'am Anfang'], ['M', 'Ampel', '🚦', 'in der Mitte'],
   ['N', 'Nase', '👃', 'am Anfang'], ['N', 'Ente', '🦆', 'in der Mitte'], ['N', 'Zahn', '🦷', 'am Ende'], ['N', 'Nuss', '🥜', 'am Anfang'], ['N', 'Kran', '🏗️', 'am Ende'],
   ['L', 'Löwe', '🦁', 'am Anfang'], ['L', 'Wolke', '☁️', 'in der Mitte'], ['L', 'Ball', '⚽', 'am Ende'], ['L', 'Igel', '🦔', 'am Ende'], ['L', 'Eule', '🦉', 'in der Mitte'],
   ['S', 'Sonne', '☀️', 'am Anfang'], ['S', 'Hose', '👖', 'in der Mitte'], ['S', 'Eis', '🍦', 'am Ende'], ['S', 'Haus', '🏠', 'am Ende'], ['S', 'Rose', '🌹', 'in der Mitte'],
@@ -961,6 +961,9 @@ const LAUTPOS: [string, string, string, Pos][] = [
   ['S', 'Salat', '🥗', 'am Anfang'], ['S', 'Bus', '🚌', 'am Ende'], ['S', 'Vase', '🏺', 'in der Mitte'],
   ['F', 'Feder', '🪶', 'am Anfang'], ['F', 'Schiff', '🚢', 'am Ende'], ['F', 'Seife', '🧼', 'in der Mitte'],
   ['T', 'Tasse', '☕', 'am Anfang'], ['T', 'Boot', '⛵', 'am Ende'], ['T', 'Butter', '🧈', 'in der Mitte'],
+  // Nachtlauf 24.10.2026: K und P neu
+  ['K', 'Kuh', '🐮', 'am Anfang'], ['K', 'Rakete', '🚀', 'in der Mitte'], ['K', 'Anker', '⚓', 'in der Mitte'], ['K', 'Park', '🏞️', 'am Ende'],
+  ['P', 'Pilz', '🍄', 'am Anfang'], ['P', 'Lupe', '🔍', 'in der Mitte'], ['P', 'Suppe', '🍲', 'in der Mitte'],
 ];
 function lautposTask(r: Rng, s: Stage): Gen {
   const [l, w, e, pos] = pick(r, s === 1 ? LAUTPOS.filter((x) => x[3] !== 'in der Mitte') : LAUTPOS);
