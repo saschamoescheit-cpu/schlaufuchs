@@ -259,6 +259,11 @@ const NOMEN: { w: string; a: 'der' | 'die' | 'das'; e: string; pl: string }[] = 
   { w: 'Bär', a: 'der', e: '🐻', pl: 'Bären' }, { w: 'Kerze', a: 'die', e: '🕯️', pl: 'Kerzen' }, { w: 'Brot', a: 'das', e: '🍞', pl: 'Brote' },
   { w: 'Topf', a: 'der', e: '🍲', pl: 'Töpfe' }, { w: 'Tomate', a: 'die', e: '🍅', pl: 'Tomaten' }, { w: 'Zelt', a: 'das', e: '⛺', pl: 'Zelte' },
   { w: 'Hahn', a: 'der', e: '🐓', pl: 'Hähne' }, { w: 'Ente', a: 'die', e: '🦆', pl: 'Enten' }, { w: 'Krokodil', a: 'das', e: '🐊', pl: 'Krokodile' },
+  // Nachtlauf 24.10.2026: mehr Nomen
+  { w: 'Löwe', a: 'der', e: '🦁', pl: 'Löwen' }, { w: 'Gabel', a: 'die', e: '🍴', pl: 'Gabeln' }, { w: 'Schloss', a: 'das', e: '🏰', pl: 'Schlösser' },
+  { w: 'Schuh', a: 'der', e: '👟', pl: 'Schuhe' }, { w: 'Kirsche', a: 'die', e: '🍒', pl: 'Kirschen' }, { w: 'Kamel', a: 'das', e: '🐫', pl: 'Kamele' },
+  { w: 'Turm', a: 'der', e: '🗼', pl: 'Türme' }, { w: 'Wolke', a: 'die', e: '☁️', pl: 'Wolken' }, { w: 'Telefon', a: 'das', e: '☎️', pl: 'Telefone' },
+  { w: 'Zug', a: 'der', e: '🚂', pl: 'Züge' }, { w: 'Zitrone', a: 'die', e: '🍋', pl: 'Zitronen' }, { w: 'Huhn', a: 'das', e: '🐔', pl: 'Hühner' },
 ];
 const VERBEN = ['laufen', 'spielen', 'lesen', 'schreiben', 'singen', 'malen', 'springen', 'essen', 'trinken', 'lachen', 'schwimmen', 'tanzen', 'rufen', 'bauen', 'schlafen', 'kochen', 'klettern', 'werfen', 'fliegen', 'helfen', 'rennen', 'weinen', 'sägen', 'basteln', 'putzen', 'turnen', 'graben', 'fahren', 'nähen', 'füttern', 'hüpfen', 'gießen', 'wandern', 'pflücken', 'zeichnen', 'rutschen', 'kleben', 'reiten', 'pfeifen', 'schaukeln', 'sammeln', 'winken', 'zählen', 'ziehen',
   // Nachtlauf 24.10.2026: mehr Verben
