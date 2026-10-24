@@ -95,6 +95,14 @@ export function unionLog(a: Attempt[], b: Attempt[]): Attempt[] {
   return [...seen.values()].sort((x, y) => x.t - y.t);
 }
 
+/** Eine aufgehobene Kopie zurückholen (Rettung, 24.10.2026): Kopie und Stand jetzt können sich überschneiden – Zähler
+ *  daher das Größere (nie doppelt), Verlauf und Tests vereint, Fehler-Kiste vereint. */
+export function mergeRescue(a: Progress, b: Progress): Progress {
+  const core = mergeCore(null, coreOf(a), coreOf(b));
+  const tests = new Map([...a.tests, ...b.tests].map((t) => [t.id, t]));
+  return { ...core, log: unionLog(a.log, b.log), tests: [...tests.values()].sort((x, y) => x.t - y.t) };
+}
+
 /** Zwei Profile desselben Kindes (auf zwei Geräten getrennt angelegt) zu einem Lernstand vereinen. */
 export function mergeTwo(a: Progress, b: Progress): Progress {
   const core = mergeCore(EMPTY_BASE, coreOf(a), coreOf(b));

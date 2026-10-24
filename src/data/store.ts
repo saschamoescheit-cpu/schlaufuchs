@@ -12,6 +12,7 @@ import type { Pace } from '../engine/session';
 import { DEFAULT_STATE, stateInfo } from '../content/curriculum';
 import { mergeTwo } from './merge';
 import { askPersist, available as mirrorAvailable, choose, putMirror, readMirror, readMirrorStrict, writeMirror } from './mirror';
+import { DELETED } from './sync';
 
 export interface Profile {
   id: string;
@@ -192,6 +193,8 @@ async function moveOut(json: string, at: number, r: number): Promise<void> {
 }
 /** Liegt der Lernstand in IndexedDB? (Anzeige in den Eltern-Einstellungen) */
 export const isMovedOut = () => movedOut;
+/** Ist der Lernstand wirklich geladen? Vorher (oder wenn er nicht lesbar ist) darf nicht abgeglichen werden. */
+export const isLoaded = () => ready && !loadError;
 /** Muss die App vor dem ersten Bild IndexedDB lesen? (main.tsx) */
 export const needsMirrorFirst = () => !ready;
 /** Lernstand nach dem Umzug nicht lesbar – die App zeigt dann nur einen Hinweis */
@@ -337,7 +340,18 @@ export function saveProfile(p: Profile, activate = true) {
   });
 }
 
+/** Ausdrücklich gelöscht (nur das geht beim Abgleich als Löschung an die anderen Geräte, sync.ts DELETED). */
+function markDeleted(id: string) {
+  try {
+    const list = JSON.parse(localStorage.getItem(DELETED) ?? '[]') as string[];
+    if (!list.includes(id)) localStorage.setItem(DELETED, JSON.stringify([...list, id]));
+  } catch {
+    /* nicht schreibbar – dann bleibt das Kind auf den anderen Geräten (lieber zu viel als zu wenig) */
+  }
+}
+
 export function deleteProfile(id: string) {
+  markDeleted(id);
   update((d) => {
     d.profiles = d.profiles.filter((p) => p.id !== id);
     delete d.progress[id];
@@ -367,6 +381,7 @@ export function duplicateProfiles(d: AppData): [Profile, Profile][] {
 
 /** Zwei Profile desselben Kindes zu einem: der ganze Lernstand beider zählt, das ältere Profil bleibt. */
 export function mergeProfiles(keepId: string, dropId: string) {
+  markDeleted(dropId);
   update((d) => {
     d.progress[keepId] = mergeTwo(d.progress[keepId] ?? emptyProgress(), d.progress[dropId] ?? emptyProgress());
     d.profiles = d.profiles.filter((p) => p.id !== dropId);

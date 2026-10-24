@@ -13,11 +13,11 @@ import './styles.css';
 import App from './App';
 import { ErrorBoundary } from './ui/ErrorBoundary';
 import { SpeechHint } from './ui/common';
-import { checkMirror, getData, needsMirrorFirst, setChangeHook, updateFromSync } from './data/store';
+import { checkMirror, getData, isLoaded, needsMirrorFirst, setChangeHook, updateFromSync } from './data/store';
 import { connectStore, startSync, syncSoon } from './data/sync';
 
-// Abgleich zwischen den Geräten: jede Änderung geht ein paar Sekunden später hoch
-connectStore(getData, updateFromSync);
+// Abgleich zwischen den Geräten: jede Änderung geht ein paar Sekunden später hoch – aber nur mit geladenem Lernstand
+connectStore(getData, updateFromSync, isLoaded);
 setChangeHook(() => syncSoon());
 // Liegt der Lernstand im großen Speicher (umgezogen), erst ihn lesen, dann zeigen – sonst sähe die App kurz leer aus
 const first = needsMirrorFirst();

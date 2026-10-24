@@ -11,7 +11,7 @@
 import { useSyncExternalStore } from 'react';
 import { dayKey, emptyProgress, LOG_MAX, type Attempt, type Progress, type TestResult } from '../engine/learning';
 import type { AppData, Profile } from './store';
-import { baseOf, coreOf, mergeCore, unionLog, type Base, type Core } from './merge';
+import { baseOf, coreOf, mergeCore, mergeRescue, unionLog, type Base, type Core } from './merge';
 
 export interface Row {
   kind: string;
@@ -41,6 +41,10 @@ export interface Device {
 const META = 'schlaufuchs:sync.meta.v1';
 const BASE = 'schlaufuchs:sync.base.v1';
 const REMOVED = 'schlaufuchs:sync.removed.v1';
+/** Kinder, die auf diesem Gerät ausdrücklich gelöscht wurden (store.ts deleteProfile/mergeProfiles). Nur diese gehen
+ *  als „gelöscht“ hoch – fehlt ein Kind hier aus einem anderen Grund (z. B. Speicher beim Start nicht lesbar), wird es
+ *  vom Server zurückgeholt statt überall gelöscht (Leanas Lernstand verschwand am 24.10.2026). */
+export const DELETED = 'schlaufuchs:sync.deleted.v1';
 
 type Kind = 'profile' | 'progress' | 'test' | 'log' | 'parent';
 /** Zeilen, die zwei Geräte gleichzeitig ändern können – sie werden zusammengeführt statt überschrieben. */
@@ -197,11 +201,17 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
   const changedThere = (k: string, r?: Row) => r != null && (!meta[k] || !sameTime(r.updated_at, meta[k].at));
 
   const keys = [...new Set([...snap.keys(), ...remoteBy.keys()])];
+  const deletedHere = new Set(parse<string[]>(dev.read(DELETED), []));
   // Kinder, die hier gelöscht wurden: ihre übrigen Zeilen gehen mit
   const goneHere = new Set<string>();
+  // Kinder, die hier fehlen, ohne gelöscht worden zu sein: alle ihre Zeilen zurückholen – nie aus dem Fehlen schließen,
+  // dass gelöscht wurde
+  const missing = new Set<string>();
   for (const k of keys) {
     const [kind, id] = k.split('|');
-    if (kind === 'profile' && !snap.has(k) && meta[k] && remoteBy.get(k) && !remoteBy.get(k)!.deleted && !changedThere(k, remoteBy.get(k))) goneHere.add(id);
+    if (kind !== 'profile' || snap.has(k) || !remoteBy.get(k) || remoteBy.get(k)!.deleted) continue;
+    if (deletedHere.has(id) && meta[k] && !changedThere(k, remoteBy.get(k))) goneHere.add(id);
+    else if (!deletedHere.has(id)) missing.add(id);
   }
   for (const k of keys) {
     const l = snap.get(k);
@@ -213,7 +223,8 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
     else if (!l && r) {
       if (r.deleted) continue;
       const pid = pidOf(kind, id);
-      if (meta[k] && !rc) {
+      if (pid && missing.has(pid)) pullKeys.push({ kind, id });
+      else if (meta[k] && !rc) {
         // hier nicht mehr da: gelöscht – oder nur ein alter Tag, der aus dem vollen Verlauf gefallen ist
         if (kind === 'profile' || (pid && goneHere.has(pid))) push.push({ row: { kind, id, updated_at: at, deleted: true } });
       } else pullKeys.push({ kind, id });
@@ -328,6 +339,13 @@ export async function syncOnce(dev: Device, remote: Remote, now = () => new Date
   }
   dev.write(META, JSON.stringify(meta));
   dev.write(BASE, JSON.stringify(base));
+  // ausdrücklich gelöschte Kinder: erledigt, sobald die Löschung oben ist (oder dort schon gelöscht war)
+  if (deletedHere.size) {
+    const done = new Set(sent.filter((p) => p.row.kind === 'profile' && p.row.deleted).map((p) => p.row.id));
+    for (const id of deletedHere) if (remoteBy.get(key('profile', id))?.deleted || !remoteBy.has(key('profile', id))) done.add(id);
+    const left = [...deletedHere].filter((id) => !done.has(id));
+    if (left.length !== deletedHere.size) dev.write(DELETED, left.length ? JSON.stringify(left) : null);
+  }
   return { pushed: sent.length, pulled, at, again, ...(refused.length ? { failed: refused.length, error: refused[0].error } : {}) };
 }
 
@@ -339,7 +357,9 @@ export function restoreRemoved(profileId: string, dev: Device = browserDevice): 
   if (!r) return;
   dev.commit((d) => {
     if (!d.profiles.some((p) => p.id === profileId)) d.profiles.push(r.profile);
-    d.progress[profileId] = r.progress;
+    // zusammenführen statt ersetzen: was seitdem geübt wurde, bleibt auch
+    const cur = d.progress[profileId];
+    d.progress[profileId] = cur ? mergeRescue(cur, r.progress) : r.progress;
   });
   dev.write(REMOVED, JSON.stringify(list.filter((x) => x.profile.id !== profileId)));
   changed();
@@ -382,8 +402,12 @@ const ls = {
 
 let browserDevice: Device = { get: () => ({ schema: 1, profiles: [], progress: {}, activeId: null, parent: { pin: null } }), commit: () => {}, ...ls };
 /** Verbindet den Abgleich mit dem Speicher der App (main.tsx). */
-export function connectStore(get: () => AppData, commit: (fn: (d: AppData) => void) => void): void {
+/** Ist der Lernstand auf diesem Gerät geladen? Vorher (oder wenn er nicht lesbar ist) wird nie abgeglichen – ein leerer
+ *  Stand darf nicht als „alles gelöscht“ hochgehen. */
+let storeLoaded: () => boolean = () => true;
+export function connectStore(get: () => AppData, commit: (fn: (d: AppData) => void) => void, loaded?: () => boolean): void {
   browserDevice = { get, commit, ...ls };
+  if (loaded) storeLoaded = loaded;
 }
 
 const AUTH = 'schlaufuchs:auth.v1';
@@ -703,6 +727,7 @@ let again = false;
 /** Gleicht jetzt ab, wenn angemeldet und online. Immer nur einer zugleich; eine Änderung währenddessen → gleich noch einer. */
 export function syncNow(): Promise<SyncResult | null> {
   if (!syncConfigured() || !loadSession() || (typeof navigator !== 'undefined' && navigator.onLine === false)) return Promise.resolve(null);
+  if (!storeLoaded()) return Promise.resolve(null);
   if (running) {
     again = true;
     return running;

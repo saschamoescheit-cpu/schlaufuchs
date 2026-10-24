@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyProgress, LOG_MAX, record, type TestResult } from '../engine/learning';
 import type { Task } from '../engine/types';
 import type { AppData, Profile } from './store';
-import { removedList, restoreRemoved, syncOnce, type Device, type Remote, type Row } from './sync';
+import { DELETED, removedList, restoreRemoved, syncOnce, type Device, type Remote, type Row } from './sync';
 
 // Ein simulierter Server mit denselben Regeln wie Supabase: Zeilen je kind|id, „nur anlegen, wenn neu“ und
 // „nur ersetzen, wenn unverändert“.
@@ -215,12 +215,15 @@ describe('Abgleich zwischen Geräten', () => {
     await sync(ipad, s.remote);
     await sync(phone, s.remote);
     phone.commit((d) => void (d.activeId = 'mia'));
+    // ausdrücklich gelöscht (store.deleteProfile merkt das in DELETED)
+    ipad.write(DELETED, JSON.stringify(['mia']));
     ipad.commit((d) => {
       d.profiles = d.profiles.filter((p) => p.id !== 'mia');
       delete d.progress.mia;
     });
     await sync(ipad, s.remote);
     expect([...s.rows.values()].filter((r) => r.id.startsWith('mia')).every((r) => r.deleted)).toBe(true);
+    expect(ipad.read(DELETED)).toBeNull();
     await sync(phone, s.remote);
     expect(phone.d.profiles.map((p) => p.id)).toEqual(['leo']);
     expect(phone.d.activeId).toBeNull();
@@ -233,6 +236,58 @@ describe('Abgleich zwischen Geräten', () => {
     expect(ipad.d.profiles.map((p) => p.id).sort()).toEqual(['leo', 'mia']);
     expect(P(ipad).stars).toBe(1);
     expect(P(ipad).tests.map((x) => x.id)).toEqual(['t1']);
+  });
+
+  // 24.10.2026: Leanas Lernstand war mitten im Üben weg. Ein Gerät mit leerem Stand (z. B. Speicher beim Start nicht
+  // lesbar) darf daraus nie „alles gelöscht“ machen.
+  it('ein Gerät, dem die Kinder fehlen (ohne Löschen), holt sie zurück statt sie überall zu löschen', async () => {
+    const s = server();
+    const ipad = device();
+    const phone = device();
+    addKid(ipad);
+    practice(ipad, [['a', true], ['b', true]]);
+    ipad.commit((d) => d.progress.mia.tests.push(test('t1')));
+    await sync(ipad, s.remote);
+    await sync(phone, s.remote);
+    // auf dem iPhone ist der Stand plötzlich leer – niemand hat gelöscht
+    phone.commit((d) => {
+      d.profiles = [];
+      d.progress = {};
+    });
+    await sync(phone, s.remote);
+    expect([...s.rows.values()].some((r) => r.deleted)).toBe(false);
+    expect(phone.d.profiles.map((p) => p.id)).toEqual(['mia']);
+    expect(P(phone).stars).toBe(2);
+    expect(P(phone).tests.map((x) => x.id)).toEqual(['t1']);
+    expect(P(phone).log.length).toBe(2);
+    // das iPad übt weiter und behält alles
+    await sync(ipad, s.remote);
+    expect(ipad.d.profiles.map((p) => p.id)).toEqual(['mia']);
+    expect(P(ipad).stars).toBe(2);
+  });
+
+  it('wiederherstellen führt zusammen: was danach geübt wurde, bleibt', async () => {
+    const s = server();
+    const ipad = device();
+    const phone = device();
+    addKid(ipad);
+    practice(ipad, [['a', true], ['b', true], ['c', true]]);
+    await sync(ipad, s.remote);
+    await sync(phone, s.remote);
+    ipad.write(DELETED, JSON.stringify(['mia']));
+    ipad.commit((d) => {
+      d.profiles = [];
+      d.progress = {};
+    });
+    await sync(ipad, s.remote);
+    await sync(phone, s.remote);
+    expect(removedList(phone)[0].progress.stars).toBe(3);
+    // inzwischen neu angelegt und eine Aufgabe geübt
+    addKid(phone);
+    practice(phone, [['z', true]]);
+    restoreRemoved('mia', phone);
+    expect(P(phone).log.length).toBe(4);
+    expect(P(phone).stars).toBe(3);
   });
 
   it('ein voller Verlauf löscht alte Tage nicht vom Server', async () => {

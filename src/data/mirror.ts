@@ -71,6 +71,22 @@ export async function readMirrorStrict(id = MAIN): Promise<Snapshot | null> {
   return v && typeof v.json === 'string' && typeof v.at === 'number' ? v : null;
 }
 
+/** Alle Einträge (Hauptkopie und Sicherungen wie „vor-wiederherstellung:…“) – für die Lernstand-Rettung (rescue.ts). */
+export async function listMirror(): Promise<{ id: string; snap: Snapshot }[]> {
+  if (!available()) return [];
+  try {
+    const ids = await req<IDBValidKey[]>('readonly', (s) => s.getAllKeys());
+    const out: { id: string; snap: Snapshot }[] = [];
+    for (const id of ids) {
+      const v = await readMirror(String(id));
+      if (v) out.push({ id: String(id), snap: v });
+    }
+    return out;
+  } catch {
+    return [];
+  }
+}
+
 let pending: Snapshot | null = null;
 let pendingDone: ((ok: boolean) => void) | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;

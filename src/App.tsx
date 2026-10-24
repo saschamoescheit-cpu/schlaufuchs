@@ -7,6 +7,7 @@ import { getData, hasLoadError, hasSaveError, setActive, useData, usesSchoolFont
 import { followFamily, takePushTarget } from './data/push';
 import { useSyncStatus } from './data/sync';
 import { mirrorOk } from './data/mirror';
+import { RescueCard } from './ui/RescueCard';
 import { Home, SubjectScreen } from './screens/Home';
 import { Practice } from './screens/Practice';
 import { ReviewScreen, StatsScreen } from './screens/Stats';
@@ -285,7 +286,10 @@ export default function App() {
             </button>
           </div>
         ) : (
-          body
+          <>
+            <RescueCard />
+            {body}
+          </>
         )}
       </main>
       <nav className="tabbar" aria-label="Menü">
