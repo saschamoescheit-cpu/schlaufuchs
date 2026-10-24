@@ -19,6 +19,10 @@ const G1: Item[] = [
   ['Elefant', '🐘', 'Der Elefant ist grau.'], ['Tulpe', '🌷', 'Die Tulpe blüht.'], ['Palme', '🌴', 'Die Palme ist hoch.'], ['Pirat', '🏴‍☠️', 'Der Pirat lacht.'], ['Krone', '👑', 'Die Krone glänzt.'],
   ['Dino', '🦕', 'Der Dino ist groß.'], ['Kino', '🎬', 'Wir gehen ins Kino.'], ['Name', '📛', 'Mein Name ist Mia.'], ['Pilot', '✈️', 'Der Pilot fliegt.'],
   ['Radio', '📻', 'Das Radio ist laut.'], ['Kuli', '🖊️', 'Der Kuli schreibt blau.'], ['Mofa', '🛵', 'Das Mofa fährt.'], ['Roboter', '🤖', 'Der Roboter tanzt.'],
+  // Nachtlauf 24.10.2026: mehr lautgetreue Wörter
+  ['Kanu', '🛶', 'Das Kanu ist rot.'], ['Torte', '🎂', 'Die Torte ist süß.'], ['Nadel', '🪡', 'Die Nadel ist spitz.'], ['Gabel', '🍴', 'Die Gabel liegt auf dem Tisch.'],
+  ['Paket', '📦', 'Das Paket ist schwer.'], ['Kaktus', '🌵', 'Der Kaktus hat Stacheln.'], ['Panda', '🐼', 'Der Panda frisst Bambus.'], ['Wolf', '🐺', 'Der Wolf heult.'],
+  ['Delfin', '🐬', 'Der Delfin springt.'], ['Pinguin', '🐧', 'Der Pinguin watschelt.'],
 ];
 const G2: Item[] = [
   ['Biene', '🐝', 'Die Biene summt.'], ['Ball', '⚽', 'Der Ball rollt.'], ['Sonne', '☀️', 'Die Sonne scheint.'], ['Puppe', '🪆', 'Die Puppe ist alt.'], ['Katze', '🐱', 'Die Katze schläft.'],
